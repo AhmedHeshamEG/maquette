@@ -94,9 +94,12 @@ public struct FlipbookLayout {
         }
     }
 
-    /// The pixel frame of a track's anchor in `scene` (nil when its object is gone or behind the camera).
+    /// The pixel frame of a track's anchor in `scene` (nil when its object is gone or behind the camera, and for a
+    /// sheet, which has no single frame: its points go through `pixels(of:in:scene:)` one by one).
     public func anchorFrame(_ track: FlipbookTrack, in scene: Scene) -> FlipbookAnchorFrame? {
         switch track.anchor {
+        case .sheet:
+            return nil
         case .camera:
             let center = Vec2(width / 2 + track.offset.x * height, height / 2 - track.offset.y * height)
             return FlipbookAnchorFrame(center: center, pixelsPerUnit: height)
@@ -114,15 +117,56 @@ public struct FlipbookLayout {
     public func draws(_ timeline: Timeline, scene: Scene, palette: Palette, at time: Double) -> [FlipbookDraw] {
         timeline.flipbooks.compactMap { track in
             guard track.visible, track.opacity > 0.001,
-                  let index = track.frameIndex(at: time, fps: timeline.fps, sceneDuration: timeline.duration),
-                  let frame = anchorFrame(track, in: scene) else { return nil }
-            let strokes = track.frames[index].strokes.map { stroke in
-                FlipbookPixelStroke(points: stroke.points.map(frame.pixel), widths: stroke.widths.map { $0 * frame.pixelsPerUnit },
-                                    color: stroke.color.resolved(in: palette), filled: stroke.filled, alphas: stroke.alphas, brush: stroke.brush,
-                                    seed: stroke.seed ?? 0)
-            }
+                  let index = track.frameIndex(at: time, fps: timeline.fps, sceneDuration: timeline.duration) else { return nil }
+            let strokes = track.frames[index].strokes.flatMap { pixels(of: $0, in: track, scene: scene, palette: palette) }
             return strokes.isEmpty ? nil : FlipbookDraw(track: track.id, blend: track.blend, opacity: track.opacity, strokes: strokes)
         }
+    }
+
+    /// A stroke of a track in pixels. A stroke on a sheet goes through the camera point by point (it keeps its
+    /// perspective, and a stretch behind the camera splits it); the others through their anchor's one frame.
+    public func pixels(of stroke: FlipStroke, in track: FlipbookTrack, scene: Scene, palette: Palette = Look.default.palette) -> [FlipbookPixelStroke] {
+        let color = stroke.color.resolved(in: palette)
+        func make(_ points: [Vec2], _ widths: [Double], _ alphas: [Double]?) -> FlipbookPixelStroke {
+            FlipbookPixelStroke(points: points, widths: widths, color: color, filled: stroke.filled, alphas: alphas, brush: stroke.brush,
+                                seed: stroke.seed ?? 0)
+        }
+        guard let id = track.anchor.sheet else {
+            guard let frame = anchorFrame(track, in: scene) else { return [] }
+            return [make(stroke.points.map(frame.pixel), stroke.widths.map { $0 * frame.pixelsPerUnit }, stroke.alphas)]
+        }
+        guard let sheet = scene.sheet(id) else { return [] }
+        var runs: [FlipbookPixelStroke] = []
+        var points: [Vec2] = [], widths: [Double] = [], alphas: [Double] = []
+        func close() {
+            if !points.isEmpty, points.count >= 2 || stroke.points.count == 1 {
+                runs.append(make(points, widths, stroke.alphas == nil ? nil : alphas))
+            }
+            points = []
+            widths = []
+            alphas = []
+        }
+        let opacities = stroke.opacities
+        for index in stroke.points.indices {
+            guard let world = sheet.worldPoint(at: stroke.points[index], in: scene), let pixel = pixel(of: world) else {
+                close()
+                continue
+            }
+            points.append(pixel.point)
+            widths.append(stroke.widths[index] * pixel.pixelsPerMetre)
+            alphas.append(opacities[index])
+        }
+        close()
+        // A filled shape only makes sense whole.
+        if stroke.filled, runs.count != 1 || runs.first?.points.count != stroke.points.count { return [] }
+        return runs
+    }
+
+    /// A world point in pixels, and how many pixels a metre is there (nil behind the camera).
+    public func pixel(of world: Vec3) -> (point: Vec2, pixelsPerMetre: Double)? {
+        guard let ndc = project(world), ndc.depth > 1e-3 else { return nil }
+        let focal = 1 / tan(min(max(fieldOfView, 1), 170) * .pi / 360)
+        return (Vec2((ndc.x + 1) / 2 * width, (1 - ndc.y) / 2 * height), height / 2 * focal / ndc.depth)
     }
 
     /// The outline of a pressure stroke in pixels: left side forward, right side back (a closed polygon). Single points
