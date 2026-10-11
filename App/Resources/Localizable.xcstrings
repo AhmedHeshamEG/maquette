@@ -4377,6 +4377,22 @@
         }
       }
     },
+    "Couldn't save the recording: %@": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Impossibile salvare la registrazione: %@"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تعذّر حفظ التسجيل: %@"
+          }
+        }
+      }
+    },
     "Couldn't save the rig's weights: %@": {
       "localizations": {
         "it": {
@@ -7189,6 +7205,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "مفضّلة"
+          }
+        }
+      }
+    },
+    "Feel": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sensazione"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الإحساس"
           }
         }
       }
@@ -15321,6 +15353,22 @@
         }
       }
     },
+    "Record a minute": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Registra un minuto"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "سجّل دقيقة"
+          }
+        }
+      }
+    },
     "Record a Performance": {
       "localizations": {
         "it": {
@@ -15385,6 +15433,22 @@
         }
       }
     },
+    "Recording how the app feels": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Registrazione della sensazione dell'app"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "جارٍ تسجيل إحساس التطبيق"
+          }
+        }
+      }
+    },
     "Recording plays the timeline from the playhead, so you narrate over the animation. Imported sounds land at the playhead.": {
       "localizations": {
         "it": {
@@ -15397,6 +15461,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "يشغّل التسجيل الخط الزمني من رأس التشغيل فتروي فوق الحركة. تُوضع الأصوات المستوردة عند رأس التشغيل."
+          }
+        }
+      }
+    },
+    "Recording saved. Share it from Settings ▸ Diagnostics.": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Registrazione salvata. Condividila da Impostazioni ▸ Diagnostica."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "حُفظ التسجيل. شاركه من الإعدادات ▸ التشخيص."
           }
         }
       }
@@ -19373,6 +19453,22 @@
         }
       }
     },
+    "Stop recording": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Interrompi la registrazione"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "إيقاف التسجيل"
+          }
+        }
+      }
+    },
     "Stop the microphone": {
       "localizations": {
         "it": {
@@ -22961,6 +23057,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "استخدمها في الحلقة"
+          }
+        }
+      }
+    },
+    "Use the app for a minute as you normally do: every touch is timed to the frame that answers it. Nothing leaves the iPad unless you share it.": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Usa l'app per un minuto come fai di solito: ogni tocco viene cronometrato fino al fotogramma che gli risponde. Nulla lascia l'iPad, a meno che tu non lo condivida."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "استخدم التطبيق لمدة دقيقة كما تفعل عادةً: يُقاس زمن كل لمسة حتى الإطار الذي يستجيب لها. لا يغادر شيء جهاز iPad إلا إذا شاركته."
           }
         }
       }

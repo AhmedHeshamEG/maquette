@@ -18,7 +18,11 @@ public struct RootView: View {
     public var body: some View {
         if app.primaryWindow == nil || app.primaryWindow == windowID {
             main
-                .onAppear { if app.primaryWindow == nil { app.primaryWindow = windowID } }
+                .onAppear {
+                    if app.primaryWindow == nil { app.primaryWindow = windowID }
+                    // After this pass draws: the cold launch ends at the first screen.
+                    Task { @MainActor in app.noteLaunched() }
+                }
                 .onDisappear { if app.primaryWindow == windowID { app.primaryWindow = nil } }
         } else {
             SecondaryWindowView { app.primaryWindow = windowID }
@@ -31,6 +35,7 @@ public struct RootView: View {
         return ZStack {
             BackgroundFill()
             TheaterView(zoom: zoom)
+            if app.isRecordingFeel { FeelRecordingDot() }
         }
         .hmmThemed(.lowey, mode: HmmThemeMode(rawValue: themeMode) ?? .dark)
         .hmmToast($app.toast)
@@ -38,6 +43,7 @@ public struct RootView: View {
             ZStack {
                 BackgroundFill()
                 EditorScreen(editor: editor)
+                if app.isRecordingFeel { FeelRecordingDot() }
             }
             .environment(app)
             .hmmThemed(.lowey, mode: HmmThemeMode(rawValue: themeMode) ?? .dark)
@@ -78,5 +84,21 @@ private struct BackgroundFill: View {
 
     var body: some View {
         theme.background.ignoresSafeArea()
+    }
+}
+
+/// The feel recorder is listening: one small red dot at the top, nothing to touch (it stops by itself).
+private struct FeelRecordingDot: View {
+    @Environment(\.hmmTheme) private var theme
+
+    var body: some View {
+        Circle()
+            .fill(theme.record)
+            .frame(width: 8, height: 8)
+            .padding(.top, 6)
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+            .allowsHitTesting(false)
+            .accessibilityLabel("Recording how the app feels")
+            .accessibilityIdentifier("feel-recording")
     }
 }

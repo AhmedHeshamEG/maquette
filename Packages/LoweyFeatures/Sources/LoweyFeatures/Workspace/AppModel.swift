@@ -31,6 +31,8 @@ public final class AppModel {
     var showTour = false
     /// Settings from the Theater (the editor opens them as one of its sheets).
     var showsSettings = false
+    /// The feel recorder is listening (Diagnostics ▸ Record; a small dot at the top says so).
+    var isRecordingFeel = false
     /// A project changed on two devices: which version to keep.
     var pendingConflict: ProjectConflict?
     /// The window that edits (Stage Manager can open more; the others offer to take over or become monitors).
@@ -153,9 +155,11 @@ public final class AppModel {
             pendingConflict = ProjectConflict(url: url, versions: ConflictResolver.conflicts(at: url))
             return
         }
+        let started = CACurrentMediaTime()
         do {
             let opened = try ProjectHistory.open(url, store: projectStore, onError: journalErrorHandler)
             editor = EditorModel(app: self, projectURL: url, opened: opened)
+            editor?.openStarted = started
             diagnostics.log("Opened \(opened.session.document.project.name) (\(opened.replayed) changes replayed, \(opened.skipped) skipped)")
             if opened.skipped > 0 { show("The very last change couldn't be read back. Everything before it is here.", kind: .error) }
         } catch {

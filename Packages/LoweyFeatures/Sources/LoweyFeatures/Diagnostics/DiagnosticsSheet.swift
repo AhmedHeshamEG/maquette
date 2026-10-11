@@ -17,9 +17,11 @@ struct DiagnosticsSheet: View {
     @State private var benchmarkKind = BenchmarkKind.market
     @State private var reports: [URL] = []
     @Environment(\.hmmTheme) private var theme
+    @Environment(\.dismiss) private var dismiss
 
     var body: some View {
         HmmSheet("Diagnostics") {
+            feel
             Toggle("Performance HUD over the stage", isOn: $showsHUD).font(.hmm(.headline, weight: .semibold))
             Hint("Frame times against this screen's budget, p50 / p95 / p99 over the last five seconds, dropped frames, heat and memory.")
             if let load = editor?.loadSummary {
@@ -101,6 +103,27 @@ struct DiagnosticsSheet: View {
         .sheet(isPresented: Binding(get: { !sharing.isEmpty }, set: { if !$0 { sharing = [] } })) { ShareSheet(items: sharing) }
     }
 
+    /// The feel recorder: a minute of real use, then a file to share (it lands in the list below).
+    @ViewBuilder private var feel: some View {
+        HmmSectionHeader("Feel")
+        Hint(
+            "Use the app for a minute as you normally do: every touch is timed to the frame that answers it. Nothing leaves the iPad unless you share it."
+        )
+        if app.isRecordingFeel {
+            HmmPillButton("Stop recording", systemName: "stop.circle", prominent: true) { app.stopFeelRecording() }
+                .accessibilityIdentifier("stop-feel-recording")
+        } else {
+            HmmPillButton("Record a minute", systemName: "record.circle", prominent: true) {
+                app.startFeelRecording()
+                // Out of the way, so the minute is spent using the app.
+                editor?.sheet = nil
+                app.showsSettings = false
+                dismiss()
+            }
+            .accessibilityIdentifier("record-feel")
+        }
+    }
+
     private var summary: String {
         var lines = ["Projects: \(app.projects.count) · Library: \(app.library.manifest.assets.count) models, \(app.library.manifest.prefabs.count) builds"]
         if let editor {
@@ -111,7 +134,7 @@ struct DiagnosticsSheet: View {
 
     private func loadReports() {
         let files = (try? FileManager.default.contentsOfDirectory(at: app.diagnostics.benchmarksFolder, includingPropertiesForKeys: nil)) ?? []
-        reports = files.filter { $0.lastPathComponent.hasPrefix("benchmark-") && $0.pathExtension == "json" }
+        reports = files.filter { ($0.lastPathComponent.hasPrefix("benchmark-") || $0.lastPathComponent.hasPrefix("feel-")) && $0.pathExtension == "json" }
             .sorted { $0.lastPathComponent > $1.lastPathComponent }
     }
 }

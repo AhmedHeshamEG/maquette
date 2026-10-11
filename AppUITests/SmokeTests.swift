@@ -97,6 +97,29 @@ final class SmokeTests: XCTestCase {
         shot("Diagnostics")
     }
 
+    /// The feel recorder: a short run (three seconds here, a minute on the device) with touches on the stage, a dot while
+    /// it listens, then the file to share in Diagnostics.
+    func testTheFeelRecorder() {
+        launch(["-feel-seconds", "3"])
+        newProject("Feel")
+        tap("Actions")
+        tap("Diagnostics")
+        tap("record-feel")
+        XCTAssertTrue(app.descendants(matching: .any)["feel-recording"].firstMatch.waitForExistence(timeout: 5), "the dot says it's listening")
+        let stage = app.otherElements["stage"]
+        for step in 0 ..< 4 {
+            stage.coordinate(withNormalizedOffset: CGVector(dx: 0.4 + 0.05 * Double(step), dy: 0.5)).tap()
+        }
+        shot("Recording")
+        let dot = app.descendants(matching: .any)["feel-recording"].firstMatch
+        XCTAssertTrue(dot.waitForNonExistence(timeout: 20), "it stops by itself")
+        tap("Actions")
+        tap("Diagnostics")
+        let file = app.staticTexts.matching(NSPredicate(format: "label BEGINSWITH 'feel-'")).firstMatch
+        XCTAssertTrue(file.waitForExistence(timeout: 5), "the recording is listed to share")
+        shot("Feel recording saved")
+    }
+
     /// Under load nothing is said on the canvas (CONTEXT §6): the preview lightens by itself and the numbers are in
     /// Diagnostics.
     func testNothingAppearsOnTheCanvasUnderLoad() {
