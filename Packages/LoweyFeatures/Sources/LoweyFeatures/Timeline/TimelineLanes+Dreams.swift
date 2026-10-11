@@ -43,7 +43,7 @@ struct DreamsLanes: ViewModifier {
 
     func body(content: Content) -> some View {
         content
-            .simultaneousGesture(TwoFingerPan(enabled: fingerSelects) { translation, state in pan(translation, state: state) })
+            .gesture(TwoFingerPan(enabled: fingerSelects) { translation, state in pan(translation, state: state) })
             .onContinuousHover(coordinateSpace: .named(TimelineLayout.lanesSpace)) { phase in
                 guard hoverScrubs, !editor.isPlaying, case let .active(point) = phase, point.x >= TimelineLayout.labelWidth else { return }
                 editor.setTime(max(0, layout.time(at: point.x - TimelineLayout.labelWidth)))
