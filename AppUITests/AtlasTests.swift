@@ -186,6 +186,7 @@ final class AtlasTests: XCTestCase {
             Page(name: "Model, Precision", steps: ["Model", "model-precision"], scrolls: 2),
             Page(name: "Draw, Ink", steps: ["Draw", "tool-ink"], scrolls: 1),
             Page(name: "Draw, Solid shape", steps: ["Draw", "tool-draw"], scrolls: 1),
+            Page(name: "Draw, Sketch", steps: ["Draw", "tool-sketch"], scrolls: 1),
             Page(name: "Draw, Flipbook", steps: ["Draw", "tool-flipbook"], scrolls: 1),
             Page(name: "Paint, Colour", steps: ["Paint", "tool-paint"], scrolls: 1),
             Page(name: "Paint, Shadow Brush", steps: ["Paint", "tool-shadow-brush"], scrolls: 1),
@@ -200,6 +201,8 @@ final class AtlasTests: XCTestCase {
             Page(name: "Drawing guide", steps: ["Draw", "tool-ink", "drawing-guide"]),
             Page(name: "Colour well", steps: ["Draw", "tool-ink", "colour-well"]),
             Page(name: "Flipbook tracks", steps: ["Draw", "tool-flipbook", "flipbook-tracks"]),
+            Page(name: "The sheet's menu", steps: ["Draw", "tool-ink", "Draw", "sheet-menu"]),
+            Page(name: "The sheet as a dome", steps: ["Draw", "tool-ink", "Draw", "sheet-dome"]),
             Page(name: "My Look editor", steps: ["Look", "look-style", "look-clay", "duplicate-look"], scrolls: 1, side: .leading),
             Page(name: "Fine tune the world", steps: ["Look", "Fine tune the world"], scrolls: 1, side: .leading),
             Page(name: "Set up for a Room", steps: ["scene-name", "setup-room", "scene-name", "Model", "model-add"]),
@@ -219,6 +222,8 @@ final class AtlasTests: XCTestCase {
             Page(name: "Learn", steps: ["Actions", "open-learn"], side: .centre),
             Page(name: "Gestures", steps: ["Actions", "open-learn", "learn-gestures"], scrolls: 2, side: .centre),
             Page(name: "Settings", steps: ["Actions", "Settings"], scrolls: 3, side: .centre),
+            Page(name: "Settings, Your Pencil", steps: ["Actions", "Settings", "settings-pencil"], scrolls: 3, side: .centre),
+            Page(name: "Settings, Gestures", steps: ["Actions", "Settings", "settings-gestures"], scrolls: 2, side: .centre),
             Page(name: "Scripts", steps: ["Actions", "Settings", "open-scripts"]),
             Page(name: "Bridge", steps: ["Actions", "Settings", "open-bridge"], scrolls: 1, side: .centre),
             Page(name: "Diagnostics", steps: ["Actions", "Settings", "Diagnostics"], scrolls: 2, side: .centre)
@@ -241,6 +246,7 @@ final class AtlasTests: XCTestCase {
         each([
             Page(name: "Turn gizmo", steps: ["gizmo-rotate"]),
             Page(name: "Numbers", steps: ["transform-toggle"]),
+            Page(name: "Number pad", steps: ["transform-toggle", "number-x"]),
             Page(name: "Look of this object", steps: ["object-look"], scrolls: 1),
             Page(name: "More ways to move", steps: ["more-motion"], scrolls: 2),
             Page(name: "The object's menu", steps: ["more-actions"]),
