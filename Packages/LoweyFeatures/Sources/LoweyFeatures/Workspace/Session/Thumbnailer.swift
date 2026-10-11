@@ -22,10 +22,20 @@ final class Thumbnailer {
     /// One frame of a document from a viewpoint (the stage's view).
     func still(_ document: Document, viewpoint: Viewpoint, width: Int, height: Int, catalog: AssetCatalog = .empty,
                models: ModelLibrary = .shared, paintFile: @escaping @Sendable (String) -> Data? = { _ in nil }) async throws -> CGImage {
+        await loadModels(of: document, catalog: catalog, models: models)
         var input = RenderInput(document: document, catalog: catalog)
         input.paintFile = paintFile
         let request = FrameRequest(input: input, camera: RenderCamera(viewpoint: viewpoint))
         return try await renderer(models: models).image(request, width: width, height: height)
+    }
+
+    /// Every model the document places, loaded before its picture is taken: the renderer draws nothing for a model
+    /// still loading, and a picture taken then was kept empty (the Library's grey tiles).
+    private func loadModels(of document: Document, catalog: AssetCatalog, models: ModelLibrary) async {
+        for object in document.scene.objects.values {
+            guard let id = object.kind.assetID, let asset = catalog.manifest.asset(id) else { continue }
+            _ = await models.load(asset, catalog: catalog)
+        }
     }
 
     /// The scene slowly turning in its Look, one full turn around everything in it from the work view's height (the
@@ -41,6 +51,7 @@ final class Thumbnailer {
         let radius = max(bounds.size.length / 2, 0.05)
         let distance = radius / sin(fieldOfView * .pi / 360) * 1.08
         let still = Document(project: document.project, scene: scene)
+        await loadModels(of: still, catalog: catalog, models: models)
         let start = document.scene.viewpoint.yaw
         var images: [CGImage] = []
         for index in 0 ..< max(frames, 1) {
