@@ -216,12 +216,15 @@ public struct DrawingSheet: Codable, Hashable, Sendable, Identifiable {
         return sheet
     }
 
-    /// Up for a sheet with this normal: the world's up laid onto it; on a floor or a ceiling, away from the eye.
+    /// Up for a sheet with this normal: the world's up laid onto it; on a floor or a ceiling, the world axis (x or z)
+    /// that points most away from the eye, so what is drawn on the ground lines up with the world.
     static func preferredUp(normal: Vec3, eye: Vec3, point: Vec3) -> Vec3 {
         let worldUp = Vec3.unitY - normal * normal.y
         if worldUp.length > 0.3 { return worldUp.normalized }
         let away = point - eye
-        let along = away - normal * away.dot(normal)
+        let axes = [Vec3.unitX, -Vec3.unitX, .unitZ, -Vec3.unitZ]
+        let best = axes.max { $0.dot(away) < $1.dot(away) } ?? -Vec3.unitZ
+        let along = best - normal * best.dot(normal)
         return along.length > 1e-6 ? along.normalized : (Vec3.unitZ - normal * normal.z).normalized
     }
 

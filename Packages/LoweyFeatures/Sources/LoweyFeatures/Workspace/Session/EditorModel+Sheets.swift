@@ -31,14 +31,30 @@ extension EditorModel {
         }
     }
 
-    /// The sheet is there before the first stroke: standing where the view looks, facing it.
+    /// The sheet is there before the first stroke: standing where the view looks, facing it; for precise sketches,
+    /// lying on the ground there (where a model starts, as in Shapr3D).
     func ensureSheet() {
         guard drawsOnSheet, let stage else { return }
         if let sheet = currentSheet, sheet.worldFrame(in: displayed.scene) != nil { return }
         let viewpoint = stage.viewpoint
         let target = selectionBounds?.center ?? viewpoint.target
+        if isSketching {
+            let ground = Vec3(target.x, 0, target.z)
+            drawingSheet = .lying(on: SurfaceHit(point: ground, normal: .unitY, distance: 0), object: nil, eye: viewpoint.eye, in: displayed.scene,
+                                  id: Self.newID(), name: baseScene.nextSheetName(), size: sheetSize(at: ground))
+            return
+        }
         drawingSheet = .facing(eye: viewpoint.eye, at: target, id: Self.newID(), name: baseScene.nextSheetName(),
                                size: sheetSize(at: target))
+    }
+
+    /// The sheet comes to lie on a surface the Pencil started a sketch on (unless it lies there already).
+    func laySheet(on hit: SurfaceHit, object: ObjectID?) {
+        if let sheet = currentSheet, sheet.object == object, let plane = sheetPlane(sheet), plane.normal.dot(hit.normal) > 1 - 1e-6,
+           abs((hit.point - plane.origin).dot(plane.normal)) < 1e-6 { return }
+        guard let stage else { return }
+        drawingSheet = .lying(on: hit, object: object, eye: Vec3(stage.camera.position), in: displayed.scene, id: Self.newID(),
+                              name: baseScene.nextSheetName(), size: sheetSize(at: hit.point))
     }
 
     /// About two thirds of what the view shows at that distance.

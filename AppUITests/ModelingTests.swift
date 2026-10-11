@@ -2,7 +2,7 @@ import XCTest
 
 /// M3's acceptance on the iPad simulator: a 40 × 20 × 10 mm block with a 6 mm hole through it, built with taps only
 /// (sketch a rectangle, type its sides, pull it up 10 mm, sketch a circle on its top, type 6, cut it through) in
-/// under 30 seconds.
+/// under 30 seconds. Since 0.13 the sketch is Draw ▸ Sketch and the numbers are typed on our number pad.
 @MainActor
 final class ModelingTests: XCTestCase {
     private var app: XCUIApplication!
@@ -40,11 +40,19 @@ final class ModelingTests: XCTestCase {
         stage.coordinate(withNormalizedOffset: .zero).withOffset(CGVector(dx: point.x, dy: point.y)).tap()
     }
 
-    /// Taps a floating number and types a length into it (the field takes focus as it opens). One query per step:
-    /// the clock is running.
+    /// Taps a floating number and types a length on the number pad that opens beside it. One query per key: the clock
+    /// is running.
     private func type(_ text: String, into dimension: String) {
         element("dimension-\(dimension)").tap()
-        app.textFields["dimension-field"].typeText(text + "\n")
+        for character in text {
+            let key = switch character {
+            case "-": "minus"
+            case ".": "point"
+            default: String(character)
+            }
+            element("number-pad-\(key)").tap()
+        }
+        element("number-pad-done").tap()
     }
 
     /// Double-tap: frame what's selected (or everything), then let the camera settle.
@@ -57,12 +65,13 @@ final class ModelingTests: XCTestCase {
         // Home's quiet row: a project set up for printing.
         XCTAssertTrue(tap("start-print", timeout: 15))
         XCTAssertTrue(stage.waitForExistence(timeout: 15))
-        // Model to print opens Model; its Shape page has the sketch shapes.
-        if !element("model-shape").waitForExistence(timeout: 3) { tap("Model") }
+        // Model to print opens Model; sketching is in Draw.
+        if element("model-shape").waitForExistence(timeout: 3) { tap("Model") }
 
         // The timed part is only what a person does: taps and typed numbers. Checks and pictures come after.
         let start = Date()
-        element("model-shape").tap()
+        element("Draw").tap()
+        element("tool-sketch").tap()
         element("sketch-rectangle").tap()
         let size = stage.frame.size
         let middle = CGPoint(x: size.width / 2, y: size.height * 0.55)
@@ -90,7 +99,9 @@ final class ModelingTests: XCTestCase {
         let trail = element("debug-trail").label
         XCTAssertTrue(trail.contains("cmd=Pull"), "the rectangle became a solid: \(trail)")
         XCTAssertTrue(trail.contains("cmd=Cut"), "the circle cut through the block: \(trail)")
-        XCTAssertTrue(tap("Faces"))
+        XCTAssertTrue(tap("Model"))
+        XCTAssertTrue(tap("model-shape"))
+        XCTAssertTrue(tap("pick-face"))
         XCTAssertTrue(element("selection-size").waitForExistence(timeout: 3))
         XCTAssertEqual(element("selection-size").label, "40 × 10 × 20 mm", "the block keeps its size")
         let report = XCTAttachment(string: String(format: "Built in %.1f s of taps", elapsed))

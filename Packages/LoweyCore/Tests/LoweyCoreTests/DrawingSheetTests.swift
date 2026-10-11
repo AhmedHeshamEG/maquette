@@ -96,6 +96,14 @@ final class DrawingSheetTests: XCTestCase {
         XCTAssertLessThan(sheet.rotation.act(.unitY).z, 0, "its up points away from the eye")
     }
 
+    func testOnTheGroundItLinesUpWithTheWorld() {
+        // Seen from the front and a little to the side, a sheet on the floor still runs along x and z.
+        let hit = SurfaceHit(point: Vec3(0.3, 0, -0.2), normal: .unitY, distance: 5)
+        let sheet = DrawingSheet.lying(on: hit, object: nil, eye: Vec3(2, 4, 6), in: makeDocument().scene, id: "s", name: "S", size: 1)
+        XCTAssertEqual(sheet.rotation.act(.unitX).x, 1, accuracy: 1e-9, "across is x")
+        XCTAssertEqual(sheet.rotation.act(.unitY).z, -1, accuracy: 1e-9, "up the sheet is away from the eye, along -z")
+    }
+
     func testTheGripPushesItAlongItsNormal() {
         let sheet = DrawingSheet.facing(eye: eye, at: Vec3(0, 1, 0), id: "s", name: "Sheet 1", size: 2)
         let pushed = sheet.pushed(by: 0.5)

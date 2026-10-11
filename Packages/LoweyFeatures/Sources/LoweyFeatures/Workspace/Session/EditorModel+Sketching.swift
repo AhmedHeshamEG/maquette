@@ -86,23 +86,23 @@ extension EditorModel {
         }
     }
 
-    /// Where a new shape lies: on the sheet (CONTEXT §10.10: everything the Pencil draws lands on it; laid on a face, a
-    /// shape there can be pulled into or cut from that object), else the face under the tap, else the ground.
+    /// Where a new shape lies (CONTEXT §10.10: everything the Pencil draws lands on the sheet): on the face of a solid
+    /// it starts on (the sheet comes to lie there, and the shape can be pulled into or cut from that object), else on
+    /// the sheet, else the ground.
     private func startShape(at point: CGPoint) -> PendingSketch? {
         guard let stage else { return nil }
         var plane = PlaneFrame(origin: .zero, normal: .unitY, u: .unitX, v: Vec3(0, 0, -1))
         var target: ObjectID?
-        if let sheet = currentSheet, let frame = sheetPlane(sheet) {
+        if let (id, _) = stage.pickObject(at: point), let (mesh, world) = modelMesh(of: id), let ray = stage.worldRay(at: point),
+           let hit = MeshPicking.face(Ray(origin: world.inverseApply(to: ray.origin), direction: world.inverseApplyDirection(ray.direction)), in: mesh) {
+            let normal = world.applyDirection(mesh.normal(of: hit.face)).normalized
+            let corner = world.apply(to: mesh.vertices[mesh.faces[hit.face].outline[0]])
+            plane = Self.planeFacing(normal: normal, origin: corner)
+            target = id
+            laySheet(on: SurfaceHit(point: world.apply(to: hit.point), normal: normal, distance: 0), object: id)
+        } else if let sheet = currentSheet, let frame = sheetPlane(sheet) {
             plane = PlaneFrame(origin: frame.origin, normal: frame.normal, u: frame.u, v: frame.v)
             target = sheet.object.flatMap { baseScene.objects[$0].map(ModelingOperations.canModel) == true ? $0 : nil }
-        } else if let (id, _) = stage.pickObject(at: point), let (mesh, world) = modelMesh(of: id), let ray = stage.worldRay(at: point) {
-            let local = Ray(origin: world.inverseApply(to: ray.origin), direction: world.inverseApplyDirection(ray.direction))
-            if let hit = MeshPicking.face(local, in: mesh) {
-                let normal = world.applyDirection(mesh.normal(of: hit.face)).normalized
-                let corner = world.apply(to: mesh.vertices[mesh.faces[hit.face].outline[0]])
-                plane = Self.planeFacing(normal: normal, origin: corner)
-                target = id
-            }
         }
         // Join a sketch already on this plane (and object), so shapes drawn together make regions together.
         let existing = sketches.first { _, sketch in
