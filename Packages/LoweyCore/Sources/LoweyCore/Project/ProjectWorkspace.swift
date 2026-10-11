@@ -26,6 +26,13 @@ public struct ReferenceCard: Codable, Hashable, Sendable, Identifiable {
     public var width: Double
     /// The picture's height over its width.
     public var aspect: Double
+    /// Folded to a small chip (the Reference window, CONTEXT §10.10); nil is open.
+    public var folded: Bool?
+    /// Opened from Actions ▸ Reference (true), not pinned from the Board (nil): it stays while the Board is off.
+    public var window: Bool?
+
+    public var isFolded: Bool { folded ?? false }
+    public var isWindow: Bool { window ?? false }
 
     public static let widthRange = 120.0 ... 900.0
     public static let defaultWidth = 260.0

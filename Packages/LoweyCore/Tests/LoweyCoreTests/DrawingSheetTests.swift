@@ -146,3 +146,19 @@ final class DrawingSheetTests: XCTestCase {
         XCTAssertEqual(SheetMesh.border(flat, in: scene, thickness: 0.01).triangleCount, 8)
     }
 }
+
+final class ReferenceWindowTests: XCTestCase {
+    func testAReferenceFoldsAndOldCardsReadAsOpenBoardPins() throws {
+        var card = ReferenceCard(id: "r", image: "references/a.png")
+        XCTAssertFalse(card.isFolded)
+        XCTAssertFalse(card.isWindow)
+        card.folded = true
+        card.window = true
+        let data = try JSONEncoder().encode(card)
+        XCTAssertEqual(try JSONDecoder().decode(ReferenceCard.self, from: data), card)
+        let old = #"{"id":"r","image":"references/a.png","title":"","x":0.5,"y":0.5,"width":260,"aspect":1}"#
+        let read = try JSONDecoder().decode(ReferenceCard.self, from: Data(old.utf8))
+        XCTAssertFalse(read.isFolded, "cards from 0.12 are open")
+        XCTAssertFalse(read.isWindow, "and pinned from the Board")
+    }
+}

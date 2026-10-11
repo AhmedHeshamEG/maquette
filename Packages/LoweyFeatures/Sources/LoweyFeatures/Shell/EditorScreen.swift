@@ -119,9 +119,10 @@ struct EditorScreen: View {
             if editor.chromeHidden {
                 ChromeRestoreButton(editor: editor)
             } else {
-                // Pictures pinned from the board float under the chrome: a panel always opens over them.
-                if boardEnabled, !editor.references.isEmpty {
-                    ReferenceCards(editor: editor)
+                // The Reference window and pictures pinned from the board float under the chrome: a panel always opens
+                // over them.
+                if !editor.references.isEmpty {
+                    ReferenceCards(editor: editor, boardEnabled: boardEnabled)
                         .opacity(editor.chromeFaded ? 0 : 1)
                 }
                 StageChrome(editor: editor)
