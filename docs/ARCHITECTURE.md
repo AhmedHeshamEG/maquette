@@ -346,6 +346,48 @@ flowchart LR
   `TriggersSection`, `LifeSection`, `TriggerDeckBar`), `Rig/RigParts` (`PartSection`, `DangleControl`), `Timeline/TakesStrip`. The
   menu bar's Perform menu holds the microphone and the trigger keys.
 
+## Drawing on the sheet (0.13)
+
+```mermaid
+flowchart LR
+    Tap[finger tap<br/>StageGestures.handleTap] --> Place[EditorModel+Sheets.placeSheet<br/>lying on a surface / facing you]
+    Place --> Sheet[drawingSheet<br/>view state until kept]
+    Stroke[Pencil samples<br/>StrokeGestureRecognizer + HmmPencilFeel] --> Land[EditorModel.land<br/>DrawingSheet.land · object mesh]
+    Sheet --> Land
+    Land --> Ink[commitInkStrokes / commitStroke<br/>keepingSheet: setSheets + the stroke]
+    Land --> Flip[commitSheetStrokes<br/>sheet metres · FlipbookAnchor.sheet]
+    Flip --> Layout[FlipbookLayout.pixels<br/>point by point through the camera]
+    Sheet --> Overlay[SheetMesh → StageView.showSheet]
+```
+
+- **Core**: `DrawingSheet` (`Model/DrawingSheet.swift`: the frame, the four shapes, `land`, `surfaceCoordinates` and
+  `worldPoint`, `lying(on:)`, `facing(eye:at:)`, `pushed(by:)`), `SheetEdit` and the `setSheets` command,
+  `Scene.sheets`; `SheetMesh` (the fill and border the stage draws); `FlipbookAnchor.sheet` and
+  `FlipbookLayout.pixels(of:in:scene:)` (every anchor through one function); `FlipbookEditing.movingFrame`;
+  `SketchAssist` (the line's length, angle and named snaps); `ClipSegment.retimed`; `SnapSettings.magnet` and
+  `effective(flipped:)`; `ReferenceCard.folded` and `window`.
+- **Engine**: `StageView.showSheet` (drawn first in the editor pass); `StrokeGestureRecognizer` reads `HmmPencilFeel` as
+  each stroke starts and puts every Pencil sample's pressure through it.
+- **Features**: `EditorModel+Sheets` (the current sheet, placing, the grip, shapes, kept sheets, `keepingSheet`, the
+  overlay, where the edge control sits), `Draw/SheetEdge` (the control on its edge), `Draw/FrameStrip` (the strip and
+  `FrameThumbnail`), `EditorModel+Flipbook` (sheet and camera tracks, the loop), `EditorModel+SketchAssist` and
+  `Draw/DrawToolsPanel`'s `SketchSection` (sketching runs on the Model tool's sketch mode, shown as Draw:
+  `EditorModel.isSketching`), `EditorModel+Reference` and `Board/ReferenceCards` (the Reference window),
+  `Timeline/TimelineLanes+Dreams`.
+
+## Hands and Pencil (0.13)
+
+- **hmm-kit**: `HmmShortcut` (each hand shortcut's switch), the gesture layer (three fingers held redo, swiped down open
+  `hmmEditBar`), `HmmQuickMenu` (the squeeze ring), `HmmPencilHaptics` (`UICanvasFeedbackGenerator`), `HmmNumberPad` +
+  `hmmNumberPad` (and `HmmNumberPadEntry`, `HmmArithmetic`), `HmmPencilFeel` (HmmBrush).
+- **Features**: `StageGestures` has a Pencil-only pan beside the fingers' (`pencilPan`) and a `HeldFingerWatcher` that
+  flips the magnet (`EditorModel.snapFlipped`, read through `EditorModel.snapping`); `StageGestures+Hands` (a finger's
+  double-tap, the loupe); `InputJob` (who does what); `EditorModel+Hands` (squeeze and double-tap through
+  `PencilShortcut`, the six `QuickAction` slots, the edit bar); `EditorScreen` maps the iPad's
+  `PencilPreferredAction`. Settings: `Settings/PencilPage` (with `PencilTestPad` and `PressureCurveEditor`),
+  `Shell/GesturesPage`. The Snap magnet is `StageChrome`'s `SnapMagnet`; the brush library's drop-down is
+  `Workspace/UI/BrushRow`'s `BrushDropDown`.
+
 ## LoweyRender 2
 
 ```mermaid

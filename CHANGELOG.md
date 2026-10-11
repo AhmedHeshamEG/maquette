@@ -3,6 +3,41 @@
 All notable changes. 1.x grew in four phases (v0.1 → v1.4); 2.0 is the remaster, released as betas first. Maquette
 continues from 2.0 and numbers its phases again from 0.1 (each phase bumps the minor version until 1.0).
 
+## [0.13] — Maquette — draw (phase U3)
+
+Drawing in 3D, rebuilt on **the sheet**, and hands and Pencil given their jobs.
+
+- **The sheet.** A see-through sheet is always under the Pencil, so a stroke knows how deep it is. Tap with a finger to
+  move it: onto a surface (it lies there and rides with that object), or into the air (it stands there facing you).
+  Drag its grip to push it nearer or farther. The control on its edge makes it flat, wrapped around, a dome, or lying on
+  the object itself. Sheets you drew on are kept, named, and can be drawn on again. The nine "Draws on" buttons and
+  "Plane offset" are gone.
+- **Everything the Pencil draws is in Draw**: ink, solid shapes, **Sketch** (moved from Model ▸ Edit) and flipbooks.
+  Sketches start on the ground, lined up with the world; a face you start on lays the sheet there. **Sketching talks
+  back**: draw a line with the Pencil and its length and angle float beside the tip; it snaps to round angles, corners,
+  middles, and parallel or perpendicular to lines already there, with the snap named on a ghost line and felt in an
+  Apple Pencil Pro. A finger sketching gets a magnifier.
+- **Flipbooks on the sheet**, in perspective and staying in the space (stuck to the camera is still an option), with
+  **the frame strip** along the bottom: the drawings as pictures, + for the next, step, hold and drag to reorder, drag
+  an edge to hold longer, onion skin, and a loop that plays while you draw. Draw, then hold for a clean shape works on
+  flipbooks too.
+- **Our number pad** opens beside any number you tap; the system keyboard never covers the screen for one.
+- **The hand shortcuts**, each switchable in Settings ▸ Gestures: two- and three-finger taps undo and redo (hold to
+  repeat), four fingers hide everything, **three fingers swiped down cut, copy and paste**, a finger's double-tap frames
+  a thing and, again, looks straight at the face you touched, **a finger held down flips snapping** for that move, hold
+  at the end of a stroke for a clean shape. **Squeeze** an Apple Pencil Pro for a menu of six at its tip (you choose
+  them); **double-tap** does what the iPad's Pencil setting says.
+- **The Snap magnet** on the stage replaces Precision's switches: tap it on or off, hold it for the details.
+- **Settings ▸ Pencil and hands**: who does what (moving and posing with fingers, pulling faces with the Pencil, or
+  either), and **Your Pencil**: a test pad, a two-stroke calibration, presets for a light, normal or heavy hand, the
+  curve to drag, stabilisation, thickness from speed for a Pencil without pressure. The Board follows it too.
+- **The Reference window**: Actions ▸ Reference floats any picture over the stage; move it, size it, fold it, take a
+  colour from it with Pick, or trace it on the sheet. The Board's pins work as before.
+- **The timeline as Procreate Dreams has it**: draw around keys and clips with the Pencil to pick them (or with a finger,
+  by choice; two fingers pan), the Pencil's hover scrubs, and holding a clip's edge retimes it.
+- **The brush library drops down** from the brush, sets on the left and brushes on the right.
+- Projects are schema 13 (sheets); Maquette 0.12 can't open them. hmm-kit 0.8.0.
+
 ## [0.12] — Maquette — layout (phase U2)
 
 Everything moved, merged or folded into the map that freezes at 1.0 (docs/LAYOUT.md has the whole map and what came

@@ -1808,3 +1808,105 @@ the Atlas workflow on the mini, the 11-inch and the 13-inch in both orientations
 
 **D-239 — Not in this phase, though CONTEXT lists it near the layout.** Hatched shadows (a new capability; U2 moves,
 it doesn't add), the Reference window (U3), the brush library dropping down (U3), switchable gestures (U3).
+
+## Maquette 0.13 — U3, draw
+
+**D-240 — U3 starts from main, after U2.** U1 (PR #30) still waits for the first feel recording; main already carries
+U1's finished steps through U2 (D-226), so U3 branches from main and ships as 0.13. *Rejected:* stacking on U1's branch
+again (nothing in it that main lacks).
+
+**D-241 — A sheet is a frame and a shape, kept with the scene by its first stroke.** `DrawingSheet` (Core) is an origin
+and a turn (local +z faces whoever placed it, +y its up), a shape (flat, around, dome, on the object), a size and a
+curve; laid on an object it lives in that object's space and rides with it. The sheet under the Pencil is view state
+until something is drawn on it; then `setSheets` keeps it, in the stroke's undo step. Ink, solid shapes and sketches stay
+objects of their own; only flipbooks name their sheet. *Rejected:* every placed sheet in the document (a scene full of
+sheets nobody drew on); ink strokes owned by sheets (the 2.0 ink objects, their exports and their MCP shape would all
+change for nothing a person sees).
+
+**D-242 — Where the first sheet stands.** For ink, solid shapes and flipbooks: upright, facing the view, through what
+the view looks at (Feather's easel); seen steeply from above or below it lies level. For Sketch: on the ground there,
+its axes along the world's x and z (Shapr3D's ground sketch, and M3's block keeps its sides). A sketch begun on a solid's
+face lays the sheet on that face, so pulling and cutting work as before. *Rejected:* the old view-locked principal plane
+(it turned with every orbit, which is what made a stroke's depth a guess).
+
+**D-243 — A finger's tap places the sheet; the Pencil's draws.** With a tool that draws on the sheet, a finger's tap
+lays it on the surface under it or stands it in the air at the sheet's distance, facing you. An ink drawing under the
+finger is picked instead (strokes join it). Until a Pencil has touched the iPad, a finger's tap with Sketch places a
+point (it is the only hand there is). *Rejected:* a separate "move sheet" mode (one more mode to be in).
+
+**D-244 — Strokes land past the sheet's edge.** A flat sheet is an endless plane and "around" an endless cylinder for
+landing; the edge only shows where it is. Around and dome curve away behind the point they were placed on, so changing
+the shape keeps the sheet touching the same spot. *Rejected:* clipping strokes at the drawn edge (a stroke that runs off
+the sheet would be cut for no reason a person can see).
+
+**D-245 — Flipbooks on a sheet keep their points in the sheet's own metres.** A flat sheet's across and up; around, the
+arc and the height; a dome, the two arcs. `FlipbookLayout` takes each point through the camera, so the drawing keeps its
+perspective and stays where it was drawn; a stretch behind the camera splits the stroke. They are still drawn over the
+shot (not hidden behind objects), like every flipbook. A flipbook on an "on the object" sheet lies on its plane there.
+Drawn effects keep riding objects (`.object` anchors), and stuck to the camera stays as an option. *Rejected:* 3D ribbons
+for flipbook strokes (a second drawing path for the same brush).
+
+**D-246 — The frame strip's pictures are the strokes themselves; the loop holds for the Pencil.** Each drawing is drawn
+by SwiftUI from its strokes, all of a track at one scale so the motion shows; a drawing is as wide as it is held. While
+the strip loops, the Pencil touching pauses on the drawing under the playhead and the loop goes on 0.45 s after it lifts.
+*Rejected:* rendered thumbnails (a render per drawing per change); drawing into whatever drawing the playhead reaches
+mid-stroke.
+
+**D-247 — How sketching talks back.** The end of a line snaps, in this order: a corner already drawn, an edge's middle
+(12 points on screen), a round angle (every 15°, within 2.5°), parallel or perpendicular to a line already on the plane
+(within 2.5°). The readout beside the tip (length · angle · the snap's name) can't be typed while drawing; once the line
+lands its length is the usual number to tap. The magnet switches all of it. *Rejected:* typing mid-stroke (the Pencil is
+busy); snapping lengths to whole units (it fights the angle snaps; the grid does it for taps).
+
+**D-248 — Our number pad is the kit's; the text it makes is read by the app's own parsers.** `HmmNumberPad` opens as a
+popover beside the number; its text is `25`, `2*12`, `1.5 cm`, `1 ft 6 in`, so `LengthExpression` reads lengths and
+`HmmArithmetic` plain numbers. Sliders keep their readouts. *Rejected:* a pad that computes (two parsers that could
+disagree).
+
+**D-249 — The hand shortcuts are kit switches, on until switched off.** `HmmShortcut` (two-, three-, four-finger taps,
+three fingers swiped down, a finger's double-tap, a finger held down, hold at the end of a stroke, squeeze, Pencil
+double-tap) live in Settings ▸ Gestures. Three fingers held redo again and again, as two undo. The edit bar (cut, copy,
+paste, duplicate) waits four seconds. A finger's double-tap frames the thing under it; on the same thing again, it
+turns to look straight at the face touched. *Rejected:* a look-straight button (no on-screen choices, CONTEXT §10.10).
+
+**D-250 — The Pencil drags through its own recognizer, and never moves the view.** A Pencil-only pan beside the
+fingers' means a finger resting as a modifier can't stop the Pencil's drag; a Pencil drag that would have orbited does
+nothing. A finger resting (moving under 12 points) while the Pencil is down flips the Snap magnet for that move.
+*Rejected:* one pan for both (two touches stopped it).
+
+**D-251 — Squeeze and double-tap follow the iPad's Pencil setting.** The eraser, the last tool and the colours do
+those; the tool palette (the iPad's default for squeeze) and anything else open our menu of six at the tip. Settings ▸
+Your Pencil can make double-tap open the menu instead (for a Pencil that can't squeeze) or do nothing. Squeeze no longer
+plays and pauses. *Rejected:* ignoring the iPad's setting (people set it once for every app).
+
+**D-252 — Who does what is two jobs for now.** Moving objects and posing (fingers), pulling faces, edges and corners
+(the Pencil); each Fingers, Pencil or Both. Until a Pencil has touched the iPad, a finger does the Pencil's jobs. Placing
+pins and dots joins the page with U4, when they exist. *Rejected:* rows for jobs that don't exist yet (law 8).
+
+**D-253 — The Pencil's feel is the kit's, read as each stroke starts.** `HmmPencilFeel`: the curve from two strokes is
+fitted through the medians of the lightest and the heaviest (a thin visible line, a full one); presets for a light,
+normal or heavy hand; the curve to drag; stabilisation added to ink's and flipbooks' streamline; a Pencil whose pressure
+never moves gets it from its speed. The stage and the board both apply the curve. *Rejected:* a curve per tool.
+
+**D-254 — The Snap magnet is a master switch over the snap settings.** `SnapSettings.magnet` (on when missing);
+`snap.effective(flipped:)` is what every snap reads. Its details are its hold (a context menu), and Precision keeps the
+grid on the ground and the units. *Rejected:* a popover of twelve switches (what changes rarely can take one at a time).
+
+**D-255 — The Reference window is a reference card that didn't come from the Board.** Actions ▸ Reference (Photos, or
+paste) keeps the picture under `assets/references/` and floats it as a card marked `window`, which stays when the Board
+is switched off; any card folds to a chip. With Pick in the hand a tap on it takes its colour. Its menu traces it on the
+sheet: a card object on the sheet, half see-through, in one step with the sheet kept. *Rejected:* a separate window
+type (two floating-picture systems).
+
+**D-256 — The timeline, as Dreams has it.** The Pencil's loop picks keys and clips (a clip by its middle); Settings ▸
+Gestures can give the loop to one finger, and then two fingers pan; the Pencil's hover scrubs unless playing (its own
+switch, on: hover preview on the stage stays off by default); holding a clip's edge and dragging retimes it (speed
+changes, the other edge stays). *Rejected:* two-finger pan always on (it doubled the one-finger pan SwiftUI already does).
+
+**D-257 — The brush library drops down.** A popover from the brush row: sets on the left, the set's brushes on the
+right; the whole library (Brush Studio, sets, imports) is its last row. *Rejected:* Brush Studio inside the popover
+(too much for a glance).
+
+**D-258 — SPIKE: squeeze, the Pencil's haptics and the loupe are on the pinned SDK.** `PencilSDKSpikeTests` (hmm-kit)
+builds and runs a `UIPencilInteraction` squeeze delegate, `UICanvasFeedbackGenerator` and `UITextLoupeSession` on CI's
+simulator. Squeeze and haptics need an Apple Pencil Pro to happen: device checks. No fallback needed.

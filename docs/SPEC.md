@@ -22,8 +22,11 @@ reference and stays.
 | The Schizzo board: brush strokes, pictures, notes, arrows and frames on an endless sheet in every project; pins as reference cards and scene planes; the Sketch template | **0.9.** In hmm-kit (`HmmBoard`, `HmmBoardUI`), so Cutaway mounts the same board (D-200). Strokes blend normally; no MCP tools yet (D-201). |
 | Live performance: the face, the voice and the hands driving any puppet (3D and 2D), blinking and breathing, triggers, draggers, dangling bones, takes and comping, the iPhone as the face camera | **0.10.** The voice gives the mouth the shape of the sound, not of the words (D-211); hands are the wrists (D-212); draggers stay where they're left (D-210). |
 | The layout pass (U2): the Library and Rig, the scene as a door, the object panel on one screen and moved by hand, one menu per object, Perform and Keys, the dark studio, the resting sidebar, the held features | **0.12.** [LAYOUT.md](LAYOUT.md) is the map; D-226 … D-239. Live performance's entry points are held in App Store builds until 1.2 (D-228). |
-| Sculpting, mechanisms + AR, web layer, house kit | M11–M14: all in 1.0 (CONTEXT §10.10) |
-| The Pencil page, sketching that talks back, the flipbook's experience, waiting, the smoothness pass | M15 |
+| Draw (U3): the sheet (four shapes, placed by hand, kept and named), Sketch in Draw and talking back, flipbooks on the sheet with the frame strip, the hand shortcuts and the squeeze menu, the Snap magnet, our number pad, Settings ▸ Pencil and hands (who does what, the Pencil page with its test pad and calibration), the Reference window, the timeline as Dreams has it, the brush library dropping down | **0.13.** D-240 … D-258. Hold-to-clean-shape and the squeeze menu on the board's own drawings come with the Board's finish (M14) as far as clean shapes go. |
+| Rig, and bring your sculpt (pins and dots, a rig you can change, the Nomad bridge) | U4 |
+| Shape and paint (touch-and-drag modelling, deformations, the full colour picker, layers on the bottom bar, smudge) | U5 |
+| Mechanisms + AR, web layer (held) | M12 |
+| Content and finish: the house kit, waiting designed, the Board's finish | M14 |
 | Tutorials in Hesham's voice, artist info, Content Credentials, Time-lapse, Report a problem | M16 |
 
 ### Where 0.10's controls live since 0.12

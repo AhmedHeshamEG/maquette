@@ -1,7 +1,25 @@
 # Backlog
 
 What's known and not done yet, so nothing lives only in someone's head. What Maquette is: [SPEC.md](SPEC.md). The
-phase plan (M11 … M16, then 1.0) lives in studio-h's `PHASES.md`; ideas go to its `IDEAS.md`.
+phase plan (the pass U1 … U5, M12, M14, M16, then 1.0) lives in studio-h's `PHASES.md`; ideas go to its `IDEAS.md`.
+
+## Left from U3 (Maquette 0.13)
+
+- [ ] The device checklist in the "Maquette 0.13 — U3" PR (every gesture with misfires counted over a session, the
+      sheet placed by hand and its four shapes, flipbooks in the air and the strip, sketching with the Pencil and its
+      snaps felt in a Pencil Pro, squeeze and double-tap, the test pad and calibration, a Pencil without pressure, the
+      number pad, the Reference window, the timeline with the Pencil).
+- [ ] Flipbooks on a sheet are drawn over the shot, not hidden behind what stands in front of them (D-245).
+- [ ] A flipbook drawn on an "on the object" sheet lies on its plane there, not on the curved surface (D-245).
+- [ ] The frame's drawing guide (grid, perspective, symmetry) serves flipbooks stuck to the camera only; the sheet's
+      plane guide serves ink on a flat sheet.
+- [ ] Hold-to-clean-shape on the Board's own strokes and its squeeze menu's slots are fixed (draw, erase, colour, select,
+      undo, redo): the Board's finish (M14).
+- [ ] The number pad isn't typed from a hardware keyboard yet.
+- [ ] Who does what has two jobs; placing pins and dots joins with U4 (D-252).
+- [ ] The two-finger pan on the timeline runs only while a finger selects (D-256); the hover scrub hears any pointer, not
+      only the Pencil.
+- [ ] The magnet's details are a context menu: one switch per opening (D-254).
 
 ## Left from U2 (Maquette 0.12)
 
@@ -9,8 +27,8 @@ phase plan (M11 … M16, then 1.0) lives in studio-h's `PHASES.md`; ideas go to 
       waiting for a touch, the dark studio's contrast to the eye, the resting sidebar, the chrome-restraint trial both
       ways, the mini and the 13-inch in both orientations).
 - [ ] The Library's Motion and Rigs pages come with U4, when poses, clips and rigs are saved things (D-227).
-- [ ] Settings ▸ Gestures lists the gestures; switching each off is U3's (D-237).
-- [ ] Hatched shadows, the Reference window and the brush library dropping down are U3 and later (D-239).
+- [x] Settings ▸ Gestures lists the gestures; switching each off is U3's (D-237). Done in 0.13.
+- [ ] Hatched shadows are U5's; the Reference window and the brush library dropping down came in 0.13 (D-239).
 - [ ] The rig steps' chips are still dimmed until a step opens: U4 rebuilds rigging (D-238).
 - [ ] Held rows that can't be walked (Dangle, Make it part of, the takes, the trigger deck, draggers) are gated in code
       but not asserted by the App Store walk; they need a rigged character to reach (D-228).
@@ -66,8 +84,8 @@ phase plan (M11 … M16, then 1.0) lives in studio-h's `PHASES.md`; ideas go to 
 - [ ] Reference cards are the same in every scene of a project (they belong to the workspace, not a scene).
 - [ ] A pinned picture taken off the stage stays in `assets/references/` (a plane in a scene may show it); a cleanup
       when nothing refers to it any more.
-- [ ] The board's Pencil has no hold-to-clean-shape, no squeeze menu and no latency numbers of its own yet: M15's
-      Pencil work covers the stage and the board together.
+- [ ] The board's Pencil has no hold-to-clean-shape and no latency numbers of its own yet (its double-tap, squeeze and
+      the Pencil's feel came in 0.13): the Board's finish, M14.
 - [ ] Cutaway mounts `HmmBoardScreen` next to the script in C2 (D-200).
 - [ ] The brush library, imports and Brush Studio still live in Maquette; they move to hmm-kit when Cutaway's board
       needs them (D-189).
