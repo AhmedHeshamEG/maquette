@@ -10,6 +10,7 @@ struct DiagnosticsSheet: View {
     let app: AppModel
     let editor: EditorModel?
     @AppStorage(AppSettings.showsPerformanceHUD) private var showsHUD = false
+    @AppStorage(HmmChromeRestraint.storageKey) private var restrainedChrome = true
     @State private var sharing: [URL] = []
     @State private var runningBenchmark = false
     @State private var runningHomeBenchmark = false
@@ -22,6 +23,9 @@ struct DiagnosticsSheet: View {
     var body: some View {
         HmmSheet("Diagnostics") {
             feel
+            Toggle("Restrained chrome (the trial)", isOn: $restrainedChrome).font(.hmm(.headline, weight: .semibold))
+                .accessibilityIdentifier("restrained-chrome")
+            Hint("On: panels are neutral dark glass and amber marks only the tool in the hand. Off: the chrome as it was, to compare.")
             Toggle("Performance HUD over the stage", isOn: $showsHUD).font(.hmm(.headline, weight: .semibold))
             Hint("Frame times against this screen's budget, p50 / p95 / p99 over the last five seconds, dropped frames, heat and memory.")
             if let load = editor?.loadSummary {

@@ -2,22 +2,64 @@ import HmmDesign
 import LoweyCore
 import SwiftUI
 
-/// Preferences: appearance, feel, the stage, storage.
-struct PreferencesForm: View {
-    let app: AppModel
-    @AppStorage(HmmThemeMode.storageKey) private var themeMode = HmmThemeMode.dark.rawValue
-    @AppStorage(HmmHaptics.storageKey) private var haptics = true
-    @AppStorage(AppSettings.sidebarOnRight) private var sidebarOnRight = false
-    @AppStorage(AppSettings.alwaysShowsSidebar) private var alwaysShowsSidebar = false
-    @AppStorage(AppSettings.pencilHoverPreview) private var pencilHover = false
+/// Settings ▸ Pencil and hands: who makes and who moves the view, and the Pencil's hover point.
+struct PencilAndHandsSection: View {
     @AppStorage(HmmPencilOrHand.fingersAlwaysMakeKey) private var fingersMake = false
+    @AppStorage(AppSettings.pencilHoverPreview) private var pencilHover = false
+
+    var body: some View {
+        Section {
+            Toggle("Draw with a finger too", isOn: $fingersMake)
+                .accessibilityIdentifier("settings-fingers-make")
+            Toggle("Pencil hover preview", isOn: $pencilHover)
+        } header: {
+            Text("Pencil and hands")
+        } footer: {
+            Text("One finger draws until an Apple Pencil touches the screen. Then the Pencil draws and fingers move the view, unless a finger draws too.")
+        }
+    }
+}
+
+/// Settings ▸ Stage: the sidebar, sharpness, moving around, the object panel, the joystick, the board.
+struct StageSettingsSection: View {
+    @AppStorage(AppSettings.alwaysShowsSidebar) private var alwaysShowsSidebar = false
     @AppStorage(AppSettings.fullResolutionStage) private var fullResolution = false
     @AppStorage(AppSettings.inspectorDocked) private var inspectorDocked = false
     @AppStorage(AppSettings.navigationSpeed) private var navigationSpeed = 1.0
     @AppStorage(AppSettings.showsJoystick) private var showsJoystick = true
     @AppStorage(AppSettings.joystickSpeed) private var joystickSpeed = 1.0
-    @AppStorage(AppSettings.storeInICloud) private var iCloud = true
     @AppStorage(AppSettings.boardEnabled) private var boardEnabled = true
+
+    var body: some View {
+        Section {
+            Toggle("Always show the sidebar", isOn: $alwaysShowsSidebar)
+                .accessibilityIdentifier("settings-always-sidebar")
+            Toggle("Always full resolution", isOn: $fullResolution)
+            LabeledSlider(title: "Moving around (orbit, pan, zoom)", value: navigationSpeed, range: AppSettings.navigationSpeedRange,
+                          format: { String(format: "%.2g×", $0) }) { navigationSpeed = $0 }
+            Toggle("Dock the object panel at the side", isOn: $inspectorDocked)
+                .accessibilityIdentifier("settings-inspector-docked")
+            Toggle("Joystick under a selection", isOn: $showsJoystick)
+                .accessibilityIdentifier("settings-joystick")
+            if showsJoystick {
+                LabeledSlider(title: "Joystick speed", value: joystickSpeed, range: AppSettings.joystickSpeedRange,
+                              format: { String(format: "%.2g×", $0) }) { joystickSpeed = $0 }
+            }
+            Toggle("The Board", isOn: $boardEnabled)
+                .accessibilityIdentifier("settings-board")
+        } header: {
+            Text("Stage")
+        } footer: {
+            Text("The Board is a sheet for planning in every project. Off: it leaves Actions and pinned pictures are put away. Nothing is deleted.")
+        }
+    }
+}
+
+/// Settings ▸ Appearance.
+struct AppearanceSection: View {
+    @AppStorage(HmmThemeMode.storageKey) private var themeMode = HmmThemeMode.dark.rawValue
+    @AppStorage(HmmHaptics.storageKey) private var haptics = true
+    @AppStorage(AppSettings.sidebarOnRight) private var sidebarOnRight = false
 
     var body: some View {
         Section("Appearance") {
@@ -27,38 +69,15 @@ struct PreferencesForm: View {
             Toggle("Sidebar on the right (left-handed)", isOn: $sidebarOnRight)
             Toggle("Haptics", isOn: $haptics)
         }
-        Section {
-            Toggle("Draw with a finger too", isOn: $fingersMake)
-                .accessibilityIdentifier("settings-fingers-make")
-        } header: {
-            Text("Pencil or hand")
-        } footer: {
-            Text("One finger draws until an Apple Pencil touches the screen. Then the Pencil draws and fingers move the view, unless this is on.")
-        }
-        Section("Stage") {
-            Toggle("Always show the sidebar", isOn: $alwaysShowsSidebar)
-                .accessibilityIdentifier("settings-always-sidebar")
-            Toggle("Pencil hover preview", isOn: $pencilHover)
-            Toggle("Always full resolution", isOn: $fullResolution)
-            LabeledSlider(title: "Moving around (orbit, pan, zoom)", value: navigationSpeed, range: AppSettings.navigationSpeedRange,
-                          format: { String(format: "%.2g×", $0) }) { navigationSpeed = $0 }
-            Toggle("Dock the inspector at the side", isOn: $inspectorDocked)
-                .accessibilityIdentifier("settings-inspector-docked")
-            Toggle("Joystick under a selection", isOn: $showsJoystick)
-                .accessibilityIdentifier("settings-joystick")
-            if showsJoystick {
-                LabeledSlider(title: "Joystick speed", value: joystickSpeed, range: AppSettings.joystickSpeedRange,
-                              format: { String(format: "%.2g×", $0) }) { joystickSpeed = $0 }
-            }
-        }
-        Section {
-            Toggle("Schizzo board", isOn: $boardEnabled)
-                .accessibilityIdentifier("settings-board")
-        } header: {
-            Text("Board")
-        } footer: {
-            Text("A sheet for planning in every project. Off: it leaves Actions and pinned pictures are put away. Nothing is deleted.")
-        }
+    }
+}
+
+/// Where projects are kept.
+struct StorageSection: View {
+    let app: AppModel
+    @AppStorage(AppSettings.storeInICloud) private var iCloud = true
+
+    var body: some View {
         Section {
             Toggle("Keep projects in iCloud Drive", isOn: Binding(get: { iCloud }, set: { value in
                 iCloud = value
@@ -73,13 +92,17 @@ struct PreferencesForm: View {
     }
 }
 
-/// About, licences and acknowledgements.
+/// About: the version, licences, and Diagnostics (the feel recorder, the benchmarks, the Pencil's latency, logs).
 struct AboutSection: View {
+    let diagnostics: () -> Void
+
     var body: some View {
         Section("About") {
             LabeledContent("Version", value: AppIdentity.version)
             LabeledContent("Made by", value: "studio h.")
             NavigationLink("Licences") { AcknowledgementsView() }
+            Button("Diagnostics", action: diagnostics)
+                .accessibilityIdentifier("Diagnostics")
             Text("No account, no tracking: nothing leaves this iPad unless you share it.").font(.hmm(.footnote))
         }
     }

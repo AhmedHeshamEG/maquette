@@ -2,7 +2,7 @@ import HmmDesign
 import LoweyCore
 import SwiftUI
 
-/// Frame rate, length, the project's stepping.
+/// Frame rate and length.
 struct TimelineSettingsSheet: View {
     let editor: EditorModel
     @State private var length: Double = 10
@@ -20,15 +20,7 @@ struct TimelineSettingsSheet: View {
                 editor.fitDurationToContent()
                 length = editor.timeline.duration
             }
-            HmmSectionHeader("Stepping (the whole project)")
-            Picker("Stepping", selection: Binding(get: { editor.timeline.stepping }, set: { editor.setProjectStepping($0) })) {
-                Text("On ones").tag(Stepping.onOnes)
-                Text("On twos").tag(Stepping.onTwos)
-                Text("On threes").tag(Stepping.onThrees)
-                Text("On fours").tag(Stepping.onFours)
-            }
-            .pickerStyle(.segmented)
-            Hint("On twos looks hand-animated. Cameras stay smooth; any object can choose its own in the inspector.")
+            Hint("How motion is drawn (smooth, on twos) is in Look ▸ Finish.")
         }
         .onAppear { length = editor.timeline.duration }
     }
