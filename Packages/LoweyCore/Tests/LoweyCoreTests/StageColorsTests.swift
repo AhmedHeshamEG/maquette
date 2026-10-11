@@ -24,6 +24,15 @@ final class StageColorsTests: XCTestCase {
         XCTAssertLessThan(StageColors.contrast(minor, ground), 7, "faint: it mustn't compete with what is made")
     }
 
+    func testTheSheetIsSeenButNeverHidesTheWork() {
+        let fill = StageColors.over(StageColors.sheet, alpha: StageColors.sheetFillAlpha, on: ground)
+        let border = StageColors.over(StageColors.sheet, alpha: StageColors.sheetBorderAlpha, on: ground)
+        XCTAssertGreaterThanOrEqual(StageColors.contrast(border, ground), 3, "its edge is plain to see")
+        XCTAssertLessThan(StageColors.contrast(fill, ground), 2, "its face stays see-through, fainter than the grid")
+        let first = Look.default.palette.color(at: 0)
+        XCTAssertGreaterThanOrEqual(StageColors.contrast(first, fill), 7, "ink drawn on it stands out")
+    }
+
     func testContrastIsTheWCAGRatio() {
         XCTAssertEqual(StageColors.contrast(.white, .black), 21, accuracy: 0.001)
         XCTAssertEqual(StageColors.contrast(.black, .black), 1, accuracy: 0.001)

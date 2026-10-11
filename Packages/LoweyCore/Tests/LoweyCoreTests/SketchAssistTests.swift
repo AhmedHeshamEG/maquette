@@ -59,3 +59,18 @@ final class SketchAssistTests: XCTestCase {
         XCTAssertGreaterThan(clip.retimed(end: true, to: 0).duration, 0, "never shorter than a frame")
     }
 }
+
+final class SnapMagnetTests: XCTestCase {
+    func testTheMagnetSwitchesEverySnapAndAHeldFingerFlipsItForOneMove() throws {
+        let settings = SnapSettings(grid: true)
+        XCTAssertTrue(settings.effective().grid)
+        XCTAssertFalse(settings.effective(flipped: true).grid, "a finger held down: no snapping for that move")
+        var off = settings
+        off.magnet = false
+        XCTAssertEqual(off.effective(), .off)
+        XCTAssertTrue(off.effective(flipped: true).grid, "magnet off, a finger held down: snapping for that move")
+        XCTAssertTrue(off.effective(flipped: true).magnet)
+        let old = try JSONDecoder().decode(SnapSettings.self, from: Data(#"{"grid":true}"#.utf8))
+        XCTAssertTrue(old.magnet, "workspaces from before the magnet have it on")
+    }
+}
