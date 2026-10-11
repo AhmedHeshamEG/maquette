@@ -26,6 +26,10 @@ public struct FlipbookSettings: Equatable, Sendable {
     public var onionAfter = 1
     /// Eraser radius in points.
     public var eraserRadius: Double = 14
+    /// New flipbooks are stuck to the camera (screen effects) instead of drawn on the sheet in the space.
+    public var onCamera = false
+    /// The frame strip's loop: the drawings play round while you draw (a stroke holds the drawing it started on).
+    public var looping = false
 
     public init() {}
 }
