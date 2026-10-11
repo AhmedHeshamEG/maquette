@@ -65,8 +65,11 @@ public struct RigSettings: Equatable {
     /// The weight brush's size in points and how much one pass gives.
     public var size: Double = 40
     public var strength: Double = 0.5
+    /// The newest rig whose weights are being worked out, per object: its bone still shows, and the next stroke adds
+    /// to it rather than to the rig the object had.
+    public var weighing: [ObjectID: ObjectRig] = [:]
     /// Objects whose weights are being worked out.
-    public var busy: Set<ObjectID> = []
+    public var busy: Set<ObjectID> { Set(weighing.keys) }
     /// "Rig as a person": the dots on the model's front view.
     public var person: PersonRigging?
 
