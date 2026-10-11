@@ -19,7 +19,11 @@ struct MakeItMove: View {
                 HStack(spacing: HmmSpacing.xs) {
                     ForEach(LoopMotion.allCases) { motion in
                         Group {
-                            if motion == .followPath { followTile } else { tile(motion) }
+                            if motion == .followPath {
+                                followTile
+                            } else {
+                                tile(motion)
+                            }
                         }
                         .frame(width: 76)
                     }

@@ -307,17 +307,19 @@ public enum MoodPresets {
                 ground: Ground(color: RGBA.hex("#D9D9D9"))
             )
         case .darkStudio:
-            // One soft key from the front left, high, with a little fill so the shadow side never goes black.
-            return Look(
-                lightingPreset: .darkStudio,
-                lighting: Lighting(sunElevation: 48, sunAzimuth: -38, sunColor: RGBA.hex("#FFF4E6"),
-                                   sunIntensity: 0.95, ambientIntensity: 0.55),
-                sky: sky(for: .darkStudio),
-                fog: Fog(enabled: true, color: RGBA.hex("#121316"), distance: 60),
-                ground: Ground(color: RGBA.hex("#1A1B1F"))
-            )
+            return darkStudio
         }
     }
+
+    /// A blank project's world: one soft key from the front left, high, with a little fill so the shadow side never
+    /// goes black, on a near-black ground.
+    static let darkStudio = Look(
+        lightingPreset: .darkStudio,
+        lighting: Lighting(sunElevation: 48, sunAzimuth: -38, sunColor: RGBA.hex("#FFF4E6"), sunIntensity: 0.95, ambientIntensity: 0.55),
+        sky: sky(for: .darkStudio),
+        fog: Fog(enabled: true, color: RGBA.hex("#121316"), distance: 60),
+        ground: Ground(color: RGBA.hex("#1A1B1F"))
+    )
 
     public static func sky(for preset: LightingPreset) -> Sky {
         switch preset {

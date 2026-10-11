@@ -126,30 +126,29 @@ struct GallerySelectionBar: View {
         .padding(.bottom, HmmSpacing.s)
     }
 
+    @ViewBuilder
     private func actions(_ chosen: [String]) -> some View {
-        Group {
-            if state.openStack == nil {
-                HmmPillButton("Stack", systemName: "square.stack") {
-                    state.nameText = ""
-                    state.naming = chosen
-                }
-                .accessibilityIdentifier("gallery-stack")
-            } else {
-                HmmPillButton("Move out", systemName: "arrow.up.square") {
-                    app.moveOutOfStacks(chosen)
-                    state.endSelecting()
-                }
+        if state.openStack == nil {
+            HmmPillButton("Stack", systemName: "square.stack") {
+                state.nameText = ""
+                state.naming = chosen
             }
-            HmmPillButton("Duplicate", systemName: "plus.square.on.square") {
-                app.duplicate(chosen)
+            .accessibilityIdentifier("gallery-stack")
+        } else {
+            HmmPillButton("Move out", systemName: "arrow.up.square") {
+                app.moveOutOfStacks(chosen)
                 state.endSelecting()
             }
-            HmmPillButton("Archive", systemName: "archivebox") {
-                app.archive(chosen)
-                state.endSelecting()
-            }
-            HmmPillButton("Delete", systemName: "trash", role: .destructive) { state.deleting = chosen }
         }
+        HmmPillButton("Duplicate", systemName: "plus.square.on.square") {
+            app.duplicate(chosen)
+            state.endSelecting()
+        }
+        HmmPillButton("Archive", systemName: "archivebox") {
+            app.archive(chosen)
+            state.endSelecting()
+        }
+        HmmPillButton("Delete", systemName: "trash", role: .destructive) { state.deleting = chosen }
     }
 }
 

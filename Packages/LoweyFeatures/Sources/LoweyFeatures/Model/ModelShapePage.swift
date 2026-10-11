@@ -48,5 +48,4 @@ struct ModelShapePage: View {
         case .vertex: "smallcircle.filled.circle"
         }
     }
-
 }
