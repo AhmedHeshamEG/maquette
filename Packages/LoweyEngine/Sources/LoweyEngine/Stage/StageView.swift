@@ -60,6 +60,13 @@ public final class StageView: MTKView {
     public private(set) var lastReport: FrameReport?
     /// The CPU time the last frame took to build and encode (seconds); with the GPU time, the frame's real work.
     public private(set) var lastEncodeTime: Double = 0
+    /// Sharp at rest (`StageView+Rest`): once nothing moves, a frame at full resolution; off in tests that compare scales.
+    public var sharpensAtRest = true
+    var restPending = false
+    var restWork: DispatchWorkItem?
+    /// When the last frame was drawn, and how long the GPU took for the last full-resolution one.
+    var lastDrawn: CFTimeInterval = 0
+    var fullResolutionGPU: Double?
 
     public init(device: RenderDevice, quality: PreviewQuality = .current) throws {
         renderDevice = device
@@ -99,6 +106,7 @@ public final class StageView: MTKView {
     }
 
     public func redraw() {
+        cancelRestFrame()
         if isPaused { setNeedsDisplay() }
     }
 
@@ -338,7 +346,8 @@ extension StageView: MTKViewDelegate {
               let commandBuffer = renderDevice.queue.makeCommandBuffer() else { return }
         commandBuffer.label = "Stage"
         frame.request.camera = frame.shotCamera ?? camera
-        frame.request.renderScale = dynamicScale.scale
+        let scale = frameScale(at: start)
+        frame.request.renderScale = scale
         if let livePaint { frame.request.livePaint = livePaint }
         if frame.request.editor == nil { frame.request.editor = editorScene(showsSelection: true) }
         do {
@@ -361,14 +370,19 @@ extension StageView: MTKViewDelegate {
             DispatchQueue.main.async {
                 MainActor.assumeIsolated {
                     guard let self else { return }
-                    let scale = self.dynamicScale.update(gpuTime: gpuEnd - gpuStart, thermal: .current)
-                    self.onFrameTime?(gpuEnd - gpuStart, total, scale)
+                    // A frame drawn sharp because nothing moved says nothing about keeping up with motion.
+                    if scale < 1 || self.dynamicScale.scale >= 1 {
+                        let next = self.dynamicScale.update(gpuTime: gpuEnd - gpuStart, thermal: .current)
+                        self.onFrameTime?(gpuEnd - gpuStart, total, next)
+                    }
+                    if scale >= 1 { self.fullResolutionGPU = gpuEnd - gpuStart }
                     // The feel recorder follows touches on the stage to this frame.
                     FeelProbe.surfaceFrame(self, started: start, encoded: encoded, gpuStart: gpuStart, gpuEnd: gpuEnd)
                 }
             }
         }
         commandBuffer.commit()
+        frameDrawn(at: start, scale: scale)
     }
 }
 
