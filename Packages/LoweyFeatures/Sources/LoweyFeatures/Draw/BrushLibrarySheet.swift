@@ -92,7 +92,7 @@ struct BrushLibrarySheet: View {
                 Spacer()
                 Menu {
                     Button("Rename", systemImage: "pencil") { renaming = Renaming(target: .set(set.id), name: set.name) }
-                        .disabled(set.builtIn)
+                        .shown(!set.builtIn)
                     Button("Share", systemImage: "square.and.arrow.up") { sharing = brushes.shareFile(for: set.id) }
                     if !set.builtIn {
                         Button("Delete set", systemImage: "trash", role: .destructive) { brushes.deleteSet(set.id) }

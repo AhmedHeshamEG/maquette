@@ -101,7 +101,7 @@ struct RigOptionsBar: View {
                     Text("Drag any dot, then Rig").font(.hmm(.body, weight: .semibold))
                 }
                 HmmPillButton("Rig", systemName: "checkmark", prominent: person.next == nil) { editor.finishPersonRig() }
-                    .disabled(person.next != nil)
+                    .shown(person.next == nil)
                     .accessibilityIdentifier("rig-person-done")
                 HmmButton("xmark", label: "Cancel", size: 36) {
                     editor.cancelPersonRig()

@@ -3,7 +3,8 @@ import LoweyCore
 import SwiftUI
 
 /// Paint: on objects and over the ground. Colour paints straight onto models with the brush engine; the Shadow Brush
-/// paints where an object's toon shadow falls; Scatter paints copies of the selection across the ground.
+/// paints where an object's toon shadow falls. Scatter (copies of the selection across the ground) starts from the
+/// selection's panel and keeps its options here while it runs.
 struct PaintPanel: View {
     @Bindable var editor: EditorModel
 
@@ -17,8 +18,6 @@ struct PaintPanel: View {
                         editor.tool = .shadowBrush
                     }
                     .accessibilityIdentifier("tool-shadow-brush")
-                    ChoiceChip(title: "Scatter", systemName: "circle.hexagongrid", isOn: editor.tool == .scatter) { editor.tool = .scatter }
-                        .accessibilityIdentifier("tool-scatter")
                 }
                 switch editor.tool {
                 case .scatter: scatter

@@ -94,7 +94,7 @@ private struct ClipControls: View {
                 }
                 HmmPillButton(editor.timeline.transcript(for: clip.id) == nil ? "Transcribe" : "Transcribe again", systemName: "text.bubble",
                               prominent: editor.timeline.transcript(for: clip.id) == nil) { editor.transcribe(clip.id) }
-                    .disabled(editor.transcribing != nil)
+                    .shown(editor.transcribing == nil)
                     .accessibilityIdentifier("transcribe")
                 if editor.timeline.transcript(for: clip.id) != nil {
                     HmmPillButton("Open the transcript", systemName: "text.quote") { editor.sheet = .transcript }

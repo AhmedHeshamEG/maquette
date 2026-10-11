@@ -68,7 +68,7 @@ struct CameraSection: View {
             HmmPillButton("Frame it", systemName: "camera.viewfinder", prominent: true) {
                 editor.frameShot(shotType, composition: composition, side: fromLeft ? -1 : 1)
             }
-            .disabled(!editor.selection.contains { $0 != camera })
+            .shown(editor.selection.contains { $0 != camera })
             .accessibilityIdentifier("frame-shot")
             Hint("Select the camera and the subject (two subjects for a two-shot or over-the-shoulder).")
             HmmPillButton(editor.flying ? "Stop flying" : "Fly it", systemName: "gamecontroller") {
@@ -96,7 +96,7 @@ struct CameraSection: View {
                 HmmPillButton("Focus on selection", systemName: "scope") { editor.focus(onSelection: false) }
                 HmmPillButton("Focus pull", systemName: "camera.metering.center.weighted") { editor.focus(onSelection: true) }
             }
-            .disabled(editor.selection.allSatisfy { $0 == camera })
+            .shown(!editor.selection.allSatisfy { $0 == camera })
             LabeledSlider(title: "9:16 zoom", value: lens?.portraitZoom ?? 1, range: 0.5 ... 2, format: { String(format: "%.2g×", $0) },
                           set: { editor.setCameraProperty(.portraitZoom, $0, gesture: "pzoom") }, done: editor.endGesture)
             LabeledSlider(title: "9:16 pan", value: lens?.portraitShift ?? 0, range: -1 ... 1, format: NumberFormat.percent,

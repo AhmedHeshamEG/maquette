@@ -103,7 +103,7 @@ struct FlipbookSection: View {
                 Text(holdText(track)).font(.hmmNumbers(.footnote, weight: .semibold)).frame(minWidth: 36)
                 HmmButton("plus", label: "Longer hold", size: 40) { editor.changeFlipbookHold(by: 1) }
             }
-            .disabled(editor.activeFlipbookFrame == nil)
+            .shown(editor.activeFlipbookFrame != nil)
             Stepper("New drawings hold \(editor.flipbook.hold) frames", value: $editor.flipbook.hold, in: 1 ... 8)
         }
     }
@@ -124,7 +124,7 @@ struct FlipbookOptionsBar: View {
                 ChoiceChip(title: mode.title, systemName: mode.systemImage, isOn: editor.flipbook.mode == mode) { editor.flipbook.mode = mode }
             }
             HmmButton("plus.rectangle.on.rectangle", label: "New drawing", size: 36) { editor.addFlipbookDrawing() }
-                .disabled(editor.activeFlipbook == nil)
+                .shown(editor.activeFlipbook != nil)
             HmmButton("circle.dotted.circle", label: "Onion skin", isOn: editor.flipbook.onionSkin, size: 36) { editor.flipbook.onionSkin.toggle() }
             HmmButton("xmark", label: "Done drawing", size: 36) { editor.tool = .select }
         }

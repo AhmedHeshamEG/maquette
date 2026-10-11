@@ -174,11 +174,11 @@ struct PaintLayersSection: View {
             Menu {
                 Button("Duplicate", systemImage: "plus.square.on.square") { editor.duplicatePaintLayer(layer.id, of: object.id) }
                 Button("Merge down", systemImage: "square.3.layers.3d.down.right") { editor.mergePaintLayerDown(layer.id, of: object.id) }
-                    .disabled(index == 0)
+                    .shown(index != 0)
                 Button("Move up", systemImage: "arrow.up") { editor.movePaintLayer(layer.id, of: object.id, by: 1) }
-                    .disabled(index >= count - 1)
+                    .shown(index < count - 1)
                 Button("Move down", systemImage: "arrow.down") { editor.movePaintLayer(layer.id, of: object.id, by: -1) }
-                    .disabled(index == 0)
+                    .shown(index != 0)
                 Button("Clear", systemImage: "eraser") { editor.clearPaintLayer(layer.id, of: object.id) }
                 Button("Rename", systemImage: "pencil") { renaming = (layer.id, layer.name) }
                 Divider()

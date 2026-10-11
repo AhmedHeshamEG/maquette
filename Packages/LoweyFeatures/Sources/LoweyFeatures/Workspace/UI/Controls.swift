@@ -3,6 +3,13 @@ import LoweyCore
 import SwiftUI
 import UIKit
 
+extension View {
+    /// Nothing greyed out (CONTEXT §10.10): a control that can't act right now isn't shown, rather than dimmed.
+    @ViewBuilder func shown(_ condition: Bool) -> some View {
+        if condition { self }
+    }
+}
+
 /// A labelled horizontal slider for panels (the sidebar's vertical sliders are HmmSlider).
 struct LabeledSlider: View {
     let title: String

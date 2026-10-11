@@ -50,6 +50,7 @@ struct InspectorPanel: View {
         if object.kind.hasSurface { ColourRow(editor: editor, object: object) }
         KindSection(editor: editor, object: object)
         MakeItMove(editor: editor)
+        SelectionActions(editor: editor)
         VStack(alignment: .leading, spacing: 0) {
             if object.kind.hasSurface || object.kind == .group {
                 DisclosureRow("Look of this object", systemName: "paintpalette", identifier: "object-look") {
@@ -72,6 +73,7 @@ struct InspectorPanel: View {
         Text("\(editor.selection.count) objects").font(.hmm(.body)).foregroundStyle(theme.text2)
         PaletteRow(palette: editor.look.palette, selected: nil) { editor.setColor(.palette($0)) }
         MakeItMove(editor: editor)
+        SelectionActions(editor: editor)
         ArrangeSection(editor: editor)
         VStack(alignment: .leading, spacing: 0) {
             DisclosureRow("Look of these objects", systemName: "paintpalette", identifier: "object-look") {
