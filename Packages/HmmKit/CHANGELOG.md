@@ -3,6 +3,20 @@
 All notable changes to hmm-kit. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the
 project uses [Semantic Versioning](https://semver.org/).
 
+## [0.6.0] - 2026-10-11
+
+Built with Maquette 0.10.1.
+
+### Added
+- **HmmDiagnostics**: the feel recorder. `FeelProbe` watches every touch in the app's windows for a while (a gesture
+  recogniser that never recognises), the main thread's busy stretches (a run-loop observer) and every refresh (a
+  display link), and Metal surfaces report their frames to it; `FeelLog` follows each touch to the refresh that shows
+  its answer and splits the time into input, main thread, encode and GPU; `FeelRecording` is the JSON an app shares.
+  `FeelProbe.noteLaunched` measures a cold launch from the process's start.
+
+### Changed
+- **HmmBoardUI**: the board's canvas reports its frames to the feel recorder while it records.
+
 ## [0.5.0] - 2026-10-08
 
 Built with Maquette 0.9.

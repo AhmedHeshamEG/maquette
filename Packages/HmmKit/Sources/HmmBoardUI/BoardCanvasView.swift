@@ -2,6 +2,7 @@
     import HmmBoard
     import HmmBrush
     import HmmDesign
+    import HmmDiagnostics
     import Metal
     import Observation
     import QuartzCore
@@ -125,8 +126,23 @@
             } onChange: { [weak self] in
                 Task { @MainActor in self?.setNeedsFrame() }
             }
+            let started = CACurrentMediaTime()
             renderer.draw(scene, to: drawable.texture, commandBuffer: commandBuffer)
             commandBuffer.present(drawable)
+            if FeelProbe.isRecording {
+                // The feel recorder follows touches on the board to this frame.
+                let encoded = CACurrentMediaTime()
+                commandBuffer.addCompletedHandler { [weak self] buffer in
+                    let gpuStart = buffer.gpuStartTime
+                    let gpuEnd = buffer.gpuEndTime
+                    DispatchQueue.main.async {
+                        MainActor.assumeIsolated {
+                            guard let self else { return }
+                            FeelProbe.surfaceFrame(self, started: started, encoded: encoded, gpuStart: gpuStart, gpuEnd: gpuEnd)
+                        }
+                    }
+                }
+            }
             commandBuffer.commit()
         }
 

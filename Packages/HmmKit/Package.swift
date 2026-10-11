@@ -46,7 +46,7 @@ let package = Package(
         // The brush engine on the GPU (Metal): the stamp shader, the stamper, tip and grain textures.
         .target(name: "HmmBrushRender", dependencies: ["HmmBrush"], resources: [.process("Shaders")]),
         // The board on screen: its Metal renderer, the canvas view, the SwiftUI screen.
-        .target(name: "HmmBoardUI", dependencies: ["HmmBoard", "HmmBrush", "HmmBrushRender", "HmmCommands", "HmmDesign", "HmmDocuments"]),
+        .target(name: "HmmBoardUI", dependencies: ["HmmBoard", "HmmBrush", "HmmBrushRender", "HmmCommands", "HmmDesign", "HmmDiagnostics", "HmmDocuments"]),
         .testTarget(name: "HmmCommandsTests", dependencies: ["HmmCommands"]),
         .testTarget(name: "HmmDocumentsTests", dependencies: ["HmmDocuments", "HmmCommands"]),
         .testTarget(name: "HmmTranscriptTests", dependencies: ["HmmTranscript"]),
