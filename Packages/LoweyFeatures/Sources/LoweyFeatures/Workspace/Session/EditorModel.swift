@@ -106,7 +106,17 @@ final class EditorModel {
     var viewRevision = 0
     /// The current colour: new blockout, strokes and "paint" use it.
     var currentColor: ColorValue = .palette(0)
-    var openPanel: ClusterPanel?
+    /// The panel a cluster button opened. One big thing open at a time: a panel folds the whole timeline to its
+    /// slim transport (and the object panel to its chip, `inspectorAsChip`).
+    var openPanel: ClusterPanel? {
+        didSet {
+            if let openPanel, openPanel != .select, timelinePresence == .full { timelinePresence = .transport }
+        }
+    }
+
+    /// The object panel folded to its chip by hand (the fold button); `inspectorAsChip` also folds it while something
+    /// bigger is open.
+    var inspectorFolded = false
     var modelPage: ModelPage = .add
     var libraryPage: LibraryPage = .things
     var sheet: EditorSheet?
@@ -293,6 +303,8 @@ final class EditorModel {
     @ObservationIgnored var workspace = ProjectWorkspace()
     /// What the project is set up for (Blank, Print, Room, Animation): it decides what is in reach.
     var projectSetUp: StarterTemplate.Kind = .blank
+    /// Save to the library is asking for a name (the alert is on the editor's screen).
+    var savingPrefab = false
     @ObservationIgnored let logger = Logger(subsystem: AppIdentity.subsystem, category: "editor")
 
     var library: LibraryModel { app.library }

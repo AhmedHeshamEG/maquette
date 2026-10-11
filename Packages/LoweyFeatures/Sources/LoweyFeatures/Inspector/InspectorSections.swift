@@ -2,28 +2,14 @@ import HmmDesign
 import LoweyCore
 import SwiftUI
 
-/// Position, rotation and size as numbers (folded: most moves happen on the stage).
+/// Position, rotation and size as numbers (one step deeper: most moves happen on the stage).
 struct TransformSection: View {
     let editor: EditorModel
     let object: SceneObject
     @State private var uniformScale = true
-    @AppStorage("inspector.transformOpen") private var open = false
 
     var body: some View {
-        VStack(alignment: .leading, spacing: HmmSpacing.xs) {
-            Button {
-                withHmmAnimation(.snappy) { open.toggle() }
-            } label: {
-                HStack {
-                    HmmSectionHeader("Transform")
-                    Image(systemName: "chevron.right").font(.system(size: 11, weight: .bold)).rotationEffect(.degrees(open ? 90 : 0))
-                }
-                .contentShape(Rectangle())
-            }
-            .buttonStyle(.plain)
-            .accessibilityIdentifier("transform-toggle")
-            if open { fields }
-        }
+        fields
     }
 
     private var fields: some View {
@@ -106,8 +92,8 @@ struct NumberField: View {
     }
 }
 
-/// Colour, glow, shape smoothing and the bevel.
-struct SurfaceSection: View {
+/// The thing's colour, from the scene's palette.
+struct ColourRow: View {
     let editor: EditorModel
     let object: SceneObject
 
@@ -117,6 +103,31 @@ struct SurfaceSection: View {
             if object.color != nil, object.kind.assetID != nil {
                 Button("Use the model's own colours") { editor.setColor(nil) }.font(.hmm(.footnote, weight: .semibold))
             }
+        }
+    }
+}
+
+/// Look of this object, one row deep: its glow, smoothing and bevel, then another Look for it alone, its lines, rim
+/// light, accent and gloss.
+struct ObjectLookSection: View {
+    let editor: EditorModel
+    let object: SceneObject
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: HmmSpacing.s) {
+            if object.kind.hasSurface { SurfaceSliders(editor: editor, object: object) }
+            LookOverrideSection(editor: editor, object: object)
+        }
+    }
+}
+
+/// Glow, shape smoothing and the bevel.
+struct SurfaceSliders: View {
+    let editor: EditorModel
+    let object: SceneObject
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: HmmSpacing.s) {
             LabeledSlider(title: "Glow", value: object.emissiveIntensity, range: 0 ... 8, set: {
                 editor.setProperty(.emissiveIntensity, .float($0), coalesce: "glow-\(object.id.raw)")
             }, done: editor.endGesture)

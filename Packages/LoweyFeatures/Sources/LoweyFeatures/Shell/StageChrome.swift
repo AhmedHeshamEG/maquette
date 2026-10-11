@@ -10,8 +10,10 @@ struct StageChrome: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @AppStorage(AppSettings.sidebarOnRight) private var sidebarOnRight = false
     @AppStorage(AppSettings.showsJoystick) private var showsJoystick = true
-    /// The open leading panel's frame on screen (the inspector keeps clear of it).
-    @State private var leadingPanelFrame: CGRect?
+    /// The open panel's frame on screen (the object panel, or its chip, keeps clear of it).
+    @State private var panelFrame: CGRect?
+    /// The stage's frame on screen: panels moved by hand stay inside it.
+    @State private var bounds: CGRect?
 
     var body: some View {
         ZStack {
@@ -36,12 +38,15 @@ struct StageChrome: View {
                     if let panel = editor.openPanel, panel.isLeading {
                         ClusterPanelView(editor: editor, panel: panel)
                             .hmmPanelTransition(from: .topLeading)
-                            .onGeometryChange(for: CGRect.self) { $0.frame(in: .global) } action: { leadingPanelFrame = $0 }
-                            .onDisappear { leadingPanelFrame = nil }
+                            .onGeometryChange(for: CGRect.self) { $0.frame(in: .global) } action: { panelFrame = $0 }
+                            .onDisappear { panelFrame = nil }
                     }
                     Spacer(minLength: 0)
                     if let panel = editor.openPanel, !panel.isLeading {
-                        ClusterPanelView(editor: editor, panel: panel).hmmPanelTransition(from: .topTrailing)
+                        ClusterPanelView(editor: editor, panel: panel)
+                            .hmmPanelTransition(from: .topTrailing)
+                            .onGeometryChange(for: CGRect.self) { $0.frame(in: .global) } action: { panelFrame = $0 }
+                            .onDisappear { panelFrame = nil }
                     }
                 }
                 Spacer(minLength: 0)
@@ -50,19 +55,20 @@ struct StageChrome: View {
         }
         .overlay {
             if showsInspector {
-                FloatingInspector(editor: editor, avoiding: leadingPanelFrame, sidebarOnRight: sidebarOnRight)
+                FloatingInspector(editor: editor, avoiding: panelFrame, sidebarOnRight: sidebarOnRight)
                     .transition(.opacity)
             }
         }
+        .environment(\.hmmPanelBounds, bounds)
+        .onGeometryChange(for: CGRect.self) { $0.frame(in: .global) } action: { bounds = $0 }
         .animation(HmmMotion.standard.animation(reduceMotion: reduceMotion), value: editor.openPanel)
         .animation(HmmMotion.standard.animation(reduceMotion: reduceMotion), value: showsInspector)
     }
 
-    /// The inspector floats while something is selected and no making tool's panel is open. While sketching it steps
-    /// aside: the numbers on the stage are what you're working with then (D-124).
+    /// The object panel floats while something is selected (a chip while something bigger is open). While sketching it
+    /// steps aside: the numbers on the stage are what you're working with then (D-124).
     private var showsInspector: Bool {
-        !editor.selection.isEmpty && editor.openPanel?.isLeading != false
-            && !(editor.tool == .model && editor.modeling.mode.sketchKind != nil)
+        !editor.selection.isEmpty && !(editor.tool == .model && editor.modeling.mode.sketchKind != nil)
     }
 
     // MARK: Clusters

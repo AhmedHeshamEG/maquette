@@ -2,20 +2,14 @@ import HmmDesign
 import LoweyCore
 import SwiftUI
 
-/// Motion: one-tap presets at the playhead (one after another for many objects), behaviours, simulations, puppet
-/// joints, the object's frame rate, clearing animation. (The looping motions are the Motion row, at the top.)
-struct MotionSection: View {
+/// More ways to move, one step deeper than Make it move: how long and strong the once-moves are (one after another
+/// for many objects), behaviours, the frame rate this thing is animated on, simulations, puppet joints, the motion
+/// path and onion skin, clearing animation.
+struct MoreWaysToMove: View {
     @Bindable var editor: EditorModel
 
     var body: some View {
-        PanelSection("Motion") {
-            TileGrid(minimum: 78) {
-                ForEach(AnimationPreset.allCases) { preset in
-                    TileButton(title: preset.title, systemName: Self.icon(for: preset), identifier: "preset-\(preset.rawValue)") {
-                        editor.applyPreset(preset)
-                    }
-                }
-            }
+        VStack(alignment: .leading, spacing: HmmSpacing.s) {
             LabeledSlider(title: "Length", value: editor.presetDuration ?? 0.8, range: 0.1 ... 4,
                           format: { editor.presetDuration == nil ? "Auto" : "\(NumberFormat.short($0)) s" }) { editor.presetDuration = $0 }
             LabeledSlider(title: "Strength", value: editor.presetStrength, range: 0.2 ... 2, format: NumberFormat.percent) { editor.presetStrength = $0 }
@@ -24,7 +18,7 @@ struct MotionSection: View {
                 HmmPillButton("Grow it in, one by one", systemName: "sparkles", prominent: true) { editor.growGenerator() }
             }
             BehaviorList(editor: editor)
-            stepping
+            if editor.singleSelection != nil { stepping }
             AnimationViewOptions(editor: editor)
             TileGrid(minimum: 96) {
                 TileButton(title: "Fall", systemName: "arrow.down.to.line") { editor.simulatePhysics(.fall) }
@@ -62,12 +56,20 @@ struct MotionSection: View {
         }
     }
 
+    /// Motion on twos for this one thing (the scene's choice is Look ▸ Finish ▸ Motion).
     private var stepping: some View {
+        VStack(alignment: .leading, spacing: HmmSpacing.xxs) {
+            Text("Animated on").font(.hmm(.footnote, weight: .semibold))
+            steppingPicker
+        }
+    }
+
+    private var steppingPicker: some View {
         Picker("Frame rate", selection: Binding(
             get: { editor.singleSelection?[.stepping]?.stringValue.flatMap(Stepping.init(name:)) },
             set: { editor.setObjectStepping($0) }
         )) {
-            Text("Project").tag(Stepping?.none)
+            Text("Scene").tag(Stepping?.none)
             Text("Ones").tag(Stepping?.some(.onOnes))
             Text("Twos").tag(Stepping?.some(.onTwos))
             Text("Threes").tag(Stepping?.some(.onThrees))
@@ -154,14 +156,14 @@ private struct BehaviorList: View {
     }
 }
 
-/// More: what the object is (model facts, build links), locks.
+/// About this object: what it is (model facts, build links), locks.
 struct MetadataSection: View {
     let editor: EditorModel
     let object: SceneObject
     @Environment(\.hmmTheme) private var theme
 
     var body: some View {
-        PanelSection("About this object") {
+        VStack(alignment: .leading, spacing: HmmSpacing.xs) {
             if case let .asset(id) = object.kind, let asset = editor.library.manifest.asset(id) {
                 if let triangles = asset.triangleCount { line("\(triangles) triangles · \(asset.format.rawValue.uppercased())") }
                 if asset.rig.isRigged { line("Skeleton: \(asset.rig.rawValue.capitalized)") }

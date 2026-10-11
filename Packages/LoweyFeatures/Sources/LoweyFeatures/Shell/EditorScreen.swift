@@ -55,6 +55,7 @@ struct EditorScreen: View {
         }
         .modifier(EditorSheets(editor: editor))
         .modifier(ObjectRenameAlert(editor: editor))
+        .modifier(PrefabSaveAlert(editor: editor))
         .background {
             // The stage's keys (space, delete, arrows) rest while the board has the screen.
             if !editor.boardShown { EditorKeyboardShortcuts(editor: editor) }

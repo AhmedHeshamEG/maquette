@@ -2,18 +2,18 @@ import HmmDesign
 import LoweyCore
 import SwiftUI
 
-/// Floats beside the selection (the Shell places it): Move · Turn · Size, Transform · Look override · Lines · Motion ·
-/// Metadata, and the actions. The few controls used most come first; the rest sit behind More. Its corner grip
-/// resizes it; the Shell sizes it from `size`.
+/// The object panel (CONTEXT §10.10): one screen beside the selection. Move · Turn · Size, its colour, what kind of
+/// thing it is, Make it move; one step deeper, Look of this object, More ways to move, the numbers and what it is.
+/// Its header is a grip: drag it anywhere and it stays there; the fold button (or opening something big) folds it to
+/// a chip. The ⋯ button is the object's one menu, the same as touching and holding it.
 struct InspectorPanel: View {
     @Bindable var editor: EditorModel
     @Binding var size: HmmPanelSize?
+    /// The header's drag (the Shell moves the panel and remembers where it was left).
+    var move: InspectorMove?
     static let sizing = HmmPanelSizing(id: "inspector", minimum: CGSize(width: 290, height: 240), maximum: CGSize(width: 520, height: 1400))
     static let defaultSize = CGSize(width: 330, height: 560)
     @State private var name = ""
-    @State private var showsMore = false
-    @State private var savingPrefab = false
-    @State private var prefabName = ""
     @Environment(\.hmmTheme) private var theme
 
     var body: some View {
@@ -24,16 +24,11 @@ struct InspectorPanel: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: HmmSpacing.m) {
                     GizmoModeRow(editor: editor)
-                    MotionRow(editor: editor)
+                    SizeSection(editor: editor)
                     if let object = editor.singleSelection {
                         single(object)
                     } else {
-                        Text("\(editor.selection.count) objects").font(.hmm(.body)).foregroundStyle(theme.text2)
-                        SizeSection(editor: editor)
-                        PaletteRow(palette: editor.look.palette, selected: nil) { editor.setColor(.palette($0)) }
-                        ArrangeSection(editor: editor)
-                        LookOverrideSection(editor: editor, object: nil)
-                        MotionSection(editor: editor)
+                        several
                     }
                     actions
                 }
@@ -46,30 +41,46 @@ struct InspectorPanel: View {
         .hmmPanelBackground()
         .onAppear { name = editor.singleSelection?.name ?? "" }
         .onChange(of: editor.selection) { _, _ in name = editor.singleSelection?.name ?? "" }
-        .alert("Save to your library", isPresented: $savingPrefab) {
-            TextField("Name", text: $prefabName)
-            Button("Save a copy") { editor.saveSelectionAsPrefab(name: prefabName, replaceSelection: false) }
-            Button("Save & link") { editor.saveSelectionAsPrefab(name: prefabName, replaceSelection: true) }
-            Button("Cancel", role: .cancel) {}
-        } message: {
-            Text("Build once, reuse it everywhere. Linked copies update when you edit the original.")
-        }
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("inspector")
     }
 
     @ViewBuilder
     private func single(_ object: SceneObject) -> some View {
-        TransformSection(editor: editor, object: object)
-        SizeSection(editor: editor)
-        if object.kind.hasSurface { SurfaceSection(editor: editor, object: object) }
+        if object.kind.hasSurface { ColourRow(editor: editor, object: object) }
         KindSection(editor: editor, object: object)
-        if object.kind.hasSurface || object.kind == .group { LookOverrideSection(editor: editor, object: object) }
-        MotionSection(editor: editor)
-        if showsMore { MetadataSection(editor: editor, object: object) }
-        Button(showsMore ? "Less" : "More") { withHmmAnimation(.standard) { showsMore.toggle() } }
-            .font(.hmm(.body, weight: .semibold))
-            .accessibilityIdentifier("inspector-more")
+        MakeItMove(editor: editor)
+        VStack(alignment: .leading, spacing: 0) {
+            if object.kind.hasSurface || object.kind == .group {
+                DisclosureRow("Look of this object", systemName: "paintpalette", identifier: "object-look") {
+                    ObjectLookSection(editor: editor, object: object)
+                }
+            }
+            DisclosureRow("More ways to move", systemName: "figure.run", identifier: "more-motion") {
+                MoreWaysToMove(editor: editor)
+            }
+            DisclosureRow("Numbers", systemName: "number", identifier: "transform-toggle") {
+                TransformSection(editor: editor, object: object)
+            }
+            DisclosureRow("About this object", systemName: "info.circle", identifier: "inspector-more") {
+                MetadataSection(editor: editor, object: object)
+            }
+        }
+    }
+
+    @ViewBuilder private var several: some View {
+        Text("\(editor.selection.count) objects").font(.hmm(.body)).foregroundStyle(theme.text2)
+        PaletteRow(palette: editor.look.palette, selected: nil) { editor.setColor(.palette($0)) }
+        MakeItMove(editor: editor)
+        ArrangeSection(editor: editor)
+        VStack(alignment: .leading, spacing: 0) {
+            DisclosureRow("Look of these objects", systemName: "paintpalette", identifier: "object-look") {
+                LookOverrideSection(editor: editor, object: nil)
+            }
+            DisclosureRow("More ways to move", systemName: "figure.run", identifier: "more-motion") {
+                MoreWaysToMove(editor: editor)
+            }
+        }
     }
 
     private var header: some View {
@@ -85,11 +96,24 @@ struct InspectorPanel: View {
                 Text("Selection").font(.hmm(.headline, weight: .semibold))
             }
             Spacer()
+            HmmButton("rectangle.compress.vertical", label: "Fold the panel", size: 32) { editor.foldInspector(true) }
+                .accessibilityIdentifier("fold-inspector")
             HmmButton("xmark", label: "Deselect", size: 32) { editor.setSelection([]) }
         }
+        .padding(.top, HmmSpacing.xxs)
+        .overlay(alignment: .top) {
+            if move != nil { Capsule().fill(theme.text3).frame(width: 36, height: 4).offset(y: -6).allowsHitTesting(false) }
+        }
+        .contentShape(Rectangle())
+        .gesture(
+            DragGesture(minimumDistance: 4, coordinateSpace: .global)
+                .onChanged { move?.changed($0.translation) }
+                .onEnded { _ in move?.ended() }
+        )
+        .onTapGesture(count: 2) { move?.reset() }
     }
 
-    /// The three things done most as buttons; everything else in one menu.
+    /// Duplicate and Hide as buttons, the object's one menu, Delete.
     private var actions: some View {
         let object = editor.singleSelection
         return HStack(spacing: HmmSpacing.xs) {
@@ -98,7 +122,7 @@ struct InspectorPanel: View {
                 HmmButton(object.isVisible ? "eye.slash" : "eye", label: object.isVisible ? "Hide" : "Show", size: 40) { editor.toggleVisible(object.id) }
             }
             Menu {
-                moreActions(object)
+                HmmHoldMenuContent(editor.holdMenu(for: editor.selection))
             } label: {
                 Image(systemName: "ellipsis").font(.system(size: 16, weight: .semibold)).frame(width: 44, height: 40)
             }
@@ -106,40 +130,6 @@ struct InspectorPanel: View {
             .accessibilityIdentifier("more-actions")
             Spacer(minLength: 0)
             HmmButton("trash", label: "Delete", size: 40, role: .destructive) { editor.deleteSelection() }
-        }
-    }
-
-    @ViewBuilder
-    private func moreActions(_ object: SceneObject?) -> some View {
-        Section {
-            Menu("Array", systemImage: "square.grid.3x3") {
-                let step = editor.arrayStep
-                Button("Row of 5") { editor.array(.line(count: 5, step: Vec3(step, 0, 0))) }
-                Button("Row of 10") { editor.array(.line(count: 10, step: Vec3(step, 0, 0))) }
-                Button("Grid 3 × 3") { editor.array(.grid(columns: 3, rows: 3, spacingX: step, spacingZ: step)) }
-                Button("Grid 5 × 5") { editor.array(.grid(columns: 5, rows: 5, spacingX: step, spacingZ: step)) }
-                Button("Circle of 8") { editor.array(.circle(count: 8, radius: max(step * 1.5, 1), faceCenter: true)) }
-                Button("Circle of 12") { editor.array(.circle(count: 12, radius: max(step * 2, 1.5), faceCenter: true)) }
-                if !editor.sketches.isEmpty {
-                    Button("Along a sketch") { editor.arrayAlongSketch(align: false) }
-                    Button("Along a sketch, turning with it") { editor.arrayAlongSketch(align: true) }
-                }
-            }
-            Button("To the ground", systemImage: "arrow.down.to.line") { editor.dropSelectionToGround() }
-        }
-        Section {
-            if editor.selection.count > 1 { Button("Group", systemImage: "square.on.square.dashed") { editor.groupSelection() } }
-            if object?.kind == .group { Button("Ungroup", systemImage: "square.dashed") { editor.ungroupSelection() } }
-            if case .primitive = object?.kind { Button("Swap for a model…", systemImage: "arrow.triangle.swap") { editor.beginSwap() } }
-            Button("Save to library…", systemImage: "tray.and.arrow.down") {
-                prefabName = object?.name ?? ""
-                savingPrefab = true
-            }
-            if object?.kind.prefabID != nil { Button("Unpack", systemImage: "shippingbox") { editor.unpackSelection() } }
-            if let object {
-                Button(object.isLocked ? "Unlock" : "Lock", systemImage: object.isLocked ? "lock.open" : "lock") { editor.toggleLock(object.id) }
-            }
-            Button("Copy", systemImage: "doc.on.doc") { editor.copySelection() }
         }
     }
 
@@ -160,5 +150,52 @@ struct InspectorPanel: View {
         case .sketch: "pencil.and.ruler"
         case .dimension: "ruler"
         }
+    }
+}
+
+/// How the Shell moves the panel by its header.
+struct InspectorMove {
+    let changed: (CGSize) -> Void
+    let ended: () -> Void
+    /// Double-tap: back beside the selection.
+    let reset: () -> Void
+}
+
+/// The folded panel: the thing's name (tap to unfold) and Move · Turn · Size.
+struct InspectorChip: View {
+    let editor: EditorModel
+    @Environment(\.hmmTheme) private var theme
+
+    var body: some View {
+        HStack(spacing: HmmSpacing.xs) {
+            Button {
+                HmmHaptics.play(.selection)
+                editor.foldInspector(false)
+            } label: {
+                HStack(spacing: HmmSpacing.xxs) {
+                    if let object = editor.singleSelection {
+                        Image(systemName: InspectorPanel.icon(for: object.kind)).foregroundStyle(theme.accent)
+                        Text(verbatim: object.name).lineLimit(1)
+                    } else {
+                        Text("\(editor.selection.count) objects").lineLimit(1)
+                    }
+                    Image(systemName: "chevron.down").font(.system(size: 10, weight: .bold)).foregroundStyle(theme.text3)
+                }
+                .font(.hmm(.footnote, weight: .semibold))
+                .foregroundStyle(theme.text)
+                .padding(.horizontal, HmmSpacing.s)
+                .frame(minHeight: 40)
+                .frame(maxWidth: 180, alignment: .leading)
+                .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+            .accessibilityHint("Unfold the panel")
+            .accessibilityIdentifier("unfold-inspector")
+            GizmoModeRow(editor: editor, compact: true)
+        }
+        .padding(HmmSpacing.xxs)
+        .hmmPanelBackground(cornerRadius: HmmRadius.card + 8)
+        .accessibilityElement(children: .contain)
+        .accessibilityIdentifier("inspector-chip")
     }
 }
