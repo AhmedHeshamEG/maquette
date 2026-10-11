@@ -197,7 +197,8 @@ final class AtlasTests: XCTestCase {
     func test03Deeper() {
         area = "3 Deeper"
         each([
-            Page(name: "Brush library", steps: ["Draw", "tool-ink", "brush-ink"], scrolls: 1, side: .centre),
+            Page(name: "Brush library, dropped down", steps: ["Draw", "tool-ink", "brush-ink"]),
+            Page(name: "Brush library, whole", steps: ["Draw", "tool-ink", "brush-ink", "brush-library-open"], scrolls: 1, side: .centre),
             Page(name: "Drawing guide", steps: ["Draw", "tool-ink", "drawing-guide"]),
             Page(name: "Colour well", steps: ["Draw", "tool-ink", "colour-well"]),
             Page(name: "Flipbook tracks", steps: ["Draw", "tool-flipbook", "flipbook-tracks"]),

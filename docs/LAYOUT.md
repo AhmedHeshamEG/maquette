@@ -186,7 +186,8 @@ Draw again for the panel.
 | The brush flipbooks draw with (opens the brush library) | `Draw › tool-flipbook › brush-flipbook` |
 | The frame strip: the drawings; step, add, reorder, hold longer, onion skin, loop, erase | `Draw › tool-flipbook › frame-strip` |
 | The frame's drawing guide (stuck to the camera): 2D grid, isometric, 1-, 2- and 3-point perspective, symmetry; Drawing assist | in Flipbook while it's stuck to the camera |
-| Brush library: sets, choose a brush, new set, share a set, import Procreate (.brushset, .brush) and Photoshop (.abr) brushes | the brush row's sheet |
+| The brush library drops down from the brush row: sets on the left, the set's brushes on the right | `Draw › tool-ink › brush-ink › brush-dropdown` |
+| The whole library: sets, choose a brush, new set, share a set, import Procreate (.brushset, .brush) and Photoshop (.abr) brushes | the drop-down's last row |
 | A brush's menu (the hold menu): duplicate, rename; Brush Studio, reset, move to a set; delete | touch and hold a brush in the library |
 | Brush Studio: stroke, shape, grain, dynamics, Pencil, rendering, about; the pad to try it | a brush's menu ▸ Edit in Brush Studio |
 
