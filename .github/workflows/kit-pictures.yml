@@ -35,7 +35,7 @@ jobs:
           xcrun simctl boot "${{ steps.sim.outputs.udid }}" || true
           xcrun simctl bootstatus "${{ steps.sim.outputs.udid }}" -b
       - name: Bake
-        run: Tools/bake-kit-pictures.sh "${{ steps.sim.outputs.udid }}"
+        run: bash Tools/bake-kit-pictures.sh "${{ steps.sim.outputs.udid }}"
       - name: Check
         run: python3 Tools/fetch-kit.py check
       - name: Commit the pictures
