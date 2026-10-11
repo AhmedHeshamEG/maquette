@@ -28,6 +28,10 @@ public enum AppSettings {
     public static let tourSeen = "tourSeen"
     /// The Schizzo board (on by default). Off: no board in Actions, no Sketch template, pinned cards put away.
     public static let boardEnabled = "boardEnabled"
+    /// Settings ▸ Gestures: one finger draws around keys and clips on the timeline (off: the Pencil does; a finger pans).
+    public static let timelineFingerSelects = "timelineFingerSelects"
+    /// Settings ▸ Gestures: the Pencil hovering over the timeline moves the playhead (Procreate Dreams' way).
+    public static let timelineHoverScrubs = "timelineHoverScrubs"
 
     /// The navigation speed, clamped (read when a gesture starts).
     public static var navigationFactor: Double {
