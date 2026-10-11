@@ -56,6 +56,9 @@ final class BoardTests: XCTestCase {
         let words = element("board-note-text")
         XCTAssertTrue(words.waitForExistence(timeout: 5), "a new note opens for typing")
         words.typeText("Lamp")
+        // A simulator with the on-screen keyboard keeps it up over the board's bottom bar: put it away.
+        let hide = app.keyboards.buttons["Hide keyboard"].firstMatch
+        if hide.waitForExistence(timeout: 1) { hide.tap() }
         shot("A stroke and a note")
 
         // Picked, it can be pinned to the project.
