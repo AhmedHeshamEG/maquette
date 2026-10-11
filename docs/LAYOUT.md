@@ -84,7 +84,7 @@ is open, `[transport]` the slim transport is showing, `[home]` the steps start o
 | Paste a Scene Script | `Actions › Paste script` |
 | Gestures | `Actions › Gestures` |
 | The tour | `Actions › Tour` |
-| Diagnostics, the benchmark, the Pencil's touch-to-screen latency | `Actions › Diagnostics` |
+| Diagnostics, the feel recorder, the benchmark, the Pencil's touch-to-screen latency | `Actions › Diagnostics` |
 | Settings | `Actions › Settings` |
 
 ### Look

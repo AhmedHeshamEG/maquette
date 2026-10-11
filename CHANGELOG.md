@@ -3,6 +3,14 @@
 All notable changes. 1.x grew in four phases (v0.1 → v1.4); 2.0 is the remaster, released as betas first. Maquette
 continues from 2.0 and numbers its phases again from 0.1 (each phase bumps the minor version until 1.0).
 
+## [0.10.1] — Maquette — the feel recorder (phase U1, first step)
+
+- **Diagnostics ▸ Feel ▸ Record a minute.** Use the app for a minute the way you normally do; a small red dot at the
+  top says it's listening, and it stops by itself. Every touch is timed to the frame that answers it. Share the file
+  from the same place (it's also in Export logs). Nothing leaves the iPad unless you share it.
+- The log now notes how long a cold launch took to reach Home and how long each project took to show its first frame.
+- hmm-kit 0.6.0.
+
 ## [0.10] — Maquette — live performance (phase M10)
 
 - **Your face drives any character.** Front camera or iPhone: drawn rigs, person rigs, 2D drawn puppets and rigged

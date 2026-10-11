@@ -3,6 +3,12 @@
 What's known and not done yet, so nothing lives only in someone's head. What Maquette is: [SPEC.md](SPEC.md). The
 phase plan (M11 … M16, then 1.0) lives in studio-h's `PHASES.md`; ideas go to its `IDEAS.md`.
 
+## U1 in progress (Maquette 0.10.1)
+
+- [ ] Hesham's first feel recording on 0.10.1 (the "before"); U1's fixes are aimed at what it ranks (PHASES, U1 step 2).
+- [ ] The recorder times a touch to the first refresh after its answer is ready; the compositor's own frame after that
+      is the same for every app and isn't counted (D-217).
+
 ## Left from M10 (Maquette 0.10)
 
 - [ ] The device checklist in the "Maquette 0.10 — M10" PR (the front camera driving a drawn rig, a person rig and a
