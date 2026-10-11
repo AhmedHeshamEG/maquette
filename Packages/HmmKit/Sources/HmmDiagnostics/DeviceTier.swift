@@ -24,9 +24,10 @@ public enum DeviceTier: String, Codable, Sendable, CaseIterable, Comparable {
 
     /// The tier for a GPU generation and the device's memory. M-series iPads have family 7 or later and at least
     /// 8 GB; A-series iPads of the same generation have 6 GB or less (the A17 Pro iPad mini, with 8 GB and an M1-class
-    /// GPU, counts as A). Families before 7 (A12, A13) are C.
+    /// GPU, counts as A). Families before 7 (A12, A13) are C. An "8 GB" iPad reports less than 8 GiB (what the
+    /// system keeps for itself), so the line sits at 7, well clear of it and of any 6 GB iPad.
     public static func classify(gpu: GPU, memoryGB: Double) -> DeviceTier {
-        if gpu.appleFamily >= 7, memoryGB >= 7.5 { return .a }
+        if gpu.appleFamily >= 7, memoryGB >= 7 { return .a }
         if gpu.appleFamily >= 7 || memoryGB >= 4.5 { return .b }
         return .c
     }
