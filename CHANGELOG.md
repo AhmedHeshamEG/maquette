@@ -3,6 +3,45 @@
 All notable changes. 1.x grew in four phases (v0.1 → v1.4); 2.0 is the remaster, released as betas first. Maquette
 continues from 2.0 and numbers its phases again from 0.1 (each phase bumps the minor version until 1.0).
 
+## [0.12] — Maquette — layout (phase U2)
+
+Everything moved, merged or folded into the map that freezes at 1.0 (docs/LAYOUT.md has the whole map and what came
+from where). Nothing new to learn; everything easier to find.
+
+- **New top buttons.** Top left: Home · Actions · Look · Select · **Library**. Top right: Model · Draw · Paint · **Rig**
+  · Animate. Cast is gone: a Blob, Me and a Puppet are in the Library; rigging, poses and clips are in Rig; a
+  character's expressions, lip sync and face are its button beside Record in the timeline's Perform.
+- **The + on Home goes straight in**: a blank project in the new dark studio, named by itself (tap a card's name to
+  rename it). Print, Room and Animation are a quiet row under the title; the samples are one card; no tagline.
+- **Tap the scene's name** (under the top-left buttons) for what it's set up for (switch any time: Blank, Print, Room,
+  Animation), its scenes and its objects. Select is a small bar.
+- **The object panel fits on one screen**: Move · Turn · Size, colour, **Make it move** (every motion once, in one
+  strip), what the selection can do (Combine, Mirror, Make editable, Scatter), and four rows one step deeper. Drag its
+  header to move it anywhere; it stays there. It folds to a chip while anything bigger is open.
+- **One menu per object**: touch and hold it, or its panel's ⋯, for everything it can do.
+- **The timeline**: Perform and Keys, as words, and eight controls. Perform waits for your touch: time runs while you
+  touch and stops when you lift. After a thing's first key, changes key themselves. Slide a whole animation by the
+  grip under its row. Titles, marks and screen effects are its + Overlay.
+- **Cameras live on the camera button**: tap to look through, hold for a new camera from this view.
+- **Look** has three pages (Style, World, Finish; motion on twos is in Finish). **Export** asks the kind first.
+  **Settings** is Pencil and hands · Gestures · Stage · Appearance · Assistant · About (Diagnostics inside). **Learn**
+  holds the tour, the gestures and the switch for the instructions in panels.
+- The sidebar rests as a thin rail when nothing uses it; a colour is always in the hand before making, shapes too.
+- Undo and redo say what changed for a second; a guided step shows one line at the bottom. Nothing is greyed out and
+  no label is cut, from the iPad mini to the 13-inch, in landscape and portrait.
+- A trial: calmer chrome (neutral glass, amber only for the tool in your hand). Diagnostics switches it off to compare.
+- Projects are schema 12 (the dark studio mood); Maquette 0.11 can't open them. hmm-kit 0.7.0.
+
+## [0.11] — Maquette — feel (phase U1, shipped with 0.12)
+
+- **The Library shows every model's picture.** The Kit's pictures now ship with the app, so they're there the first
+  time you open it; a picture is never taken before its model has loaded (the grey tiles, and empty Home cards).
+- **Sharp at rest.** When the view stops moving, the stage draws at full resolution; while it moves, it stays smooth.
+- **No more "getting ready".** Choosing an object with Paint in the hand makes it ready to paint quietly; the layers
+  simply appear. A drawn bone stays on the stage while it learns how to bend, and you can draw the next one straight away.
+- An iPad with 8 GB (every M-chip iPad) always previews at full quality (hmm-kit 0.6.1).
+- Opening the app doesn't read the Kit's pictures any more.
+
 ## [0.10.1] — Maquette — the feel recorder (phase U1, first step)
 
 - **Diagnostics ▸ Feel ▸ Record a minute.** Use the app for a minute the way you normally do; a small red dot at the

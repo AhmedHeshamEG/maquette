@@ -2,7 +2,7 @@ import Foundation
 import HmmDesign
 import LoweyCore
 
-/// Several clips at once: pick clip segments (in the timeline or the Cast panel), then move, loop, speed up or remove
+/// Several clips at once: pick clip segments (in the timeline or the Rig panel), then move, loop, speed up or remove
 /// them together, one undo step each.
 extension EditorModel {
     /// Picks a clip segment; `additive` adds it to (or takes it out of) the picked ones.

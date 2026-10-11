@@ -34,7 +34,8 @@ extension StageGestures {
     }
 
     private func beginDrag(at point: CGPoint, editor: EditorModel, stage: StageView) -> DragKind {
-        if editor.performPhase == .recording, editor.tool == .select, !operatesCamera, let handle = editor.ikHandle(at: point) {
+        if editor.performPhase.isArmed, editor.tool == .select, !operatesCamera, let handle = editor.ikHandle(at: point) {
+            editor.beginPerformTime()
             editor.chooseJoint(of: handle)
             return .ik(handle)
         }

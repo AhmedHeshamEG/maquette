@@ -1691,3 +1691,120 @@ nothing at all (he'd not know when the minute ends).
 
 **D-220 — 0.10.1 ships the recorder alone.** So the first recording measures 0.10's feel unchanged: it is the "before"
 the phase notes keep, and every speed fix after it is aimed at what it ranks and proved by the same recording.
+
+**D-221 — The Kit's pictures are baked in CI and committed beside each model.** The simulator renders every Kit asset
+with the app's renderer in the Ink Look (`KitPicturesTests`, run by the Kit pictures workflow) and the PNGs ship in the
+app; the iPad only reads them, off the main thread, when a tile appears. The root of "the models never show their
+pictures": the picture used to be taken before the model had loaded, so an empty one was drawn and then kept.
+`Thumbnailer` now loads every model a picture places first, which also fixes empty Home cards. *Rejected:* rendering on
+the iPad, fixed (a render per tile on the main actor while scrolling is exactly the feel U1 removes); baking at build
+time in the release workflow (the pictures would differ between builds and couldn't be reviewed in a PR).
+
+**D-222 — Sharp at rest, smooth in motion.** Moving, the stage holds the frame rate with the dynamic scale as before;
+0.15 s after the last frame it draws one at full resolution on every tier, and an isolated change (a tap, a slider step)
+is drawn at full resolution while the last such frame fit the budget. The extra frames don't feed the scale or the load
+meter. A hot iPad keeps the lighter preview. *Rejected:* raising the scale slowly while calm (30 calm frames: a stage
+that draws on request may never get them, which is how an empty scene sat at 80 %); full resolution all the time on
+Tier A (the drag is what has to be smooth).
+
+**D-223 — An 8 GB iPad is Tier A.** The line was 7.5 GiB of reported memory; an 8 GB iPad reports less than 8 GiB, and
+so may land under it and preview like an A-chip iPad. The line is 7 GiB now (no 6 GB iPad comes near it). The recorder
+writes the tier into every recording, so the device answers it.
+
+**D-224 — Paint makes its object ready the moment it's chosen; no message.** With Paint in the hand, choosing an
+object (or opening Paint with one chosen) lays it flat, or carries its paint onto a changed shape, in the background;
+"Getting … ready to paint" and "Bringing the paint onto the new shape" are gone, and so is the *Paint …* button, except
+when making it ready failed (then it's the way to try again). Starting it is an undo step of its own, as before.
+*Rejected:* preparing on every selection whatever the tool (heavy work for objects nobody paints); keeping the result
+off the document until the first stroke (a second path for the first stroke to commit through).
+
+**D-225 — A bone is weighed quietly.** "Working out how it bends…" is gone: the stroke's bone stays on the stage, the
+step keeps its controls, and Skin and Pose light up when the weights land. A stroke drawn meanwhile builds on the rig
+being weighed, and only the newest result is stored (it holds the earlier bones too), as one step.
+
+## Maquette 0.12 — U2, layout
+
+**D-226 — U2 is stacked on U1 and ships U1's work with it.** U1 (PR #30) waits for Hesham's first feel recording
+(steps 2 and 6 are aimed at what it ranks), and every phase ships (law 9). U2 branched from `phase/U1-feel`, so the
+0.12 merge carries U1's sharp-at-rest, quiet work and baked pictures; U1 stays open for the recording's fixes, and its
+gates are re-checked on 0.12. *Rejected:* holding U2 until the recording arrives (a phase that can't ship); rebasing U2
+on main and leaving U1's finished steps unshipped.
+
+**D-227 — Cast dissolves; the Library and Rig get buttons.** Top left: Home · Actions · Look · Select · Library; top
+right: Model · Draw · Paint · Rig · Animate. Blob, Me and Puppet are things on the Library's first page; rigging (Bones,
+Skin, Pose, poses, clips) is Rig, today's tools moved until U4 rebuilds them; expressions, lip sync, face capture and
+the voice are the selected character's button beside Record in the timeline's Perform. The Library has two pages for
+now, **Things** (the characters and the Kit) and **Yours** (imports, builds, worlds, scripts); Motion and Rigs join
+when U4 makes poses, clips and rigs things you save (no stub pages). *Rejected:* a Perform workspace of its own
+(law 2); the four pages now with two of them empty.
+
+**D-228 — Held features travel in the Info.plist, not in compilation conditions.** `HmmHeld` (a new pure hmm-kit
+module) reads the list once from the bundle's `HmmHeld` key, which `project.yml` fills from `MAQUETTE_HELD`: the
+AppStore configuration names `livePerformance mechanisms ar webLayer`, every other configuration nothing. Swift
+packages don't see an app target's `SWIFT_ACTIVE_COMPILATION_CONDITIONS`, and every entry point lives in a package
+(LoweyFeatures). The bundle is sealed by its signature, so a store build still can't reach a held feature by any means.
+A UI job builds the AppStore configuration and walks LAYOUT.md: rows marked *(held: 1.x)* must be absent, all others
+present. *Rejected:* passing flags into the package through a generated Swift file (another file CI must keep in step);
+a runtime setting (a hidden switch, which CONTEXT §5 rules out).
+
+**D-229 — Model ▸ Add keeps making things in the world.** Shapes, Light, Words & pictures (3D text, a photo or video),
+Effects. Building shows while the scene is set up for a Room. Cameras live on the camera button (tap: look through;
+again: the next camera; after the last, back to the free view; hold: a new camera from this view, or pick one; with no
+camera, the first tap makes one). Titles, labels, marks and screen effects are the timeline's + Overlay.
+
+**D-230 — The scene's name is a door.** Under the top-left cluster, tapping it opens: Set up for (Blank, Print, Room,
+Animation), the scenes, and the objects (the outliner, moved from Select). Setting up changes units, snapping, the
+grid, the new-shape size, the printer and the timeline (raised, never hidden), never the project
+(`ProjectWorkspace.settingUp`, Linux-tested). Character and Sketch remain as templates for old projects but aren't
+offered: a character is a Library thing, the Board is in Actions. Select is a small bar.
+
+**D-231 — The object panel fits one screen.** Move · Turn · Size, size, colour, the kind's own controls, Make it move
+(one strip: the six loops, then the once-moves; Bounce, Wiggle, Float and Spin are loops only), what the selection can
+do (Combine for two or more shapes, Mirror and symmetry, Make editable, Scatter copies), then four rows one step deeper:
+Look of this object (glow, smoothing, bevel, its own Look, lines, rim, accent, gloss), More ways to move, Numbers,
+About. Its header is a grip: moved by hand, it stays where it was left (as fractions of the room, so it survives a
+rotation) until its header is double-tapped; a remembered spot that would cover the selection gives way to the place
+beside it. *Rejected:* a horizontal list of every motion in a grid (five rows of tiles, off the first screen).
+
+**D-232 — One menu per object, inside the kit's three extras.** Hide, Lock, and More (Group or Ungroup, Array, To the
+ground, Swap for a model, Save to the library, Unpack): the same from the stage, the outliner, the timeline and the
+panel's ⋯. *Rejected:* raising `HmmHoldMenu.maximumExtras` (more than three rows under a finger is a panel).
+
+**D-233 — The + goes straight in.** A blank project named "Untitled" (then "Untitled 2"…), in the new **dark studio**
+mood (schema 12): a near-black ground, one soft key, faint grid. Rename from the card's name. Set-ups are the quiet
+row under the title; samples one card. `StageColorsTests` checks the default shape and ink colour, the grid, the axes
+and the selection outline against the dark ground (WCAG contrast), with the editor colours moved into Core's
+`StageColors` so the test reads the renderer's own values. *Rejected:* the dark studio as a Look override on the Studio
+mood (Look ▸ World would then call it "Studio").
+
+**D-234 — Perform and Keys; keys add themselves; Perform waits for a touch.** Compose is gone: a selected row's whole
+animation has a grip along its bottom, in either mode. The bar is eight controls (play, the time, Perform | Keys,
+Record or Key, + Overlay, + Sound, the menu, collapse); markers, the loop and each mode's extras are in the menu; the
+ruler steps a frame on a tap just beside the playhead and goes to the start on a flick. Without Compose to protect a
+set from stray keys, the rule CONTEXT decided takes over: the first key on a thing is deliberate (Key, a motion, a
+performance); after it, a change in Keys keys itself. Record arms Perform ("Ready"); the first touch starts time,
+lifting the hand stops it, touching again resumes; a face, a voice or the iPad's motion still runs time after a
+3-2-1. *Rejected:* keeping auto-key's old rule with Keys as the default mode (moving a cube while building would key
+it).
+
+**D-235 — The sidebar rests; its sliders mean size and opacity.** With no tool that uses them they shrink to a faint
+rail; a touch wakes them as ink's width and opacity (the drawing tool that comes first). Snapping distance moved to
+Model ▸ Precision, moving-around speed was already in Settings ▸ Stage. Settings ▸ Stage ▸ Always show the sidebar.
+
+**D-236 — Chrome restraint is on by default, as the trial.** Panels are near-opaque graphite glass that takes no colour
+from the stage; amber marks only the tool in the hand (`HmmButton(accent:)`), an open panel's button gets a neutral
+fill. Diagnostics ▸ Restrained chrome flips back to compare, on the device.
+
+**D-237 — Settings keeps a door from Actions.** The spec lists what Actions keeps; Settings is added so a Pencil or
+Stage preference isn't three screens away mid-project (Home's gear stays the other way in). Learn is the tour, every
+gesture and the instructions switch; Settings ▸ Gestures shows the same gesture list until U3 makes gestures
+switchable.
+
+**D-238 — Nothing greyed out, no label cut, checked twice.** Panels hide what can't act (`shown(_:)`); pills, chips
+and tiles take a second line instead of truncating or shrinking. `ChromeFitTests` fails when a chrome control sits on another or is cut by the
+screen's edge, or a panel's control is cut by it (a panel covers the sidebar on purpose, so overlaps are the chrome's
+check), in landscape and portrait; CI runs it on the 13-inch,
+the Atlas workflow on the mini, the 11-inch and the 13-inch in both orientations.
+
+**D-239 — Not in this phase, though CONTEXT lists it near the layout.** Hatched shadows (a new capability; U2 moves,
+it doesn't add), the Reference window (U3), the brush library dropping down (U3), switchable gestures (U3).

@@ -4,11 +4,15 @@ import LoweyCore
 import LoweyEngine
 import SwiftUI
 
-/// Export: pick a preset (YouTube 4K, 1080p, Shorts / Reels, Square, Transparent, PNG still, GIF loop, 3D, captions)
-/// or set your own. It renders in the background with the stage still usable, carries on when you leave the app, and
-/// every video is checked before it counts as done.
+/// Export asks the kind first (CONTEXT §10.10): a Video, a Picture or a 3D model, then that kind's presets (YouTube
+/// 4K, 1080p, Shorts / Reels, Square, Transparent, a GIF loop, captions; a PNG still; glTF, USDZ, OBJ, STL, 3MF or a
+/// Blender package), the last one used already picked. It renders in the background with the stage still usable,
+/// carries on when you leave the app, and every video is checked before it counts as done.
 struct ExportSheet: View {
     @Bindable var editor: EditorModel
+    @AppStorage("export.kind") private var kind = ExportKindChoice.video
+    @AppStorage("export.preset.video") private var lastVideo = ExportPreset.hd1080.rawValue
+    @AppStorage("export.preset.picture") private var lastPicture = ExportPreset.stillHD.rawValue
     @State private var preset: ExportPreset = .hd1080
     @State private var custom = false
     @State private var settings = ExportPreset.hd1080.settings(range: TimeRange(start: 0, end: 1), fps: 30)
@@ -18,10 +22,14 @@ struct ExportSheet: View {
 
     var body: some View {
         HmmSheet("Export") {
-            LazyVGrid(columns: [GridItem(.adaptive(minimum: 150), spacing: HmmSpacing.xs)], spacing: HmmSpacing.xs) {
-                ForEach(ExportPreset.allCases) { item in
-                    TileButton(title: item.title, systemName: item.systemImage, identifier: "export-\(item.rawValue)") { choose(item) }
-                        .overlay(RoundedRectangle(cornerRadius: HmmRadius.card).stroke(theme.accent, lineWidth: preset == item ? 2 : 0))
+            kinds
+            if kind != .model {
+                LazyVGrid(columns: [GridItem(.adaptive(minimum: 150), spacing: HmmSpacing.xs)], spacing: HmmSpacing.xs) {
+                    ForEach(kind.presets) { item in
+                        TileButton(title: item.title, systemName: item.systemImage, identifier: "export-\(item.rawValue)", isOn: preset == item) {
+                            choose(item)
+                        }
+                    }
                 }
             }
             if preset.kind == .model {
@@ -40,7 +48,8 @@ struct ExportSheet: View {
             progressOrStart
             results
         }
-        .onAppear { choose(preset) }
+        .onAppear { choose(remembered(for: kind)) }
+        .onChange(of: kind) { _, newKind in choose(remembered(for: newKind)) }
         .onChange(of: onlyLoop) { _, _ in settings.range = range }
         .sheet(isPresented: Binding(get: { !sharing.isEmpty }, set: { if !$0 { sharing = [] } })) { ShareSheet(items: sharing) }
     }
@@ -49,8 +58,34 @@ struct ExportSheet: View {
         onlyLoop ? (editor.timeline.loop ?? TimeRange(start: 0, end: editor.timeline.duration)) : TimeRange(start: 0, end: editor.timeline.duration)
     }
 
+    /// Video, Picture, 3D model: the first choice.
+    private var kinds: some View {
+        HStack(spacing: HmmSpacing.xs) {
+            ForEach(ExportKindChoice.allCases) { item in
+                ChoiceChip(title: item.title, systemName: item.systemImage, isOn: kind == item) {
+                    withHmmAnimation(.snappy) { kind = item }
+                }
+                .accessibilityIdentifier("export-kind-\(item.rawValue)")
+            }
+        }
+    }
+
+    /// The kind's last preset, or its first.
+    private func remembered(for kind: ExportKindChoice) -> ExportPreset {
+        switch kind {
+        case .video: ExportPreset(rawValue: lastVideo).flatMap { kind.presets.contains($0) ? $0 : nil } ?? .hd1080
+        case .picture: ExportPreset(rawValue: lastPicture).flatMap { kind.presets.contains($0) ? $0 : nil } ?? .stillHD
+        case .model: .model3D
+        }
+    }
+
     private func choose(_ item: ExportPreset) {
         preset = item
+        switch kind {
+        case .video: lastVideo = item.rawValue
+        case .picture: lastPicture = item.rawValue
+        case .model: break
+        }
         settings = item.settings(range: range, fps: editor.timeline.fps)
         settings.framing = item == .vertical ? .portrait : (item == .square ? .square : settings.framing)
     }
@@ -134,6 +169,38 @@ struct ExportSheet: View {
             }
             .accessibilityElement(children: .contain)
             .accessibilityIdentifier("export-results")
+        }
+    }
+}
+
+/// Export's first question: what kind of thing to make.
+enum ExportKindChoice: String, CaseIterable, Identifiable {
+    case video, picture, model
+
+    var id: String { rawValue }
+
+    var title: String {
+        switch self {
+        case .video: "Video"
+        case .picture: "Picture"
+        case .model: "3D model"
+        }
+    }
+
+    var systemImage: String {
+        switch self {
+        case .video: "film"
+        case .picture: "photo"
+        case .model: "cube"
+        }
+    }
+
+    /// The presets of this kind (a GIF and captions go with the video).
+    var presets: [ExportPreset] {
+        switch self {
+        case .video: [.hd1080, .youtube4K, .vertical, .square, .transparent, .gifLoop, .captions]
+        case .picture: [.stillHD, .still4K]
+        case .model: [.model3D]
         }
     }
 }

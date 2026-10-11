@@ -65,7 +65,7 @@ A lighting recipe placed for the shot camera: key-warm-world-cool (the default s
 
 ## `set_look`
 
-The Look (ink, comic, sketch, clay, lowpoly), the mood (day, goldenHour, dusk, night, space, studio) and per-object Looks ({"Robot": "sketch"}).
+The Look (ink, comic, sketch, clay, lowpoly), the mood (day, goldenHour, dusk, night, space, studio, darkStudio) and per-object Looks ({"Robot": "sketch"}).
 
 | Parameter | Type | Default |
 |---|---|---|

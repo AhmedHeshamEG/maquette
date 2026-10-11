@@ -2,8 +2,8 @@ import HmmDesign
 import LoweyCore
 import SwiftUI
 
-/// Model ▸ Edit: sketch on any surface, pick faces / edges / corners to push and pull, combine solids, mirror and
-/// symmetry, and get a part ready to print. Choosing a sketch shape or a pick mode closes the panel so the stage is
+/// Model ▸ Edit: sketch on any surface, pick faces / edges / corners to push and pull, and get a part ready to print.
+/// (Combine, mirror and Make editable are on the selection, in its panel.) Choosing a sketch shape or a pick mode closes the panel so the stage is
 /// free; the bar at the bottom holds what the pick can do (bevel, round, inset, shell).
 struct ModelShapePage: View {
     let editor: EditorModel
@@ -30,25 +30,8 @@ struct ModelShapePage: View {
                 }
                 Hint("Tap a face and drag it. Tap the number to type an exact size, like 25 or 2*12.")
             }
-            PanelSection("Combine") {
-                HStack(spacing: HmmSpacing.xs) {
-                    ForEach(MeshBoolean.Operation.allCases, id: \.self) { operation in
-                        HmmPillButton(operation.label, systemName: Self.icon(for: operation)) { editor.combineSelection(operation) }
-                            .accessibilityIdentifier("boolean-\(operation.rawValue)")
-                    }
-                }
-                .disabled(editor.modelableSelection.count < 2)
-                Hint("Select two or more shapes (touch and hold adds one). The first one keeps its look and place.")
-            }
-            PanelSection("Mirror & symmetry") {
-                MirrorControls(editor: editor)
-            }
             PanelSection("3D print") {
                 PrintCheckControls(editor: editor)
-            }
-            if editor.convertibleSelection != nil {
-                HmmPillButton("Make editable", systemName: "cube.transparent") { editor.makeSelectionEditable() }
-                    .accessibilityIdentifier("make-editable")
             }
         }
     }
@@ -63,14 +46,6 @@ struct ModelShapePage: View {
         case .face: "square.fill"
         case .edge: "line.diagonal"
         case .vertex: "smallcircle.filled.circle"
-        }
-    }
-
-    static func icon(for operation: MeshBoolean.Operation) -> String {
-        switch operation {
-        case .union: "square.on.square"
-        case .subtract: "square.on.square.dashed"
-        case .intersect: "square.on.square.intersection.dashed"
         }
     }
 }

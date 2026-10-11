@@ -2,23 +2,44 @@ import HmmDesign
 import LoweyCore
 import SwiftUI
 
-/// The left sidebar: two sliders that change with the context (drawing: width and smoothing; Shadow Brush: size and
-/// strength; Perform: filtering and sensitivity; otherwise snapping and navigation speed), Pick, the colour well
-/// while a tool that puts colour down is in the hand, undo and redo.
+/// The left sidebar: two sliders that change with the context (drawing: width and opacity; Shadow Brush: size and
+/// strength; Perform: filtering and sensitivity), Pick, the colour well while anything that makes is in the hand
+/// (a drawing tool, or Model ▸ Add: a colour is always in the hand before making), undo and redo.
+///
+/// It rests rather than leaves: with no tool that uses the sliders, they and the well shrink to a faint rail in the
+/// same place, and a touch on it brings back the sliders, which then mean size and opacity (of ink, the drawing tool
+/// that comes first). Undo and redo never rest. Settings ▸ Stage ▸ Always show the sidebar keeps it awake.
 struct EditorSidebar: View {
     @Bindable var editor: EditorModel
-    @AppStorage(AppSettings.navigationSpeed) private var navigationSpeed = 1.0
+    @AppStorage(AppSettings.alwaysShowsSidebar) private var alwaysShows = false
+    @State private var woken = false
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
         let (top, bottom) = sliders
         HmmSidebar(top: top, bottom: bottom, pickActive: editor.pickActive, pick: {
             editor.pickActive.toggle()
-            if editor.pickActive { editor.app.show("Tap an object to take its colour into palette slot \(editor.pickSlot + 1)") }
-        }, accessory: editor.tool.putsColourDown ? AnyView(SidebarColourWell(editor: editor)) : nil,
+        }, accessory: showsWell ? AnyView(SidebarColourWell(editor: editor)) : nil, resting: resting, wake: { woken = true },
         canUndo: editor.canUndo, canRedo: editor.canRedo, undo: editor.undo, redo: editor.redo)
+            .animation(HmmMotion.standard.animation(reduceMotion: reduceMotion), value: resting)
+            .onChange(of: editor.tool) { _, _ in woken = false }
+            .onChange(of: editor.selection) { _, _ in woken = false }
             .accessibilityElement(children: .contain)
             .accessibilityIdentifier("sidebar")
     }
+
+    /// No tool in the hand wants the sliders.
+    private var idle: Bool {
+        !editor.flying && !(editor.timelineMode == .perform && (editor.performPhase != .idle || editor.tool == .select))
+            && ([StageTool.select, .lasso, .model, .scatter].contains(editor.tool) || (editor.tool == .rig && editor.rigging.mode != .weights))
+    }
+
+    private var resting: Bool { idle && !alwaysShows && !woken && !makingFromModel }
+
+    /// Model ▸ Add (or the Model tool) is open: what is made next takes the colour in the hand.
+    private var makingFromModel: Bool { editor.openPanel == .model && editor.modelPage == .add }
+
+    private var showsWell: Bool { editor.tool.putsColourDown || makingFromModel || (idle && (woken || alwaysShows)) }
 
     private var sliders: (HmmSidebarSlider, HmmSidebarSlider) {
         if editor.flying {
@@ -59,8 +80,11 @@ struct EditorSidebar: View {
                                      onEditingChanged: editor.setBrushResizing),
                     HmmSidebarSlider("Strength", value: $editor.shadowBrush.strength, in: 0.05 ... 1))
         default:
-            return (HmmSidebarSlider("Snapping", value: $editor.snap.objectThreshold, in: 0 ... 0.5, format: { "\(Int(($0 * 100).rounded())) cm" }),
-                    HmmSidebarSlider("Speed", value: $navigationSpeed, in: AppSettings.navigationSpeedRange, format: { String(format: "%.2g×", $0) }))
+            // Awake with nothing that uses them, the sliders still mean size and opacity: ink's.
+            return (HmmSidebarSlider("Width", value: $editor.ink.width, in: 0.001 ... 0.05, format: { "\(Int(($0 * 2000).rounded())) mm" },
+                                     onEditingChanged: editor.setBrushResizing),
+                    HmmSidebarSlider("Opacity", value: inkOpacity, in: 0.05 ... 1, format: { "\(Int(($0 * 100).rounded())) %" },
+                                     onEditingChanged: { if !$0 { editor.endGesture() } }))
         }
     }
 }

@@ -32,7 +32,7 @@ struct TheaterHeader: View {
             Menu {
                 Button("Import a project (.maquettepack)", systemImage: "square.and.arrow.down") { state.importing = true }
                 Button("Archive (\(app.archived.count))", systemImage: "archivebox") { state.showArchive = true }
-                Button("Take the tour", systemImage: "hand.wave") { app.startTour() }
+                Button("Learn", systemImage: "graduationcap") { app.showsLearn = true }
             } label: {
                 Image(systemName: "ellipsis.circle").font(.system(size: 24)).foregroundStyle(theme.text).frame(width: 44, height: 44)
             }
@@ -62,10 +62,7 @@ struct TheaterHeader: View {
                 .accessibilityHint("Rename the stack")
             }
         } else {
-            VStack(alignment: .leading, spacing: HmmSpacing.xxs) {
-                Text(AppIdentity.displayName).font(.hmm(.title1, weight: .semibold)).foregroundStyle(theme.text)
-                Text("Build a world. Direct it. Make the video.").font(.hmm(.headline)).foregroundStyle(theme.text2).lineLimit(1)
-            }
+            Text(AppIdentity.displayName).font(.hmm(.title1, weight: .semibold)).foregroundStyle(theme.text)
         }
     }
 
@@ -121,33 +118,37 @@ struct GallerySelectionBar: View {
                 .foregroundStyle(theme.text2)
                 .accessibilityIdentifier("gallery-selected-count")
             Spacer()
-            if state.openStack == nil {
-                HmmPillButton("Stack", systemName: "square.stack") {
-                    state.nameText = ""
-                    state.naming = chosen
-                }
-                .accessibilityIdentifier("gallery-stack")
-            } else {
-                HmmPillButton("Move out", systemName: "arrow.up.square") {
-                    app.moveOutOfStacks(chosen)
-                    state.endSelecting()
-                }
-            }
-            HmmPillButton("Duplicate", systemName: "plus.square.on.square") {
-                app.duplicate(chosen)
-                state.endSelecting()
-            }
-            HmmPillButton("Archive", systemName: "archivebox") {
-                app.archive(chosen)
-                state.endSelecting()
-            }
-            HmmPillButton("Delete", systemName: "trash", role: .destructive) { state.deleting = chosen }
+            if !chosen.isEmpty { actions(chosen) }
         }
-        .disabled(chosen.isEmpty)
         .padding(HmmSpacing.s)
         .hmmPanelBackground()
         .padding(.horizontal, HmmSpacing.xl)
         .padding(.bottom, HmmSpacing.s)
+    }
+
+    @ViewBuilder
+    private func actions(_ chosen: [String]) -> some View {
+        if state.openStack == nil {
+            HmmPillButton("Stack", systemName: "square.stack") {
+                state.nameText = ""
+                state.naming = chosen
+            }
+            .accessibilityIdentifier("gallery-stack")
+        } else {
+            HmmPillButton("Move out", systemName: "arrow.up.square") {
+                app.moveOutOfStacks(chosen)
+                state.endSelecting()
+            }
+        }
+        HmmPillButton("Duplicate", systemName: "plus.square.on.square") {
+            app.duplicate(chosen)
+            state.endSelecting()
+        }
+        HmmPillButton("Archive", systemName: "archivebox") {
+            app.archive(chosen)
+            state.endSelecting()
+        }
+        HmmPillButton("Delete", systemName: "trash", role: .destructive) { state.deleting = chosen }
     }
 }
 
@@ -158,13 +159,6 @@ struct TheaterDialogs: ViewModifier {
 
     func body(content: Content) -> some View {
         content
-            .sheet(isPresented: $state.showNewProject) {
-                NewProjectSheet { name, template, mood, look in
-                    state.showNewProject = false
-                    app.createProject(named: name, template: template, mood: mood, look: look, inStack: state.openStack)
-                }
-                .presentationDetents([.large])
-            }
             .alert("Rename project", isPresented: present($state.renaming)) {
                 TextField("Name", text: $state.nameText)
                 Button("Rename") { if let project = state.renaming { app.rename(project, to: state.nameText) } }

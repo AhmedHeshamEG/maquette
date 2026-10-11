@@ -26,6 +26,7 @@ struct EditorSheets: ViewModifier {
         case .settings: SettingsSheet(app: editor.app).presentationDetents([.large])
         case .diagnostics: DiagnosticsSheet(app: editor.app, editor: editor).presentationDetents([.large])
         case .gestures: NavigationStack { GestureGuide() }.presentationDetents([.large])
+        case .learn: LearnSheet(app: editor.app).presentationDetents([.large])
         case .timelineSettings: TimelineSettingsSheet(editor: editor).presentationDetents([.medium])
         case .brushes: BrushLibrarySheet(editor: editor).presentationDetents([.large])
         }

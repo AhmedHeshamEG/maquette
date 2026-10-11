@@ -63,6 +63,9 @@ public enum ShadingStyle: String, Codable, Sendable, CaseIterable {
 
 public enum LightingPreset: String, Codable, Sendable, CaseIterable {
     case day, goldenHour, dusk, night, space, studio
+    /// A blank project's world (Maquette 0.12): a near-black ground, one soft key light, nothing to compete with what is
+    /// being made. Every default colour (shapes, ink, the grid, gizmos, the selection outline) stays visible on it.
+    case darkStudio
 
     public var displayName: String {
         switch self {
@@ -72,6 +75,7 @@ public enum LightingPreset: String, Codable, Sendable, CaseIterable {
         case .night: "Night"
         case .space: "Space"
         case .studio: "Studio"
+        case .darkStudio: "Dark studio"
         }
     }
 }
@@ -244,7 +248,7 @@ public struct Look: Codable, Hashable, Sendable {
     }
 }
 
-/// The six built-in lighting moods. Tuned for low-poly worlds.
+/// The seven built-in lighting moods. Tuned for low-poly worlds.
 public enum MoodPresets {
     public static func look(for preset: LightingPreset) -> Look {
         switch preset {
@@ -302,8 +306,20 @@ public enum MoodPresets {
                 fog: Fog(enabled: false, color: RGBA.hex("#E6E6E6"), distance: 100),
                 ground: Ground(color: RGBA.hex("#D9D9D9"))
             )
+        case .darkStudio:
+            return darkStudio
         }
     }
+
+    /// A blank project's world: one soft key from the front left, high, with a little fill so the shadow side never
+    /// goes black, on a near-black ground.
+    static let darkStudio = Look(
+        lightingPreset: .darkStudio,
+        lighting: Lighting(sunElevation: 48, sunAzimuth: -38, sunColor: RGBA.hex("#FFF4E6"), sunIntensity: 0.95, ambientIntensity: 0.55),
+        sky: sky(for: .darkStudio),
+        fog: Fog(enabled: true, color: RGBA.hex("#121316"), distance: 60),
+        ground: Ground(color: RGBA.hex("#1A1B1F"))
+    )
 
     public static func sky(for preset: LightingPreset) -> Sky {
         switch preset {
@@ -319,6 +335,8 @@ public enum MoodPresets {
             Sky(top: RGBA.hex("#000000"), horizon: RGBA.hex("#0A0A18"), bottom: RGBA.hex("#000000"), stars: 1)
         case .studio:
             Sky(top: RGBA.hex("#D5D8DD"), horizon: RGBA.hex("#EEEEEE"), bottom: RGBA.hex("#D0D0D0"))
+        case .darkStudio:
+            Sky(top: RGBA.hex("#0B0C0E"), horizon: RGBA.hex("#17181C"), bottom: RGBA.hex("#0E0F11"))
         }
     }
 }

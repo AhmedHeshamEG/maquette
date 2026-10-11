@@ -23,7 +23,7 @@ struct TimelinePane: View {
                     let width = max(geometry.size.width - TimelineLayout.labelWidth, 50)
                     VStack(spacing: 0) {
                         HStack(spacing: 0) {
-                            Text(editor.timelineMode == .compose ? "Animations" : "Tracks")
+                            Text("Tracks")
                                 .font(.hmm(.caption, weight: .semibold))
                                 .foregroundStyle(theme.text2)
                                 .frame(width: TimelineLayout.labelWidth)

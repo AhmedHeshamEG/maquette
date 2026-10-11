@@ -1,5 +1,7 @@
 # The atlas: a picture of every screen, panel and page (AppUITests/AtlasTests.swift), for reviewing the layout as a
-# whole. Run by hand, or by pushing a branch named atlas/…; it checks nothing and never blocks a merge.
+# whole, on three iPads (mini, 11-inch, 13-inch) in landscape and portrait. On each size it also runs ChromeFitTests,
+# which fails on any control cut by the screen's edge or sitting on another. Run by hand, or by pushing a branch named
+# atlas/…; it never blocks a merge (the CI job runs ChromeFitTests on the 13-inch for every PR).
 name: Atlas
 
 on:
@@ -16,9 +18,14 @@ env:
 
 jobs:
   atlas:
-    name: Every screen, in landscape
+    name: Every screen (${{ matrix.size }}, ${{ matrix.orientation }})
     runs-on: xcode-27
     timeout-minutes: 150
+    strategy:
+      fail-fast: false
+      matrix:
+        size: [mini, '11', '13']
+        orientation: [landscape, portrait]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/cache/restore@v4
@@ -34,15 +41,25 @@ jobs:
         run: xcodegen generate
       - name: Pick an iPad simulator
         id: sim
-        run: echo "udid=$(python3 Tools/pick-simulator.py)" >> "$GITHUB_OUTPUT"
+        run: echo "udid=$(python3 Tools/pick-simulator.py --size ${{ matrix.size }})" >> "$GITHUB_OUTPUT"
       - name: Boot the simulator
         run: |
           xcrun simctl boot "${{ steps.sim.outputs.udid }}" || true
           xcrun simctl bootstatus "${{ steps.sim.outputs.udid }}" -b
-      - name: Take the pictures
+      - name: Every control whole and apart (both orientations)
+        if: matrix.orientation == 'landscape'
         run: |
           set -o pipefail
-          TEST_RUNNER_ATLAS=1 xcodebuild test -project Lowey.xcodeproj -scheme Lowey \
+          xcodebuild test -project Lowey.xcodeproj -scheme Lowey \
+            -destination "id=${{ steps.sim.outputs.udid }}" -derivedDataPath DerivedData \
+            -resultBundlePath Fit.xcresult -skipPackagePluginValidation -only-testing:LoweyUITests/ChromeFitTests \
+            -collect-test-diagnostics never CODE_SIGNING_ALLOWED=NO | tee fit.log | grep -E "error:|failed|Test Case|Executed|\*\* " || true
+          grep -q "\*\* TEST SUCCEEDED \*\*" fit.log
+      - name: Take the pictures
+        if: always()
+        run: |
+          set -o pipefail
+          TEST_RUNNER_ATLAS=1 TEST_RUNNER_ATLAS_ORIENTATION=${{ matrix.orientation }} xcodebuild test -project Lowey.xcodeproj -scheme Lowey \
             -destination "id=${{ steps.sim.outputs.udid }}" -derivedDataPath DerivedData \
             -resultBundlePath Atlas.xcresult -skipPackagePluginValidation -only-testing:LoweyUITests/AtlasTests \
             -collect-test-diagnostics never -test-timeouts-enabled YES -default-test-execution-time-allowance 1200 \
@@ -60,18 +77,20 @@ jobs:
                       name = item["suggestedHumanReadableName"]
                       if name.startswith("Atlas "):
                           source = manifest.parent / item["exportedFileName"]
-                          shutil.copy(source, pathlib.Path("atlas") / (name.split("_0_")[0] + source.suffix))
+                          shutil.copy(source, pathlib.Path("atlas") / (name.split("_0_")[0].replace("Atlas ", "Atlas ${{ matrix.size }} ${{ matrix.orientation }} ", 1) + source.suffix))
           PY
           ls atlas | wc -l
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: atlas
+          name: atlas-${{ matrix.size }}-${{ matrix.orientation }}
           path: atlas
           retention-days: 30
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: atlas-log
-          path: xcodebuild.log
+          name: atlas-log-${{ matrix.size }}-${{ matrix.orientation }}
+          path: |
+            xcodebuild.log
+            fit.log
           retention-days: 7

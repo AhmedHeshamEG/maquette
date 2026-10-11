@@ -39,7 +39,7 @@ public enum ScriptReference {
     {"do":"cameraMove","camera":"Shot 2","move":"pushIn|pullOut|punchIn|snapZoom|orbit|dolly|truck|crane|whipPan|shake|reveal","subject":"Paper","at":{"word":"message"},"duration":2,"strength":1}
     {"do":"cut","camera":"Room cam","at":{"word":"people"},"transition":"cut|fade|dipToBlack|wipe|zoomThrough","duration":0.6}
     {"do":"lighting","recipe":"key-warm-world-cool|noir-single-source|golden-rim|monitor-glow|moonlit|studio-soft","subject":"Hesham","intensity":1,"warmth":0.3}
-    {"do":"look","look":"ink|comic|sketch|clay|lowpoly","mood":"day|goldenHour|dusk|night|space|studio","perObject":{"Robot":"sketch"},"fog":40,"sceneOnly":true}
+    {"do":"look","look":"ink|comic|sketch|clay|lowpoly","mood":"day|goldenHour|dusk|night|space|studio|darkStudio","perObject":{"Robot":"sketch"},"fog":40,"sceneOnly":true}
 
     Animate (say the intent; the app picks the animation)
     {"do":"intent","target":"Hesham","what":"enter|exit|emphasise|react|walk_to|look_at|talk|idle","how":"surprised","to":"Door","at":{"word":"Nobody"},"frameRate":"twos"}

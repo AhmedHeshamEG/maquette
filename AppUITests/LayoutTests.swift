@@ -5,7 +5,9 @@ import XCTest
 @MainActor
 final class LayoutTests: XCTestCase {
     private var app: XCUIApplication!
-    private let panels: Set<String> = ["Model", "Draw", "Paint", "Cast", "Actions", "Look", "Select"]
+    private let panels: Set<String> = ["Model", "Draw", "Paint", "Rig", "Actions", "Look", "Select", "Library", "scene-name"]
+    /// The App Store configuration's walk: held rows must be absent there, everything else present (CONTEXT §5).
+    private static let checkingHeld = ProcessInfo.processInfo.environment["MAQUETTE_HELD_CHECK"] == "1"
 
     override func setUp() async throws {
         continueAfterFailure = true
@@ -41,13 +43,9 @@ final class LayoutTests: XCTestCase {
         add(attachment)
     }
 
-    private func newProject(_ name: String) {
+    /// The + goes straight to a blank project in the dark studio.
+    private func newProject(_: String = "") {
         XCTAssertTrue(tap("new-project", timeout: 15))
-        let field = app.textFields["project-name"]
-        XCTAssertTrue(field.waitForExistence(timeout: 5))
-        field.tap()
-        field.typeText(name)
-        tap("create-project")
         XCTAssertTrue(app.otherElements["stage"].waitForExistence(timeout: 15))
     }
 
@@ -115,6 +113,7 @@ final class LayoutTests: XCTestCase {
         closeMenu()
 
         XCTAssertTrue(tap("Look"))
+        tap("look-style")
         let look = element("look-clay")
         XCTAssertTrue(look.waitForExistence(timeout: 5))
         look.press(forDuration: 1.2)
@@ -123,7 +122,7 @@ final class LayoutTests: XCTestCase {
         tap("Look")
 
         XCTAssertTrue(tap("Home"))
-        let card = element("project-Holding")
+        let card = element("project-Untitled")
         XCTAssertTrue(card.waitForExistence(timeout: 10))
         card.press(forDuration: 1.2)
         XCTAssertEqual(openMenuRows(), expected, "a project's card")
@@ -187,9 +186,8 @@ final class LayoutTests: XCTestCase {
             tap("add-cube")
             XCTAssertTrue(element("inspector").waitForExistence(timeout: 5), "a cube to inspect")
         case "blob":
-            tap("Cast")
+            tap("Library")
             tap("add-me")
-            tap("Cast")
         case "timeline":
             if !element("timeline").exists { tap("Animate") }
         case "transport":
@@ -200,8 +198,14 @@ final class LayoutTests: XCTestCase {
         }
     }
 
-    /// Taps every step but the last; the last must be there.
+    /// Taps every step but the last; the last must be there (in the App Store build, a held row's last must not be).
     private func walk(_ row: LayoutWalk.Row) {
+        if Self.checkingHeld, !row.held.isEmpty {
+            walkHeld(row)
+            return
+        }
+        // A row that calls the timeline or reaches into a popover leaves it open: the next row starts afresh.
+        defer { if !row.held.isEmpty || row.steps.first == "Animate" { startAfresh(row.precondition) } }
         for step in row.steps.dropLast() {
             XCTAssertTrue(tap(step), "\(row.home) › \(row.control): \(step) isn't there")
             if panels.contains(step) || step.hasPrefix("model-") { settle(step == "Look" ? 3 : 1) }
@@ -212,6 +216,26 @@ final class LayoutTests: XCTestCase {
         guard row.steps.count > 1, let first = row.steps.first, panels.contains(first) else { return }
         tap(first)
         if first == "Draw" || first == "Paint" { resetTool() }
+    }
+
+    /// A held row in the App Store build: the way there is open, the held control itself isn't.
+    private func walkHeld(_ row: LayoutWalk.Row) {
+        for step in row.steps.dropLast() {
+            tap(step)
+            if panels.contains(step) { settle(1) }
+        }
+        if let last = row.steps.last {
+            XCTAssertFalse(element(last).waitForExistence(timeout: 2), "\(row.control) airs in \(row.held): it must be held in the App Store build")
+        }
+        startAfresh(row.precondition)
+    }
+
+    /// A new launch and a new project, prepared as `precondition` asks.
+    private func startAfresh(_ precondition: String) {
+        app.terminate()
+        app.launch()
+        newProject()
+        prepare(precondition)
     }
 
     /// Back to tapping (painting tools change the sidebar and hide the joystick).
@@ -228,8 +252,8 @@ final class LayoutTests: XCTestCase {
         let window = app.windows.firstMatch.frame
         let stage = app.otherElements["stage"].frame
         XCTAssertGreaterThan(stage.height, window.height * 0.97, "no timeline under the stage until it's called")
-        let leading = ["Home", "Actions", "Look", "Select"].map { element($0).frame }
-        let trailing = ["Model", "Draw", "Paint", "Animate", "Cast"].map { element($0).frame }
+        let leading = ["Home", "Actions", "Look", "Select", "Library"].map { element($0).frame }
+        let trailing = ["Model", "Draw", "Paint", "Rig", "Animate"].map { element($0).frame }
         var chrome = [union(leading), union(trailing), element("sidebar").frame, element("view-controls").frame]
         if element("scene-name").exists { chrome.append(element("scene-name").frame) }
         // The glass around each cluster reaches a little past its buttons.
@@ -251,6 +275,11 @@ final class LayoutTests: XCTestCase {
     func testTheHomeBenchmarkRunsAndReports() {
         newProject("Bench")
         tap("Actions")
+        tap("Settings")
+        // Settings ▸ About is below the fold.
+        for _ in 0 ..< 8 where !(element("Diagnostics").exists && element("Diagnostics").isHittable) {
+            app.swipeUp()
+        }
         XCTAssertTrue(tap("Diagnostics"))
         XCTAssertTrue(tap("run-home-benchmark", timeout: 10))
         let frames = element("home-benchmark-frames")

@@ -2,13 +2,16 @@ import HmmDesign
 import LoweyCore
 import SwiftUI
 
-/// Seconds, the loop region, the end of the timeline, markers; drag to scrub (snapping to words); the band over
-/// several selected keys, whose ends stretch their timing.
+/// Seconds, the loop region, the end of the timeline, markers; drag to scrub (snapping to words), tap just beside the
+/// playhead to step a frame, flick left to go to the start; the band over several selected keys, whose ends stretch
+/// their timing.
 struct TimelineRuler: View {
     let editor: EditorModel
     let layout: TimelineLayout
     let width: CGFloat
     let renameMarker: (Marker) -> Void
+    /// Where the finger came down, and whether it was just beside the playhead (−1 before it, +1 after, 0 elsewhere).
+    @State private var press: (x: CGFloat, beside: Int)?
     @Environment(\.hmmTheme) private var theme
 
     var body: some View {
@@ -27,17 +30,44 @@ struct TimelineRuler: View {
         }
         .frame(width: width, height: TimelineLayout.rulerHeight)
         .contentShape(Rectangle())
-        .gesture(DragGesture(minimumDistance: 0).onChanged { value in
-            editor.pause()
-            let before = editor.time
-            editor.setTime(editor.wordSnapped(layout.time(at: value.location.x), tolerance: 8 / layout.pps))
-            if editor.time != before { editor.audioPlayback.scrub(editor.timeline.audio, at: editor.time) }
-        })
+        .gesture(DragGesture(minimumDistance: 0)
+            .onChanged { value in
+                if press == nil { press = (value.startLocation.x, side(of: value.startLocation.x)) }
+                // A tap just beside the playhead steps a frame; wait to see whether it moves first.
+                if let press, press.beside != 0, abs(value.translation.width) < 6 { return }
+                scrub(to: value.location.x)
+            }
+            .onEnded { value in
+                defer { press = nil }
+                // A flick to the left goes to the start.
+                if value.translation.width < -30, value.predictedEndTranslation.width < -width * 0.6 {
+                    editor.pause()
+                    editor.setTime(editor.playRange.start)
+                    HmmHaptics.play(.selection)
+                } else if let press, press.beside != 0, abs(value.translation.width) < 6 {
+                    editor.pause()
+                    editor.step(frames: press.beside)
+                }
+            })
         .accessibilityElement()
         .accessibilityLabel("Playhead")
         .accessibilityValue(TimeFormat.clock(editor.time))
         .accessibilityAdjustableAction { direction in editor.step(frames: direction == .increment ? 1 : -1) }
         .accessibilityIdentifier("timeline-ruler")
+    }
+
+    private func scrub(to x: CGFloat) {
+        editor.pause()
+        let before = editor.time
+        editor.setTime(editor.wordSnapped(layout.time(at: x), tolerance: 8 / layout.pps))
+        if editor.time != before { editor.audioPlayback.scrub(editor.timeline.audio, at: editor.time) }
+    }
+
+    /// −1 or +1 when `x` is just before or after the playhead (beside it, not on it), else 0.
+    private func side(of x: CGFloat) -> Int {
+        let distance = x - layout.x(editor.time)
+        guard abs(distance) >= 8, abs(distance) <= 30 else { return 0 }
+        return distance < 0 ? -1 : 1
     }
 
     private func draw(in context: inout GraphicsContext, size: CGSize) {
@@ -68,7 +98,7 @@ struct TimelineRuler: View {
     }
 
     @ViewBuilder private var selectionBand: some View {
-        if editor.timelineMode != .compose, editor.selectedKeys.count > 1, let span = KeySelection.span(of: editor.selectedKeys), span.duration > 0 {
+        if editor.selectedKeys.count > 1, let span = KeySelection.span(of: editor.selectedKeys), span.duration > 0 {
             let shown = layout.stretch.map { layout.stretchTarget(span: span, stretch: $0) }
                 ?? TimeRange(start: layout.previewTime(span.start), end: layout.previewTime(span.end))
             ZStack(alignment: .topLeading) {

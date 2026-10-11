@@ -161,7 +161,7 @@ def light(recipe: str, subject: str | None = None, intensity: float | None = Non
 @mcp.tool()
 def set_look(look: str | None = None, mood: str | None = None, per_object: dict[str, str] | None = None,
              scene_only: bool = True) -> list[Any] | str:
-    """The Look (ink, comic, sketch, clay, lowpoly), the mood (day, goldenHour, dusk, night, space, studio) and per-object
+    """The Look (ink, comic, sketch, clay, lowpoly), the mood (day, goldenHour, dusk, night, space, studio, darkStudio) and per-object
     Looks ({"Robot": "sketch"})."""
     action = _clean({"do": "look", "look": look, "mood": mood, "perObject": per_object, "sceneOnly": scene_only})
     return _build("Look", [action], views=["camera"])

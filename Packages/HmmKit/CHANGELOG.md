@@ -3,6 +3,29 @@
 All notable changes to hmm-kit. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the
 project uses [Semantic Versioning](https://semver.org/).
 
+## [0.7.0] - 2026-10-11
+
+Built with Maquette 0.12.
+
+### Added
+- **HmmHeld** (new, pure Swift): held features. An app lists its own (`HmmHeldFeature`); `HmmHeld` reads what a build
+  holds back from the Info.plist key `HmmHeld` (a space-separated list the App Store configuration fills), once.
+- **HmmDesign**: panels moved by hand (`HmmPanel(movable:)`, `hmmMovable`, `HmmPanelPosition`, kept inside
+  `hmmPanelBounds`; double-tap the title to send one home); the undo line (`hmmUndoLine`); the guide line
+  (`hmmGuideLine`); the instructions switch (`HmmInstructions`, `HmmHint`); chrome restraint (`hmmRestrainedChrome`:
+  neutral glass, and only an `accent` button wears the accent); the sidebar at rest (`HmmSidebar(resting:wake:)`).
+
+### Changed
+- **HmmDesign**: a pill's label is never cut; it takes a second line. Panel titles take two lines.
+
+## [0.6.1] - 2026-10-11
+
+Built with Maquette 0.11.
+
+### Fixed
+- **HmmDiagnostics**: `DeviceTier.classify` puts an 8 GB iPad in Tier A even when it reports less than 7.5 GiB of
+  memory (the line is 7 GiB now; no 6 GB iPad comes near it).
+
 ## [0.6.0] - 2026-10-11
 
 Built with Maquette 0.10.1.

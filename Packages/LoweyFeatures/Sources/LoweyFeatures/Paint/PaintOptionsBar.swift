@@ -12,7 +12,7 @@ struct PaintOptionsBar: View {
         HStack(spacing: HmmSpacing.xs) {
             if editor.colourPaint.picture != nil {
                 HmmPillButton("Project", systemName: "light.beacon.max") { editor.projectPicture() }
-                    .disabled(editor.paintTarget?.paint == nil)
+                    .shown(editor.paintTarget?.paint != nil)
                     .accessibilityIdentifier("paint-project")
                 HmmButton("xmark", label: "Put the picture away", size: 36) { editor.colourPaint.picture = nil }
             } else {

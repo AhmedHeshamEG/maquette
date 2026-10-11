@@ -7,6 +7,9 @@ final class DeviceTierTests: XCTestCase {
         XCTAssertEqual(DeviceTier.classify(gpu: .init(appleFamily: 9), memoryGB: 8), .a)
         XCTAssertEqual(DeviceTier.classify(gpu: .init(appleFamily: 9), memoryGB: 16), .a)
         XCTAssertEqual(DeviceTier.classify(gpu: .init(appleFamily: 7), memoryGB: 8), .a)
+        // What an 8 GB iPad reports (less than 8 GiB): still A.
+        XCTAssertEqual(DeviceTier.classify(gpu: .init(appleFamily: 9), memoryGB: 7.42), .a)
+        XCTAssertEqual(DeviceTier.classify(gpu: .init(appleFamily: 8), memoryGB: 5.6), .b)
         // iPad (A16, 6 GB), iPad mini 6 (A15, 4 GB), iPad Air 4 (A14, 4 GB).
         XCTAssertEqual(DeviceTier.classify(gpu: .init(appleFamily: 8), memoryGB: 6), .b)
         XCTAssertEqual(DeviceTier.classify(gpu: .init(appleFamily: 8), memoryGB: 4), .b)

@@ -280,8 +280,7 @@ extension EditorModel {
     func beginSwap() {
         guard let target = selection.first else { return }
         libraryPurpose = .swap(target)
-        modelPage = .library
-        openPanel = .model
+        openPanel = .library
     }
 }
 

@@ -35,6 +35,8 @@ struct EditorScreen: View {
             }
         }
         .overlay { PerformCountdown(editor: editor) }
+        .hmmUndoLine($editor.undoLine)
+        .hmmGuideLine(editor.chromeHidden ? nil : editor.guideLine)
         .overlay {
             if app.showTour { TourOverlay(editor: editor) }
         }
@@ -55,6 +57,7 @@ struct EditorScreen: View {
         }
         .modifier(EditorSheets(editor: editor))
         .modifier(ObjectRenameAlert(editor: editor))
+        .modifier(PrefabSaveAlert(editor: editor))
         .background {
             // The stage's keys (space, delete, arrows) rest while the board has the screen.
             if !editor.boardShown { EditorKeyboardShortcuts(editor: editor) }

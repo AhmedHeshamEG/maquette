@@ -23,7 +23,7 @@ public struct StarterTemplate: Hashable, Sendable, Identifiable {
             case .blank: "An empty stage, ready for anything."
             case .print: "Millimetres, 5 cm shapes on a 1 cm grid, close up."
             case .room: "Metres, a 25 cm grid, the view from above."
-            case .character: "Cast open, the camera at eye level."
+            case .character: "Rig open, the camera at eye level."
             case .animation: "The timeline open from the start."
             case .sketch: "The board first: plan it, then build it."
             }
@@ -59,8 +59,13 @@ public struct StarterTemplate: Hashable, Sendable, Identifiable {
         all.first { $0.kind == kind } ?? .blank
     }
 
+    /// What "Set up for" offers, in an open project and on Home's quiet row: each changes what is in reach (units,
+    /// snapping, the grid, the printer, the timeline), never the project.
+    public static let setUps: [Kind] = [.blank, .print, .room, .animation]
+
+    /// The + on Home: an empty project in the dark studio.
     public static let blank = StarterTemplate(
-        kind: .blank, lookPresetID: LookPreset.ink.id, mood: .day, viewpoint: .default, workspace: ProjectWorkspace(template: .blank)
+        kind: .blank, lookPresetID: LookPreset.ink.id, mood: .darkStudio, viewpoint: .default, workspace: ProjectWorkspace(template: .blank)
     )
 
     /// Small parts on a fine grid, seen up close in Clay so the form reads.
@@ -80,11 +85,11 @@ public struct StarterTemplate: Hashable, Sendable, Identifiable {
                                     firstPanel: "model", units: .metre)
     )
 
-    /// A character at eye level with Cast open.
+    /// A character at eye level with Rig open.
     public static let character = StarterTemplate(
         kind: .character, lookPresetID: LookPreset.ink.id, mood: .studio,
         viewpoint: Viewpoint(target: Vec3(0, 0.9, 0), yaw: 20, pitch: 8, distance: 4.5, fieldOfView: 40),
-        workspace: ProjectWorkspace(template: .character, timeline: .transport, showsGrid: false, firstPanel: "cast")
+        workspace: ProjectWorkspace(template: .character, timeline: .transport, showsGrid: false, firstPanel: "rig")
     )
 
     /// Motion first: the timeline open from the start.

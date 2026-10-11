@@ -15,6 +15,10 @@ struct GalleryGrid<ProjectMenu: View, StackMenu: View>: View {
     var open: (ProjectSummary) -> Void = { _ in }
     var openStack: (GalleryStack) -> Void = { _ in }
     var drop: (String, GalleryEntry) -> Void = { _, _ in }
+    /// Tap a card's name to rename it.
+    var rename: ((ProjectSummary) -> Void)?
+    /// The Samples card, last (nil: no samples shown).
+    var samples: AnyView?
     @ViewBuilder var projectMenu: (ProjectSummary) -> ProjectMenu
     @ViewBuilder var stackMenu: (GalleryStack) -> StackMenu
     @Environment(AppModel.self) private var app
@@ -32,6 +36,7 @@ struct GalleryGrid<ProjectMenu: View, StackMenu: View>: View {
                         return true
                     }
             }
+            if let samples { samples }
         }
     }
 
@@ -40,7 +45,8 @@ struct GalleryGrid<ProjectMenu: View, StackMenu: View>: View {
         switch entry {
         case let .item(item):
             if let project = app.project(item.id) {
-                ProjectCard(project: project, zoom: zoom, playing: playing, selection: selected.map { $0.contains(item.id) })
+                ProjectCard(project: project, zoom: zoom, playing: playing, selection: selected.map { $0.contains(item.id) },
+                            rename: rename.map { rename in { rename(project) } })
                     .onTapGesture { open(project) }
                     .draggable(item.id)
                     .contextMenu { projectMenu(project) }

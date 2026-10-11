@@ -28,13 +28,8 @@ final class BoardTests: XCTestCase {
         element.tap()
     }
 
-    private func newProject(_ name: String) {
+    private func newProject(_: String = "") {
         tap("new-project")
-        let field = app.textFields["project-name"]
-        XCTAssertTrue(field.waitForExistence(timeout: 5))
-        field.tap()
-        field.typeText(name)
-        tap("create-project")
         XCTAssertTrue(app.otherElements["stage"].waitForExistence(timeout: 15))
     }
 

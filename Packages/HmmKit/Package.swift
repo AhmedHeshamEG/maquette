@@ -26,7 +26,8 @@ let package = Package(
         .library(name: "HmmBrush", targets: ["HmmBrush"]),
         .library(name: "HmmBoard", targets: ["HmmBoard"]),
         .library(name: "HmmBrushRender", targets: ["HmmBrushRender"]),
-        .library(name: "HmmBoardUI", targets: ["HmmBoardUI"])
+        .library(name: "HmmBoardUI", targets: ["HmmBoardUI"]),
+        .library(name: "HmmHeld", targets: ["HmmHeld"])
     ],
     targets: [
         .target(name: "HmmDesign"),
@@ -47,6 +48,8 @@ let package = Package(
         .target(name: "HmmBrushRender", dependencies: ["HmmBrush"], resources: [.process("Shaders")]),
         // The board on screen: its Metal renderer, the canvas view, the SwiftUI screen.
         .target(name: "HmmBoardUI", dependencies: ["HmmBoard", "HmmBrush", "HmmBrushRender", "HmmCommands", "HmmDesign", "HmmDiagnostics", "HmmDocuments"]),
+        // Held features: built before launch, aired later as free updates; the list travels in the Info.plist.
+        .target(name: "HmmHeld"),
         .testTarget(name: "HmmCommandsTests", dependencies: ["HmmCommands"]),
         .testTarget(name: "HmmDocumentsTests", dependencies: ["HmmDocuments", "HmmCommands"]),
         .testTarget(name: "HmmTranscriptTests", dependencies: ["HmmTranscript"]),
@@ -57,7 +60,8 @@ let package = Package(
         .testTarget(name: "HmmDesignTests", dependencies: ["HmmDesign"]),
         .testTarget(name: "HmmBrushTests", dependencies: ["HmmBrush"]),
         .testTarget(name: "HmmBoardTests", dependencies: ["HmmBoard", "HmmBrush", "HmmCommands", "HmmDocuments"]),
-        .testTarget(name: "HmmBoardUITests", dependencies: ["HmmBoardUI", "HmmBoard", "HmmBrush", "HmmBrushRender"])
+        .testTarget(name: "HmmBoardUITests", dependencies: ["HmmBoardUI", "HmmBoard", "HmmBrush", "HmmBrushRender"]),
+        .testTarget(name: "HmmHeldTests", dependencies: ["HmmHeld"])
     ],
     swiftLanguageModes: [.v6]
 )

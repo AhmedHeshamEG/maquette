@@ -4,7 +4,7 @@ import HmmDesign
 import LoweyCore
 import LoweyEngine
 
-/// Cast ▸ Rig (CONTEXT §10.5): a Pencil stroke through a limb, tail or rope becomes a chain of bones, the weights are
+/// Rig (CONTEXT §10.5): a Pencil stroke through a limb, tail or rope becomes a chain of bones, the weights are
 /// worked out by bone heat, and the brush paints them by hand if wanted. Every change is one `setRig` (its weights'
 /// file written first). While the Rig tool is on, the object stands as it was made (its rest pose), so bones and
 /// weights land where they're drawn.
@@ -37,7 +37,7 @@ extension EditorModel {
         return library.models.model(asset, catalog: library.catalog)
     }
 
-    /// The object Cast ▸ Rig works on: the one being rigged while it's there, else the selection when it can be rigged.
+    /// The object Rig works on: the one being rigged while it's there, else the selection when it can be rigged.
     var rigTarget: SceneObject? {
         if let id = rigging.target, let object = baseScene.objects[id], rigBlocker(object) == nil { return object }
         return singleSelection.flatMap { rigBlocker($0) == nil ? $0 : nil }
@@ -92,19 +92,24 @@ extension EditorModel {
             app.show("Choose what to rig first")
             return
         }
-        defer { endBonePreview() }
         guard let surface = boneSurface(of: object) else {
+            endBonePreview()
             app.show("This model hasn't loaded yet")
             return
         }
         let samples = boneSamples(worldRays, through: surface, of: object)
+        // A stroke drawn while the last one's weights are still being worked out adds to that rig.
+        let base = rigging.weighing[object.id] ?? (rigFits(object) ? object.rig : nil)
         do {
-            let rig = try BoneStroke.addingChain(samples, to: rigFits(object) ? object.rig : nil, surface: surface.points)
+            let rig = try BoneStroke.addingChain(samples, to: base, surface: surface.points)
             // Drawing along a chain again replaces it: what its joints held (poses, keys) goes with them.
-            let gone = object.rig.map { jointsGone(from: $0, in: rig) } ?? []
-            let label = object.rig == nil ? "Rig \(object.name)" : (gone.isEmpty ? "Add a bone" : "Redraw a bone")
+            let gone = base.map { jointsGone(from: $0, in: rig) } ?? []
+            let label = base == nil ? "Rig \(object.name)" : (gone.isEmpty ? "Add a bone" : "Redraw a bone")
+            // The stroke is over; its bone stays on the stage until the weights land (no waiting message).
+            boneSurface = nil
             weigh(rig, on: object, label: label, also: forgetting(gone, of: object))
         } catch {
+            endBonePreview()
             app.show(String.LocalizationValue(error.description))
         }
     }
@@ -118,11 +123,14 @@ extension EditorModel {
         } else {
             paintSource(of: object)
         }
-        rigging.busy.insert(id)
+        rigging.weighing[id] = rig
         let folder = assetsFolder
         Task {
             let result = await Task.detached(priority: .userInitiated) { RigOperations.weighted(rig, object: object, mesh: mesh) }.value
-            rigging.busy.remove(id)
+            // A newer stroke is being weighed: it holds this one's bones too, and lands as one step.
+            guard rigging.weighing[id] == rig else { return }
+            rigging.weighing[id] = nil
+            if boneSurface == nil { endBonePreview() }
             guard let result else {
                 app.show("This can't be rigged", kind: .error)
                 return

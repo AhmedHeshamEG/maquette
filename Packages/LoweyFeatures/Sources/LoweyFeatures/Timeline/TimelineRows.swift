@@ -16,14 +16,11 @@ struct TimelineRowView: View {
             let entry = layout.entry(id)
             HStack(spacing: 0) {
                 ObjectLabel(editor: editor, id: id, entry: entry)
-                if editor.timelineMode == .compose {
-                    ComposeBar(editor: editor, layout: layout, id: id, width: width)
-                } else {
-                    ZStack(alignment: .leading) {
-                        Spans(editor: editor, layout: layout, ids: layout.members(of: id), width: width)
-                        KeyLane(editor: editor, layout: layout, tracks: editor.timeline.tracks.filter { layout.members(of: id).contains($0.target) },
-                                width: width, color: entry?.isGroup == true ? theme.accent.opacity(0.6) : theme.accent)
-                    }
+                ZStack(alignment: .leading) {
+                    Spans(editor: editor, layout: layout, ids: layout.members(of: id), width: width)
+                    KeyLane(editor: editor, layout: layout, tracks: editor.timeline.tracks.filter { layout.members(of: id).contains($0.target) },
+                            width: width, color: entry?.isGroup == true ? theme.accent.opacity(0.6) : theme.accent)
+                    if editor.selection.contains(id) { AnimationGrip(editor: editor, layout: layout, id: id, width: width) }
                 }
             }
             .frame(height: TimelineLayout.rowHeight)
@@ -170,25 +167,30 @@ struct KeyLane: View {
 }
 
 /// Compose: an object's whole animation as a bar; a selected bar slides in time (with the rest of the selection).
-private struct ComposeBar: View {
+/// A selected row's whole animation as a thin grip along its bottom, from the first key to the last: drag it to slide
+/// everything in time (and every other selected animated thing with it), in Perform or Keys.
+struct AnimationGrip: View {
     let editor: EditorModel
     let layout: TimelineLayout
     let id: ObjectID
     let width: CGFloat
     @Environment(\.hmmTheme) private var theme
 
+    /// How far up from the row's bottom a touch grabs the grip.
+    static let reach: CGFloat = 9
+
     var body: some View {
         let ids = layout.members(of: id)
         let times = editor.timeline.tracks.filter { ids.contains($0.target) }.flatMap { $0.keyframes.map(\.time) }
-        let selected = editor.selection.contains(id)
         let moving = layout.composeDrag.map { !$0.ids.isDisjoint(with: ids) } ?? false
         let delta = moving ? layout.composeDrag?.delta ?? 0 : 0
-        ZStack(alignment: .leading) {
-            Spans(editor: editor, layout: layout, ids: ids, width: width)
+        ZStack(alignment: .bottomLeading) {
             if let start = times.min(), let end = times.max() {
-                RoundedRectangle(cornerRadius: 6, style: .continuous)
-                    .fill(theme.accent.opacity(selected ? 0.85 : 0.45))
-                    .frame(width: max(CGFloat((end - start) * layout.pps), 10), height: TimelineLayout.rowHeight - 10)
+                Capsule()
+                    .fill(theme.accent.opacity(moving ? 0.95 : 0.7))
+                    .frame(width: max(CGFloat((end - start) * layout.pps), 10), height: 4)
+                    .padding(.vertical, 3)
+                    .contentShape(Rectangle())
                     .offset(x: layout.x(start + delta))
                     .gesture(
                         DragGesture(minimumDistance: 2)
@@ -196,14 +198,13 @@ private struct ComposeBar: View {
                             .onEnded { value in
                                 editor.shiftAnimation(of: group(ids), by: Double(value.translation.width) / layout.pps)
                                 layout.composeDrag = nil
-                            },
-                        including: selected ? .all : .subviews
+                            }
                     )
-                    .onTapGesture { editor.select(id, additive: editor.keyBoxSelect) }
-                    .accessibilityAddTraits(.isButton)
+                    .accessibilityLabel("Slide the whole animation")
+                    .accessibilityIdentifier("animation-grip")
             }
         }
-        .frame(width: width, alignment: .leading)
+        .frame(width: width, height: TimelineLayout.rowHeight, alignment: .bottomLeading)
         .clipped()
     }
 

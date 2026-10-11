@@ -425,9 +425,64 @@ jobs:
           path: xcodebuild.log
           retention-days: 7
 
+  appstore:
+    name: App Store build (held features held back)
+    needs: [changes, lint]
+    if: needs.changes.outputs.features == 'true'
+    runs-on: xcode-27
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/cache@v4
+        with:
+          path: DerivedData
+          key: appstore-dd-${{ hashFiles('project.yml', 'Packages/*/Package.swift') }}-${{ github.sha }}
+          restore-keys: appstore-dd-${{ hashFiles('project.yml', 'Packages/*/Package.swift') }}-
+      - name: Install XcodeGen and the Metal toolchain
+        run: |
+          brew install xcodegen
+          xcodebuild -downloadComponent MetalToolchain
+      - name: Generate project
+        run: xcodegen generate
+      - name: Pick an iPad simulator
+        id: sim
+        run: echo "udid=$(python3 Tools/pick-simulator.py)" >> "$GITHUB_OUTPUT"
+      - name: Boot the simulator
+        run: |
+          xcrun simctl boot "${{ steps.sim.outputs.udid }}" || true
+          xcrun simctl bootstatus "${{ steps.sim.outputs.udid }}" -b
+      # The App Store configuration holds back what airs later (CONTEXT §5): the layout walk asserts every row marked
+      # held in docs/LAYOUT.md is absent there, and every other row is present.
+      - name: Walk the layout in the App Store configuration
+        run: |
+          set -o pipefail
+          for attempt in 1 2; do
+            rm -rf AppStore.xcresult
+            TEST_RUNNER_MAQUETTE_HELD_CHECK=1 xcodebuild test -project Lowey.xcodeproj -scheme Lowey -configuration AppStore \
+              -destination "id=${{ steps.sim.outputs.udid }}" -derivedDataPath DerivedData -resultBundlePath AppStore.xcresult \
+              -skipPackagePluginValidation -collect-test-diagnostics never -test-timeouts-enabled YES \
+              -default-test-execution-time-allowance 600 -retry-tests-on-failure -test-iterations 3 \
+              -only-testing:LoweyUITests/LayoutTests/testHomeControlsAreReachable \
+              -only-testing:LoweyUITests/LayoutTests/testPanelAndChromeControlsAreReachable \
+              -only-testing:LoweyUITests/LayoutTests/testModelControlsAreReachable \
+              -only-testing:LoweyUITests/LayoutTests/testMoreModelControlsAreReachable \
+              -only-testing:LoweyUITests/LayoutTests/testSelectionControlsAreReachable \
+              -only-testing:LoweyUITests/LayoutTests/testTimelineControlsAreReachable \
+              CODE_SIGNING_ALLOWED=NO | tee appstore.log | grep -E "error:|failed|Test Case|Executed|\*\* " || true
+            grep -q "\*\* TEST SUCCEEDED \*\*" appstore.log && exit 0
+            echo "::warning::The App Store walk failed on attempt $attempt"
+          done
+          exit 1
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: appstore-log
+          path: appstore.log
+          retention-days: 7
+
   result:
     name: CI result
-    needs: [changes, lint, core-tests, interop, tools, engine, features, app]
+    needs: [changes, lint, core-tests, interop, tools, engine, features, app, appstore]
     if: always()
     runs-on: ubuntu-latest
     steps:

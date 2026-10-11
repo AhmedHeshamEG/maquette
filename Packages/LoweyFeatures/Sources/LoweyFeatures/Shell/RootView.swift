@@ -9,6 +9,8 @@ import SwiftUI
 public struct RootView: View {
     @Environment(AppModel.self) private var app
     @AppStorage(HmmThemeMode.storageKey) private var themeMode = HmmThemeMode.dark.rawValue
+    /// Chrome restraint, a trial (Diagnostics flips it): neutral glass, one accent at a time.
+    @AppStorage(HmmChromeRestraint.storageKey) private var restrained = true
     /// This window, among the app's windows (Stage Manager).
     @State private var windowID = UUID()
     @Namespace private var zoom
@@ -38,6 +40,7 @@ public struct RootView: View {
             if app.isRecordingFeel { FeelRecordingDot() }
         }
         .hmmThemed(.lowey, mode: HmmThemeMode(rawValue: themeMode) ?? .dark)
+        .environment(\.hmmRestrainedChrome, restrained)
         .hmmToast($app.toast)
         .fullScreenCover(item: $app.editor) { editor in
             ZStack {
@@ -47,6 +50,7 @@ public struct RootView: View {
             }
             .environment(app)
             .hmmThemed(.lowey, mode: HmmThemeMode(rawValue: themeMode) ?? .dark)
+            .environment(\.hmmRestrainedChrome, restrained)
             .hmmToast($app.toast)
             .hmmUniversalGestures(HmmGestureActions(
                 // While the board covers the stage, two fingers undo on the board (its own gestures), not under it.
@@ -65,6 +69,7 @@ public struct RootView: View {
             }
         }
         .sheet(isPresented: $app.showsSettings) { SettingsSheet(app: app) }
+        .sheet(isPresented: $app.showsLearn) { LearnSheet(app: app) }
         .onChange(of: app.projects.count) { _, _ in openTourIslandIfNeeded() }
         .onChange(of: app.showTour) { _, _ in openTourIslandIfNeeded() }
         .task { await app.start() }

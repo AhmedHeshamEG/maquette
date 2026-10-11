@@ -208,7 +208,7 @@ final class StageGestures: NSObject, UIGestureRecognizerDelegate {
     /// Recording a performance of objects (a flown camera goes through the camera gestures instead).
     var isRecordingPerform: Bool {
         guard let editor else { return false }
-        return editor.performPhase == .recording && !editor.performTargets.isEmpty && !operatesCamera
+        return editor.performPhase.isArmed && !editor.performTargets.isEmpty && !operatesCamera
     }
 
     /// The Director view with the shot camera selected (or nothing selected): gestures operate that camera.

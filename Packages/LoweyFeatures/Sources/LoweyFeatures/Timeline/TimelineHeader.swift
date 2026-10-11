@@ -2,7 +2,10 @@ import HmmDesign
 import LoweyCore
 import SwiftUI
 
-/// Transport, timecode, Compose · Perform · Keyframe and the mode's own controls, markers, sound and the menu.
+/// The timeline's bar, eight controls (CONTEXT §10.10, Procreate Dreams' restraint): play, the time, Perform | Keys,
+/// the mode's one button (Record or Key), + Overlay, + Sound, the menu, collapse. Markers, the loop and what each mode
+/// does one step deeper are in the menu; going to the start is a flick on the ruler, a frame is a tap beside the
+/// playhead. A selected character adds its Perform button beside Record; a performed number, its slider.
 struct TimelineHeader: View {
     @Bindable var editor: EditorModel
     let fit: () -> Void
@@ -10,41 +13,54 @@ struct TimelineHeader: View {
 
     var body: some View {
         HStack(spacing: HmmSpacing.s) {
-            Transport(editor: editor)
+            HmmButton(editor.isPlaying ? "pause.fill" : "play.fill", label: editor.isPlaying ? "Pause" : "Play", isOn: editor.isPlaying,
+                      size: HmmTarget.primary) { editor.togglePlay() }
             TimelineClock(editor: editor)
             ModePicker(mode: $editor.timelineMode)
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: HmmSpacing.xs) {
                     switch editor.timelineMode {
                     case .perform: PerformControls(editor: editor)
-                    case .keyframe: KeyControls(editor: editor)
-                    case .compose: composeControls
+                    case .keyframe: KeyButton(editor: editor)
                     }
+                    OverlayMenu(editor: editor)
+                    soundButton
                 }
             }
-            HmmButton("flag", label: "Add marker", size: 40) { editor.addMarker() }
-            HmmButton("waveform", label: "Sound and words", size: 40) { editor.sheet = .audio }
             menu
             HmmButton("chevron.down", label: "Collapse the timeline", size: 36) { editor.timelinePresence = .transport }
         }
         .environment(\.hmmInsideGlass, true)
     }
 
-    @ViewBuilder private var composeControls: some View {
-        Toggle(isOn: $editor.keyBoxSelect) { Label("Select", systemImage: "rectangle.dashed").font(.hmm(.footnote, weight: .semibold)) }
-            .toggleStyle(.button)
-        if !editor.selection.isEmpty, editor.selectionHasAnimation {
-            HmmPillButton("Clear animation", systemName: "xmark.bin", role: .destructive) { editor.clearAnimation() }
+    private var soundButton: some View {
+        Button {
+            HmmHaptics.play(.selection)
+            editor.sheet = .audio
+        } label: {
+            Label("Sound", systemImage: "waveform")
+                .font(.hmm(.footnote, weight: .semibold))
+                .foregroundStyle(theme.text)
+                .padding(.horizontal, HmmSpacing.s)
+                .frame(height: 40)
+                .background(Capsule().fill(theme.surface2))
         }
-        Hint("Slide whole animations in time.")
+        .buttonStyle(.plain)
+        .accessibilityLabel("Sound and words")
+        .accessibilityIdentifier("Sound and words")
     }
 
     private var menu: some View {
         Menu {
-            Section("Loop") {
+            Section {
+                Button("Add marker", systemImage: "flag") { editor.addMarker() }
                 Button("Loop starts here", systemImage: "arrow.right.to.line") { editor.setLoopStart() }
                 Button("Loop ends here", systemImage: "arrow.left.to.line") { editor.setLoopEnd() }
                 if editor.timeline.loop != nil { Button("No loop", systemImage: "xmark") { editor.clearLoop() } }
+            }
+            switch editor.timelineMode {
+            case .keyframe: KeyMenuItems(editor: editor)
+            case .perform: PerformMenuItems(editor: editor)
             }
             Section {
                 Button("Show the whole timeline", systemImage: "arrow.left.and.right", action: fit)
@@ -62,7 +78,7 @@ struct TimelineHeader: View {
     }
 }
 
-/// Compose · Perform · Keyframe; the current one labelled.
+/// Perform | Keys, both shown as words.
 private struct ModePicker: View {
     @Binding var mode: TimelineMode
     @Environment(\.hmmTheme) private var theme
@@ -74,16 +90,14 @@ private struct ModePicker: View {
                     HmmHaptics.play(.selection)
                     withHmmAnimation(.snappy) { mode = item }
                 } label: {
-                    HStack(spacing: 5) {
-                        Image(systemName: item.systemImage)
-                        if item == mode { Text(LocalizedStringKey(item.title)) }
-                    }
-                    .font(.hmm(.footnote, weight: .semibold))
-                    .padding(.horizontal, item == mode ? 12 : 10)
-                    .frame(height: 36)
-                    .foregroundStyle(item == mode ? theme.onAccent : theme.text)
-                    .background(Capsule().fill(item == mode ? theme.accent : .clear))
-                    .contentShape(Capsule())
+                    Text(LocalizedStringKey(item.title))
+                        .font(.hmm(.footnote, weight: .semibold))
+                        .lineLimit(1)
+                        .padding(.horizontal, 12)
+                        .frame(height: 36)
+                        .foregroundStyle(item == mode ? theme.onAccent : theme.text)
+                        .background(Capsule().fill(item == mode ? theme.accent : .clear))
+                        .contentShape(Capsule())
                 }
                 .buttonStyle(.plain)
                 .accessibilityLabel(item.title)
@@ -96,75 +110,82 @@ private struct ModePicker: View {
     }
 }
 
-/// Keyframe: key the selection, auto-key, pick keys, easing and the key menu.
-private struct KeyControls: View {
+/// Keys: the mode's one button keys the selection at the playhead.
+private struct KeyButton: View {
     @Bindable var editor: EditorModel
 
     var body: some View {
-        HmmPillButton("Key", systemName: "diamond.fill", prominent: !editor.selection.isEmpty) { editor.keySelection() }
-            .disabled(editor.selection.isEmpty)
-        Toggle(isOn: $editor.autoKey) { Text("Auto-key").font(.hmm(.footnote, weight: .semibold)) }
-            .toggleStyle(.button)
-            .accessibilityIdentifier("auto-key")
-        Toggle(isOn: $editor.keyBoxSelect) { Label("Select", systemImage: "rectangle.dashed").font(.hmm(.footnote, weight: .semibold)) }
-            .toggleStyle(.button)
-            .accessibilityIdentifier("key-select-mode")
-        Menu {
-            ForEach(KeyQuery.allCases) { query in
-                if query != .loop || editor.timeline.loop != nil {
-                    Button(LocalizedStringKey(query.title), systemImage: query.systemImage) { editor.selectKeys(query) }
-                }
-            }
-        } label: {
-            Label(editor.selection.isEmpty ? "Pick" : "Pick in selection", systemImage: "checklist").font(.hmm(.footnote, weight: .semibold))
-        }
-        .accessibilityIdentifier("key-select-menu")
-        if !editor.selectedKeys.isEmpty { selectedKeyMenus }
-        if editor.selectedKeys.isEmpty, let key = editor.firstGraphKey {
-            HmmButton("point.topleft.down.to.point.bottomright.curvepath", label: "Graph editor", size: 36) { editor.graphKey = key }
-                .accessibilityIdentifier("graph-editor")
-        }
-        if editor.hasKeyClipboard { HmmPillButton("Paste", systemName: "doc.on.clipboard") { editor.pasteKeys() } }
-    }
-
-    @ViewBuilder private var selectedKeyMenus: some View {
-        Menu {
-            ForEach(EasingChoice.allCases) { choice in
-                Button(LocalizedStringKey(choice.title)) { editor.setEasing(choice.easing) }
-            }
-            Divider()
-            Button("Graph editor…", systemImage: "point.topleft.down.to.point.bottomright.curvepath") {
-                editor.graphKey = editor.selectedKeys.min { $0.time < $1.time }
-            }
-        } label: {
-            Label("Easing", systemImage: "point.topleft.down.to.point.bottomright.curvepath").font(.hmm(.footnote, weight: .semibold))
-        }
-        Menu {
-            Button("Copy", systemImage: "doc.on.doc") { editor.copyKeys() }
-            Button("Mirror (there and back)", systemImage: "arrow.left.and.right") { editor.mirrorKeys() }
-            Button("Reverse", systemImage: "arrow.uturn.backward") { editor.reverseKeys() }
-            Button("Twice as fast", systemImage: "hare") { editor.retimeKeys(0.5) }
-            Button("Twice as slow", systemImage: "tortoise") { editor.retimeKeys(2) }
-            Button("One frame earlier", systemImage: "chevron.left") { editor.nudgeSelectedKeys(frames: -1) }
-            Button("One frame later", systemImage: "chevron.right") { editor.nudgeSelectedKeys(frames: 1) }
-            Divider()
-            Button("Delete keys", systemImage: "trash", role: .destructive) { editor.deleteSelectedKeys() }
-        } label: {
-            Label("\(editor.selectedKeys.count) key\(editor.selectedKeys.count == 1 ? "" : "s")", systemImage: "diamond")
-                .font(.hmm(.footnote, weight: .semibold))
+        if !editor.selection.isEmpty {
+            HmmPillButton("Key", systemName: "diamond.fill", prominent: true) { editor.keySelection() }
+                .accessibilityIdentifier("key-selection")
         }
     }
 }
 
-/// Perform: record (3-2-1), filtering and sensitivity live in the sidebar; Pencil roll; a performed number.
+/// Keys, one step deeper (the timeline's menu): auto-key, picking keys, the picked keys' easing and timing, the graph.
+private struct KeyMenuItems: View {
+    @Bindable var editor: EditorModel
+
+    var body: some View {
+        Section("Keys") {
+            Toggle("Pick several keys", isOn: $editor.keyBoxSelect)
+                .accessibilityIdentifier("key-select-mode")
+            Menu(editor.selection.isEmpty ? "Pick keys" : "Pick keys in the selection", systemImage: "checklist") {
+                ForEach(KeyQuery.allCases) { query in
+                    if query != .loop || editor.timeline.loop != nil {
+                        Button(LocalizedStringKey(query.title), systemImage: query.systemImage) { editor.selectKeys(query) }
+                    }
+                }
+            }
+            .accessibilityIdentifier("key-select-menu")
+            if !editor.selectedKeys.isEmpty {
+                Menu("Easing", systemImage: "point.topleft.down.to.point.bottomright.curvepath") {
+                    ForEach(EasingChoice.allCases) { choice in
+                        Button(LocalizedStringKey(choice.title)) { editor.setEasing(choice.easing) }
+                    }
+                }
+                Menu("Timing", systemImage: "timer") {
+                    Button("Twice as fast", systemImage: "hare") { editor.retimeKeys(0.5) }
+                    Button("Twice as slow", systemImage: "tortoise") { editor.retimeKeys(2) }
+                    Button("One frame earlier", systemImage: "chevron.left") { editor.nudgeSelectedKeys(frames: -1) }
+                    Button("One frame later", systemImage: "chevron.right") { editor.nudgeSelectedKeys(frames: 1) }
+                }
+            }
+            if let key = editor.selectedKeys.min(by: { $0.time < $1.time }) ?? editor.firstGraphKey {
+                Button("Graph editor…", systemImage: "point.topleft.down.to.point.bottomright.curvepath") { editor.graphKey = key }
+                    .accessibilityIdentifier("graph-editor")
+            }
+            if editor.hasKeyClipboard {
+                Button("Paste keys at the playhead", systemImage: "doc.on.clipboard") { editor.pasteKeys() }
+            }
+            if !editor.selection.isEmpty, editor.selectionHasAnimation {
+                Button("Clear the selection's animation", systemImage: "xmark.bin", role: .destructive) { editor.clearAnimation() }
+            }
+        }
+    }
+}
+
+/// Perform, one step deeper (the timeline's menu): what a touch performs, and the Pencil's roll.
+private struct PerformMenuItems: View {
+    @Bindable var editor: EditorModel
+
+    var body: some View {
+        Section("Perform") {
+            PerformValueMenu(editor: editor)
+            Toggle("Pencil roll turns it", isOn: $editor.performSettings.barrelRoll)
+        }
+    }
+}
+
+/// Perform: Record (Ready, then time runs while you touch), the selected character's button, a performed number.
 private struct PerformControls: View {
     @Bindable var editor: EditorModel
     @Environment(\.hmmTheme) private var theme
 
     var body: some View {
         Button {
-            if editor.performPhase == .recording {
-                editor.pause()
+            if editor.performPhase == .recording || editor.performPhase == .ready {
+                editor.stopPerform()
             } else {
                 editor.armPerform()
             }
@@ -179,16 +200,14 @@ private struct PerformControls: View {
         }
         .buttonStyle(.plain)
         .accessibilityIdentifier("perform-record")
-        Toggle(isOn: $editor.performSettings.barrelRoll) {
-            Label("Pencil roll", systemImage: "applepencil.and.scribble").font(.hmm(.footnote, weight: .semibold))
-        }
-        .toggleStyle(.button)
+        PerformCharacterButton(editor: editor)
         PerformValueSlider(editor: editor)
     }
 
     private var recordTitle: String {
         switch editor.performPhase {
         case .idle: "Record"
+        case .ready: "Ready"
         case let .countdown(count): "Ready… \(count)"
         case .recording: "Stop"
         }

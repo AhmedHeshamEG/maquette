@@ -18,12 +18,15 @@ final class MotionToolsTests: XCTestCase {
         editor.addPrimitive(.cube)
         let cube = try XCTUnwrap(editor.singleSelection?.id)
         editor.timelineMode = .keyframe
+        // The first key is deliberate; after it, moves at other times key themselves.
+        editor.setTime(0)
+        editor.keySelection()
         for second in 0 ... 2 {
             editor.setTime(Double(second))
             editor.translateSelection(by: Vec3(1, 0, 0), gesture: "key-\(second)")
             editor.endGesture()
         }
-        editor.timelineMode = .compose
+        editor.timelineMode = .perform
         editor.setTime(1.5)
         return cube
     }
@@ -67,6 +70,8 @@ final class PoseFlowTests: XCTestCase {
         let editor = try XCTUnwrap(app.editor)
         editor.buildBlob(.hesham)
         let blob = try XCTUnwrap(editor.poseCharacter)
+        // Outside Keys a pose sets the dials (in Keys it lands as keys at the playhead).
+        editor.timelineMode = .perform
         editor.perform(.setProperties([PropertyChange(object: blob, key: .handLeftY, value: .float(0.9)),
                                        PropertyChange(object: blob, key: .headYaw, value: .float(20))]))
         editor.savePose(of: blob, named: "Hand up")

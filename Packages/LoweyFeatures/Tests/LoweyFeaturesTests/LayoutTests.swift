@@ -57,7 +57,7 @@ final class LayoutTests: XCTestCase {
 
     func testCharacterAndAnimationTemplates() throws {
         let character = try makeEditor(.character)
-        XCTAssertEqual(character.openPanel, .cast)
+        XCTAssertEqual(character.openPanel, .rig)
         XCTAssertEqual(character.timelinePresence, .transport)
         XCTAssertFalse(character.showsGrid)
         let animation = try makeEditor(.animation)
@@ -77,13 +77,12 @@ final class LayoutTests: XCTestCase {
         XCTAssertFalse(workspace.showsGrid)
     }
 
-    func testSwappingOpensModelOnItsLibrary() throws {
+    func testSwappingOpensTheLibrary() throws {
         let editor = try makeEditor()
         editor.addPrimitive(.cube)
         editor.openPanel = nil
         editor.beginSwap()
-        XCTAssertEqual(editor.openPanel, .model)
-        XCTAssertEqual(editor.modelPage, .library)
+        XCTAssertEqual(editor.openPanel, .library)
         XCTAssertNotEqual(editor.libraryPurpose, .place)
     }
 
@@ -93,7 +92,7 @@ final class LayoutTests: XCTestCase {
         XCTAssertTrue(StageTool.allCases.filter { $0.draws || $0.paintsSurfaces }.allSatisfy { $0 != .select && $0 != .lasso })
         XCTAssertFalse(ClusterPanel.model.isLeading)
         XCTAssertTrue(ClusterPanel.select.isLeading)
-        XCTAssertEqual(ModelPage.allCases.map(\.rawValue), ["add", "shape", "library", "precision"])
+        XCTAssertEqual(ModelPage.allCases.map(\.rawValue), ["add", "shape", "precision"])
         XCTAssertFalse(StageTool.model.paints, "the Model tool taps; fingers still navigate")
     }
 

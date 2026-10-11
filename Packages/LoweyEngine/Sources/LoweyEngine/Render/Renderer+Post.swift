@@ -37,7 +37,7 @@ extension LoweyRenderer {
         var lines = LineUniforms()
         lines.size = SIMD4<Float>(Float(width), Float(height), 1 / Float(width), 1 / Float(height))
         lines.scale = SIMD4<Float>(Float(height) / 1080, Float(request.frameIndex / 2), post.outline > 0 ? Float(1 + post.outline * 2.4) : 0, 0)
-        lines.selection = SIMD4<Float>(RGBA(1, 0.72, 0.28).linear, request.editor?.showsSelection == true ? 1 : 0)
+        lines.selection = SIMD4<Float>(StageColors.selection.linear, request.editor?.showsSelection == true ? 1 : 0)
         lines.extraInk = SIMD4<Float>(post.outlineColor.linear, 0)
         var looks = gpu.looks
         encoder.setTexture(targets.nativeColor, index: 0)

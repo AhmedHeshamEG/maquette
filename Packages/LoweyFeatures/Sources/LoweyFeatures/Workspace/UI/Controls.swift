@@ -3,6 +3,13 @@ import LoweyCore
 import SwiftUI
 import UIKit
 
+extension View {
+    /// Nothing greyed out (CONTEXT §10.10): a control that can't act right now isn't shown, rather than dimmed.
+    @ViewBuilder func shown(_ condition: Bool) -> some View {
+        if condition { self }
+    }
+}
+
 /// A labelled horizontal slider for panels (the sidebar's vertical sliders are HmmSlider).
 struct LabeledSlider: View {
     let title: String
@@ -44,10 +51,11 @@ struct ChoiceChip: View {
         } label: {
             HStack(spacing: HmmSpacing.xxs) {
                 if let systemName { Image(systemName: systemName) }
-                Text(LocalizedStringKey(title)).lineLimit(1)
+                Text(LocalizedStringKey(title)).lineLimit(2).multilineTextAlignment(.leading).fixedSize(horizontal: false, vertical: true)
             }
             .font(.hmm(.footnote, weight: .semibold))
             .padding(.horizontal, HmmSpacing.s)
+            .padding(.vertical, HmmSpacing.xxs)
             .frame(minHeight: 36)
             .foregroundStyle(isOn ? theme.onAccent : theme.text)
             .background(Capsule().fill(isOn ? theme.accent : theme.surface2.opacity(0.9)))
@@ -99,7 +107,9 @@ struct TileLabel: View {
             } else {
                 Image(systemName: systemName).symbolRenderingMode(.hierarchical).font(.system(size: 20, weight: .medium))
             }
-            Text(LocalizedStringKey(title)).font(.hmm(.caption, weight: .semibold)).lineLimit(1).minimumScaleFactor(0.8)
+            // Never cut: a long title takes a second line.
+            Text(LocalizedStringKey(title)).font(.hmm(.caption, weight: .semibold)).lineLimit(2).multilineTextAlignment(.center)
+                .fixedSize(horizontal: false, vertical: true)
         }
         .frame(maxWidth: .infinity, minHeight: 60)
         .foregroundStyle(isOn ? theme.accent : theme.text)
@@ -207,9 +217,10 @@ struct PaletteRow: View {
     }
 }
 
-/// Small text under a control explaining it.
+/// Small text under a control explaining it; gone while the instructions switch is off (Learn, on by default).
 struct Hint: View {
     let text: String
+    @AppStorage(HmmInstructions.storageKey) private var showsInstructions = true
     @Environment(\.hmmTheme) private var theme
 
     init(_ text: String) {
@@ -217,7 +228,9 @@ struct Hint: View {
     }
 
     var body: some View {
-        Text(LocalizedStringKey(text)).font(.hmm(.caption)).foregroundStyle(theme.text2).fixedSize(horizontal: false, vertical: true)
+        if showsInstructions {
+            Text(LocalizedStringKey(text)).font(.hmm(.caption)).foregroundStyle(theme.text2).fixedSize(horizontal: false, vertical: true)
+        }
     }
 }
 

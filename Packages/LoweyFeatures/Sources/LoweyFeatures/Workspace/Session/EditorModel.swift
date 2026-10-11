@@ -35,6 +35,7 @@ final class EditorModel {
             if !inkStrokes.isEmpty { inkStrokes = [] }
             if AppIdentity.isUITesting { trail("sel=[\(selection.compactMap { scene.objects[$0]?.name }.joined(separator: ","))]") }
             refreshSelectionOverlay()
+            if tool == .paint { readyPaintTarget() }
         }
     }
 
@@ -66,7 +67,7 @@ final class EditorModel {
     var ink = InkSettings()
     var flipbook = FlipbookSettings()
     var colourPaint = ColourPaintSettings()
-    /// Cast ▸ Rig: drawing bones, painting weights, the person rig's dots.
+    /// Rig: drawing bones, painting weights, the person rig's dots.
     var rigging = RigSettings() {
         didSet {
             guard rigging.joint != oldValue.joint || rigging.mode != oldValue.mode || rigging.target != oldValue.target
@@ -105,8 +106,19 @@ final class EditorModel {
     var viewRevision = 0
     /// The current colour: new blockout, strokes and "paint" use it.
     var currentColor: ColorValue = .palette(0)
-    var openPanel: ClusterPanel?
+    /// The panel a cluster button opened. One big thing open at a time: a panel folds the whole timeline to its
+    /// slim transport (and the object panel to its chip, `inspectorAsChip`).
+    var openPanel: ClusterPanel? {
+        didSet {
+            if let openPanel, openPanel != .select, timelinePresence == .full { timelinePresence = .transport }
+        }
+    }
+
+    /// The object panel folded to its chip by hand (the fold button); `inspectorAsChip` also folds it while something
+    /// bigger is open.
+    var inspectorFolded = false
     var modelPage: ModelPage = .add
+    var libraryPage: LibraryPage = .things
     var sheet: EditorSheet?
     var libraryPurpose: LibraryPurpose = .place
     /// Four-finger tap: everything but the stage hides.
@@ -136,6 +148,8 @@ final class EditorModel {
         didSet { if directorView != oldValue { refreshSelectionOverlay() } }
     }
 
+    /// The camera the camera button's taps started from (a full round of taps comes back to the free view).
+    @ObservationIgnored var cameraTourStart: ObjectID?
     var deliveryFraming: Framing = .landscape
     var showsThirds = true
     var showsSafeAreas = false
@@ -146,8 +160,9 @@ final class EditorModel {
 
     var time: Double = 0
     var isPlaying = false
-    var timelineMode: TimelineMode = .compose
+    var timelineMode: TimelineMode = .keyframe
     /// In Keyframe mode, edits become keys at the playhead.
+    /// Keys add themselves to animated things in Keys (`keyed`); off only while placing (a crowd's jitter isn't motion).
     var autoKey = true
     /// Points per second.
     var timelineZoom: Double = 90
@@ -287,6 +302,12 @@ final class EditorModel {
     @ObservationIgnored var openStarted: CFTimeInterval?
     /// The template the project began from and how it shows (`workspace.json`).
     @ObservationIgnored var workspace = ProjectWorkspace()
+    /// What the project is set up for (Blank, Print, Room, Animation): it decides what is in reach.
+    var projectSetUp: StarterTemplate.Kind = .blank
+    /// Save to the library is asking for a name (the alert is on the editor's screen).
+    var savingPrefab = false
+    /// What an undo or a redo just changed, said for a second at the top centre (CONTEXT §10.10).
+    var undoLine: HmmUndoLineMessage?
     @ObservationIgnored let logger = Logger(subsystem: AppIdentity.subsystem, category: "editor")
 
     var library: LibraryModel { app.library }
@@ -362,8 +383,10 @@ final class EditorModel {
 
     func undo() {
         if historyScrub != nil { closeHistory() }
+        let title = undoTitle
         do {
             guard let changes = try session.undo() else { return }
+            undoLine = HmmUndoLineMessage(title)
             loadOlderUndoIfNeeded()
             refreshDisplay(changes)
             afterChange()
@@ -374,8 +397,10 @@ final class EditorModel {
 
     func redo() {
         if historyScrub != nil { closeHistory() }
+        let title = redoTitle
         do {
             guard let changes = try session.redo() else { return }
+            undoLine = HmmUndoLineMessage(title)
             refreshDisplay(changes)
             afterChange()
         } catch {

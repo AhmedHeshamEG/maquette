@@ -114,15 +114,11 @@ extension EditorModel {
         }
     }
 
-    /// Hide, Lock and Group (Show, Unlock, Ungroup when that's what they'd undo).
+    /// Hide and Lock (Show, Unlock when that's what they'd undo), then More: everything else an object can do, so the
+    /// one menu holds it all (CONTEXT §10.10: Group, Array, To the ground, Swap, Save to the library, Unpack).
     private func objectExtras(_ ids: [ObjectID], _ objects: [SceneObject]) -> [HmmHoldMenu.Item] {
         let hidden = !objects.isEmpty && objects.allSatisfy { !$0.isVisible }
         let locked = !objects.isEmpty && objects.allSatisfy(\.isLocked)
-        let grouping = if objects.count == 1, objects[0].kind == .group {
-            HmmHoldMenu.Item("Ungroup", systemName: "square.on.square.dashed", action: on(ids) { $0.ungroupSelection() })
-        } else {
-            HmmHoldMenu.Item("Group", systemName: "square.on.square", isEnabled: objects.count > 1, action: on(ids) { $0.groupSelection() })
-        }
         return [
             HmmHoldMenu.Item(hidden ? "Show" : "Hide", systemName: hidden ? "eye" : "eye.slash") { [weak self] in
                 guard let self else { return }
@@ -132,8 +128,67 @@ extension EditorModel {
                 guard let self else { return }
                 perform(operations.setFlag(ids, key: .locked, !locked))
             },
-            grouping
+            HmmHoldMenu.Item("More", systemName: "ellipsis.circle", children: moreItems(ids, objects))
         ]
+    }
+
+    /// The rest of an object's menu; only what these objects can do is listed.
+    private func moreItems(_ ids: [ObjectID], _ objects: [SceneObject]) -> [HmmHoldMenu.Item] {
+        var items: [HmmHoldMenu.Item] = []
+        if objects.count == 1, objects[0].kind == .group {
+            items.append(HmmHoldMenu.Item("Ungroup", systemName: "square.on.square.dashed", action: on(ids) { $0.ungroupSelection() }))
+        } else if objects.count > 1 {
+            items.append(HmmHoldMenu.Item("Group", systemName: "square.on.square", action: on(ids) { $0.groupSelection() }))
+        }
+        items.append(HmmHoldMenu.Item("Array", systemName: "square.grid.3x3", children: arrayItems(ids)))
+        items.append(HmmHoldMenu.Item("To the ground", systemName: "arrow.down.to.line", action: on(ids) { $0.dropSelectionToGround() }))
+        if objects.count == 1, case .primitive = objects[0].kind {
+            items.append(HmmHoldMenu.Item("Swap for a model…", systemName: "arrow.triangle.swap", action: on(ids) { $0.beginSwap() }))
+        }
+        items.append(HmmHoldMenu.Item("Save to the library…", systemName: "tray.and.arrow.down", action: on(ids) { $0.savingPrefab = true }))
+        if objects.contains(where: { $0.kind.prefabID != nil }) {
+            items.append(HmmHoldMenu.Item("Unpack", systemName: "shippingbox", action: on(ids) { $0.unpackSelection() }))
+        }
+        return items
+    }
+
+    /// Copies in a row, a grid, a circle or along a sketch.
+    private func arrayItems(_ ids: [ObjectID]) -> [HmmHoldMenu.Item] {
+        let step = arrayStep
+        var items = [
+            HmmHoldMenu.Item("Row of 5", action: on(ids) { $0.array(.line(count: 5, step: Vec3(step, 0, 0))) }),
+            HmmHoldMenu.Item("Row of 10", action: on(ids) { $0.array(.line(count: 10, step: Vec3(step, 0, 0))) }),
+            HmmHoldMenu.Item("Grid 3 × 3", action: on(ids) { $0.array(.grid(columns: 3, rows: 3, spacingX: step, spacingZ: step)) }),
+            HmmHoldMenu.Item("Grid 5 × 5", action: on(ids) { $0.array(.grid(columns: 5, rows: 5, spacingX: step, spacingZ: step)) }),
+            HmmHoldMenu.Item("Circle of 8", action: on(ids) { $0.array(.circle(count: 8, radius: max(step * 1.5, 1), faceCenter: true)) }),
+            HmmHoldMenu.Item("Circle of 12", action: on(ids) { $0.array(.circle(count: 12, radius: max(step * 2, 1.5), faceCenter: true)) })
+        ]
+        if !sketches.isEmpty {
+            items.append(HmmHoldMenu.Item("Along a sketch", action: on(ids) { $0.arrayAlongSketch(align: false) }))
+            items.append(HmmHoldMenu.Item("Along a sketch, turning with it", action: on(ids) { $0.arrayAlongSketch(align: true) }))
+        }
+        return items
+    }
+}
+
+/// Save to the library, wherever it was asked for (an object's menu on the stage, in the outliner, in its panel).
+struct PrefabSaveAlert: ViewModifier {
+    @Bindable var editor: EditorModel
+    @State private var name = ""
+
+    func body(content: Content) -> some View {
+        content
+            .onChange(of: editor.savingPrefab) { _, saving in
+                if saving { name = editor.singleSelection?.name ?? "" }
+            }
+            .alert("Save to your library", isPresented: $editor.savingPrefab) {
+                TextField("Name", text: $name)
+                Button("Save a copy") { editor.saveSelectionAsPrefab(name: name, replaceSelection: false) }
+                Button("Save & link") { editor.saveSelectionAsPrefab(name: name, replaceSelection: true) }
+                Button("Cancel", role: .cancel) {}
+            } message: {
+                Text("Build once, reuse it everywhere. Linked copies update when you edit the original.")
+            }
     }
 }
 

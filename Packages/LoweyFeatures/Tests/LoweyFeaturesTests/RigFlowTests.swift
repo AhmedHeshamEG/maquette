@@ -121,6 +121,8 @@ final class RigFlowTests: XCTestCase {
         editor.tool = .select
         let character = try XCTUnwrap(CharacterRig.of(cube.id, in: editor.baseScene))
         editor.timelineMode = .keyframe
+        editor.setSelection([cube.id])
+        editor.keySelection()
         editor.setTime(1)
         _ = editor.perform(.setProperties(character.changes(turning: [rig.skeleton.joints.count - 2: Quat(angle: 0.5, axis: .unitZ)])))
         let key = PropertyKey.boneTurn(rig.skeleton.joints[rig.skeleton.joints.count - 2].name)

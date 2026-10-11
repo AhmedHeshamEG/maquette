@@ -45,7 +45,8 @@ public enum LoweySchema {
     /// 10: Maquette 0.8's looping motions: the `bounce` and `swing` behaviours.
     /// 11: Maquette 0.10's live performance: timelines' `takes` and the `setTakes` command; `dangle.<joint>`, `breathe`,
     ///     `attachBone`, `liveHead` and `triggers` properties.
-    public static let currentVersion = 11
+    /// 12: Maquette 0.12's `darkStudio` mood (a blank project's world).
+    public static let currentVersion = 12
 
     public static let migrations: [Migration] = [
         Migration(kind: .scene, from: 0, transform: liftSceneV0),
@@ -87,7 +88,11 @@ public enum LoweySchema {
         // 10 → 11 adds optional takes and properties; nothing older changes shape.
         Migration(kind: .scene, from: 10) { $0 },
         Migration(kind: .project, from: 10) { $0 },
-        Migration(kind: .library, from: 10) { $0 }
+        Migration(kind: .library, from: 10) { $0 },
+        // 11 → 12 adds a mood; nothing older changes shape.
+        Migration(kind: .scene, from: 11) { $0 },
+        Migration(kind: .project, from: 11) { $0 },
+        Migration(kind: .library, from: 11) { $0 }
     ]
 
     /// The render style a 1.x look maps to.

@@ -3,7 +3,24 @@
 What's known and not done yet, so nothing lives only in someone's head. What Maquette is: [SPEC.md](SPEC.md). The
 phase plan (M11 … M16, then 1.0) lives in studio-h's `PHASES.md`; ideas go to its `IDEAS.md`.
 
-## U1 in progress (Maquette 0.10.1)
+## Left from U2 (Maquette 0.12)
+
+- [ ] The device checklist in the "Maquette 0.12 — U2" PR (the new homes, moving and folding the object panel, Perform
+      waiting for a touch, the dark studio's contrast to the eye, the resting sidebar, the chrome-restraint trial both
+      ways, the mini and the 13-inch in both orientations).
+- [ ] The Library's Motion and Rigs pages come with U4, when poses, clips and rigs are saved things (D-227).
+- [ ] Settings ▸ Gestures lists the gestures; switching each off is U3's (D-237).
+- [ ] Hatched shadows, the Reference window and the brush library dropping down are U3 and later (D-239).
+- [ ] The rig steps' chips are still dimmed until a step opens: U4 rebuilds rigging (D-238).
+- [ ] Held rows that can't be walked (Dangle, Make it part of, the takes, the trigger deck, draggers) are gated in code
+      but not asserted by the App Store walk; they need a rigged character to reach (D-228).
+- [ ] The pinned object panel spot is per device, not per project.
+
+## U1 in progress (Maquette 0.10.1, shipped with 0.12)
+
+- [ ] A Paint stroke that starts on an object before it is ready to paint is dropped (it is made ready while chosen,
+      so this is rare now); keeping that stroke is U3/U5's (D-224).
+- [ ] Only the bone being weighed is drawn while its weights are worked out, not the whole pending rig (D-225).
 
 - [ ] Hesham's first feel recording on 0.10.1 (the "before"); U1's fixes are aimed at what it ranks (PHASES, U1 step 2).
 - [ ] The recorder times a touch to the first refresh after its answer is ready; the compositor's own frame after that

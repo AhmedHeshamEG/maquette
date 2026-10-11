@@ -21,9 +21,16 @@ reference and stays.
 | Fixes and touch: the silent load meter, one hold menu everywhere, Pencil or hand, the Motion row, the colour well, rigging in three steps with the bone redrawn | **0.8** |
 | The Schizzo board: brush strokes, pictures, notes, arrows and frames on an endless sheet in every project; pins as reference cards and scene planes; the Sketch template | **0.9.** In hmm-kit (`HmmBoard`, `HmmBoardUI`), so Cutaway mounts the same board (D-200). Strokes blend normally; no MCP tools yet (D-201). |
 | Live performance: the face, the voice and the hands driving any puppet (3D and 2D), blinking and breathing, triggers, draggers, dangling bones, takes and comping, the iPhone as the face camera | **0.10.** The voice gives the mouth the shape of the sound, not of the words (D-211); hands are the wrists (D-212); draggers stay where they're left (D-210). |
+| The layout pass (U2): the Library and Rig, the scene as a door, the object panel on one screen and moved by hand, one menu per object, Perform and Keys, the dark studio, the resting sidebar, the held features | **0.12.** [LAYOUT.md](LAYOUT.md) is the map; D-226 … D-239. Live performance's entry points are held in App Store builds until 1.2 (D-228). |
 | Sculpting, mechanisms + AR, web layer, house kit | M11–M14: all in 1.0 (CONTEXT §10.10) |
 | The Pencil page, sketching that talks back, the flipbook's experience, waiting, the smoothness pass | M15 |
 | Tutorials in Hesham's voice, artist info, Content Credentials, Time-lapse, Report a problem | M16 |
+
+### Where 0.10's controls live since 0.12
+
+Cast is gone (D-227): what said *Cast ▸ Voice & face*, *Triggers* and *Life* below is the selected character's
+button beside Record in the timeline's Perform; *Cast ▸ Rig* is Rig; *Make it part of* is in Rig. Everything below
+still works the same way.
 
 ### Live performance (0.10)
 

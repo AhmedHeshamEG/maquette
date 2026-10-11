@@ -2,21 +2,64 @@ import HmmDesign
 import LoweyCore
 import SwiftUI
 
-/// Preferences: appearance, feel, the stage, storage.
-struct PreferencesForm: View {
-    let app: AppModel
-    @AppStorage(HmmThemeMode.storageKey) private var themeMode = HmmThemeMode.dark.rawValue
-    @AppStorage(HmmHaptics.storageKey) private var haptics = true
-    @AppStorage(AppSettings.sidebarOnRight) private var sidebarOnRight = false
-    @AppStorage(AppSettings.pencilHoverPreview) private var pencilHover = false
+/// Settings ▸ Pencil and hands: who makes and who moves the view, and the Pencil's hover point.
+struct PencilAndHandsSection: View {
     @AppStorage(HmmPencilOrHand.fingersAlwaysMakeKey) private var fingersMake = false
+    @AppStorage(AppSettings.pencilHoverPreview) private var pencilHover = false
+
+    var body: some View {
+        Section {
+            Toggle("Draw with a finger too", isOn: $fingersMake)
+                .accessibilityIdentifier("settings-fingers-make")
+            Toggle("Pencil hover preview", isOn: $pencilHover)
+        } header: {
+            Text("Pencil and hands")
+        } footer: {
+            Text("One finger draws until an Apple Pencil touches the screen. Then the Pencil draws and fingers move the view, unless a finger draws too.")
+        }
+    }
+}
+
+/// Settings ▸ Stage: the sidebar, sharpness, moving around, the object panel, the joystick, the board.
+struct StageSettingsSection: View {
+    @AppStorage(AppSettings.alwaysShowsSidebar) private var alwaysShowsSidebar = false
     @AppStorage(AppSettings.fullResolutionStage) private var fullResolution = false
     @AppStorage(AppSettings.inspectorDocked) private var inspectorDocked = false
     @AppStorage(AppSettings.navigationSpeed) private var navigationSpeed = 1.0
     @AppStorage(AppSettings.showsJoystick) private var showsJoystick = true
     @AppStorage(AppSettings.joystickSpeed) private var joystickSpeed = 1.0
-    @AppStorage(AppSettings.storeInICloud) private var iCloud = true
     @AppStorage(AppSettings.boardEnabled) private var boardEnabled = true
+
+    var body: some View {
+        Section {
+            Toggle("Always show the sidebar", isOn: $alwaysShowsSidebar)
+                .accessibilityIdentifier("settings-always-sidebar")
+            Toggle("Always full resolution", isOn: $fullResolution)
+            LabeledSlider(title: "Moving around (orbit, pan, zoom)", value: navigationSpeed, range: AppSettings.navigationSpeedRange,
+                          format: { String(format: "%.2g×", $0) }) { navigationSpeed = $0 }
+            Toggle("Dock the object panel at the side", isOn: $inspectorDocked)
+                .accessibilityIdentifier("settings-inspector-docked")
+            Toggle("Joystick under a selection", isOn: $showsJoystick)
+                .accessibilityIdentifier("settings-joystick")
+            if showsJoystick {
+                LabeledSlider(title: "Joystick speed", value: joystickSpeed, range: AppSettings.joystickSpeedRange,
+                              format: { String(format: "%.2g×", $0) }) { joystickSpeed = $0 }
+            }
+            Toggle("The Board", isOn: $boardEnabled)
+                .accessibilityIdentifier("settings-board")
+        } header: {
+            Text("Stage")
+        } footer: {
+            Text("The Board is a sheet for planning in every project. Off: it leaves Actions and pinned pictures are put away. Nothing is deleted.")
+        }
+    }
+}
+
+/// Settings ▸ Appearance.
+struct AppearanceSection: View {
+    @AppStorage(HmmThemeMode.storageKey) private var themeMode = HmmThemeMode.dark.rawValue
+    @AppStorage(HmmHaptics.storageKey) private var haptics = true
+    @AppStorage(AppSettings.sidebarOnRight) private var sidebarOnRight = false
 
     var body: some View {
         Section("Appearance") {
@@ -26,36 +69,15 @@ struct PreferencesForm: View {
             Toggle("Sidebar on the right (left-handed)", isOn: $sidebarOnRight)
             Toggle("Haptics", isOn: $haptics)
         }
-        Section {
-            Toggle("Draw with a finger too", isOn: $fingersMake)
-                .accessibilityIdentifier("settings-fingers-make")
-        } header: {
-            Text("Pencil or hand")
-        } footer: {
-            Text("One finger draws until an Apple Pencil touches the screen. Then the Pencil draws and fingers move the view, unless this is on.")
-        }
-        Section("Stage") {
-            Toggle("Pencil hover preview", isOn: $pencilHover)
-            Toggle("Always full resolution", isOn: $fullResolution)
-            LabeledSlider(title: "Moving around (orbit, pan, zoom)", value: navigationSpeed, range: AppSettings.navigationSpeedRange,
-                          format: { String(format: "%.2g×", $0) }) { navigationSpeed = $0 }
-            Toggle("Dock the inspector at the side", isOn: $inspectorDocked)
-                .accessibilityIdentifier("settings-inspector-docked")
-            Toggle("Joystick under a selection", isOn: $showsJoystick)
-                .accessibilityIdentifier("settings-joystick")
-            if showsJoystick {
-                LabeledSlider(title: "Joystick speed", value: joystickSpeed, range: AppSettings.joystickSpeedRange,
-                              format: { String(format: "%.2g×", $0) }) { joystickSpeed = $0 }
-            }
-        }
-        Section {
-            Toggle("Schizzo board", isOn: $boardEnabled)
-                .accessibilityIdentifier("settings-board")
-        } header: {
-            Text("Board")
-        } footer: {
-            Text("A sheet for planning in every project. Off: it leaves Actions and pinned pictures are put away. Nothing is deleted.")
-        }
+    }
+}
+
+/// Where projects are kept.
+struct StorageSection: View {
+    let app: AppModel
+    @AppStorage(AppSettings.storeInICloud) private var iCloud = true
+
+    var body: some View {
         Section {
             Toggle("Keep projects in iCloud Drive", isOn: Binding(get: { iCloud }, set: { value in
                 iCloud = value
@@ -70,13 +92,17 @@ struct PreferencesForm: View {
     }
 }
 
-/// About, licences and acknowledgements.
+/// About: the version, licences, and Diagnostics (the feel recorder, the benchmarks, the Pencil's latency, logs).
 struct AboutSection: View {
+    let diagnostics: () -> Void
+
     var body: some View {
         Section("About") {
             LabeledContent("Version", value: AppIdentity.version)
             LabeledContent("Made by", value: "studio h.")
             NavigationLink("Licences") { AcknowledgementsView() }
+            Button("Diagnostics", action: diagnostics)
+                .accessibilityIdentifier("Diagnostics")
             Text("No account, no tracking: nothing leaves this iPad unless you share it.").font(.hmm(.footnote))
         }
     }
@@ -111,65 +137,5 @@ struct AcknowledgementsView: View {
             .padding(HmmSpacing.l)
         }
         .navigationTitle("Licences")
-    }
-}
-
-/// Every gesture, the same in every hmm. app, plus Maquette's own.
-struct GestureGuide: View {
-    struct Item: Identifiable {
-        let symbol: String
-        let gesture: String
-        let result: String
-        var id: String { gesture }
-    }
-
-    static let sections: [(String, [Item])] = [
-        ("Everywhere", HmmUniversalGesture.allCases.map { Item(symbol: "hand.tap", gesture: $0.gesture, result: $0.meaning) }),
-        ("Stage", [
-            Item(symbol: "hand.point.up.left", gesture: "Tap", result: "Select; tap empty space to deselect"),
-            Item(symbol: "hand.draw", gesture: "Drag", result: "Orbit; drag the selection to move it"),
-            Item(symbol: "arrow.up.and.down.and.arrow.left.and.right", gesture: "Two-finger drag", result: "Pan"),
-            Item(symbol: "arrow.trianglehead.2.clockwise.rotate.90", gesture: "Two fingers on the selection", result: "Twist turns it, pinch sizes it"),
-            Item(symbol: "scope", gesture: "Double-tap", result: "Frame the selection"),
-            Item(symbol: "hand.tap", gesture: "Touch and hold an object", result: "Add it to the selection"),
-            Item(symbol: "video", gesture: "Director view", result: "Fingers fly the shot camera: drag aims, two fingers move, pinch dollies, twist rolls")
-        ]),
-        ("Apple Pencil", [
-            Item(symbol: "pencil.tip", gesture: "A drawing or painting tool", result: "The Pencil makes, fingers move the view. No Pencil: a finger makes"),
-            Item(symbol: "scribble", gesture: "Draw, then hold", result: "Snaps to a clean line, circle or rectangle"),
-            Item(symbol: "pencil.and.outline", gesture: "Squeeze (Pencil Pro)", result: "Play / pause"),
-            Item(symbol: "arrow.clockwise", gesture: "Barrel roll (Pencil Pro)", result: "Turns what you perform")
-        ]),
-        ("Timeline", [
-            Item(symbol: "hand.point.up.left", gesture: "Tap or drag the ruler", result: "Move the playhead (snaps to words)"),
-            Item(symbol: "arrow.left.and.right", gesture: "Pinch", result: "Zoom time"),
-            Item(symbol: "rectangle.dashed", gesture: "Touch and hold, then drag", result: "Box-select keys"),
-            Item(symbol: "flag", gesture: "Touch and hold a marker", result: "Rename or delete it")
-        ]),
-        ("Keyboard", [
-            Item(symbol: "space", gesture: "Space · J K L", result: "Play / pause · shuttle"),
-            Item(symbol: "option", gesture: "⌥← ⌥→", result: "Back / forward 10 seconds"),
-            Item(symbol: "command", gesture: "⌘1 – ⌘5", result: "Select, Build, Draw, Transform, Look"),
-            Item(symbol: "command", gesture: "⌘Z ⇧⌘Z ⌘D ⌘G ⌘K", result: "Undo, redo, duplicate, group, key"),
-            Item(symbol: "questionmark", gesture: "?", result: "This page")
-        ])
-    ]
-
-    var body: some View {
-        List {
-            ForEach(Self.sections, id: \.0) { section in
-                Section(section.0) {
-                    ForEach(section.1) { item in
-                        HStack(spacing: HmmSpacing.s) {
-                            Image(systemName: item.symbol).foregroundStyle(Color.accentColor).frame(width: 28)
-                            Text(item.gesture).font(.hmm(.body, weight: .semibold)).frame(width: 220, alignment: .leading)
-                            Text(item.result).font(.hmm(.body)).foregroundStyle(.secondary)
-                        }
-                        .accessibilityElement(children: .combine)
-                    }
-                }
-            }
-        }
-        .navigationTitle("Gestures")
     }
 }

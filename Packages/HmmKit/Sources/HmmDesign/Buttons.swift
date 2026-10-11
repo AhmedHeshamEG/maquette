@@ -2,23 +2,27 @@
     import SwiftUI
 
     /// A round icon button: 44 pt (52 pt for primary transport), SF Symbol in medium weight, glass unless it sits on
-    /// a panel. The accent fills it only while `isOn` (the active tool, the open panel).
+    /// a panel. The accent fills it while `isOn` (the active tool, the open panel). With chrome restraint on, only the
+    /// one active thing (`accent`) is filled with the accent; anything else that is on gets a quiet neutral fill.
     public struct HmmButton: View {
         private let systemName: String
         private let label: String
         private let isOn: Bool
+        private let accent: Bool
         private let size: Double
         private let role: ButtonRole?
         private let action: () -> Void
         @Environment(\.hmmInsideGlass) private var insideGlass
         @Environment(\.hmmTheme) private var theme
         @Environment(\.isEnabled) private var isEnabled
+        @Environment(\.hmmRestrainedChrome) private var restrained
 
-        public init(_ systemName: String, label: String, isOn: Bool = false, size: Double = HmmTarget.minimum,
+        public init(_ systemName: String, label: String, isOn: Bool = false, accent: Bool = false, size: Double = HmmTarget.minimum,
                     role: ButtonRole? = nil, action: @escaping () -> Void) {
             self.systemName = systemName
             self.label = label
             self.isOn = isOn
+            self.accent = accent
             self.size = size
             self.role = role
             self.action = action
@@ -34,7 +38,7 @@
                     .font(.system(size: size * 0.4, weight: isOn ? .semibold : .medium))
                     .frame(width: size, height: size)
                     .foregroundStyle(foreground)
-                    .background(Circle().fill(isOn ? theme.accent : Color.clear))
+                    .background(Circle().fill(fill))
                     .contentShape(Circle())
             }
             .buttonStyle(.plain)
@@ -46,8 +50,16 @@
             .hmmHoverHighlight()
         }
 
+        /// Whether this button wears the accent (restrained: only the one active thing does).
+        private var wearsAccent: Bool { isOn && (!restrained || accent) }
+
+        private var fill: Color {
+            if wearsAccent { return theme.accent }
+            return isOn ? theme.text.opacity(0.16) : Color.clear
+        }
+
         private var foreground: Color {
-            if isOn { return theme.onAccent }
+            if wearsAccent { return theme.onAccent }
             return role == .destructive ? theme.danger : theme.text
         }
     }
@@ -77,10 +89,15 @@
             } label: {
                 HStack(spacing: HmmSpacing.xs) {
                     if let systemName { Image(systemName: systemName).symbolRenderingMode(.hierarchical) }
-                    Text(LocalizedStringKey(title)).lineLimit(1)
+                    // A label is never cut: a long one takes a second line.
+                    Text(LocalizedStringKey(title))
+                        .lineLimit(2)
+                        .multilineTextAlignment(.center)
+                        .fixedSize(horizontal: false, vertical: true)
                 }
                 .font(.hmm(.body, weight: .semibold))
                 .padding(.horizontal, HmmSpacing.m)
+                .padding(.vertical, HmmSpacing.xxs)
                 .frame(minHeight: HmmTarget.minimum)
                 .foregroundStyle(prominent ? theme.onAccent : (role == .destructive ? theme.danger : theme.text))
                 .background(Capsule().fill(prominent ? theme.accent : theme.surface2.opacity(0.9)))

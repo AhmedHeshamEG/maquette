@@ -22,7 +22,7 @@ public enum StageTool: String, CaseIterable, Identifiable, Sendable {
     case model
     /// Paint ▸ Colour: colour painted on models with the brush engine (`ColourPaintSettings`).
     case paint
-    /// Cast ▸ Rig: bones drawn through an object, weights painted, the person rig's dots (`RigSettings`).
+    /// Rig: bones drawn through an object, weights painted, the person rig's dots (`RigSettings`).
     case rig
 
     public var id: String { rawValue }
@@ -75,26 +75,26 @@ public enum StageTool: String, CaseIterable, Identifiable, Sendable {
 }
 
 /// The floating panels the corner clusters open. One at a time; tapping its button again closes it. Animate, the
-/// fourth making tool, has no panel: it calls the timeline (docs/LAYOUT.md).
+/// last making tool, has no panel: it calls the timeline (docs/LAYOUT.md).
 public enum ClusterPanel: String, Identifiable, Sendable {
-    // Top-left: document and app.
-    case actions, look, select
+    // Top-left: document and app (the scene opens from its name, under the cluster).
+    case actions, look, select, library, scene
     // Top-right: making.
-    case model, draw, paint, cast
+    case model, draw, paint, rig
 
     public var id: String { rawValue }
 
     public var isLeading: Bool {
         switch self {
-        case .actions, .look, .select: true
+        case .actions, .look, .select, .library, .scene: true
         default: false
         }
     }
 }
 
-/// The Model panel's pages: things to add, shaping (sketch, push/pull, booleans), the library of models, snapping.
+/// The Model panel's pages: things to add, shaping (sketch, push/pull, booleans), snapping and measuring.
 public enum ModelPage: String, CaseIterable, Identifiable, Sendable {
-    case add, shape, library, precision
+    case add, shape, precision
 
     public var id: String { rawValue }
 
@@ -102,7 +102,6 @@ public enum ModelPage: String, CaseIterable, Identifiable, Sendable {
         switch self {
         case .add: "Add"
         case .shape: "Edit"
-        case .library: "Library"
         case .precision: "Precision"
         }
     }
@@ -111,15 +110,35 @@ public enum ModelPage: String, CaseIterable, Identifiable, Sendable {
         switch self {
         case .add: "plus"
         case .shape: "cube.transparent"
-        case .library: "books.vertical"
         case .precision: "ruler"
+        }
+    }
+}
+
+/// The Library's pages: Things (the characters, the Kit) and Yours (what you imported, built and saved).
+public enum LibraryPage: String, CaseIterable, Identifiable, Sendable {
+    case things, yours
+
+    public var id: String { rawValue }
+
+    public var title: String {
+        switch self {
+        case .things: "Things"
+        case .yours: "Yours"
+        }
+    }
+
+    public var systemImage: String {
+        switch self {
+        case .things: "shippingbox"
+        case .yours: "person.crop.square"
         }
     }
 }
 
 /// Sheets over the editor (one at a time).
 public enum EditorSheet: String, Identifiable, Sendable {
-    case export, audio, transcript, scripts, bridge, blobBuilder, characterBuilder, settings, diagnostics, gestures, timelineSettings
+    case export, audio, transcript, scripts, bridge, blobBuilder, characterBuilder, settings, diagnostics, gestures, timelineSettings, learn
     /// The brush library (and Brush Studio) for the drawing tool in `EditorModel.brushTool`.
     case brushes
 
@@ -242,22 +261,22 @@ public struct ScatterPanelSettings: Equatable, Sendable {
     public init() {}
 }
 
+/// The timeline's two modes, shown as words (CONTEXT §10.10): Perform (record by moving things while time runs) and
+/// Keys. Sliding a whole animation in time is dragging its bar, in either.
 public enum TimelineMode: String, CaseIterable, Identifiable, Sendable {
-    case compose, perform, keyframe
+    case perform, keyframe
 
     public var id: String { rawValue }
 
     public var title: String {
         switch self {
-        case .compose: "Compose"
         case .perform: "Perform"
-        case .keyframe: "Keyframe"
+        case .keyframe: "Keys"
         }
     }
 
     public var systemImage: String {
         switch self {
-        case .compose: "rectangle.split.3x1"
         case .perform: "record.circle"
         case .keyframe: "diamond"
         }
@@ -266,8 +285,14 @@ public enum TimelineMode: String, CaseIterable, Identifiable, Sendable {
 
 public enum PerformPhase: Equatable, Sendable {
     case idle
+    /// Armed (Procreate Dreams' Performing): "Ready" shows, and the first touch on the stage starts time.
+    case ready
+    /// A face, a voice or the iPad's motion performs without a touch: 3-2-1, then time runs.
     case countdown(Int)
     case recording
+
+    /// Ready or recording: a touch on the stage performs.
+    public var isArmed: Bool { self == .ready || self == .recording }
 }
 
 public struct PerformSettings: Equatable, Sendable {

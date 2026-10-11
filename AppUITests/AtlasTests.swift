@@ -1,6 +1,7 @@
 import XCTest
 
-/// The atlas: a picture of every screen, panel and page in landscape, to review the layout as a whole.
+/// The atlas: a picture of every screen, panel and page, in landscape or portrait (`ATLAS_ORIENTATION`), to review the
+/// layout as a whole.
 /// It asserts nothing: a control that can't be reached is listed in the "Missing" attachment. It runs only with
 /// `ATLAS=1` (the Atlas workflow), never in the smoke run.
 @MainActor
@@ -31,7 +32,7 @@ final class AtlasTests: XCTestCase {
         try XCTSkipUnless(ProcessInfo.processInfo.environment["ATLAS"] == "1", "the atlas runs in its own workflow")
         continueAfterFailure = true
         executionTimeAllowance = 1200
-        XCUIDevice.shared.orientation = .landscapeLeft
+        XCUIDevice.shared.orientation = ProcessInfo.processInfo.environment["ATLAS_ORIENTATION"] == "portrait" ? .portrait : .landscapeLeft
         app = XCUIApplication()
         app.launchArguments = ["-ui-testing", "-ui-testing-sample", "-ui-testing-screenshots"]
     }
@@ -99,12 +100,6 @@ final class AtlasTests: XCTestCase {
 
     private func newProject() {
         tap("new-project", timeout: 30)
-        let field = app.textFields["project-name"]
-        if field.waitForExistence(timeout: 5) {
-            field.tap()
-            field.typeText("Atlas")
-        }
-        tap("create-project")
         _ = app.otherElements["stage"].waitForExistence(timeout: 15)
     }
 
@@ -116,9 +111,8 @@ final class AtlasTests: XCTestCase {
     }
 
     private func addBlob() {
-        tap("Cast")
+        tap("Library")
         tap("add-me")
-        tap("Cast")
     }
 
     private func open(_ page: Page) {
@@ -165,7 +159,7 @@ final class AtlasTests: XCTestCase {
         fresh(.home)
         shot("Home")
         each([
-            Page(name: "New project", steps: ["new-project"], scrolls: 2, side: .centre),
+            Page(name: "Samples", steps: ["samples"]),
             Page(name: "Sort", steps: ["gallery-sort"]),
             Page(name: "Select several", steps: ["gallery-select"]),
             Page(name: "Home menu", steps: ["theater-menu"]),
@@ -180,19 +174,22 @@ final class AtlasTests: XCTestCase {
         shot("Empty stage")
         walk([
             Page(name: "Actions", steps: ["Actions"], scrolls: 1, side: .leading),
-            Page(name: "Look", steps: ["Look"], scrolls: 2, side: .leading),
+            Page(name: "Look, Style", steps: ["Look", "look-style"], scrolls: 1, side: .leading),
+            Page(name: "Look, World", steps: ["Look", "look-world"], scrolls: 1, side: .leading),
+            Page(name: "Look, Finish", steps: ["Look", "look-finish"], scrolls: 1, side: .leading),
             Page(name: "Select", steps: ["Select"], side: .leading),
-            Page(name: "Model, Add", steps: ["Model", "model-add"], scrolls: 3),
+            Page(name: "Library, Things", steps: ["Library", "library-things"], scrolls: 2, side: .leading),
+            Page(name: "Library, Yours", steps: ["Library", "library-yours"], side: .leading),
+            Page(name: "The scene", steps: ["scene-name"], scrolls: 1, side: .leading),
+            Page(name: "Model, Add", steps: ["Model", "model-add"], scrolls: 2),
             Page(name: "Model, Edit", steps: ["Model", "model-shape"], scrolls: 2),
-            Page(name: "Model, Library", steps: ["Model", "model-library"], scrolls: 1),
             Page(name: "Model, Precision", steps: ["Model", "model-precision"], scrolls: 2),
             Page(name: "Draw, Ink", steps: ["Draw", "tool-ink"], scrolls: 1),
             Page(name: "Draw, Solid shape", steps: ["Draw", "tool-draw"], scrolls: 1),
             Page(name: "Draw, Flipbook", steps: ["Draw", "tool-flipbook"], scrolls: 1),
             Page(name: "Paint, Colour", steps: ["Paint", "tool-paint"], scrolls: 1),
             Page(name: "Paint, Shadow Brush", steps: ["Paint", "tool-shadow-brush"], scrolls: 1),
-            Page(name: "Paint, Scatter", steps: ["Paint", "tool-scatter"]),
-            Page(name: "Cast", steps: ["Cast"], scrolls: 1)
+            Page(name: "Rig, nothing selected", steps: ["Rig"])
         ], from: .blank)
     }
 
@@ -203,12 +200,13 @@ final class AtlasTests: XCTestCase {
             Page(name: "Drawing guide", steps: ["Draw", "tool-ink", "drawing-guide"]),
             Page(name: "Colour well", steps: ["Draw", "tool-ink", "colour-well"]),
             Page(name: "Flipbook tracks", steps: ["Draw", "tool-flipbook", "flipbook-tracks"]),
-            Page(name: "My Look editor", steps: ["Look", "look-clay", "duplicate-look"], scrolls: 1, side: .leading),
+            Page(name: "My Look editor", steps: ["Look", "look-style", "look-clay", "duplicate-look"], scrolls: 1, side: .leading),
             Page(name: "Fine tune the world", steps: ["Look", "Fine tune the world"], scrolls: 1, side: .leading),
-            Page(name: "Outliner", steps: ["Select", "outliner"], side: .leading),
+            Page(name: "Set up for a Room", steps: ["scene-name", "setup-room", "scene-name", "Model", "model-add"]),
             Page(name: "Print check", steps: ["Model", "model-shape", "print-check"]),
             Page(name: "Views", steps: ["views-menu"]),
-            Page(name: "Director view", steps: ["director-view"])
+            Page(name: "Through the camera", steps: ["camera-button"]),
+            Page(name: "The sidebar awake", steps: ["sidebar-rail"])
         ], from: .blank)
     }
 
@@ -218,22 +216,23 @@ final class AtlasTests: XCTestCase {
             Page(name: "Export", steps: ["Actions", "open-export"], scrolls: 2, side: .centre),
             Page(name: "History", steps: ["Actions", "open-history"]),
             Page(name: "Board", steps: ["Actions", "open-board"]),
-            Page(name: "Scripts", steps: ["Actions", "open-scripts"]),
-            Page(name: "Bridge", steps: ["Actions", "open-bridge"], scrolls: 1, side: .centre),
-            Page(name: "Gestures", steps: ["Actions", "Gestures"], scrolls: 2, side: .centre),
-            Page(name: "Diagnostics", steps: ["Actions", "Diagnostics"], scrolls: 2, side: .centre),
-            Page(name: "Settings", steps: ["Actions", "Settings"], scrolls: 3, side: .centre)
+            Page(name: "Learn", steps: ["Actions", "open-learn"], side: .centre),
+            Page(name: "Gestures", steps: ["Actions", "open-learn", "learn-gestures"], scrolls: 2, side: .centre),
+            Page(name: "Settings", steps: ["Actions", "Settings"], scrolls: 3, side: .centre),
+            Page(name: "Scripts", steps: ["Actions", "Settings", "open-scripts"]),
+            Page(name: "Bridge", steps: ["Actions", "Settings", "open-bridge"], scrolls: 1, side: .centre),
+            Page(name: "Diagnostics", steps: ["Actions", "Settings", "Diagnostics"], scrolls: 2, side: .centre)
         ], from: .blank)
     }
 
     func test05Selection() {
         area = "5 Selection"
         fresh(.cube)
-        shot("Inspector")
-        for index in 1 ... 3 {
+        shot("Object panel")
+        for index in 1 ... 2 {
             element("inspector").swipeUp()
             settle(1)
-            shot("Inspector, further \(index)")
+            shot("Object panel, further \(index)")
         }
         fresh(.cube)
         app.otherElements["stage"].coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).press(forDuration: 1.2)
@@ -241,16 +240,21 @@ final class AtlasTests: XCTestCase {
         shot("Hold menu on an object")
         each([
             Page(name: "Turn gizmo", steps: ["gizmo-rotate"]),
-            Page(name: "Transform as numbers", steps: ["transform-toggle"]),
-            Page(name: "More actions", steps: ["more-actions"]),
-            Page(name: "Motion row, Bounce", steps: ["motion-bounce"]),
+            Page(name: "Numbers", steps: ["transform-toggle"]),
+            Page(name: "Look of this object", steps: ["object-look"], scrolls: 1),
+            Page(name: "More ways to move", steps: ["more-motion"], scrolls: 2),
+            Page(name: "The object's menu", steps: ["more-actions"]),
+            Page(name: "Make it move, Bounce", steps: ["motion-bounce"]),
+            Page(name: "The chip", steps: ["fold-inspector"]),
             Page(name: "Model, Edit on an object", steps: ["Model", "model-shape"], scrolls: 2),
-            Page(name: "Paint layers", steps: ["Paint", "tool-paint", "paint-start"], scrolls: 1),
-            Page(name: "Rig, Bones", steps: ["Cast", "rig-step-bones"], scrolls: 1),
-            Page(name: "Rig as a person", steps: ["Cast", "rig-person"])
+            Page(name: "Paint layers", steps: ["Paint", "tool-paint", "paint-layer-add"], scrolls: 1),
+            Page(name: "Rig, Bones", steps: ["Rig", "rig-step-bones"], scrolls: 1),
+            Page(name: "Rig as a person", steps: ["Rig", "rig-person"])
         ], from: .cube)
         fresh(.blob)
-        open(Page(name: "Cast with a character", steps: ["Cast"], scrolls: 3))
+        open(Page(name: "Rig with a character", steps: ["Rig"], scrolls: 2))
+        fresh(.blob)
+        open(Page(name: "Perform with a character", steps: ["Animate", "timeline-mode-perform", "perform-character"], scrolls: 1, side: .centre))
     }
 
     func test06Timeline() {
@@ -258,10 +262,7 @@ final class AtlasTests: XCTestCase {
         fresh(.cube)
         tap("Animate")
         settle(2)
-        shot("Timeline, Compose")
-        tap("timeline-mode-keyframe")
-        settle(1)
-        shot("Timeline, Keyframe")
+        shot("Timeline, Keys")
         tap("timeline-mode-perform")
         settle(1)
         shot("Timeline, Perform")
@@ -271,7 +272,8 @@ final class AtlasTests: XCTestCase {
         each([
             Page(name: "Sound and words", steps: ["Animate", "Sound and words"]),
             Page(name: "Timeline menu", steps: ["Animate", "timeline-menu"]),
-            Page(name: "Graph editor", steps: ["Animate", "timeline-mode-keyframe", "auto-key"])
+            Page(name: "+ Overlay", steps: ["Animate", "add-overlay"]),
+            Page(name: "Perform, Ready", steps: ["Animate", "timeline-mode-perform", "perform-record"])
         ], from: .cube)
     }
 
@@ -281,7 +283,7 @@ final class AtlasTests: XCTestCase {
         shot("A finished scene")
         walk([
             Page(name: "Look on a scene", steps: ["Look"], side: .leading),
-            Page(name: "Outliner on a scene", steps: ["Select", "outliner"], side: .leading),
+            Page(name: "Objects on a scene", steps: ["scene-name"], side: .leading),
             Page(name: "Model over a scene", steps: ["Model", "model-add"])
         ], from: .sample)
         tap("Animate")

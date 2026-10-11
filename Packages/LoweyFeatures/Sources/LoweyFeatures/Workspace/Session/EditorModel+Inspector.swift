@@ -9,6 +9,34 @@ import UIKit
 /// when the selection changes, and once edits or the camera pause (not every frame of a drag or an orbit: the
 /// inspector glides over when things come to rest).
 extension EditorModel {
+    /// One big thing open at a time (CONTEXT §10.10): while a panel, the whole timeline, a sheet or the board is open,
+    /// or after the fold button, the object panel is a chip (its name and Move · Turn · Size).
+    var inspectorAsChip: Bool {
+        inspectorFolded || (openPanel != nil && openPanel != .select) || timelinePresence == .full || sheet != nil
+    }
+
+    /// One line at the bottom while a guided step runs (CONTEXT §10.10), gone the moment the step ends.
+    var guideLine: String? {
+        if pickActive { return "Tap something to take its colour into palette slot \(pickSlot + 1)" }
+        if tool == .scatter { return selection.isEmpty ? "Select what to scatter first" : "Drag on the ground to fill an area with copies" }
+        switch modeling.mode.buildTool {
+        case .walls?: return modeling.build.isEmpty ? "Tap where the first wall starts" : "Tap each corner, then Done"
+        case .floor?: return modeling.build.isEmpty ? "Tap the floor's first corner" : "Tap each corner, then Done"
+        case .door?, .window?: return "Tap a wall where it goes"
+        case .stairs?: return "Tap where the stairs start"
+        case nil: return nil
+        }
+    }
+
+    /// Fold the object panel to its chip, or unfold it. Unfolding is choosing it as the one big thing: an open panel
+    /// closes and the whole timeline folds to its transport.
+    func foldInspector(_ fold: Bool) {
+        inspectorFolded = fold
+        guard !fold else { return }
+        if openPanel != nil, openPanel != .select { openPanel = nil }
+        if timelinePresence == .full { timelinePresence = .transport }
+    }
+
     /// With no delay given: at once for a new selection, after a short pause for the same one being edited.
     func refreshSelectionScreenRect(after delay: Double? = nil) {
         selectionRectTask?.cancel()

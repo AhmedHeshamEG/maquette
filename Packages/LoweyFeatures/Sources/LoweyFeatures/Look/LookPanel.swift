@@ -2,33 +2,42 @@ import HmmDesign
 import LoweyCore
 import SwiftUI
 
-/// Look: which Look (Ink, Comic, Sketch, Clay, Low-poly or a My Look), the Mood, the palette, the finish. Few
-/// decisions first; fine tuning one tap deeper.
+/// Look, in three short pages (progressive disclosure): **Style** (which Look, and the palette), **World** (the mood,
+/// the light and sky, fine tuning) and **Finish** (the grain, outlines and film finishes, and how motion is drawn: smooth,
+/// on twos, on threes). The page is remembered.
 struct LookPanel: View {
     @Bindable var editor: EditorModel
     @State private var savingLook = false
     @State private var lookName = ""
     @State private var showsFineTune = false
+    @AppStorage("look.page") private var page = LookPage.style
 
     private var look: Look { editor.look }
 
     var body: some View {
-        HmmPanel("Look", width: 380, sizing: HmmPanelSizing(id: "look"), close: { editor.openPanel = nil }) {
+        HmmPanel("Look", width: 380, sizing: HmmPanelSizing(id: "look"), movable: true, close: { editor.openPanel = nil }) {
             VStack(alignment: .leading, spacing: HmmSpacing.m) {
+                pages
+                switch page {
+                case .style:
+                    looks
+                    if let mine = editor.document.project.customLooks.first(where: { $0.id == look.presetID }) {
+                        MyLookEditor(editor: editor, preset: mine)
+                    }
+                    PaletteSection(editor: editor)
+                case .world:
+                    moods
+                    DisclosureGroup("Fine tune the world", isExpanded: $showsFineTune) {
+                        WorldSection(editor: editor).padding(.top, HmmSpacing.xs)
+                    }
+                    .font(.hmm(.body, weight: .semibold))
+                    saved
+                case .finish:
+                    FinishSection(editor: editor)
+                    MotionFinish(editor: editor)
+                }
                 Toggle("Only this scene", isOn: Binding(get: { editor.lookIsSceneOnly }, set: { editor.setLookSceneOnly($0) }))
                     .font(.hmm(.body, weight: .semibold))
-                looks
-                if let mine = editor.document.project.customLooks.first(where: { $0.id == look.presetID }) {
-                    MyLookEditor(editor: editor, preset: mine)
-                }
-                moods
-                PaletteSection(editor: editor)
-                FinishSection(editor: editor)
-                DisclosureGroup("Fine tune the world", isExpanded: $showsFineTune) {
-                    WorldSection(editor: editor).padding(.top, HmmSpacing.xs)
-                }
-                .font(.hmm(.body, weight: .semibold))
-                saved
             }
         }
         .alert("Save the world to your library", isPresented: $savingLook) {
@@ -39,6 +48,17 @@ struct LookPanel: View {
                 editor.app.show("Saved “\(name)” to your library")
             }
             Button("Cancel", role: .cancel) {}
+        }
+    }
+
+    private var pages: some View {
+        HStack(spacing: HmmSpacing.xs) {
+            ForEach(LookPage.allCases) { item in
+                ChoiceChip(title: item.title, systemName: item.systemImage, isOn: page == item) {
+                    withHmmAnimation(.snappy) { page = item }
+                }
+                .accessibilityIdentifier("look-\(item.rawValue)")
+            }
         }
     }
 
@@ -95,6 +115,48 @@ struct LookPanel: View {
                     Button(saved.name) { editor.place(.look(saved)) }.font(.hmm(.body))
                 }
             }
+        }
+    }
+}
+
+/// Look's three pages.
+enum LookPage: String, CaseIterable, Identifiable {
+    case style, world, finish
+
+    var id: String { rawValue }
+
+    var title: String {
+        switch self {
+        case .style: "Style"
+        case .world: "World"
+        case .finish: "Finish"
+        }
+    }
+
+    var systemImage: String {
+        switch self {
+        case .style: "paintpalette"
+        case .world: "sun.horizon"
+        case .finish: "film"
+        }
+    }
+}
+
+/// Finish ▸ Motion: how the whole scene's motion is drawn (smooth, on twos, on threes). Any one thing can choose its
+/// own in its panel (More ways to move ▸ Animated on).
+struct MotionFinish: View {
+    let editor: EditorModel
+
+    var body: some View {
+        PanelSection("Motion") {
+            Picker("Motion", selection: Binding(get: { editor.timeline.stepping }, set: { editor.setProjectStepping($0) })) {
+                Text("Smooth").tag(Stepping.onOnes)
+                Text("On twos").tag(Stepping.onTwos)
+                Text("On threes").tag(Stepping.onThrees)
+            }
+            .pickerStyle(.segmented)
+            .accessibilityIdentifier("finish-motion")
+            Hint("On twos looks hand-animated. Cameras stay smooth; any one thing can choose its own in its panel.")
         }
     }
 }

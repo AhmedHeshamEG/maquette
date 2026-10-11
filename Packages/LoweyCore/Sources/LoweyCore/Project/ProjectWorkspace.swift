@@ -147,6 +147,31 @@ public struct ProjectWorkspace: Codable, Hashable, Sendable {
     }
 }
 
+public extension ProjectWorkspace {
+    /// The project set up for another job ("Set up for", any time): the set-up's units, snapping, grid, new-shape size
+    /// and printer, and its timeline if it asks for more of it than is showing. What the project holds and how it was
+    /// left (the timeline's height, guides, the section, pinned pictures) stays.
+    func settingUp(for kind: StarterTemplate.Kind) -> ProjectWorkspace {
+        let target = StarterTemplate.template(kind).workspace
+        var result = self
+        result.template = kind
+        result.snap = target.snap
+        result.showsGrid = target.showsGrid
+        result.shapeSize = target.shapeSize
+        result.units = target.units
+        result.printBed = target.printBed
+        let order: [TimelinePresence] = [.hidden, .transport, .full]
+        if (order.firstIndex(of: target.timeline) ?? 0) > (order.firstIndex(of: timeline) ?? 0) { result.timeline = target.timeline }
+        return result
+    }
+
+    /// The set-up a project is in (one from before set-ups, or from a retired template, reads as Blank).
+    var setUp: StarterTemplate.Kind {
+        guard let template, StarterTemplate.setUps.contains(template) else { return .blank }
+        return template
+    }
+}
+
 public extension ProjectStore {
     static func workspaceURL(in project: URL) -> URL {
         project.appendingPathComponent(ProjectLayout.workspaceFile)

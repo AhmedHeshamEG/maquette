@@ -75,17 +75,20 @@ extension EditorModel {
         }
     }
 
-    /// Changes of animated properties become keys at the playhead; in Keyframe mode with auto-key on, every animatable
-    /// change does (Compose never creates keys, so building a set never sprinkles them). Structural edits pass through.
+    /// Keys add themselves (CONTEXT §10.10): a change of a property that has keys becomes a key at the playhead, and in
+    /// Keys any animatable change of a thing that is already animated does. The first key on a thing is deliberate (the
+    /// Key button, a motion, a performance), so building a set never sprinkles keys. Structural edits pass through.
     func keyed(_ command: EditCommand) -> EditCommand {
         switch command {
         case let .setProperties(changes):
             var plain: [PropertyChange] = []
             var keyedChanges: [PropertyChange] = []
+            // Keyed things only: a Blob's breathing or a loop isn't a key to add to.
+            let animated = autoKey && timelineMode == .keyframe ? Set(timeline.tracks.map(\.target)) : []
             for change in changes {
                 let animatable = change.key.spec?.animatable == true && change.value != nil
                 let hasTrack = timeline.track(for: change.object, change.key) != nil
-                if animatable, hasTrack || (autoKey && timelineMode == .keyframe) {
+                if animatable, hasTrack || animated.contains(change.object) {
                     keyedChanges.append(change)
                 } else {
                     plain.append(change)
@@ -155,6 +158,15 @@ extension EditorModel {
         refreshSelectionOverlay()
         updateStageClock()
         showChrome()
+    }
+
+    /// Time stops with the hand while performing (the take isn't over: touching again goes on from here).
+    func holdPerformTime() {
+        guard isPlaying else { return }
+        isPlaying = false
+        clock.stop()
+        audioPlayback.stop()
+        updateStageClock()
     }
 
     private func tick(_ delta: Double) {

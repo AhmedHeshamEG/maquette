@@ -24,13 +24,14 @@ flowchart TD
         Perception[HmmPerception]
         Brush[HmmBrush · HmmBrushRender]
         Board[HmmBoard · HmmBoardUI]
+        Held[HmmHeld]
     end
     App --> Features
     Features --> Engine
     Features --> Core
     Engine --> Core
     Core --> Manifold
-    Features --> Design & Bridge & Diagnostics & Documents & Perception & Board
+    Features --> Design & Bridge & Diagnostics & Documents & Perception & Board & Held
     Engine --> Media & Diagnostics & Transcript & Perception & Brush
     Core --> Commands & Documents & Transcript & Brush
     Board --> Brush
@@ -250,7 +251,7 @@ flowchart LR
   resetting, painting weights, the bones on the stage), `EditorModel+RigSteps` (Bones → Skin → Pose and when each
   opens, the bone under the Pencil shown as it will land, forgetting the poses of replaced joints),
   `EditorModel+PersonRig`, `RigTypes` (`RigSettings` with its `Step`, `PersonRigging`), `StageGestures+Rig`,
-  `Cast/RigSection` (the three steps, `RigStepRow`, `RigOptionsBar`, `PersonDotMarks`).
+  `Rig/RigSection` (the three steps, `RigStepRow`, `RigOptionsBar`, `PersonDotMarks`).
   `EditorModel+Poses` drags any character's joints through `IKHandles`; `restingRigTarget` shows the object being
   rigged or painted in its rest pose (D-171).
 
@@ -341,8 +342,8 @@ flowchart LR
 - **Engine `Face/VoiceCapture.swift`**: the microphone through an `AVAudioSinkNode`, measured on its own queue, the
   mouth delivered on the main actor. `FaceLinkSender` also sends `eyeWide` and `browAngle`.
 - **Features**: `EditorModel+Live` (`LiveState`: the voice, the chosen joint, held triggers, the picked take, the live
-  past; draggers, dangle, life, parts), `EditorModel+Triggers`, `EditorModel+Takes`; `Cast/LiveSections` (`VoiceLevel`,
-  `TriggersSection`, `LifeSection`, `PartSection`, `DangleControl`, `TriggerDeckBar`), `Timeline/TakesStrip`. The
+  past; draggers, dangle, life, parts), `EditorModel+Triggers`, `EditorModel+Takes`; `Timeline/PerformSections` (`VoiceLevel`,
+  `TriggersSection`, `LifeSection`, `TriggerDeckBar`), `Rig/RigParts` (`PartSection`, `DangleControl`), `Timeline/TakesStrip`. The
   menu bar's Perform menu holds the microphone and the trigger keys.
 
 ## LoweyRender 2
@@ -396,7 +397,23 @@ entitlement, on the device otherwise; `HmmConflictSheet` resolves conflicting ve
 
 ## The layout
 
-docs/LAYOUT.md is the map; the Shell composes it. `RootView` shows Home (`TheaterView`) and presents the open project
+docs/LAYOUT.md is the map; the Shell composes it. Since 0.12 (U2) the feature folders follow it: `Library/` (the
+Library panel, the Kit browser, the character sheets), `Rig/` (rigging, poses, clips, parts), `Scene/` (the scene's
+door: set-up, scenes, the outliner), `Select/` (the small bar), `Learn/`, and the timeline's `PerformCharacter`,
+`PerformSections` and `OverlayMenu`. `ClusterPanel` has `library`, `scene` and `rig`; `EditorModel.inspectorAsChip`
+is "one big thing open at a time"; `openPanel`'s `didSet` folds the whole timeline to its transport;
+`EditorModel+Workspace.setUp(for:)` applies Core's `ProjectWorkspace.settingUp`. The object panel's placement, its
+pinned spot and its chip are `Shell/FloatingInspector`; panels moved by hand are hmm-kit's `hmmMovable`, kept inside
+`hmmPanelBounds` (set by `StageChrome`). The undo line and the guide line are hmm-kit's presenters on `EditorScreen`
+(`EditorModel.undoLine`, `guideLine`); `Hint` obeys hmm-kit's instructions switch; `shown(_:)` hides what can't act.
+
+**Held features** (CONTEXT §5, D-228): `Workspace/Support/Held.swift` lists `MaquetteHeld`; `Held.isOn(_:)` reads
+hmm-kit's `HmmHeld` from the Info.plist key `HmmHeld`, filled from `project.yml`'s `MAQUETTE_HELD` (set only in the
+AppStore configuration). Only entry points ask. The `appstore` CI job builds that configuration and walks LAYOUT.md,
+asserting rows marked *(held: 1.x)* are absent.
+
+**The editor's colours** (grid strengths, axes, selection outline) are Core's `StageColors`, which the renderer reads
+and `StageColorsTests` checks against the dark studio's ground. `RootView` shows Home (`TheaterView`) and presents the open project
 over it as a full-screen cover with the zoom transition from the card's picture. `EditorScreen` stacks the stage and
 the timeline by `EditorModel.timelinePresence` (hidden, transport, full; height and presence come from and go back to
 `workspace.json` through `EditorModel+Workspace`). `StageChrome` lays out the sidebar and the bottom row, then the two clusters and the panel each
@@ -419,6 +436,33 @@ stills and thumbnails always render `.full`. `PerformanceMonitor` feeds hmm-kit'
 `EditorModel.adaptPreview` moves the stage's render-scale range one tier lighter (Engine's `AdaptivePreview`: back after
 twenty calm seconds, longer when a recovery doesn't hold), and Diagnostics ▸ Smoothness shows the numbers
 (`EditorModel.loadSummary`). `-load-level over` puts a UI test's stage under load.
+
+## Pictures of things
+
+`Thumbnailer` (Features) draws every picture with the stage's renderer: project stills and turntables, library tiles,
+Looks, the character portrait. It loads every model a picture places before drawing it (the renderer draws nothing for
+a model still loading). **The Kit's pictures are baked**: `KitPicturesTests` renders each Kit asset in the Ink Look on
+the CI simulator, `Tools/bake-kit-pictures.sh` (the Kit pictures workflow, or a `kit-pictures/…` branch) writes
+`picture.png` beside its `model.glb`, and `fetch-kit.py check` fails CI while one is missing. `LibraryModel` reads a Kit
+tile's picture from the app bundle off the main thread when the tile appears (`LibraryAsset.kitPicture`); it never
+renders one, and nothing about the Kit is read at launch. Imported models, saved builds and Looks get theirs when they
+are saved.
+
+## Sharp at rest
+
+The stage draws on request. While it moves, `DynamicScale` keeps the shaded image inside the frame budget (0.66…1 of
+full resolution, the tier's range). Once nothing has asked for a frame for 0.15 s, `StageView+Rest` draws one more at
+full resolution, and a single change after a rest is drawn at full resolution when the last full-resolution frame fit
+the budget. Those frames don't feed the dynamic scale or the load meter (they say nothing about keeping up with
+motion); a hot iPad (thermal serious) keeps its lighter preview.
+
+## Quiet work
+
+Nothing says "getting ready". With Paint in the hand, the chosen object is laid flat for painting (or its paint is
+carried onto its changed shape) as soon as it is chosen (`EditorModel.readyPaintTarget`, from the tool and the
+selection); the layers appear when it's done. A drawn bone stays on the stage while its weights are worked out
+(`RigSettings.weighing`, the newest rig per object); a stroke drawn meanwhile adds to it, and only the newest result is
+stored, as one step.
 
 ## The feel recorder
 
@@ -499,6 +543,8 @@ flowchart LR
 
 The tools job also checks that `AppUITests/LayoutWalk.swift` is what `Tools/layout_walk.py` makes of docs/LAYOUT.md;
 the UI tests walk every row (five tests, by precondition, Model on its own), measure the idle stage's share of the screen and run the Home benchmark.
+`ChromeFitTests` fails on a control cut by the screen's edge or sitting on another, in landscape and portrait; the
+Atlas workflow runs it and the atlas on the iPad mini, 11-inch and 13-inch.
 
 Golden images are recorded on the CI simulator (`TEST_RUNNER_GOLDEN_OUTPUT`), reviewed and committed under
 `Packages/LoweyEngine/Tests/LoweyEngineTests/Golden`.

@@ -9,9 +9,17 @@ options:
   developmentLanguage: en
   groupSortPosition: top
 
+# AppStore is Release with the held features held back (CONTEXT §5): it lists them in MAQUETTE_HELD, which reaches the
+# Info.plist as `HmmHeld`. An update airs a feature by deleting its name there. Every other configuration holds nothing.
+configs:
+  Debug: debug
+  Release: release
+  AppStore: release
+
 configFiles:
   Debug: Config/Branding.xcconfig
   Release: Config/Branding.xcconfig
+  AppStore: Config/Branding.xcconfig
 
 settings:
   base:
@@ -23,6 +31,10 @@ settings:
     DEAD_CODE_STRIPPING: YES
     CODE_SIGN_STYLE: Automatic
     DEVELOPMENT_TEAM: ""
+    MAQUETTE_HELD: ""
+  configs:
+    AppStore:
+      MAQUETTE_HELD: "livePerformance mechanisms ar webLayer"
 
 packages:
   LoweyFeatures:
@@ -78,6 +90,8 @@ targets:
           - studio.h.maquette.export.*
         # Build switches (FeatureFlags): the App Store build turns the bridge off until 2.1.
         LoweyAIBridge: true
+        # Held features (MaquetteHeld): what this build holds back, from the configuration's MAQUETTE_HELD.
+        HmmHeld: $(MAQUETTE_HELD)
         LoweyBackgroundBridge: true
         NSPhotoLibraryAddUsageDescription: "Maquette saves the videos and stills you export to your photo library."
         NSCameraUsageDescription: "Maquette uses the camera to follow the iPad when it acts as a film camera, and the front camera to read your face for character performances."

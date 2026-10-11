@@ -18,6 +18,8 @@ public enum AppSettings {
     public static let navigationSpeedRange = 0.25 ... 3.0
     /// The left sidebar on the right edge (left-handed use).
     public static let sidebarOnRight = "sidebarOnRight"
+    /// Settings ▸ Stage: the sidebar never rests (off: with no tool that uses it, it rests as a thin rail).
+    public static let alwaysShowsSidebar = "alwaysShowsSidebar"
     /// The Performance HUD over the stage.
     public static let showsPerformanceHUD = "showsPerformanceHUD"
     /// Projects in iCloud Drive (when the build is entitled and the user is signed in) or on this iPad.

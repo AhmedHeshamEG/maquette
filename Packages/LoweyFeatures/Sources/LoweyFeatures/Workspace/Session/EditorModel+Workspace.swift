@@ -18,6 +18,7 @@ extension EditorModel {
         frameGuide = workspace.frameGuide
         planeGuide = workspace.planeGuide
         references = workspace.references
+        projectSetUp = workspace.setUp
         if workspace.firstPanel == ProjectWorkspace.boardPanel {
             // A Sketch project opens on its board, once.
             workspace.firstPanel = nil
@@ -58,6 +59,22 @@ extension EditorModel {
         } catch {
             logger.error("Couldn't save the workspace: \(error.localizedDescription)")
         }
+    }
+
+    /// "Set up for", any time: the set-up's units, snapping, grid, printer and timeline come into reach; the project
+    /// itself doesn't change (`ProjectWorkspace.settingUp`).
+    func setUp(for kind: StarterTemplate.Kind) {
+        guard kind != projectSetUp else { return }
+        saveWorkspace()
+        workspace = workspace.settingUp(for: kind)
+        projectSetUp = workspace.setUp
+        timelinePresence = workspace.timeline
+        snap = workspace.snap
+        showsGrid = workspace.showsGrid
+        units = workspace.units
+        precision.printBed = workspace.printBed
+        saveWorkspace()
+        HmmHaptics.play(.selection)
     }
 
     // MARK: The timeline on call

@@ -10,8 +10,10 @@ struct StageChrome: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @AppStorage(AppSettings.sidebarOnRight) private var sidebarOnRight = false
     @AppStorage(AppSettings.showsJoystick) private var showsJoystick = true
-    /// The open leading panel's frame on screen (the inspector keeps clear of it).
-    @State private var leadingPanelFrame: CGRect?
+    /// The open panel's frame on screen (the object panel, or its chip, keeps clear of it).
+    @State private var panelFrame: CGRect?
+    /// The stage's frame on screen: panels moved by hand stay inside it.
+    @State private var bounds: CGRect?
 
     var body: some View {
         ZStack {
@@ -36,12 +38,15 @@ struct StageChrome: View {
                     if let panel = editor.openPanel, panel.isLeading {
                         ClusterPanelView(editor: editor, panel: panel)
                             .hmmPanelTransition(from: .topLeading)
-                            .onGeometryChange(for: CGRect.self) { $0.frame(in: .global) } action: { leadingPanelFrame = $0 }
-                            .onDisappear { leadingPanelFrame = nil }
+                            .onGeometryChange(for: CGRect.self) { $0.frame(in: .global) } action: { panelFrame = $0 }
+                            .onDisappear { panelFrame = nil }
                     }
                     Spacer(minLength: 0)
                     if let panel = editor.openPanel, !panel.isLeading {
-                        ClusterPanelView(editor: editor, panel: panel).hmmPanelTransition(from: .topTrailing)
+                        ClusterPanelView(editor: editor, panel: panel)
+                            .hmmPanelTransition(from: .topTrailing)
+                            .onGeometryChange(for: CGRect.self) { $0.frame(in: .global) } action: { panelFrame = $0 }
+                            .onDisappear { panelFrame = nil }
                     }
                 }
                 Spacer(minLength: 0)
@@ -50,19 +55,20 @@ struct StageChrome: View {
         }
         .overlay {
             if showsInspector {
-                FloatingInspector(editor: editor, avoiding: leadingPanelFrame, sidebarOnRight: sidebarOnRight)
+                FloatingInspector(editor: editor, avoiding: panelFrame, sidebarOnRight: sidebarOnRight)
                     .transition(.opacity)
             }
         }
+        .environment(\.hmmPanelBounds, bounds)
+        .onGeometryChange(for: CGRect.self) { $0.frame(in: .global) } action: { bounds = $0 }
         .animation(HmmMotion.standard.animation(reduceMotion: reduceMotion), value: editor.openPanel)
         .animation(HmmMotion.standard.animation(reduceMotion: reduceMotion), value: showsInspector)
     }
 
-    /// The inspector floats while something is selected and no making tool's panel is open. While sketching it steps
-    /// aside: the numbers on the stage are what you're working with then (D-124).
+    /// The object panel floats while something is selected (a chip while something bigger is open). While sketching it
+    /// steps aside: the numbers on the stage are what you're working with then (D-124).
     private var showsInspector: Bool {
-        !editor.selection.isEmpty && editor.openPanel?.isLeading != false
-            && !(editor.tool == .model && editor.modeling.mode.sketchKind != nil)
+        !editor.selection.isEmpty && !(editor.tool == .model && editor.modeling.mode.sketchKind != nil)
     }
 
     // MARK: Clusters
@@ -72,28 +78,22 @@ struct StageChrome: View {
             HmmClusterItem(id: "home", systemName: "square.grid.2x2", label: "Home") { app.closeEditor() },
             item(.actions, "ellipsis.circle", "Actions"),
             item(.look, "paintpalette", "Look"),
-            item(.select, editor.tool == .lasso ? "lasso" : "hand.point.up.left", "Select", on: editor.tool == .lasso)
+            item(.select, editor.tool == .lasso ? "lasso" : "hand.point.up.left", "Select", on: editor.tool == .lasso),
+            item(.library, "books.vertical", "Library")
         ])
-        .overlay(alignment: .bottomLeading) {
-            Text(editor.baseScene.name)
-                .font(.hmm(.caption, weight: .semibold))
-                .foregroundStyle(.secondary)
-                .lineLimit(1)
-                .offset(x: HmmSpacing.s, y: 18)
-                .accessibilityIdentifier("scene-name")
-        }
+        .overlay(alignment: .bottomLeading) { SceneNameDoor(editor: editor).offset(x: HmmSpacing.xs, y: 30) }
     }
 
-    /// The making tools: Model, Draw, Paint, Animate (calls the timeline) and Cast.
+    /// The making tools, in the order a thing gets made: Model, Draw, Paint, Rig, and Animate (it calls the timeline).
     private var trailingCluster: some View {
         HmmCornerCluster([
-            item(.model, "cube", "Model"),
+            item(.model, "cube", "Model", on: editor.tool == .model),
             item(.draw, drawIcon, "Draw", on: editor.tool.draws),
             item(.paint, editor.tool == .scatter ? "circle.hexagongrid" : "paintbrush.pointed", "Paint", on: editor.tool.paintsSurfaces),
+            item(.rig, "figure.arms.open", "Rig", on: editor.tool == .rig),
             HmmClusterItem(id: "animate", systemName: "figure.walk.motion", label: "Animate", isOn: editor.timelinePresence == .full) {
                 editor.toggleAnimate()
-            },
-            item(.cast, "person.2", "Cast")
+            }
         ])
     }
 
@@ -105,10 +105,11 @@ struct StageChrome: View {
         }
     }
 
+    /// A cluster button. `on` is the tool in the hand: with chrome restraint, the one thing that wears the accent.
     private func item(_ panel: ClusterPanel, _ systemName: String, _ label: String, on: Bool = false) -> HmmClusterItem {
-        HmmClusterItem(id: panel.rawValue, systemName: systemName, label: label, isOn: editor.openPanel == panel || on) {
+        HmmClusterItem(id: panel.rawValue, systemName: systemName, label: label, isOn: editor.openPanel == panel || on, accent: on) {
             editor.openPanel = editor.openPanel == panel ? nil : panel
-            if panel == .model, editor.openPanel == nil { editor.libraryPurpose = .place }
+            if panel == .library, editor.openPanel == nil { editor.libraryPurpose = .place }
         }
     }
 
@@ -144,12 +145,42 @@ private struct ClusterPanelView: View {
         switch panel {
         case .actions: ActionsPanel(editor: editor)
         case .look: LookPanel(editor: editor)
-        case .select: SelectPanel(editor: editor)
+        case .select: SelectBar(editor: editor)
+        case .library: LibraryPanel(editor: editor)
+        case .scene: ScenePanel(editor: editor)
         case .model: ModelPanel(editor: editor)
         case .draw: DrawToolsPanel(editor: editor)
         case .paint: PaintPanel(editor: editor)
-        case .cast: CastPanel(editor: editor)
+        case .rig: RigPanel(editor: editor)
         }
+    }
+}
+
+/// The scene's name under the top-left cluster, a door: tap it for the set-up, the scenes and the objects.
+private struct SceneNameDoor: View {
+    let editor: EditorModel
+    @Environment(\.hmmTheme) private var theme
+
+    var body: some View {
+        Button {
+            HmmHaptics.play(.selection)
+            editor.openPanel = editor.openPanel == .scene ? nil : .scene
+        } label: {
+            HStack(spacing: 4) {
+                Text(editor.baseScene.name).lineLimit(1)
+                Image(systemName: "chevron.down").font(.system(size: 9, weight: .bold))
+            }
+            .font(.hmm(.caption, weight: .semibold))
+            .foregroundStyle(editor.openPanel == .scene ? theme.text : theme.text2)
+            .padding(.horizontal, HmmSpacing.xs)
+            .frame(minHeight: 28)
+            .frame(maxWidth: 220, alignment: .leading)
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel(Text("Scene: \(editor.baseScene.name)"))
+        .accessibilityHint(Text("The set-up, the scenes and the objects"))
+        .accessibilityIdentifier("scene-name")
     }
 }
 
@@ -168,7 +199,7 @@ private struct JoystickHideButton: View {
     }
 }
 
-/// Bottom-right of the stage: the timeline on call, the views, framing the selection, the Director view.
+/// Bottom-right of the stage: the timeline on call, the views, framing the selection, the camera button.
 private struct ViewControls: View {
     let editor: EditorModel
 
@@ -188,13 +219,40 @@ private struct ViewControls: View {
             .accessibilityLabel("Views")
             .accessibilityIdentifier("views-menu")
             HmmButton("viewfinder", label: "Frame the selection") { editor.frameSelection() }
-            HmmButton("video", label: "Director view", isOn: editor.directorView) { editor.setDirectorView(!editor.directorView) }
-                .accessibilityIdentifier("director-view")
+            CameraButton(editor: editor)
         }
         .padding(HmmSpacing.xxs)
         .environment(\.hmmInsideGlass, true)
         .hmmGlass(in: Capsule(), interactive: false)
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("view-controls")
+    }
+}
+
+/// The camera button: tap to look through the camera (again for the next one, then back to the free view); hold for
+/// a new camera from this view, or to pick one.
+private struct CameraButton: View {
+    let editor: EditorModel
+
+    var body: some View {
+        HmmButton("video", label: "Camera", isOn: editor.directorView) { editor.tapCameraButton() }
+            .contextMenu {
+                Button("New camera from this view", systemImage: "plus") { editor.newCameraFromThisView() }
+                if !editor.cameras.isEmpty {
+                    Section("Look through") {
+                        ForEach(editor.cameras, id: \.self) { id in
+                            Button {
+                                editor.lookThrough(id)
+                            } label: {
+                                Text(verbatim: editor.baseScene.objects[id]?.name ?? "Camera")
+                            }
+                        }
+                    }
+                }
+                if editor.directorView {
+                    Button("Back to the free view", systemImage: "arrow.uturn.backward") { editor.setDirectorView(false) }
+                }
+            }
+            .accessibilityIdentifier("camera-button")
     }
 }

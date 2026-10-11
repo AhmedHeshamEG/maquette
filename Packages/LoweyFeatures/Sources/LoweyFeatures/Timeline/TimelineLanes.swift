@@ -33,9 +33,9 @@ struct TimelineLanes: View {
         .contentShape(Rectangle())
         .coordinateSpace(name: TimelineLayout.lanesSpace)
         .hmmHoldMenu(at: { point in holdMenu(at: point) })
-        .simultaneousGesture(laneTap, including: editor.timelineMode == .compose ? .subviews : .all)
+        .simultaneousGesture(laneTap)
         .simultaneousGesture(laneDrag)
-        .simultaneousGesture(marqueePress, including: editor.timelineMode == .compose ? .subviews : .all)
+        .simultaneousGesture(marqueePress)
         .gesture(PencilLasso { point, state in pencilLasso(point, state: state) })
         .overlay(alignment: .topTrailing) { scrollIndicator }
         .onAppear { layout.viewportHeight = height }
@@ -46,7 +46,6 @@ struct TimelineLanes: View {
         switch editor.timelineMode {
         case .perform: "Select something, press Record, and move it while the timeline plays."
         case .keyframe: "Select something and move it: each change becomes a key at the playhead. Or tap a Motion preset."
-        case .compose: "Animated things appear here as bars you can slide in time."
         }
     }
 
@@ -97,7 +96,7 @@ struct TimelineLanes: View {
             editor.setTime(key.time)
             return editor.holdMenu(forKey: key)
         }
-        if editor.timelineMode != .compose, let clip = layout.clip(at: location) { return editor.holdMenu(forClip: clip) }
+        if let clip = layout.clip(at: location) { return editor.holdMenu(forClip: clip) }
         return nil
     }
 
@@ -118,7 +117,7 @@ struct TimelineLanes: View {
         SpatialTapGesture(coordinateSpace: .named(TimelineLayout.lanesSpace)).onEnded { tap in
             let location = layout.toContent(tap.location)
             guard location.x >= TimelineLayout.labelWidth, !layout.isOwnGestureRow(at: location.y) else { return }
-            if editor.timelineMode != .compose, layout.key(at: location) == nil, let clip = layout.clip(at: location) {
+            if layout.key(at: location) == nil, let clip = layout.clip(at: location) {
                 editor.pickClip(clip.id, additive: editor.keyBoxSelect || !editor.selectedClips.isEmpty)
                 return
             }
@@ -178,19 +177,17 @@ struct TimelineLanes: View {
             return vertical ? .scrollRows(start: layout.scrollOffset) : .ignore
         }
         if !layout.lasso.isEmpty { return .ignore }
-        if editor.timelineMode != .compose {
-            if let hit = layout.key(at: start), editor.selectedKeys.contains(hit) {
-                layout.keyDrag = 0
-                return .moveKeys
-            }
-            if let clip = layout.clip(at: start), editor.selectedClips.contains(clip.id) {
-                layout.keyDrag = 0
-                return .moveClips
-            }
-            if editor.keyBoxSelect { return .marquee(origin: start) }
-        } else if startsOnSelectedBar(start) {
-            return .ignore
+        if let hit = layout.key(at: start), editor.selectedKeys.contains(hit) {
+            layout.keyDrag = 0
+            return .moveKeys
         }
+        if let clip = layout.clip(at: start), editor.selectedClips.contains(clip.id) {
+            layout.keyDrag = 0
+            return .moveClips
+        }
+        // The whole animation's grip under a selected row slides it (its own gesture moves it).
+        if startsOnAnimationGrip(start) { return .ignore }
+        if editor.keyBoxSelect { return .marquee(origin: start) }
         return vertical ? .scrollRows(start: layout.scrollOffset) : .pan(start: layout.visibleStart)
     }
 
@@ -241,8 +238,11 @@ struct TimelineLanes: View {
         }
     }
 
-    private func startsOnSelectedBar(_ point: CGPoint) -> Bool {
-        guard case let .object(id)? = layout.row(at: point.y), editor.selection.contains(id) else { return false }
+    /// A point on a selected row's animation grip: the bottom of the row, along its first to last key.
+    private func startsOnAnimationGrip(_ point: CGPoint) -> Bool {
+        guard let slot = layout.slots.first(where: { point.y >= $0.minY && point.y < $0.minY + $0.height }),
+              case let .object(id)? = slot.row, editor.selection.contains(id),
+              point.y >= slot.minY + slot.height - AnimationGrip.reach else { return false }
         let ids = layout.members(of: id)
         let times = editor.timeline.tracks.filter { ids.contains($0.target) }.flatMap { $0.keyframes.map(\.time) }
         guard let start = times.min(), let end = times.max() else { return false }
