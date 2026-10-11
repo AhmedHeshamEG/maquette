@@ -420,6 +420,33 @@ stills and thumbnails always render `.full`. `PerformanceMonitor` feeds hmm-kit'
 twenty calm seconds, longer when a recovery doesn't hold), and Diagnostics ▸ Smoothness shows the numbers
 (`EditorModel.loadSummary`). `-load-level over` puts a UI test's stage under load.
 
+## Pictures of things
+
+`Thumbnailer` (Features) draws every picture with the stage's renderer: project stills and turntables, library tiles,
+Looks, the character portrait. It loads every model a picture places before drawing it (the renderer draws nothing for
+a model still loading). **The Kit's pictures are baked**: `KitPicturesTests` renders each Kit asset in the Ink Look on
+the CI simulator, `Tools/bake-kit-pictures.sh` (the Kit pictures workflow, or a `kit-pictures/…` branch) writes
+`picture.png` beside its `model.glb`, and `fetch-kit.py check` fails CI while one is missing. `LibraryModel` reads a Kit
+tile's picture from the app bundle off the main thread when the tile appears (`LibraryAsset.kitPicture`); it never
+renders one, and nothing about the Kit is read at launch. Imported models, saved builds and Looks get theirs when they
+are saved.
+
+## Sharp at rest
+
+The stage draws on request. While it moves, `DynamicScale` keeps the shaded image inside the frame budget (0.66…1 of
+full resolution, the tier's range). Once nothing has asked for a frame for 0.15 s, `StageView+Rest` draws one more at
+full resolution, and a single change after a rest is drawn at full resolution when the last full-resolution frame fit
+the budget. Those frames don't feed the dynamic scale or the load meter (they say nothing about keeping up with
+motion); a hot iPad (thermal serious) keeps its lighter preview.
+
+## Quiet work
+
+Nothing says "getting ready". With Paint in the hand, the chosen object is laid flat for painting (or its paint is
+carried onto its changed shape) as soon as it is chosen (`EditorModel.readyPaintTarget`, from the tool and the
+selection); the layers appear when it's done. A drawn bone stays on the stage while its weights are worked out
+(`RigSettings.weighing`, the newest rig per object); a stroke drawn meanwhile adds to it, and only the newest result is
+stored, as one step.
+
 ## The feel recorder
 
 Diagnostics ▸ Feel ▸ *Record a minute* (`AppModel+Feel`) starts hmm-kit's `FeelProbe` for sixty seconds. It watches

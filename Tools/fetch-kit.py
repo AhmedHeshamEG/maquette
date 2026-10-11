@@ -8,8 +8,8 @@
 Sources: Kenney (kenney.nl, CC0) and Quaternius (itch.io, CC0). Nothing is used unless the pack's own licence file
 says CC0. Each converted asset is a `.loweyasset` folder: `model.glb` (scaled to metres, pivot at the base centre)
 and `asset.json` (name, set, category, tags, real size, the surfaces things can stand on, which way it faces, rig,
-source and licence). Thumbnails are rendered by the app itself, in the Ink Look, the first time the Library shows
-an asset (so they always match the renderer).
+source and licence), and `picture.png`: the Library's picture, rendered by the app's own renderer in the Ink Look in
+CI (`Tools/bake-kit-pictures.sh`, the Kit pictures workflow) and shipped, so the iPad never renders one.
 """
 
 import io
@@ -224,6 +224,10 @@ def command_check():
                 meta = json.load(handle)
             if "cc0" not in meta.get("license", "").lower():
                 problems.append(f"{entry['id']}: not CC0")
+            if not meta.get("clipsOnly") and not os.path.exists(os.path.join(folder, "picture.png")):
+                problems.append(f"{entry['path']}: no picture.png (run the Kit pictures workflow)")
+            elif os.path.exists(os.path.join(folder, "picture.png")):
+                size += os.path.getsize(os.path.join(folder, "picture.png"))
     if size > BUDGET_MB * 1e6:
         problems.append(f"the Kit is {size / 1e6:.1f} MB, over the {BUDGET_MB} MB budget")
     if problems:

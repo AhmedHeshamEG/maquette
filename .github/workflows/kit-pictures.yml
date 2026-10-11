@@ -1,0 +1,54 @@
+# Bakes the Kit's pictures (Tools/bake-kit-pictures.sh) and commits them to the branch it ran on. Run by hand, or by
+# pushing a branch named kit-pictures/…, after the Kit or the Ink Look changes; CI's `fetch-kit.py check` says when an
+# asset has no picture.
+name: Kit pictures
+
+on:
+  workflow_dispatch:
+  push:
+    branches: ['kit-pictures/**']
+
+concurrency:
+  group: kit-pictures-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: write
+
+env:
+  DEVELOPER_DIR: /Applications/Xcode_27.0.app/Contents/Developer
+
+jobs:
+  bake:
+    name: Render every Kit asset
+    runs-on: xcode-27
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install the Metal toolchain
+        run: xcodebuild -downloadComponent MetalToolchain
+      - name: Pick an iPad simulator
+        id: sim
+        run: echo "udid=$(python3 Tools/pick-simulator.py)" >> "$GITHUB_OUTPUT"
+      - name: Boot the simulator
+        run: |
+          xcrun simctl boot "${{ steps.sim.outputs.udid }}" || true
+          xcrun simctl bootstatus "${{ steps.sim.outputs.udid }}" -b
+      - name: Bake
+        run: bash Tools/bake-kit-pictures.sh "${{ steps.sim.outputs.udid }}"
+      - name: Check
+        run: python3 Tools/fetch-kit.py check
+      - name: Commit the pictures
+        run: |
+          git config user.name "${{ github.actor }}"
+          git config user.email "${{ github.actor_id }}+${{ github.actor }}@users.noreply.github.com"
+          git add App/Resources/Kit
+          if git diff --cached --quiet; then echo "The pictures are unchanged."; exit 0; fi
+          git commit -m "chore(kit): bake the Kit's pictures"
+          git push
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: kit-pictures-log
+          path: ${{ runner.temp }}/kit-pictures.log
+          retention-days: 7

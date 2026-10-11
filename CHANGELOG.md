@@ -3,6 +3,16 @@
 All notable changes. 1.x grew in four phases (v0.1 → v1.4); 2.0 is the remaster, released as betas first. Maquette
 continues from 2.0 and numbers its phases again from 0.1 (each phase bumps the minor version until 1.0).
 
+## [Unreleased] — Maquette 0.11 — feel (phase U1)
+
+- **The Library shows every model's picture.** The Kit's pictures now ship with the app, so they're there the first
+  time you open it; a picture is never taken before its model has loaded (the grey tiles, and empty Home cards).
+- **Sharp at rest.** When the view stops moving, the stage draws at full resolution; while it moves, it stays smooth.
+- **No more "getting ready".** Choosing an object with Paint in the hand makes it ready to paint quietly; the layers
+  simply appear. A drawn bone stays on the stage while it learns how to bend, and you can draw the next one straight away.
+- An iPad with 8 GB (every M-chip iPad) always previews at full quality (hmm-kit 0.6.1).
+- Opening the app doesn't read the Kit's pictures any more.
+
 ## [0.10.1] — Maquette — the feel recorder (phase U1, first step)
 
 - **Diagnostics ▸ Feel ▸ Record a minute.** Use the app for a minute the way you normally do; a small red dot at the

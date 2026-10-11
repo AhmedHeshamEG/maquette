@@ -171,8 +171,8 @@ is open, `[transport]` the slim transport is showing, `[home]` the steps start o
 |---|---|
 | Colour: paint, erase, fill and the eyedropper on models | `Paint › tool-paint › paint-pick` |
 | The brush painting uses (opens the brush library) | `Paint › tool-paint › brush-paint` |
-| Paint the chosen object (it's laid flat for painting first; a stroke on it does the same) | `[cube] Paint › tool-paint › paint-start` |
-| Layers: show or hide, the one the Pencil paints on, its opacity and blend, add a layer | `[cube] Paint › tool-paint › paint-start › paint-layer-add` |
+| The chosen object is made ready to paint the moment Paint is in the hand (laid flat, or its paint carried onto a changed shape): no button, no message; *Paint it* appears only if that didn't work | shown when Paint opens with an object chosen |
+| Layers: show or hide, the one the Pencil paints on, its opacity and blend, add a layer | `[cube] Paint › tool-paint › paint-layer-add` |
 | A layer's menu: duplicate, merge down, move up or down, clear, rename, delete; remove all paint | `[cube] Paint › tool-paint › paint-layer-menu` |
 | A layer's hold menu: duplicate, rename; merge down, clear; delete | touch and hold a layer |
 | Project a picture: from Photos or Files, placed with the fingers, Project from the options bar | Paint ▸ Colour on a painted object |

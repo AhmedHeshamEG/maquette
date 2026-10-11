@@ -18,8 +18,8 @@ final class LibraryModel {
     /// The Kit's Sets (Room & Desk, City Street…), shipped with the app.
     private(set) var kitSets: [KitSet] = []
     @ObservationIgnored private var kitIndex = KitIndex()
-    @ObservationIgnored private var thumbnailQueue: [LibraryItem] = []
-    @ObservationIgnored private var renderingThumbnails = false
+    /// Kit pictures being read from the app bundle (by thumbnail name).
+    @ObservationIgnored private var readingPictures: Set<String> = []
     /// Bumped when a prefab changes, so open scenes redraw its instances.
     private(set) var prefabRevision = 0
     @ObservationIgnored let models: ModelLibrary
@@ -62,9 +62,11 @@ final class LibraryModel {
             logger.error("Library failed to load: \(String(describing: error))")
         }
         loadKit()
-        for item in LibrarySearch.items(in: manifest, filter: .all) {
+        // The Kit's pictures are read when their tiles come on screen (`requestThumbnail`), not at launch.
+        for item in LibrarySearch.items(in: manifest, filter: .all) where !item.isKit {
             loadThumbnail(for: item)
         }
+        removeRenderedKitPictures()
     }
 
     private func loadKit() {
@@ -93,7 +95,7 @@ final class LibraryModel {
         manifest.kit = kitIndex.assets
         self.manifest = manifest
         save()
-        for item in LibrarySearch.items(in: manifest, filter: .all) where thumbnails[item.thumbnailName] == nil {
+        for item in LibrarySearch.items(in: manifest, filter: .all) where !item.isKit && thumbnails[item.thumbnailName] == nil {
             loadThumbnail(for: item)
         }
     }
@@ -122,8 +124,11 @@ final class LibraryModel {
         }
     }
 
-    /// PNG of a model's thumbnail for the bridge (rendered now when it hasn't been yet).
+    /// PNG of a model's thumbnail for the bridge (rendered now when it hasn't been yet; the Kit's ship with the app).
     func thumbnailPNG(for item: LibraryItem) async -> Data? {
+        if case let .asset(asset) = item, let picture = asset.kitPicture {
+            return try? Data(contentsOf: Self.kitRoot.appendingPathComponent(picture))
+        }
         if thumbnails[item.thumbnailName] == nil { loadThumbnail(for: item) }
         if thumbnails[item.thumbnailName] == nil, case let .asset(asset) = item {
             let object = SceneObject(id: .make(), name: asset.name, kind: .asset(asset.id))
@@ -132,26 +137,33 @@ final class LibraryModel {
         return thumbnails[item.thumbnailName]?.pngData()
     }
 
-    /// A Kit tile came on screen: its thumbnail is rendered in the Ink Look (once, then cached), one at a time.
-    func requestThumbnail(for item: LibraryItem) {
-        guard thumbnails[item.thumbnailName] == nil, case let .asset(asset) = item, asset.isKit else { return }
-        loadThumbnail(for: item)
-        guard thumbnails[item.thumbnailName] == nil, !thumbnailQueue.contains(item) else { return }
-        thumbnailQueue.append(item)
-        renderQueuedThumbnails()
+    /// Before 0.11 the Kit's pictures were rendered on the iPad into the library's own folder (often empty); they ship
+    /// with the app now, so those copies go.
+    private func removeRenderedKitPictures() {
+        let folder = store.thumbnailURL(named: "kit").deletingLastPathComponent()
+        Task.detached(priority: .background) {
+            let names = (try? FileManager.default.contentsOfDirectory(atPath: folder.path)) ?? []
+            for name in names where name.hasPrefix(KitIndex.idPrefix) {
+                try? FileManager.default.removeItem(at: folder.appendingPathComponent(name))
+            }
+        }
     }
 
-    private func renderQueuedThumbnails() {
-        guard !renderingThumbnails, !thumbnailQueue.isEmpty else { return }
-        renderingThumbnails = true
-        let item = thumbnailQueue.removeFirst()
-        Task { @MainActor in
-            if case let .asset(asset) = item {
-                let object = SceneObject(id: .make(), name: asset.name, kind: .asset(asset.id))
-                await renderThumbnail(of: SceneFragment(objects: [object], roots: [object.id]), named: item.thumbnailName)
+    /// A Kit tile came on screen: its picture, baked in CI and shipped with the app, is read and decoded off the main
+    /// thread. Nothing is rendered on the iPad for the Kit.
+    func requestThumbnail(for item: LibraryItem) {
+        let name = item.thumbnailName
+        guard thumbnails[name] == nil, !readingPictures.contains(name), case let .asset(asset) = item, let picture = asset.kitPicture else { return }
+        readingPictures.insert(name)
+        let url = Self.kitRoot.appendingPathComponent(picture)
+        Task {
+            let image = await Task.detached(priority: .userInitiated) { UIImage(contentsOfFile: url.path)?.preparingForDisplay() }.value
+            readingPictures.remove(name)
+            if let image {
+                thumbnails[name] = image
+            } else {
+                logger.error("The Kit's picture is missing: \(picture)")
             }
-            renderingThumbnails = false
-            renderQueuedThumbnails()
         }
     }
 

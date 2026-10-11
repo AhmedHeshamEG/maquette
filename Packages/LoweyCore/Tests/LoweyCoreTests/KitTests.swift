@@ -16,6 +16,8 @@ final class KitTests: XCTestCase {
         XCTAssertTrue(desk.isKit)
         XCTAssertEqual(desk.format, .glb)
         XCTAssertEqual(desk.file, "Office-Computers/office-desk.loweyasset/model.glb")
+        XCTAssertEqual(desk.kitPicture, "Office-Computers/office-desk.loweyasset/picture.png", "its picture ships beside it")
+        XCTAssertNil(LibraryAsset(id: "imported", name: "Mine", format: .glb, file: "mine.glb").kitPicture)
         let info = try XCTUnwrap(desk.kit)
         XCTAssertEqual(info.category, "Desks")
         XCTAssertEqual(info.realSize.y, 0.736, accuracy: 0.01, "a desk is about 74 cm high")

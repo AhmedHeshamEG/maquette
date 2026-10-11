@@ -156,6 +156,18 @@ public struct KitIndex: Sendable {
 public extension LibraryAsset {
     /// Ships with the app (the Kit), as opposed to imported.
     var isKit: Bool { id.raw.hasPrefix(KitIndex.idPrefix) }
+
+    /// A Kit asset's picture, baked in CI and shipped beside its model (relative to the Kit folder; nil when imported).
+    var kitPicture: String? {
+        guard isKit else { return nil }
+        let folder = file.split(separator: "/").dropLast().joined(separator: "/")
+        return folder.isEmpty ? KitIndex.pictureFile : "\(folder)/\(KitIndex.pictureFile)"
+    }
+}
+
+public extension KitIndex {
+    /// Each Kit asset's picture, in its `.loweyasset` folder (`Tools/bake-kit-pictures.sh`).
+    static let pictureFile = "picture.png"
 }
 
 public extension LibraryItem {

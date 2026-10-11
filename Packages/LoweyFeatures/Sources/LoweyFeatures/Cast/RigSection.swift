@@ -15,18 +15,12 @@ struct RigSection: View {
                 if let blocker = editor.rigBlocker(object) {
                     Hint(blocker)
                 } else {
+                    // While the weights are worked out the step stays as it is; Skin and Pose light up when they land.
                     RigStepRow(editor: editor, object: object)
-                    if editor.rigging.busy.contains(object.id) {
-                        HStack(spacing: HmmSpacing.xs) {
-                            ProgressView()
-                            Text("Working out how it bends…").font(.hmm(.body))
-                        }
-                    } else {
-                        switch editor.rigStep(for: object) {
-                        case .bones: bones(object)
-                        case .skin: skin(object)
-                        case .pose: pose(object)
-                        }
+                    switch editor.rigStep(for: object) {
+                    case .bones: bones(object)
+                    case .skin: skin(object)
+                    case .pose: pose(object)
                     }
                 }
             }

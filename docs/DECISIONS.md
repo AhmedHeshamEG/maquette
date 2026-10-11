@@ -1691,3 +1691,33 @@ nothing at all (he'd not know when the minute ends).
 
 **D-220 — 0.10.1 ships the recorder alone.** So the first recording measures 0.10's feel unchanged: it is the "before"
 the phase notes keep, and every speed fix after it is aimed at what it ranks and proved by the same recording.
+
+**D-221 — The Kit's pictures are baked in CI and committed beside each model.** The simulator renders every Kit asset
+with the app's renderer in the Ink Look (`KitPicturesTests`, run by the Kit pictures workflow) and the PNGs ship in the
+app; the iPad only reads them, off the main thread, when a tile appears. The root of "the models never show their
+pictures": the picture used to be taken before the model had loaded, so an empty one was drawn and then kept.
+`Thumbnailer` now loads every model a picture places first, which also fixes empty Home cards. *Rejected:* rendering on
+the iPad, fixed (a render per tile on the main actor while scrolling is exactly the feel U1 removes); baking at build
+time in the release workflow (the pictures would differ between builds and couldn't be reviewed in a PR).
+
+**D-222 — Sharp at rest, smooth in motion.** Moving, the stage holds the frame rate with the dynamic scale as before;
+0.15 s after the last frame it draws one at full resolution on every tier, and an isolated change (a tap, a slider step)
+is drawn at full resolution while the last such frame fit the budget. The extra frames don't feed the scale or the load
+meter. A hot iPad keeps the lighter preview. *Rejected:* raising the scale slowly while calm (30 calm frames: a stage
+that draws on request may never get them, which is how an empty scene sat at 80 %); full resolution all the time on
+Tier A (the drag is what has to be smooth).
+
+**D-223 — An 8 GB iPad is Tier A.** The line was 7.5 GiB of reported memory; an 8 GB iPad reports less than 8 GiB, and
+so may land under it and preview like an A-chip iPad. The line is 7 GiB now (no 6 GB iPad comes near it). The recorder
+writes the tier into every recording, so the device answers it.
+
+**D-224 — Paint makes its object ready the moment it's chosen; no message.** With Paint in the hand, choosing an
+object (or opening Paint with one chosen) lays it flat, or carries its paint onto a changed shape, in the background;
+"Getting … ready to paint" and "Bringing the paint onto the new shape" are gone, and so is the *Paint …* button, except
+when making it ready failed (then it's the way to try again). Starting it is an undo step of its own, as before.
+*Rejected:* preparing on every selection whatever the tool (heavy work for objects nobody paints); keeping the result
+off the document until the first stroke (a second path for the first stroke to commit through).
+
+**D-225 — A bone is weighed quietly.** "Working out how it bends…" is gone: the stroke's bone stays on the stage, the
+step keeps its controls, and Skin and Pose light up when the weights land. A stroke drawn meanwhile builds on the rig
+being weighed, and only the newest result is stored (it holds the earlier bones too), as one step.

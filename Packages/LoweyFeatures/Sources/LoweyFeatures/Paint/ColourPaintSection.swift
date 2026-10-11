@@ -43,11 +43,10 @@ struct ColourPaintSection: View {
                 PaintLayersSection(editor: editor, object: object)
                 picture
             } else if editor.colourPaint.preparing.contains(object.id) {
-                HStack(spacing: HmmSpacing.s) {
-                    ProgressView()
-                    Text("Getting \(object.name) ready to paint").font(.hmm(.footnote)).foregroundStyle(theme.text2)
-                }
+                // Being made ready since it was chosen (U1: no waiting message): its layers take this place in a moment.
+                EmptyView()
             } else {
+                // Only when making it ready didn't work (the reason was said): try again.
                 HmmPillButton("Paint \(object.name)", systemName: "paintbrush.pointed") { editor.preparePaint(object.id) }
                     .accessibilityIdentifier("paint-start")
                 Hint("Or start a stroke on it with the Pencil.")
