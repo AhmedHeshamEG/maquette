@@ -3,6 +3,28 @@
 All notable changes to hmm-kit. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the
 project uses [Semantic Versioning](https://semver.org/).
 
+## [0.8.0] - 2026-10-12
+
+Built with Maquette 0.13.
+
+### Added
+- **HmmDesign**: our number pad (`HmmNumberPad`, `hmmNumberPad`: a popover beside the number, never the system
+  keyboard; `HmmNumberPadEntry` is its typing, pure, and `HmmArithmetic` reads plain sums); the hand shortcuts as
+  switches (`HmmShortcut`: each on until Settings switches it off); the squeeze menu (`HmmQuickMenu`: up to six buttons
+  in a ring at the Pencil's tip); the edit bar (`hmmEditBar`); haptics felt in the Pencil (`HmmPencilHaptics`, Apple
+  Pencil Pro).
+- **HmmDesign**: the universal gestures repeat redo with three fingers held, and three fingers swiped down open the
+  edit bar (`HmmGestureActions.editMenu`). Each obeys its switch.
+- **HmmBrush**: the Pencil's feel (`HmmPencilFeel`): a pressure curve fitted from two strokes (your lightest line, your
+  heaviest), presets for a light, normal or heavy hand, stabilisation, and pressure from speed for a Pencil that has
+  none. Kept on the device for every studio app.
+- **HmmBoardUI**: the Pencil's double-tap (what the iPad's Pencil setting says) and squeeze (the quick menu) on the
+  board; strokes go through the Pencil's feel.
+
+### Notes
+- U3's spike (`PencilSDKSpikeTests`): squeeze, the Pencil's own haptics (`UICanvasFeedbackGenerator`) and the system
+  loupe (`UITextLoupeSession`) are all on the pinned SDK.
+
 ## [0.7.0] - 2026-10-11
 
 Built with Maquette 0.12.

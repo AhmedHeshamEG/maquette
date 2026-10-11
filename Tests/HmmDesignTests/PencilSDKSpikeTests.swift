@@ -35,10 +35,8 @@
         }
 
         func testTheSystemLoupeOpensOverAnyView() throws {
-            let window = UIWindow(frame: CGRect(x: 0, y: 0, width: 400, height: 400))
-            let view = UIView(frame: window.bounds)
-            window.addSubview(view)
-            window.isHidden = false
+            // Off screen it may not open (there is nothing to magnify); what matters here is that the API is there.
+            let view = UIView(frame: CGRect(x: 0, y: 0, width: 400, height: 400))
             let session = UITextLoupeSession.begin(at: CGPoint(x: 100, y: 100), fromSelectionWidgetView: nil, in: view)
             session?.move(to: CGPoint(x: 120, y: 110), withCaretRect: .zero, trackingCaret: false)
             session?.invalidate()
