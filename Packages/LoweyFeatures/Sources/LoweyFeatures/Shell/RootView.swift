@@ -56,7 +56,8 @@ public struct RootView: View {
                 // While the board covers the stage, two fingers undo on the board (its own gestures), not under it.
                 undo: { if app.editor?.boardShown != true { app.editor?.undo() } },
                 redo: { if app.editor?.boardShown != true { app.editor?.redo() } },
-                toggleChrome: { if app.editor?.boardShown != true { app.editor?.chromeHidden.toggle() } }
+                toggleChrome: { if app.editor?.boardShown != true { app.editor?.chromeHidden.toggle() } },
+                editMenu: { if app.editor?.boardShown != true { app.editor?.hands.editBar = true } }
             ))
             // Pinching and dragging belong to the stage: the project closes from Home in the corner, never by a swipe.
             .interactiveDismissDisabled()

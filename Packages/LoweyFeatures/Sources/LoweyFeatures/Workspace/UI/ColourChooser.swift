@@ -28,11 +28,11 @@ struct ColourChooser: View {
 /// The sidebar's colour well (CONTEXT §4.1): under the two sliders while a tool that puts colour down is in the hand.
 struct SidebarColourWell: View {
     @Bindable var editor: EditorModel
-    @State private var choosing = false
 
     var body: some View {
-        HmmColourWell(editor.paintColor.color) { choosing = true }
-            .popover(isPresented: $choosing) {
+        // Opened by the well, or by the Pencil (its squeeze or double-tap).
+        HmmColourWell(editor.paintColor.color) { editor.hands.choosingColour = true }
+            .popover(isPresented: $editor.hands.choosingColour) {
                 VStack(alignment: .leading, spacing: HmmSpacing.s) {
                     HmmSectionHeader("Colour")
                     ColourChooser(editor: editor)

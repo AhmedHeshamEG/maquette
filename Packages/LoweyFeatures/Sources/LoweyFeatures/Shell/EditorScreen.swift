@@ -12,6 +12,7 @@ struct EditorScreen: View {
     @Environment(AppModel.self) private var app
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(\.preferredPencilSqueezeAction) private var squeezeAction
+    @Environment(\.preferredPencilDoubleTapAction) private var doubleTapAction
     @AppStorage(AppSettings.showsPerformanceHUD) private var showsHUD = false
     @AppStorage(AppSettings.boardEnabled) private var boardEnabled = true
 
@@ -63,9 +64,23 @@ struct EditorScreen: View {
             if !editor.boardShown { EditorKeyboardShortcuts(editor: editor) }
         }
         .onPencilSqueeze { phase in
-            guard case .ended = phase, squeezeAction != .ignore else { return }
-            editor.togglePlay()
+            guard case let .ended(value) = phase, HmmShortcut.squeeze.isOn(), !editor.boardShown else { return }
+            editor.pencilShortcut(Self.shortcut(for: squeezeAction), at: value.hoverPose?.location)
         }
+        .onPencilDoubleTap { value in
+            guard HmmShortcut.pencilDoubleTap.isOn(), !editor.boardShown else { return }
+            switch DoubleTapChoice.current {
+            case .system: editor.pencilShortcut(Self.shortcut(for: doubleTapAction), at: value.hoverPose?.location)
+            case .quickMenu: editor.pencilShortcut(.quickMenu, at: value.hoverPose?.location)
+            case .off: break
+            }
+        }
+        .overlay {
+            if let point = editor.hands.quickMenuAt {
+                HmmQuickMenu(items: editor.quickMenuItems, at: point) { editor.hands.quickMenuAt = nil }
+            }
+        }
+        .hmmEditBar(isPresented: $editor.hands.editBar, items: editor.editBarItems)
         .dropDestination(for: URL.self) { urls, _ in
             Task { await app.library.importFiles(urls) }
             return true
@@ -118,6 +133,20 @@ struct EditorScreen: View {
             if AppIdentity.isUITesting, !AppIdentity.isTakingScreenshots { DebugTrail(editor: editor) }
         }
         .clipped()
+    }
+}
+
+extension EditorScreen {
+    /// The iPad's Pencil setting, as a shortcut here: the eraser, the last tool, the colours; the tool palette (and
+    /// anything we have no match for) opens the squeeze menu at the tip.
+    static func shortcut(for action: PencilPreferredAction) -> PencilShortcut {
+        switch action {
+        case .ignore: .none
+        case .switchEraser: .eraser
+        case .switchPrevious: .lastTool
+        case .showColorPalette: .colour
+        default: .quickMenu
+        }
     }
 }
 
