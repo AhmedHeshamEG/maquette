@@ -3,8 +3,10 @@ import LoweyCore
 import SwiftUI
 import UIKit
 
-/// The rows under the ruler, with one gesture layer over them: tap a key (or empty time), drag selected keys,
-/// box-select (Select mode, or touch and hold then drag), scroll sideways through time, up and down through rows.
+/// The rows under the ruler, with one gesture layer over them (Procreate Dreams' grammar, CONTEXT §10.10): tap a key
+/// (or empty time), drag selected keys or clips, the Pencil draws around keys and clips to pick them (a finger too, when
+/// Settings says so), two fingers pan and pinch, the Pencil's hover scrubs, touch and hold then drag box-selects, and
+/// holding a clip's edge retimes it.
 struct TimelineLanes: View {
     let editor: EditorModel
     let layout: TimelineLayout
@@ -37,6 +39,7 @@ struct TimelineLanes: View {
         .simultaneousGesture(laneDrag)
         .simultaneousGesture(marqueePress)
         .gesture(PencilLasso { point, state in pencilLasso(point, state: state) })
+        .modifier(DreamsLanes(editor: editor, layout: layout))
         .overlay(alignment: .topTrailing) { scrollIndicator }
         .onAppear { layout.viewportHeight = height }
         .onChange(of: height) { _, value in layout.viewportHeight = value }
@@ -81,7 +84,7 @@ struct TimelineLanes: View {
         case .changed:
             layout.lasso.append(layout.toContent(point))
         case .ended:
-            editor.selectKeys(layout.keys(inside: layout.lasso), additive: editor.keyBoxSelect)
+            pickInside(layout.lasso)
             layout.lasso = []
         default:
             layout.lasso = []
@@ -153,11 +156,13 @@ struct TimelineLanes: View {
     }
 
     /// Touch and hold, then drag: a selection box even outside Select mode.
+    /// Touch and hold, then drag: a clip's edge retimes it; anywhere else, a selection box.
     private var marqueePress: some Gesture {
         LongPressGesture(minimumDuration: 0.35)
             .sequenced(before: DragGesture(minimumDistance: 0, coordinateSpace: .named(TimelineLayout.lanesSpace)))
             .onChanged { value in
                 guard case let .second(true, drag) = value else { return }
+                if let drag, holdEdge(drag) { return }
                 if !layout.marqueeArmed, layout.laneDrag == nil {
                     layout.marqueeArmed = true
                     HmmHaptics.play(.selection)
@@ -165,6 +170,11 @@ struct TimelineLanes: View {
                 if layout.marqueeArmed, let drag { updateMarquee(from: layout.toContent(drag.startLocation), to: layout.toContent(drag.location)) }
             }
             .onEnded { _ in
+                if layout.retiming != nil {
+                    layout.retiming = nil
+                    editor.endGesture()
+                    return
+                }
                 if layout.marqueeArmed { commitMarquee() }
                 layout.marqueeArmed = false
             }
@@ -177,6 +187,10 @@ struct TimelineLanes: View {
             return vertical ? .scrollRows(start: layout.scrollOffset) : .ignore
         }
         if !layout.lasso.isEmpty { return .ignore }
+        if UserDefaults.standard.bool(forKey: AppSettings.timelineFingerSelects), layout.key(at: start) == nil, layout.clip(at: start) == nil {
+            layout.lasso = [start]
+            return .lasso
+        }
         if let hit = layout.key(at: start), editor.selectedKeys.contains(hit) {
             layout.keyDrag = 0
             return .moveKeys
@@ -204,6 +218,8 @@ struct TimelineLanes: View {
             layout.rowScroll = min(max(start - value.translation.height, 0), layout.maxScroll)
         case let .marquee(origin):
             updateMarquee(from: origin, to: layout.toContent(value.location))
+        case .lasso:
+            layout.lasso.append(layout.toContent(value.location))
         case .ignore, nil:
             break
         }
@@ -217,6 +233,9 @@ struct TimelineLanes: View {
             if let delta = layout.keyDrag { editor.shiftPickedClips(by: delta) }
         case .marquee:
             commitMarquee()
+        case .lasso:
+            pickInside(layout.lasso)
+            layout.lasso = []
         case .pan:
             let editor = editor
             layout.momentum.start(velocity: -Double(value.velocity.width) / layout.pps, pointsPerSecond: layout.pps) { delta in

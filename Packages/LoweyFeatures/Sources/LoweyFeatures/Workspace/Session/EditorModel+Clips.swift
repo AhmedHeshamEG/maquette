@@ -37,6 +37,21 @@ extension EditorModel {
         updatePickedClips("Clip speed", coalesce: "picked-speed") { $0.speed = speed }
     }
 
+    /// A clip's edge held and dragged (Procreate Dreams' way): the same motion plays faster or slower, its other edge
+    /// stays; one undo step per drag.
+    func retimeClip(_ id: String, end: Bool, to time: Double, gesture: String) {
+        let fps = Double(timeline.fps)
+        let moment = (max(time, 0) * fps).rounded() / fps
+        updateTimeline("Retime clip", coalesce: gesture) { timeline in
+            for trackIndex in timeline.clipTracks.indices {
+                for index in timeline.clipTracks[trackIndex].segments.indices where timeline.clipTracks[trackIndex].segments[index].id == id {
+                    timeline.clipTracks[trackIndex].segments[index] = timeline.clipTracks[trackIndex].segments[index].retimed(end: end, to: moment,
+                                                                                                                         minimum: 1 / fps)
+                }
+            }
+        }
+    }
+
     func removePickedClips() {
         let picked = selectedClips
         guard !picked.isEmpty else { return }
