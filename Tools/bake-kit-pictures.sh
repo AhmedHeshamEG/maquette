@@ -6,7 +6,7 @@
 #
 #   Tools/bake-kit-pictures.sh <simulator udid>
 set -euo pipefail
-UDID="${1:?an iPad simulator's udid (Tools/pick-simulator.py)}"
+UDID="${1:?the udid of an iPad simulator, from Tools/pick-simulator.py}"
 cd "$(git rev-parse --show-toplevel)"
 OUT="$PWD/App/Resources/Kit"
 cd Packages/LoweyFeatures
