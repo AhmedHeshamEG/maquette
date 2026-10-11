@@ -9,7 +9,10 @@ struct NewProjectCard: View {
     @Environment(\.hmmTheme) private var theme
 
     var body: some View {
-        Button(action: action) {
+        Button {
+            HmmHaptics.play(.commit)
+            action()
+        } label: {
             VStack(spacing: HmmSpacing.s) {
                 Image(systemName: "plus").font(.system(size: 40, weight: .semibold)).foregroundStyle(theme.accent)
                 Text("New project").font(.hmm(.headline, weight: .semibold)).foregroundStyle(theme.text)
@@ -33,6 +36,8 @@ struct ProjectCard: View {
     let zoom: Namespace.ID
     let playing: Bool
     var selection: Bool?
+    /// Tap the name to rename it (Procreate's gallery); nil where names can't change (the benchmark).
+    var rename: (() -> Void)?
     @Environment(AppModel.self) private var app
     @Environment(\.hmmTheme) private var theme
     @State private var still: UIImage?
@@ -48,7 +53,17 @@ struct ProjectCard: View {
                 .overlay(alignment: .topTrailing) { badge }
                 .matchedTransitionSource(id: project.id.raw, in: zoom)
             VStack(alignment: .leading, spacing: 2) {
-                Text(project.info.name).font(.hmm(.headline, weight: .semibold)).foregroundStyle(theme.text).lineLimit(1)
+                if let rename, selection == nil {
+                    Button(action: rename) {
+                        Text(project.info.name).font(.hmm(.headline, weight: .semibold)).foregroundStyle(theme.text).lineLimit(2)
+                            .multilineTextAlignment(.leading)
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityHint("Rename")
+                    .accessibilityIdentifier("rename-\(project.info.name)")
+                } else {
+                    Text(project.info.name).font(.hmm(.headline, weight: .semibold)).foregroundStyle(theme.text).lineLimit(2)
+                }
                 Text(subtitle).font(.hmm(.footnote)).foregroundStyle(theme.text2)
             }
             .padding(.horizontal, HmmSpacing.xxs)

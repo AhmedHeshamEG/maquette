@@ -25,6 +25,25 @@ extension AppModel {
         }
     }
 
+    /// The + on Home (and the quiet set-up row): a new project straight away, in its set-up's world (Blank: the dark
+    /// studio), named by itself. It can be renamed from its card any time.
+    func startProject(_ kind: StarterTemplate.Kind = .blank, inStack stack: String? = nil) {
+        let template = StarterTemplate.template(kind)
+        createProject(named: newProjectName(), template: template, mood: template.mood, look: template.lookPresetID, inStack: stack)
+    }
+
+    /// "Untitled", then "Untitled 2", "Untitled 3"… so a fresh project never shares a name.
+    func newProjectName() -> String {
+        let base = String(localized: "Untitled")
+        let names = Set(projects.map(\.info.name))
+        guard names.contains(base) else { return base }
+        var number = 2
+        while names.contains("\(base) \(number)") {
+            number += 1
+        }
+        return "\(base) \(number)"
+    }
+
     func duplicate(_ project: ProjectSummary) {
         perform("duplicate") { _ = try projectStore.duplicateProject(at: project.url) }
     }

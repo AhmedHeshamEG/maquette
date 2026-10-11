@@ -15,8 +15,8 @@ struct TheaterView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: HmmSpacing.xl) {
                 TheaterHeader(state: state)
+                if state.query.isEmpty, !state.selecting { SetUpRow(stack: state.openStack) }
                 grid
-                if state.openStack == nil, state.query.isEmpty { samples }
             }
             .padding(HmmSpacing.xl)
         }
@@ -43,7 +43,7 @@ struct TheaterView: View {
                           message: "Search looks through every project and stack by name.", actionTitle: "Clear the search") { state.query = "" }
         } else {
             GalleryGrid(entries: entries, zoom: zoom, playing: playing, selected: state.selecting ? state.selected : nil,
-                        newProject: state.query.isEmpty && !state.selecting ? { state.showNewProject = true } : nil,
+                        newProject: state.query.isEmpty && !state.selecting ? { app.startProject(inStack: state.openStack) } : nil,
                         open: tap,
                         openStack: { stack in
                             withHmmAnimation(.gentle) {
@@ -52,6 +52,11 @@ struct TheaterView: View {
                             }
                         },
                         drop: { id, entry in withHmmAnimation(.standard) { app.drop(id, onto: entry) } },
+                        rename: { project in
+                            state.nameText = project.info.name
+                            state.renaming = project
+                        },
+                        samples: state.openStack == nil && state.query.isEmpty && !state.selecting ? AnyView(SamplesCard()) : nil,
                         projectMenu: { ProjectMenu(project: $0, state: state) },
                         stackMenu: { StackMenu(stack: $0, state: state) })
         }
@@ -65,15 +70,70 @@ struct TheaterView: View {
             app.open(url: project.url)
         }
     }
+}
 
-    private var samples: some View {
-        VStack(alignment: .leading, spacing: HmmSpacing.s) {
-            HmmSectionHeader("Samples")
-            HStack(spacing: HmmSpacing.s) {
-                HmmPillButton("Welcome island", systemName: "tree") { app.createIslandSample(open: true) }
-                HmmPillButton("The Enigma story", systemName: "sparkles") { app.createEnigmaSample(open: true) }
+/// Under Home's title, quietly: a new project set up for a job (Blank is the + card).
+private struct SetUpRow: View {
+    let stack: String?
+    @Environment(AppModel.self) private var app
+    @Environment(\.hmmTheme) private var theme
+
+    var body: some View {
+        HStack(spacing: HmmSpacing.m) {
+            Text("Or start set up for").foregroundStyle(theme.text3)
+            ForEach(StarterTemplate.setUps.filter { $0 != .blank }, id: \.self) { kind in
+                Button {
+                    HmmHaptics.play(.commit)
+                    app.startProject(kind, inStack: stack)
+                } label: {
+                    Label(LocalizedStringKey(kind.title), systemImage: kind.systemImage)
+                }
+                .buttonStyle(.plain)
+                .foregroundStyle(theme.text2)
+                .accessibilityIdentifier("start-\(kind.rawValue)")
             }
         }
+        .font(.hmm(.footnote, weight: .semibold))
+        .lineLimit(1)
+        .frame(maxWidth: .infinity, alignment: .leading)
+    }
+}
+
+/// The samples, once, as one stack-like card: tap it for the list; each is made fresh and opened.
+private struct SamplesCard: View {
+    @Environment(AppModel.self) private var app
+    @Environment(\.hmmTheme) private var theme
+
+    var body: some View {
+        Menu {
+            Button("Welcome island", systemImage: "tree") { app.createIslandSample(open: true) }
+                .accessibilityIdentifier("Welcome island")
+            Button("The Enigma story", systemImage: "sparkles") { app.createEnigmaSample(open: true) }
+        } label: {
+            VStack(alignment: .leading, spacing: HmmSpacing.s) {
+                ZStack {
+                    ForEach(0 ..< 3) { index in
+                        RoundedRectangle(cornerRadius: HmmRadius.card, style: .continuous)
+                            .fill(theme.surface2.opacity(1 - Double(index) * 0.25))
+                            .overlay(RoundedRectangle(cornerRadius: HmmRadius.card, style: .continuous).stroke(theme.line))
+                            .rotationEffect(.degrees(Double(index - 1) * 4))
+                            .offset(x: CGFloat(index - 1) * 6)
+                    }
+                    Image(systemName: "sparkles").font(.system(size: 34, weight: .medium)).foregroundStyle(theme.text2)
+                }
+                .frame(maxWidth: .infinity)
+                .aspectRatio(16 / 9, contentMode: .fit)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Samples").font(.hmm(.headline, weight: .semibold)).foregroundStyle(theme.text)
+                    Text("Made in \(AppIdentity.displayName), to open and take apart").font(.hmm(.footnote)).foregroundStyle(theme.text2)
+                }
+                .padding(.horizontal, HmmSpacing.xxs)
+            }
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .hoverEffect(.lift)
+        .accessibilityIdentifier("samples")
     }
 }
 
@@ -86,7 +146,6 @@ final class GalleryState {
     var selecting = false
     var selected: Set<String> = []
     var scrolling = false
-    var showNewProject = false
     var showArchive = false
     var importing = false
     var sharing: URL?
