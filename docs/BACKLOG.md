@@ -5,6 +5,10 @@ phase plan (M11 … M16, then 1.0) lives in studio-h's `PHASES.md`; ideas go to 
 
 ## U1 in progress (Maquette 0.10.1)
 
+- [ ] A Paint stroke that starts on an object before it is ready to paint is dropped (it is made ready while chosen,
+      so this is rare now); keeping that stroke is U3/U5's (D-224).
+- [ ] Only the bone being weighed is drawn while its weights are worked out, not the whole pending rig (D-225).
+
 - [ ] Hesham's first feel recording on 0.10.1 (the "before"); U1's fixes are aimed at what it ranks (PHASES, U1 step 2).
 - [ ] The recorder times a touch to the first refresh after its answer is ready; the compositor's own frame after that
       is the same for every app and isn't counted (D-217).
