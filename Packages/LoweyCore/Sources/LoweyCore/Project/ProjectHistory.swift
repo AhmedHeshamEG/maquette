@@ -39,7 +39,9 @@ public enum ProjectHistory {
         // 10 → 11 only adds the optional takes field and the `setTakes` command.
         10: { $0 },
         // 11 → 12 only adds a mood (`darkStudio`, inside looks).
-        11: { $0 }
+        11: { $0 },
+        // 12 → 13 only adds the optional sheets, the `setSheets` command and a flipbook anchor.
+        12: { $0 }
     ]
     /// The first schema journals were written with (Maquette 0.1).
     public static let firstJournalSchema = 4

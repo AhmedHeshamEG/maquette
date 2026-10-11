@@ -46,7 +46,8 @@ public enum LoweySchema {
     /// 11: Maquette 0.10's live performance: timelines' `takes` and the `setTakes` command; `dangle.<joint>`, `breathe`,
     ///     `attachBone`, `liveHead` and `triggers` properties.
     /// 12: Maquette 0.12's `darkStudio` mood (a blank project's world).
-    public static let currentVersion = 12
+    /// 13: Maquette 0.13's sheets: scenes' `sheets`, the `setSheets` command, flipbooks drawn on a sheet.
+    public static let currentVersion = 13
 
     public static let migrations: [Migration] = [
         Migration(kind: .scene, from: 0, transform: liftSceneV0),
@@ -92,7 +93,11 @@ public enum LoweySchema {
         // 11 → 12 adds a mood; nothing older changes shape.
         Migration(kind: .scene, from: 11) { $0 },
         Migration(kind: .project, from: 11) { $0 },
-        Migration(kind: .library, from: 11) { $0 }
+        Migration(kind: .library, from: 11) { $0 },
+        // 12 → 13 adds optional sheets and a flipbook anchor; nothing older changes shape.
+        Migration(kind: .scene, from: 12) { $0 },
+        Migration(kind: .project, from: 12) { $0 },
+        Migration(kind: .library, from: 12) { $0 }
     ]
 
     /// The render style a 1.x look maps to.
