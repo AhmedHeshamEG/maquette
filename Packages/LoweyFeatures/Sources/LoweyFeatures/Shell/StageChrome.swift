@@ -75,14 +75,7 @@ struct StageChrome: View {
             item(.select, editor.tool == .lasso ? "lasso" : "hand.point.up.left", "Select", on: editor.tool == .lasso),
             item(.library, "books.vertical", "Library")
         ])
-        .overlay(alignment: .bottomLeading) {
-            Text(editor.baseScene.name)
-                .font(.hmm(.caption, weight: .semibold))
-                .foregroundStyle(.secondary)
-                .lineLimit(1)
-                .offset(x: HmmSpacing.s, y: 18)
-                .accessibilityIdentifier("scene-name")
-        }
+        .overlay(alignment: .bottomLeading) { SceneNameDoor(editor: editor).offset(x: HmmSpacing.xs, y: 30) }
     }
 
     /// The making tools, in the order a thing gets made: Model, Draw, Paint, Rig, and Animate (it calls the timeline).
@@ -146,13 +139,42 @@ private struct ClusterPanelView: View {
         switch panel {
         case .actions: ActionsPanel(editor: editor)
         case .look: LookPanel(editor: editor)
-        case .select: SelectPanel(editor: editor)
+        case .select: SelectBar(editor: editor)
         case .library: LibraryPanel(editor: editor)
+        case .scene: ScenePanel(editor: editor)
         case .model: ModelPanel(editor: editor)
         case .draw: DrawToolsPanel(editor: editor)
         case .paint: PaintPanel(editor: editor)
         case .rig: RigPanel(editor: editor)
         }
+    }
+}
+
+/// The scene's name under the top-left cluster, a door: tap it for the set-up, the scenes and the objects.
+private struct SceneNameDoor: View {
+    let editor: EditorModel
+    @Environment(\.hmmTheme) private var theme
+
+    var body: some View {
+        Button {
+            HmmHaptics.play(.selection)
+            editor.openPanel = editor.openPanel == .scene ? nil : .scene
+        } label: {
+            HStack(spacing: 4) {
+                Text(editor.baseScene.name).lineLimit(1)
+                Image(systemName: "chevron.down").font(.system(size: 9, weight: .bold))
+            }
+            .font(.hmm(.caption, weight: .semibold))
+            .foregroundStyle(editor.openPanel == .scene ? theme.text : theme.text2)
+            .padding(.horizontal, HmmSpacing.xs)
+            .frame(minHeight: 28)
+            .frame(maxWidth: 220, alignment: .leading)
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel(Text("Scene: \(editor.baseScene.name)"))
+        .accessibilityHint(Text("The set-up, the scenes and the objects"))
+        .accessibilityIdentifier("scene-name")
     }
 }
 

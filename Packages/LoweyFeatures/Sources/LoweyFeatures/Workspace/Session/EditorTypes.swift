@@ -77,8 +77,8 @@ public enum StageTool: String, CaseIterable, Identifiable, Sendable {
 /// The floating panels the corner clusters open. One at a time; tapping its button again closes it. Animate, the
 /// last making tool, has no panel: it calls the timeline (docs/LAYOUT.md).
 public enum ClusterPanel: String, Identifiable, Sendable {
-    // Top-left: document and app.
-    case actions, look, select, library
+    // Top-left: document and app (the scene opens from its name, under the cluster).
+    case actions, look, select, library, scene
     // Top-right: making.
     case model, draw, paint, rig
 
@@ -86,7 +86,7 @@ public enum ClusterPanel: String, Identifiable, Sendable {
 
     public var isLeading: Bool {
         switch self {
-        case .actions, .look, .select, .library: true
+        case .actions, .look, .select, .library, .scene: true
         default: false
         }
     }
@@ -138,7 +138,7 @@ public enum LibraryPage: String, CaseIterable, Identifiable, Sendable {
 
 /// Sheets over the editor (one at a time).
 public enum EditorSheet: String, Identifiable, Sendable {
-    case export, audio, transcript, scripts, bridge, blobBuilder, characterBuilder, settings, diagnostics, gestures, timelineSettings
+    case export, audio, transcript, scripts, bridge, blobBuilder, characterBuilder, settings, diagnostics, gestures, timelineSettings, learn
     /// The brush library (and Brush Studio) for the drawing tool in `EditorModel.brushTool`.
     case brushes
 

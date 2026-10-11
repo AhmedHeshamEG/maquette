@@ -31,6 +31,8 @@ public final class AppModel {
     var showTour = false
     /// Settings from the Theater (the editor opens them as one of its sheets).
     var showsSettings = false
+    /// Learn over Home (the tour, the gestures, the instructions switch).
+    var showsLearn = false
     /// The feel recorder is listening (Diagnostics ▸ Record; a small dot at the top says so).
     var isRecordingFeel = false
     /// A project changed on two devices: which version to keep.

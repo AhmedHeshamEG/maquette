@@ -65,6 +65,7 @@ public struct RootView: View {
             }
         }
         .sheet(isPresented: $app.showsSettings) { SettingsSheet(app: app) }
+        .sheet(isPresented: $app.showsLearn) { LearnSheet(app: app) }
         .onChange(of: app.projects.count) { _, _ in openTourIslandIfNeeded() }
         .onChange(of: app.showTour) { _, _ in openTourIslandIfNeeded() }
         .task { await app.start() }
