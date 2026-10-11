@@ -113,8 +113,8 @@ final class ChromeFitTests: XCTestCase {
     private func assertPanelFits(after button: String, in orientation: String) {
         let window = app.windows.firstMatch.frame
         let controls = app.descendants(matching: .any).matching(NSPredicate(format: "elementType == %d OR elementType == %d",
-                                                                                XCUIElement.ElementType.button.rawValue,
-                                                                                XCUIElement.ElementType.staticText.rawValue))
+                                                                            XCUIElement.ElementType.button.rawValue,
+                                                                            XCUIElement.ElementType.staticText.rawValue))
         var frames: [(String, CGRect)] = []
         for index in 0 ..< min(controls.count, 120) {
             let control = controls.element(boundBy: index)

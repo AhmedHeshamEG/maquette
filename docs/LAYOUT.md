@@ -136,7 +136,7 @@ A small bar.
 |---|---|
 | Set up for: Blank, Print, Room, Animation (what's in reach changes, never the project) | `scene-name › setup-room` |
 | Scenes: switch, new, duplicate, rename; copy this scene to another project | `scene-name › scene-rename` |
-| The objects (the outliner): pick, show or hide, lock; touch and hold a row for the object's menu (with move to top level, move into a group, frame) | `scene-name › outliner` |
+| The objects (the outliner): pick, show or hide, lock; a row's hold menu (also: to top level, into a group, frame) | `scene-name › outliner` |
 
 ## Top right
 
@@ -238,14 +238,14 @@ The panel closes on the first stroke; the tool's bar under the stage stays. Tap 
 | Its size in the project's units, and what the Model tool picked | `[cube] selection-size` |
 | Colour (the scene's palette) | `[cube] section-Colour` |
 | What kind of thing it is: a light's, a text's, an overlay's, an effect's own controls | in the panel for those things |
-| Make it move, one strip: the loops (spin, float, bounce, wiggle, swing, follow a path) and the moves that happen once (pop in, grow, shake, fade, slide in…); the speed, Make keyframes | `[cube] motion-bounce` |
+| Make it move, one strip: loops (spin, float, bounce, wiggle, swing, follow a path), then once-moves; speed, keyframes | `[cube] motion-bounce` |
 | | `[cube] preset-popIn` |
 | On the selection: Scatter copies on the ground | `[cube] tool-scatter` |
 | On the selection: Mirror and symmetry | `[cube] mirror` |
 | On the selection: Make editable | `[cube] make-editable` |
 | On the selection: Combine (union, subtract, intersect), with two or more shapes | in the panel when two or more shapes are selected |
 | Look of this object: glow, smoothing, bevel; its own Look, line weight, rim light, accent, gloss | `[cube] object-look` |
-| More ways to move: the length and strength of once-moves, behaviours, animated on (ones, twos, threes, fours), simulations, puppet joints, motion path, onion skin, clear the animation | `[cube] more-motion` |
+| More ways to move: once-moves' length, behaviours, animated on (ones…fours), physics, joints, paths, onion skin | `[cube] more-motion` |
 | Numbers: position, rotation, size | `[cube] transform-toggle` |
 | About this object | `[cube] inspector-more` |
 | Duplicate, hide | `[cube] Duplicate` |
@@ -263,7 +263,7 @@ The panel closes on the first stroke; the tool's bar under the stage stays. Tap 
 | Resting: a thin rail where the sliders sit (touch it for size and opacity) | `sidebar-rail` |
 | Two sliders that follow the tool (size and opacity) | Draw, Paint, the weight brush, Perform |
 | Pick a colour from the stage | `Draw › tool-ink › Pick` |
-| The colour in the hand (the Look's palette, any colour), for every tool that makes something, shapes from Model ▸ Add included | `Draw › tool-ink › colour-well` |
+| The colour in the hand (the palette, any colour), for every tool that makes something, Model ▸ Add included | `Draw › tool-ink › colour-well` |
 | Undo, redo (they never rest) | `Undo` |
 
 ## The bottom row
@@ -273,7 +273,7 @@ The panel closes on the first stroke; the tool's bar under the stage stays. Tap 
 | The timeline on call | `timeline-toggle` |
 | Views (top, front, side; perspective or orthographic) | `views-menu` |
 | Frame the selection | `Frame the selection` |
-| The camera button: tap to look through the camera (again for the next, then back); hold for a new camera from this view, or to pick one | `camera-button` |
+| The camera button: tap to look through (again: the next, then back); hold for a new camera from this view | `camera-button` |
 | Joystick (on by default; its × hides it, Settings ▸ Stage brings it back) | `[cube] hide-joystick` |
 | Tool options (ink, solid shape, flipbook, Shadow Brush, scatter, Model, Rig) | below the stage while that tool is on |
 | The trigger deck: the selected character's triggers under the fingers *(held: 1.2)* | below the stage with Select in the hand while the timeline is in Perform |
@@ -289,7 +289,7 @@ Eight controls: play, the time, Perform | Keys, the mode's one button, + Overlay
 | Key the selection at the playhead (Keys' one button, with something selected); after the first key, changes key themselves | the timeline in Keys, with a selection |
 | + Overlay: a title, a label, marks (arrow, circle, star…), screen effects at the playhead | `[timeline] add-overlay` |
 | + Sound: voiceover, music, effects, transcript | `[timeline] Sound and words` |
-| The menu: add a marker, the loop; Keys (pick keys, easing, timing, the graph editor, paste, clear); Perform (what a touch performs, the Pencil's roll); fit, snap to words, timeline settings | `[timeline] timeline-menu` |
+| The menu: a marker, the loop; the mode's extras (keys, easing, the graph; what a touch performs); fit, settings | `[timeline] timeline-menu` |
 | Collapse to the slim transport | `[timeline] Collapse the timeline` |
 | Resize, or switch to the transport | `[timeline] timeline-divider` |
 | The ruler: drag to scrub; tap just beside the playhead to step a frame; flick left to go to the start | `[timeline] timeline-ruler` |
