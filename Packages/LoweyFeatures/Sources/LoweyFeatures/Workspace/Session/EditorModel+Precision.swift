@@ -18,6 +18,10 @@ extension EditorModel {
 
     // MARK: Snapping a point
 
+    /// What snaps right now: the settings through the Snap magnet, the other way while a finger is held down beside the
+    /// Pencil (CONTEXT §10.10).
+    var snapping: SnapSettings { snap.effective(flipped: snapFlipped) }
+
     /// The point under a screen point, snapped to corners, edge middles, edges and faces near it (12 points on screen),
     /// else to the grid on `plane`. The mark it leaves shows what it snapped to. All on the CPU: the solids the ray's
     /// path crosses are raycast, so a tap never waits for the GPU's ID buffer.
@@ -37,7 +41,7 @@ extension EditorModel {
         for (_, sketch) in sketches {
             nearby.lines += sketch.curves.map { $0.points.map { sketch.plane.lift($0) } }
         }
-        var settings = snap
+        var settings = snapping
         if settings.grid { settings.gridSize = min(settings.gridSize, pullStep * 10) }
         let result = PointSnap.snap(screen: Vec2(Double(point.x), Double(point.y)), ray: ray, surface: surface?.point, in: nearby, plane: plane,
                                     settings: settings, radius: 12) { [weak stage] world in
@@ -153,8 +157,8 @@ extension EditorModel {
 
     /// The guide plane's drawing guide (grid, isometric, symmetry) on the plane while drawing on it.
     private func planeGuideMesh(stage: StageView) -> MeshData? {
-        guard tool == .ink, ink.mode == .draw, let guide = planeGuide, let basis = planeBasis(currentGuide) else { return nil }
-        let reach = draw.guideSize * 2
+        guard tool == .ink, ink.mode == .draw, let guide = planeGuide, let sheet = currentSheet, let basis = planeBasis(sheet) else { return nil }
+        let reach = max(sheet.width, sheet.height)
         let width = stage.worldPerPoint(at: basis.origin) * 0.8
         var mesh = MeshData()
         for line in GuideLines.lines(guide, in: (Vec2(-reach, -reach), Vec2(reach, reach))) {

@@ -13,7 +13,8 @@ extension StageGestures {
             BrushInput(point: strokePoints[index], pressure: strokePressures[index], altitude: strokeAltitudes[index], time: strokeTimes[index])
         }
         for sample in predicted {
-            guard let ray = stage.worldRay(at: sample.location), let hit = strokeGuide?.intersect(ray) else { continue }
+            guard let ray = stage.worldRay(at: sample.location), let sheet = strokeSheet,
+                  let hit = editor?.land(ray, on: sheet, objectMesh: strokeTargetMesh) else { continue }
             samples.append(BrushInput(point: hit.point + hit.normal * 0.002, pressure: sample.pressure, altitude: sample.altitude, time: sample.time))
         }
         return samples
@@ -21,7 +22,7 @@ extension StageGestures {
 
     /// The stroke and its copies as the guide plane's guide makes them (samples keep their pressure and time).
     func inkCopies(_ samples: [BrushInput<Vec3>], editor: EditorModel) -> [[BrushInput<Vec3>]] {
-        editor.guidedOnPlane(samples.map(\.point), guide: strokeGuide).map { points in
+        editor.guidedOnPlane(samples.map(\.point), sheet: strokeSheet).map { points in
             zip(samples, points).map { sample, point in
                 var moved = sample
                 moved.point = point
@@ -55,6 +56,8 @@ extension StageGestures {
 
     /// The stroke and its copies as the frame's guide makes them.
     func flipbookCopies(_ samples: [BrushInput<Vec2>], editor: EditorModel) -> [[BrushInput<Vec2>]] {
+        // On the sheet a stroke is as drawn: the frame's guide belongs to flipbooks on the camera.
+        guard editor.flipbook.onCamera else { return [samples] }
         let points = samples.map { CGPoint(x: $0.point.x, y: $0.point.y) }
         return editor.guidedOnFrame(points).map { copy in
             zip(samples, copy).map { sample, point in
@@ -66,7 +69,7 @@ extension StageGestures {
     }
 
     func showFlipbookPreview(_ recognizer: StrokeGestureRecognizer, editor: EditorModel, stage: StageView) {
-        let samples = flipbookSamples(predicted: recognizer.predicted)
+        let samples = flipbookSamples(predicted: snapped == nil ? recognizer.predicted : [])
         guard !samples.isEmpty else { return }
         let brush = editor.currentBrush(for: .flipbook)
         let dabs = flipbookCopies(samples, editor: editor).enumerated().flatMap { index, copy in

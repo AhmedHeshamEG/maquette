@@ -3,7 +3,7 @@ import Foundation
 import HmmDesign
 import LoweyCore
 
-/// Ink strokes: Pencil lines in 3D on the drawing guide. Strokes join the selected ink drawing (a new one starts when
+/// Ink strokes: Pencil lines in 3D on the sheet. Strokes join the selected ink drawing (a new one starts when
 /// nothing ink is selected), the eraser splits them, and picked strokes can be moved, smoothed, thickened or deleted.
 /// Every edit is one `setKind` command, one undo step per gesture.
 extension EditorModel {
@@ -57,7 +57,7 @@ extension EditorModel {
             for (index, path) in paths.enumerated() {
                 recipe = InkEditing.appending(stroke(path, index: index, map: { world.inverseApply(to: $0) }, scale: scale), to: recipe)
             }
-            performStroke(.setKind(target.id, .drawing(recipe)), brush: brushCommand)
+            performStroke(keepingSheet(.setKind(target.id, .drawing(recipe))), brush: brushCommand)
             return
         }
         let origin = first.points[0]
@@ -68,7 +68,7 @@ extension EditorModel {
                                      color: currentColor)
         if ink.opacity < 0.999 { object[.opacity] = .float(ink.opacity) }
         object.name = ObjectFactory.uniqueName(object.name, in: scene)
-        if performStroke(operations.add(object), brush: brushCommand) { selection = [object.id] }
+        if performStroke(keepingSheet(operations.add(object)), brush: brushCommand) { selection = [object.id] }
     }
 
     // MARK: Erasing

@@ -18,6 +18,8 @@ struct StageChrome: View {
     var body: some View {
         ZStack {
             if editor.tool == .model || editor.precision.showsDimensions { ModelDimensions(editor: editor) }
+            // The sheet's edge: its grip, shapes and kept sheets, under it on the stage.
+            if editor.drawsOnSheet, editor.currentSheet != nil { SheetEdgeControl(editor: editor) }
             HStack {
                 if !sidebarOnRight { EditorSidebar(editor: editor) }
                 Spacer()
@@ -68,7 +70,7 @@ struct StageChrome: View {
     /// The object panel floats while something is selected (a chip while something bigger is open). While sketching it
     /// steps aside: the numbers on the stage are what you're working with then (D-124).
     private var showsInspector: Bool {
-        !editor.selection.isEmpty && !(editor.tool == .model && editor.modeling.mode.sketchKind != nil)
+        !editor.selection.isEmpty && !editor.isSketching
     }
 
     // MARK: Clusters
@@ -87,8 +89,8 @@ struct StageChrome: View {
     /// The making tools, in the order a thing gets made: Model, Draw, Paint, Rig, and Animate (it calls the timeline).
     private var trailingCluster: some View {
         HmmCornerCluster([
-            item(.model, "cube", "Model", on: editor.tool == .model),
-            item(.draw, drawIcon, "Draw", on: editor.tool.draws),
+            item(.model, "cube", "Model", on: editor.tool == .model && !editor.isSketching),
+            item(.draw, drawIcon, "Draw", on: editor.tool.draws || editor.isSketching),
             item(.paint, editor.tool == .scatter ? "circle.hexagongrid" : "paintbrush.pointed", "Paint", on: editor.tool.paintsSurfaces),
             item(.rig, "figure.arms.open", "Rig", on: editor.tool == .rig),
             HmmClusterItem(id: "animate", systemName: "figure.walk.motion", label: "Animate", isOn: editor.timelinePresence == .full) {
@@ -101,6 +103,7 @@ struct StageChrome: View {
         switch editor.tool {
         case .draw: "scribble.variable"
         case .flipbook: "book.pages"
+        case .model where editor.isSketching: "pencil.and.ruler"
         default: "pencil.tip"
         }
     }

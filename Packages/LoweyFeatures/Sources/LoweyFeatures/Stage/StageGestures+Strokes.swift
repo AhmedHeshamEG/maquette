@@ -41,12 +41,9 @@ extension StageGestures {
             strokeTimes = []
             strokeSeed = EditorModel.strokeSeed()
             consumedSamples = 0
-            strokeGuide = editor.currentGuide
-            strokeTargetMesh = nil
-            if editor.draw.guide == .object, let first = recognizer.samples.first {
-                strokeTargetMesh = stage.pickObject(at: first.location).flatMap { stage.worldMesh(of: $0.0) }
-                if strokeTargetMesh == nil { editor.app.show("Start the stroke on an object") }
-            }
+            editor.ensureSheet()
+            strokeSheet = editor.currentSheet
+            strokeTargetMesh = editor.sheetObjectMesh(strokeSheet)
             consume(Array(recognizer.samples), editor: editor, stage: stage)
         case .changed:
             continueStroke(recognizer, editor: editor, stage: stage)
@@ -58,7 +55,7 @@ extension StageGestures {
                 editor.commitInkStrokes(inkCopies(inkSamples(stage: stage), editor: editor), seed: strokeSeed)
                 editor.strokeEnded()
             } else {
-                editor.commitStroke(points: strokePoints, pressures: strokePressures, normals: strokeNormals, guide: strokeGuide)
+                editor.commitStroke(points: strokePoints, pressures: strokePressures, normals: strokeNormals, sheet: strokeSheet)
             }
             consumedSamples = 0
             snapped = nil
@@ -82,8 +79,12 @@ extension StageGestures {
 
     /// Draw, then hold: the stroke becomes the clean shape it was meant to be.
     func snapToQuickShape() {
-        guard let editor, let stage, editor.tool.usesGuide, stroke.state == .began || stroke.state == .changed,
+        guard HmmShortcut.cleanShape.isOn(), let editor, let stage, editor.tool.usesSheet, stroke.state == .began || stroke.state == .changed,
               let anchor = stroke.samples.last?.location else { return }
+        if editor.tool == .flipbook {
+            snapFlipbookToQuickShape(editor: editor)
+            return
+        }
         let points = stroke.samples.map { Vec2(Double($0.location.x), Double($0.location.y)) }
         guard let shape = QuickShape.fit(points) else { return }
         let pressure = stroke.samples.map(\.pressure).reduce(0, +) / Double(max(stroke.samples.count, 1))
@@ -120,13 +121,8 @@ extension StageGestures {
     /// Screen samples → points on the stroke's guide (or the object it started on).
     private func project(_ samples: [StrokeGestureRecognizer.Sample], editor: EditorModel, stage: StageView) {
         for sample in samples {
-            guard let ray = stage.worldRay(at: sample.location) else { continue }
-            let hit: SurfaceHit? = if let mesh = strokeTargetMesh {
-                MeshRaycast.intersect(ray, mesh: mesh)
-            } else {
-                strokeGuide?.intersect(ray)
-            }
-            guard let hit else { continue }
+            guard let ray = stage.worldRay(at: sample.location), let sheet = strokeSheet,
+                  let hit = editor.land(ray, on: sheet, objectMesh: strokeTargetMesh) else { continue }
             // Tubes sit on the surface instead of half buried in it.
             let lift = editor.tool == .draw && editor.draw.style == .tube ? editor.draw.width * 0.5 : 0.002
             strokePoints.append(hit.point + hit.normal * lift)

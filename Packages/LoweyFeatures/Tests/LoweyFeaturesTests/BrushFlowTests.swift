@@ -52,13 +52,14 @@ final class BrushFlowTests: XCTestCase {
         editor.app.brushes.reset(BuiltInBrushes.inkPenID)
     }
 
-    func testSymmetryOnTheGuidePlaneMirrorsInkAsOneStep() throws {
+    func testSymmetryOnTheSheetMirrorsInkAsOneStep() throws {
         let editor = try makeEditor()
         editor.tool = .ink
         editor.planeGuide = DrawingGuide(kind: .symmetry, symmetry: .vertical)
-        let surface = GuideSurface.plane(origin: .zero, normal: .unitZ)
+        let sheet = DrawingSheet(id: "s", name: "Sheet 1", origin: .zero)
         let samples = line(1).map { BrushInput(point: $0 + Vec3(0.2, 0, 0), pressure: 1, time: 0) }
-        let copies = editor.guidedOnPlane(samples.map(\.point), guide: surface)
+        let copies = editor.guidedOnPlane(samples.map(\.point), sheet: sheet)
+        XCTAssertEqual(editor.guidedOnPlane(samples.map(\.point), sheet: sheet.with(shape: .dome)).count, 1, "a curved sheet has no plane guide")
         XCTAssertEqual(copies.count, 2)
         XCTAssertEqual(copies[1][0].x, -copies[0][0].x, accuracy: 1e-9, "mirrored across the plane's upright axis")
         editor.commitInkStrokes(copies.map { copy in zip(samples, copy).map { BrushInput(point: $1, pressure: $0.pressure, time: $0.time) } },
