@@ -352,15 +352,19 @@ extension StageView: MTKViewDelegate {
             DispatchQueue.main.async { [weak self] in MainActor.assumeIsolated { self?.redraw() } }
         }
         commandBuffer.present(drawable)
-        lastEncodeTime = CACurrentMediaTime() - start
+        let encoded = CACurrentMediaTime()
+        lastEncodeTime = encoded - start
         commandBuffer.addCompletedHandler { [weak self] buffer in
-            let gpu = buffer.gpuEndTime - buffer.gpuStartTime
+            let gpuStart = buffer.gpuStartTime
+            let gpuEnd = buffer.gpuEndTime
             // A plain hop to the main queue: a Task per frame was an allocation 120 times a second.
             DispatchQueue.main.async {
                 MainActor.assumeIsolated {
                     guard let self else { return }
-                    let scale = self.dynamicScale.update(gpuTime: gpu, thermal: .current)
-                    self.onFrameTime?(gpu, total, scale)
+                    let scale = self.dynamicScale.update(gpuTime: gpuEnd - gpuStart, thermal: .current)
+                    self.onFrameTime?(gpuEnd - gpuStart, total, scale)
+                    // The feel recorder follows touches on the stage to this frame.
+                    FeelProbe.surfaceFrame(self, started: start, encoded: encoded, gpuStart: gpuStart, gpuEnd: gpuEnd)
                 }
             }
         }
