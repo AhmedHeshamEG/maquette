@@ -77,13 +77,12 @@ final class LayoutTests: XCTestCase {
         XCTAssertFalse(workspace.showsGrid)
     }
 
-    func testSwappingOpensModelOnItsLibrary() throws {
+    func testSwappingOpensTheLibrary() throws {
         let editor = try makeEditor()
         editor.addPrimitive(.cube)
         editor.openPanel = nil
         editor.beginSwap()
-        XCTAssertEqual(editor.openPanel, .model)
-        XCTAssertEqual(editor.modelPage, .library)
+        XCTAssertEqual(editor.openPanel, .library)
         XCTAssertNotEqual(editor.libraryPurpose, .place)
     }
 

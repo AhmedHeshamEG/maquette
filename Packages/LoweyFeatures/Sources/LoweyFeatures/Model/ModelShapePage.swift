@@ -49,3 +49,39 @@ struct ModelShapePage: View {
         }
     }
 }
+
+/// The Model tool's bar at the bottom of the stage: pick modes, sketch shapes, and what the current pick can do.
+struct ModelOptionsBar: View {
+    let editor: EditorModel
+
+    var body: some View {
+        HStack(spacing: HmmSpacing.xs) {
+            ForEach(MeshSelection.Mode.allCases.reversed(), id: \.self) { mode in
+                HmmButton(ModelShapePage.icon(for: mode), label: mode.label, isOn: editor.modeling.mode == .pick(mode), size: 36) {
+                    editor.startModeling(.pick(mode))
+                }
+            }
+            Divider().frame(height: 24)
+            ForEach(SketchKind.allCases) { kind in
+                HmmButton(kind.systemImage, label: kind.title, isOn: editor.modeling.mode == .sketch(kind), size: 36) {
+                    editor.startModeling(.sketch(kind))
+                }
+            }
+            if editor.modeling.pending != nil {
+                HmmButton("checkmark", label: "Done", size: 36) { editor.finishSketchShape() }
+            }
+            if let elements = editor.modeling.elements, !elements.isEmpty {
+                Divider().frame(height: 24)
+                HmmButton("plus.magnifyingglass", label: "Grow", size: 36) { editor.growPick() }
+                HmmButton("minus.magnifyingglass", label: "Shrink", size: 36) { editor.shrinkPick() }
+                HmmButton("square.grid.3x3.square", label: "Select similar", size: 36) { editor.selectSimilarElements() }
+                Divider().frame(height: 24)
+                PickActions(editor: editor, mode: elements.mode)
+            }
+            ModelToolExtras(editor: editor)
+            HmmButton("xmark", label: "Done modelling", size: 36) { editor.stopModeling() }
+        }
+        .padding(HmmSpacing.xs)
+        .hmmPanelBackground()
+    }
+}
