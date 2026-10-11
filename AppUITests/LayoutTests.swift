@@ -113,6 +113,7 @@ final class LayoutTests: XCTestCase {
         closeMenu()
 
         XCTAssertTrue(tap("Look"))
+        tap("look-style")
         let look = element("look-clay")
         XCTAssertTrue(look.waitForExistence(timeout: 5))
         look.press(forDuration: 1.2)
@@ -275,6 +276,10 @@ final class LayoutTests: XCTestCase {
         newProject("Bench")
         tap("Actions")
         tap("Settings")
+        // Settings ▸ About is below the fold.
+        for _ in 0 ..< 8 where !(element("Diagnostics").exists && element("Diagnostics").isHittable) {
+            app.swipeUp()
+        }
         XCTAssertTrue(tap("Diagnostics"))
         XCTAssertTrue(tap("run-home-benchmark", timeout: 10))
         let frames = element("home-benchmark-frames")

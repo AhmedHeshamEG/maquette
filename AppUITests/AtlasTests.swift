@@ -200,7 +200,7 @@ final class AtlasTests: XCTestCase {
             Page(name: "Drawing guide", steps: ["Draw", "tool-ink", "drawing-guide"]),
             Page(name: "Colour well", steps: ["Draw", "tool-ink", "colour-well"]),
             Page(name: "Flipbook tracks", steps: ["Draw", "tool-flipbook", "flipbook-tracks"]),
-            Page(name: "My Look editor", steps: ["Look", "look-clay", "duplicate-look"], scrolls: 1, side: .leading),
+            Page(name: "My Look editor", steps: ["Look", "look-style", "look-clay", "duplicate-look"], scrolls: 1, side: .leading),
             Page(name: "Fine tune the world", steps: ["Look", "Fine tune the world"], scrolls: 1, side: .leading),
             Page(name: "Set up for a Room", steps: ["scene-name", "setup-room", "scene-name", "Model", "model-add"]),
             Page(name: "Print check", steps: ["Model", "model-shape", "print-check"]),

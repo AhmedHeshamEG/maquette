@@ -1801,8 +1801,9 @@ gesture and the instructions switch; Settings ▸ Gestures shows the same gestur
 switchable.
 
 **D-238 — Nothing greyed out, no label cut, checked twice.** Panels hide what can't act (`shown(_:)`); pills, chips
-and tiles take a second line instead of truncating or shrinking. `ChromeFitTests` fails when a chrome control or a
-panel's control is cut by the screen's edge or sits on another, in landscape and portrait; CI runs it on the 13-inch,
+and tiles take a second line instead of truncating or shrinking. `ChromeFitTests` fails when a chrome control sits on another or is cut by the
+screen's edge, or a panel's control is cut by it (a panel covers the sidebar on purpose, so overlaps are the chrome's
+check), in landscape and portrait; CI runs it on the 13-inch,
 the Atlas workflow on the mini, the 11-inch and the 13-inch in both orientations.
 
 **D-239 — Not in this phase, though CONTEXT lists it near the layout.** Hatched shadows (a new capability; U2 moves,

@@ -34,10 +34,14 @@ final class SmokeTests: XCTestCase {
         shot("New project")
     }
 
-    /// Diagnostics live in Settings ▸ About.
+    /// Diagnostics live in Settings ▸ About, below the fold: the form is scrolled until the row is there.
     private func openDiagnostics() {
         tap("Actions")
         tap("Settings")
+        let row = app.descendants(matching: .any)["Diagnostics"].firstMatch
+        for _ in 0 ..< 8 where !(row.exists && row.isHittable) {
+            app.swipeUp()
+        }
         tap("Diagnostics")
     }
 
@@ -68,6 +72,7 @@ final class SmokeTests: XCTestCase {
         launch()
         newProject()
         tap("Look")
+        tap("look-style")
         tap("look-clay")
         tap("duplicate-look")
         shot("My Look")
@@ -111,8 +116,7 @@ final class SmokeTests: XCTestCase {
         shot("Recording")
         let dot = app.descendants(matching: .any)["feel-recording"].firstMatch
         XCTAssertTrue(dot.waitForNonExistence(timeout: 20), "it stops by itself")
-        tap("Actions")
-        tap("Diagnostics")
+        openDiagnostics()
         let file = app.staticTexts.matching(NSPredicate(format: "label BEGINSWITH 'feel-'")).firstMatch
         XCTAssertTrue(file.waitForExistence(timeout: 5), "the recording is listed to share")
         shot("Feel recording saved")

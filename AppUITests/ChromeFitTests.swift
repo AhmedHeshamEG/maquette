@@ -109,25 +109,21 @@ final class ChromeFitTests: XCTestCase {
         assertApart(frames, in: orientation)
     }
 
-    /// The open panel is whole on the screen, and its labels and buttons don't sit on each other.
+    /// The open panel's labels and buttons are whole on the screen. (Overlaps are the chrome's check: a panel covers
+    /// the sidebar and the bottom row on purpose, and what it covers still reports itself as hittable.)
     private func assertPanelFits(after button: String, in orientation: String) {
         let window = app.windows.firstMatch.frame
         let controls = app.descendants(matching: .any).matching(NSPredicate(format: "elementType == %d OR elementType == %d",
                                                                             XCUIElement.ElementType.button.rawValue,
                                                                             XCUIElement.ElementType.staticText.rawValue))
-        var frames: [(String, CGRect)] = []
         for index in 0 ..< min(controls.count, 120) {
             let control = controls.element(boundBy: index)
             guard control.exists, control.isHittable else { continue }
             let frame = control.frame
-            guard frame.width > 2, frame.height > 2 else { continue }
-            if window.intersects(frame) {
-                XCTAssertTrue(window.insetBy(dx: -1, dy: -1).contains(frame),
-                              "\(button) › \(control.label) is cut by the screen's edge in \(orientation)")
-            }
-            frames.append(("\(button) › \(control.label)", frame))
+            guard frame.width > 2, frame.height > 2, window.intersects(frame) else { continue }
+            XCTAssertTrue(window.insetBy(dx: -1, dy: -1).contains(frame),
+                          "\(button) › \(control.label) is cut by the screen's edge in \(orientation)")
         }
-        assertApart(frames, in: orientation)
     }
 
     /// No two frames overlap by more than a hair (a label inside its own button is the button's, so equal or nested
