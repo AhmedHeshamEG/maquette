@@ -7,14 +7,18 @@
         public var systemName: String
         public var label: String
         public var isOn: Bool
+        /// The one active thing (the tool in the hand): the only button that keeps the accent with chrome restraint.
+        public var accent: Bool
         public var isEnabled: Bool
         public var action: () -> Void
 
-        public init(id: String, systemName: String, label: String, isOn: Bool = false, isEnabled: Bool = true, action: @escaping () -> Void) {
+        public init(id: String, systemName: String, label: String, isOn: Bool = false, accent: Bool = false, isEnabled: Bool = true,
+                    action: @escaping () -> Void) {
             self.id = id
             self.systemName = systemName
             self.label = label
             self.isOn = isOn
+            self.accent = accent
             self.isEnabled = isEnabled
             self.action = action
         }
@@ -32,7 +36,7 @@
         public var body: some View {
             HStack(spacing: HmmSpacing.xxs) {
                 ForEach(items) { item in
-                    HmmButton(item.systemName, label: item.label, isOn: item.isOn, action: item.action)
+                    HmmButton(item.systemName, label: item.label, isOn: item.isOn, accent: item.accent, action: item.action)
                         .disabled(!item.isEnabled)
                 }
             }
@@ -97,6 +101,9 @@
     /// The Procreate sidebar: two context sliders with the Pick button between them, then whatever the tool in the
     /// hand adds (`accessory`: the colour well), undo and redo below.
     /// It sits on the left edge, or on the right for left-handed use (`mirrored`).
+    ///
+    /// It rests rather than leaves: with `resting`, the sliders, Pick and the accessory shrink to a faint thin rail in
+    /// the same place, and a touch on the rail calls `wake`. Undo and redo never rest.
     public struct HmmSidebar: View {
         private let top: HmmSidebarSlider?
         private let bottom: HmmSidebarSlider?
@@ -106,14 +113,19 @@
         private let undo: () -> Void
         private let redo: () -> Void
         private let accessory: AnyView?
+        private let resting: Bool
+        private let wake: (() -> Void)?
 
         public init(top: HmmSidebarSlider?, bottom: HmmSidebarSlider?, pickActive: Bool = false, pick: (() -> Void)? = nil,
-                    accessory: AnyView? = nil, canUndo: Bool, canRedo: Bool, undo: @escaping () -> Void, redo: @escaping () -> Void) {
+                    accessory: AnyView? = nil, resting: Bool = false, wake: (() -> Void)? = nil, canUndo: Bool, canRedo: Bool,
+                    undo: @escaping () -> Void, redo: @escaping () -> Void) {
             self.top = top
             self.bottom = bottom
             self.pickActive = pickActive
             self.pick = pick
             self.accessory = accessory
+            self.resting = resting
+            self.wake = wake
             undoState = (canUndo, canRedo)
             self.undo = undo
             self.redo = redo
@@ -121,6 +133,20 @@
 
         public var body: some View {
             VStack(spacing: HmmSpacing.s) {
+                if resting {
+                    HmmSidebarRail(wake: wake)
+                } else {
+                    tools
+                }
+                HmmButton("arrow.uturn.backward", label: "Undo", action: undo)
+                    .disabled(!undoState.canUndo)
+                HmmButton("arrow.uturn.forward", label: "Redo", action: redo)
+                    .disabled(!undoState.canRedo)
+            }
+        }
+
+        private var tools: some View {
+            Group {
                 if let top {
                     HmmSlider(top.title, value: top.value, in: top.range, length: 150, format: top.format,
                               onEditingChanged: top.onEditingChanged)
@@ -133,31 +159,55 @@
                               onEditingChanged: bottom.onEditingChanged)
                 }
                 if let accessory { accessory }
-                HmmButton("arrow.uturn.backward", label: "Undo", action: undo)
-                    .disabled(!undoState.canUndo)
-                HmmButton("arrow.uturn.forward", label: "Redo", action: redo)
-                    .disabled(!undoState.canRedo)
             }
+            .transition(.opacity.combined(with: .scale(scale: 0.9, anchor: .center)))
+        }
+    }
+
+    /// The sidebar at rest: two faint lines where the sliders sit. A touch wakes it.
+    struct HmmSidebarRail: View {
+        let wake: (() -> Void)?
+        @Environment(\.hmmTheme) private var theme
+
+        var body: some View {
+            VStack(spacing: HmmSpacing.l) {
+                Capsule().fill(theme.text3.opacity(0.55)).frame(width: 4, height: 120)
+                Capsule().fill(theme.text3.opacity(0.55)).frame(width: 4, height: 120)
+            }
+            .frame(width: HmmTarget.minimum)
+            .padding(.vertical, HmmSpacing.s)
+            .contentShape(Rectangle())
+            .onTapGesture { wake?() }
+            .transition(.opacity)
+            .accessibilityElement()
+            .accessibilityLabel(Text("Show the sliders"))
+            .accessibilityAddTraits(.isButton)
+            .accessibilityAction { wake?() }
+            .accessibilityIdentifier("sidebar-rail")
         }
     }
 
     /// A floating panel with a title row: opens from the button that called it, scrolls when Dynamic Type grows.
-    /// With `sizing`, a grip in its bottom corner resizes it and the size is remembered (`hmmResizable`).
+    /// With `sizing`, a grip in its bottom corner resizes it and the size is remembered (`hmmResizable`); with
+    /// `movable` too, the title row is a grip: drag it anywhere, it stays where it was left (remembered under the same
+    /// id), double-tap it to send the panel home.
     public struct HmmPanel<Content: View>: View {
         private let title: String
         private let width: Double
         private let close: (() -> Void)?
         private let sizing: HmmPanelSizing?
+        private let movable: Bool
         private let gripOnTrailing: Bool
         private let content: Content
         @State private var size: HmmPanelSize?
         @Environment(\.hmmTheme) private var theme
 
-        public init(_ title: String, width: Double = 340, sizing: HmmPanelSizing? = nil, gripOnTrailing: Bool = true,
+        public init(_ title: String, width: Double = 340, sizing: HmmPanelSizing? = nil, movable: Bool = false, gripOnTrailing: Bool = true,
                     close: (() -> Void)? = nil, @ViewBuilder content: () -> Content) {
             self.title = title
             self.width = width
             self.sizing = sizing
+            self.movable = movable
             self.gripOnTrailing = gripOnTrailing
             self.close = close
             self.content = content()
@@ -168,6 +218,7 @@
                 panel
                     .hmmResizable(sizing, size: $size, defaultWidth: width, gripOnTrailing: gripOnTrailing, title: title)
                     .hmmPanelBackground()
+                    .hmmMovable(movable ? HmmPanelPosition(id: sizing.id) : nil, title: title)
             } else {
                 panel.frame(width: width).hmmPanelBackground()
             }
@@ -179,6 +230,7 @@
                     Text(LocalizedStringKey(title))
                         .font(.hmm(.headline, weight: .semibold))
                         .foregroundStyle(theme.text)
+                        .lineLimit(2)
                         .accessibilityAddTraits(.isHeader)
                     Spacer(minLength: HmmSpacing.xs)
                     if let close {
@@ -188,6 +240,13 @@
                 .padding(.horizontal, HmmSpacing.m)
                 .padding(.top, HmmSpacing.s)
                 .padding(.bottom, HmmSpacing.xs)
+                .overlay(alignment: .top) {
+                    if movable, sizing != nil {
+                        Capsule().fill(theme.text3).frame(width: 36, height: 4).padding(.top, 5).allowsHitTesting(false)
+                    }
+                }
+                .contentShape(Rectangle())
+                .hmmPanelGrip()
                 ScrollView {
                     content
                         .padding(.horizontal, HmmSpacing.m)
