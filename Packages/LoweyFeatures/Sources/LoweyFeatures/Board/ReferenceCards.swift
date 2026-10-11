@@ -36,7 +36,11 @@ private struct FoldedReference: View {
             editor.foldReference(card.id, folded: false)
         } label: {
             Group {
-                if let picture { Image(uiImage: picture).resizable().scaledToFill() } else { theme.surface2 }
+                if let picture {
+                    Image(uiImage: picture).resizable().scaledToFill()
+                } else {
+                    theme.surface2
+                }
             }
             .frame(width: 52, height: 52)
             .clipShape(RoundedRectangle(cornerRadius: HmmRadius.control, style: .continuous))

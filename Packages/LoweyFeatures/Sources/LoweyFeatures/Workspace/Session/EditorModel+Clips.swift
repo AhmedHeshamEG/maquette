@@ -46,7 +46,7 @@ extension EditorModel {
             for trackIndex in timeline.clipTracks.indices {
                 for index in timeline.clipTracks[trackIndex].segments.indices where timeline.clipTracks[trackIndex].segments[index].id == id {
                     timeline.clipTracks[trackIndex].segments[index] = timeline.clipTracks[trackIndex].segments[index].retimed(end: end, to: moment,
-                                                                                                                         minimum: 1 / fps)
+                                                                                                                              minimum: 1 / fps)
                 }
             }
         }
