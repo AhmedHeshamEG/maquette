@@ -156,13 +156,8 @@ A small bar.
 | The Model tool's bar: pick modes, grow / shrink / select similar, bevel / round (edges), inset / shell (faces), the measurement and Keep, ✕ | shown at the bottom while the Model tool is on |
 | The numbers on the stage (pull distance, sides, diameter, length, offset, a bevel's or shell's size, the wall height and thickness): tap to type | shown beside what they measure |
 | Measurements and kept dimensions on the stage: tap one to keep it, or to select it | shown beside what they measure |
-| Precision: snap to grid and its size | `Model › model-precision › snap-grid` |
-| Precision: snap to corners and middles, edges, faces | `Model › model-precision › snap-corners` |
-| Precision: snap to objects, to the ground | `Model › model-precision › Snap to objects` |
-| Precision: turn in steps | `Model › model-precision › Turn in steps` |
 | Precision: the grid on the ground | `Model › model-precision › show-grid` |
 | Precision: units (mm, cm, m, in, ft) | `Model › model-precision › units` |
-| Precision: the snapping distance | `Model › model-precision › snap-distance` |
 | Precision: measure (two taps; keep it as a dimension) | `Model › model-precision › measure` |
 | Precision: show kept dimensions | `Model › model-precision › show-dimensions` |
 | Precision: section view across x, y or z, along the picked face; where it cuts; the other side | `Model › model-precision › section-x` |
@@ -281,6 +276,8 @@ The panel closes on the first stroke; the tool's bar under the stage stays. Tap 
 |---|---|
 | The timeline on call | `timeline-toggle` |
 | Views (top, front, side; perspective or orthographic) | `views-menu` |
+| The Snap magnet: everything that snaps, on or off (a finger held down while the Pencil works flips it for that move) | `snap-magnet` |
+| The magnet's details: the grid and its size, corners and middles, edges, faces, objects, the ground, turning in steps, how near | touch and hold the magnet |
 | Frame the selection | `Frame the selection` |
 | The camera button: tap to look through (again: the next, then back); hold for a new camera from this view | `camera-button` |
 | Joystick (on by default; its × hides it, Settings ▸ Stage brings it back) | `[cube] hide-joystick` |

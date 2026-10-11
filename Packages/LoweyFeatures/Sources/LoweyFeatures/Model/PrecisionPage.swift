@@ -2,14 +2,15 @@ import HmmDesign
 import LoweyCore
 import SwiftUI
 
-/// Model ▸ Precision: snapping (the grid, objects, the ground, corners, edges and faces, turning in steps), the units
-/// sizes are shown and typed in, the measure tool, kept dimensions and the section view.
+/// Model ▸ Precision: the grid on the ground, the units sizes are shown and typed in, the measure tool, kept dimensions
+/// and the section view. What snaps is the Snap magnet's, on the stage (CONTEXT §10.10): tap it on or off, hold it for
+/// the details.
 struct PrecisionPage: View {
     @Bindable var editor: EditorModel
 
     var body: some View {
         VStack(alignment: .leading, spacing: HmmSpacing.m) {
-            PanelSection("Snapping") { snapping }
+            PanelSection("Grid and units") { snapping }
             PanelSection("Measure") { measuring }
             PanelSection("Section view") { section }
         }
@@ -18,31 +19,6 @@ struct PrecisionPage: View {
 
     private var snapping: some View {
         VStack(alignment: .leading, spacing: HmmSpacing.s) {
-            Toggle("Snap to grid", isOn: $editor.snap.grid)
-                .accessibilityIdentifier("snap-grid")
-            if editor.snap.grid {
-                Picker("Grid size", selection: $editor.snap.gridSize) {
-                    ForEach(Self.gridSizes(for: editor.units), id: \.self) { size in
-                        Text(editor.units.format(size)).tag(size)
-                    }
-                }
-                .pickerStyle(.segmented)
-            }
-            Toggle("Snap to corners and middles", isOn: $editor.snap.corners)
-                .accessibilityIdentifier("snap-corners")
-            Toggle("Snap to edges", isOn: $editor.snap.edges)
-            Toggle("Snap to faces", isOn: $editor.snap.faces)
-            Toggle("Snap to objects", isOn: $editor.snap.objects)
-            Toggle("Snap to the ground", isOn: $editor.snap.ground)
-            Toggle("Turn in steps", isOn: $editor.snap.rotation)
-            if editor.snap.rotation {
-                Picker("Step", selection: $editor.snap.rotationStep) {
-                    Text("15°").tag(15.0)
-                    Text("45°").tag(45.0)
-                    Text("90°").tag(90.0)
-                }
-                .pickerStyle(.segmented)
-            }
             Toggle("Grid on the ground", isOn: $editor.showsGrid)
                 .accessibilityIdentifier("show-grid")
             Picker("Units", selection: $editor.units) {
@@ -52,10 +28,7 @@ struct PrecisionPage: View {
             }
             .pickerStyle(.segmented)
             .accessibilityIdentifier("units")
-            LabeledSlider(title: "Snapping distance", value: editor.snap.objectThreshold, range: 0 ... 0.5,
-                          format: { "\(Int(($0 * 100).rounded())) cm" }) { editor.snap.objectThreshold = $0 }
-                .accessibilityIdentifier("snap-distance")
-            Hint("This project remembers these. The snapping distance is how close a thing must come before it snaps.")
+            Hint("This project remembers these. What snaps: hold the magnet on the stage.")
         }
     }
 
