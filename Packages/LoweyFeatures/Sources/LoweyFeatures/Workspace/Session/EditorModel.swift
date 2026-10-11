@@ -35,6 +35,7 @@ final class EditorModel {
             if !inkStrokes.isEmpty { inkStrokes = [] }
             if AppIdentity.isUITesting { trail("sel=[\(selection.compactMap { scene.objects[$0]?.name }.joined(separator: ","))]") }
             refreshSelectionOverlay()
+            if tool == .paint { readyPaintTarget() }
         }
     }
 

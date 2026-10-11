@@ -164,6 +164,7 @@ extension EditorModel {
         if tool != .rig, rigging.person != nil { rigging.person = nil }
         // The object being rigged (or painted) stands in its rest pose while that tool is on, and goes back to its pose after.
         if tool == .rig || oldTool == .rig || tool == .paint || oldTool == .paint { refreshDisplay() }
+        if tool == .paint { readyPaintTarget() }
         // Only when there is one: writing the observed paint settings would redraw every view that reads them.
         if tool != .paint, colourPaint.picture != nil { colourPaint.picture = nil }
         if tool == .flipbook, flipbook.track == nil { flipbook.track = timeline.flipbooks.last?.id }

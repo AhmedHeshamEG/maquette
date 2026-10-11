@@ -33,13 +33,23 @@ extension EditorModel {
 
     // MARK: Getting ready
 
+    /// With Paint in the hand, the object it will paint is made ready as soon as it is chosen, quietly: laid flat if it
+    /// never was, its paint carried onto its new shape if it was modelled since. No message; the layers appear.
+    func readyPaintTarget() {
+        guard tool == .paint, let object = paintTarget, !colourPaint.preparing.contains(object.id) else { return }
+        if object.paint == nil {
+            preparePaint(object.id)
+        } else if !paintFitsShape(object) {
+            rebasePaint(object.id)
+        }
+    }
+
     /// Makes an object paintable (in the background: unwrapping a big model takes a moment). Placed models keep their
     /// own colours as a first layer, "Model", with an empty layer above for the paint.
     func preparePaint(_ id: ObjectID) {
         guard let object = baseScene.objects[id], object.isPaintable, object.paint == nil, !colourPaint.preparing.contains(id) else { return }
         colourPaint.target = id
         colourPaint.preparing.insert(id)
-        app.show("Getting \(object.name) ready to paint")
         let folder = assetsFolder
         Task {
             let made = await makePaintable(object)
@@ -130,7 +140,6 @@ extension EditorModel {
         guard let object = baseScene.objects[id], let paint = object.paint, let source = paintSource(of: object),
               !colourPaint.preparing.contains(id) else { return }
         colourPaint.preparing.insert(id)
-        app.show("Bringing the paint onto the new shape")
         let file = paintFiles
         let folder = assetsFolder
         Task {

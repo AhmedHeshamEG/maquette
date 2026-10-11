@@ -245,7 +245,7 @@ final class AtlasTests: XCTestCase {
             Page(name: "More actions", steps: ["more-actions"]),
             Page(name: "Motion row, Bounce", steps: ["motion-bounce"]),
             Page(name: "Model, Edit on an object", steps: ["Model", "model-shape"], scrolls: 2),
-            Page(name: "Paint layers", steps: ["Paint", "tool-paint", "paint-start"], scrolls: 1),
+            Page(name: "Paint layers", steps: ["Paint", "tool-paint", "paint-layer-add"], scrolls: 1),
             Page(name: "Rig, Bones", steps: ["Cast", "rig-step-bones"], scrolls: 1),
             Page(name: "Rig as a person", steps: ["Cast", "rig-person"])
         ], from: .cube)
