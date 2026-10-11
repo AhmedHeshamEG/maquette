@@ -37,7 +37,9 @@ public enum ProjectHistory {
         // 9 → 10 only adds the `bounce` and `swing` behaviours (inside `setTimeline`).
         9: { $0 },
         // 10 → 11 only adds the optional takes field and the `setTakes` command.
-        10: { $0 }
+        10: { $0 },
+        // 11 → 12 only adds a mood (`darkStudio`, inside looks).
+        11: { $0 }
     ]
     /// The first schema journals were written with (Maquette 0.1).
     public static let firstJournalSchema = 4

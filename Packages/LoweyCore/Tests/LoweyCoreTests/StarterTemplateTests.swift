@@ -43,8 +43,38 @@ final class StarterTemplateTests: XCTestCase {
     func testTimelineTemplates() {
         XCTAssertEqual(StarterTemplate.animation.workspace.timeline, .full)
         XCTAssertEqual(StarterTemplate.character.workspace.timeline, .transport)
-        XCTAssertEqual(StarterTemplate.character.workspace.firstPanel, "cast")
+        XCTAssertEqual(StarterTemplate.character.workspace.firstPanel, "rig")
         XCTAssertEqual(StarterTemplate.blank.workspace.timeline, .hidden, "the timeline is on call: hidden by default")
+    }
+
+    func testABlankProjectOpensInTheDarkStudio() throws {
+        XCTAssertEqual(StarterTemplate.blank.mood, .darkStudio)
+        let store = try ProjectStore(root: temporaryDirectory())
+        let (_, document) = try store.createProject(name: "Untitled", template: .blank)
+        XCTAssertEqual(document.project.look.lightingPreset, .darkStudio)
+        let ground = MoodPresets.look(for: .darkStudio).ground.color
+        XCTAssertLessThan(ground.r + ground.g + ground.b, 0.4, "a near-black ground")
+    }
+
+    func testSettingUpChangesWhatIsInReachNotTheProject() {
+        var workspace = ProjectWorkspace(template: .blank, timeline: .transport, timelineHeight: 400)
+        workspace.references = [ReferenceCard(id: "r", image: "assets/references/r.png", title: "Ref")]
+        let print = workspace.settingUp(for: .print)
+        XCTAssertEqual(print.template, .print)
+        XCTAssertEqual(print.units, .millimetre)
+        XCTAssertEqual(print.shapeSize, 0.05)
+        XCTAssertEqual(print.printBed, PrintBed.standard.id)
+        XCTAssertTrue(print.snap.grid)
+        XCTAssertEqual(print.timeline, .transport, "a set-up never hides a timeline that is showing")
+        XCTAssertEqual(print.timelineHeight, 400)
+        XCTAssertEqual(print.references, workspace.references)
+        let animation = print.settingUp(for: .animation)
+        XCTAssertEqual(animation.timeline, .full, "Animation brings the whole timeline")
+        XCTAssertNil(animation.printBed, "leaving Print takes the printer away")
+        XCTAssertEqual(animation.units, .centimetre)
+        XCTAssertEqual(animation.setUp, .animation)
+        XCTAssertEqual(ProjectWorkspace(template: .character).setUp, .blank, "a retired template reads as Blank")
+        XCTAssertEqual(ProjectWorkspace().setUp, .blank)
     }
 
     func testSketchOpensOnTheBoard() throws {
