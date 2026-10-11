@@ -202,6 +202,17 @@ public struct ClipSegment: Codable, Hashable, Sendable, Identifiable {
         }
         return min(max(local, 0), clipDuration)
     }
+
+    /// Its start or end held and dragged to `time` (the timeline's "hold an edge to retime", Dreams' way): the same
+    /// stretch of motion plays faster or slower and the other edge stays where it was.
+    public func retimed(end movesEnd: Bool, to time: Double, minimum: Double = 1.0 / 30) -> ClipSegment {
+        var result = self
+        let length = max(movesEnd ? time - start : end - time, minimum)
+        result.speed = speed * duration / length
+        result.duration = length
+        if !movesEnd { result.start = end - length }
+        return result
+    }
 }
 
 /// Simple IK applied after the clips: feet on the ground, head looks at, a hand reaches.
