@@ -32,7 +32,7 @@ extension EditorModel {
     /// The path the current ink brush makes of Pencil samples (world points on the guide): the same function draws
     /// the live stroke and the one that's kept.
     func inkPath(_ samples: [BrushInput<Vec3>]) -> BrushPath<Vec3> {
-        BrushStroker.path(samples, brush: currentBrush(for: .ink), size: ink.width, streamline: ink.smoothing * 0.6,
+        BrushStroker.path(samples, brush: currentBrush(for: .ink), size: ink.width, streamline: min((ink.smoothing + pencilFeel.stabilisation) * 0.6, 0.95),
                           minimumSpacing: ink.width * 0.25)
     }
 

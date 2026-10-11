@@ -54,7 +54,7 @@ extension EditorModel {
     /// the live stroke in points, a drawing's scale when it's kept): the same function draws both.
     func flipbookPath(_ samples: [BrushInput<Vec2>], pointsPerUnit scale: Double = 1) -> BrushPath<Vec2> {
         BrushStroker.path(samples, brush: currentBrush(for: .flipbook), size: flipbook.width / scale, opacity: flipbook.opacity,
-                          minimumSpacing: 1.5 / scale)
+                          streamline: pencilFeel.stabilisation * 0.6, minimumSpacing: 1.5 / scale)
     }
 
     /// A finished stroke from points and pressures alone (tests; the Pencil gives full samples).

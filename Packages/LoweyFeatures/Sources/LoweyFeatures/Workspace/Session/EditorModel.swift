@@ -96,6 +96,9 @@ final class EditorModel {
     @ObservationIgnored var strokesDrawn = 0
     /// A finger is held down while the Pencil works: the Snap magnet is the other way for that move.
     @ObservationIgnored var snapFlipped = false
+    /// How this hand presses (Settings ▸ Your Pencil), as the stroke being drawn read it: its stabilisation smooths ink
+    /// and flipbooks.
+    @ObservationIgnored var pencilFeel = HmmPencilFeel.default
     /// The tool in the hand before this one (the Pencil's "last tool").
     @ObservationIgnored var lastTool: StageTool = .ink
     /// The squeeze menu, the edit bar, the colours a shortcut opened (`EditorModel+Hands`).
