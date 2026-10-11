@@ -11,7 +11,7 @@ struct BoneSurface {
     var points: [Vec3]
 }
 
-/// Cast ▸ Rig in three steps (Bones → Skin → Pose), and the bone under the Pencil shown as it will land.
+/// Rig in three steps (Bones → Skin → Pose), and the bone under the Pencil shown as it will land.
 extension EditorModel {
     // MARK: Steps
 
@@ -25,7 +25,7 @@ extension EditorModel {
         }
     }
 
-    /// The step Cast ▸ Rig shows for an object: where its rigging was left, Bones for something with none yet, Pose
+    /// The step Rig shows for an object: where its rigging was left, Bones for something with none yet, Pose
     /// for something rigged earlier.
     func rigStep(for object: SceneObject) -> RigSettings.Step {
         guard object.rig != nil else { return .bones }

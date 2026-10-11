@@ -260,7 +260,7 @@ extension EditorModel {
 }
 
 /// The kinds of character in the Cast panel: the house Blob, a built Puppet, a Rigged model from the library, and
-/// anything given drawn bones (or rigged as a person) in Cast ▸ Rig.
+/// anything given drawn bones (or rigged as a person) in Rig.
 enum CastType: String, CaseIterable, Sendable {
     case blob, puppet, rigged, drawn
 

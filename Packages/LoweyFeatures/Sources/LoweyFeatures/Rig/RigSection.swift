@@ -2,7 +2,7 @@ import HmmDesign
 import LoweyCore
 import SwiftUI
 
-/// Cast ▸ Rig: give anything a skeleton, in three steps in order. **Bones**: draw a bone through a limb, tail or rope
+/// Rig: give anything a skeleton, in three steps in order. **Bones**: draw a bone through a limb, tail or rope
 /// (or rig a human-like model as a person). **Skin**: the weights are worked out by themselves; paint them only if you
 /// want to. **Pose**: drag the joints. Each step shows only its own tools, and the next one lights up when this one is
 /// done.
@@ -65,7 +65,7 @@ struct RigSection: View {
         Hint("Drag its joints on the stage. In Keyframe, keys land at the playhead. Saved poses are below.")
         HmmPillButton("Reset the pose", systemName: "arrow.uturn.backward") { editor.resetPose(object.id) }
             .accessibilityIdentifier("rig-reset-pose")
-        DangleControl(editor: editor, character: object.id)
+        if Held.isOn(.livePerformance) { DangleControl(editor: editor, character: object.id) }
     }
 }
 
@@ -86,7 +86,7 @@ struct RigStepRow: View {
     }
 }
 
-/// Under the stage while Cast ▸ Rig is on: the three steps, the bone whose weight is painted (Skin), and the person
+/// Under the stage while Rig is on: the three steps, the bone whose weight is painted (Skin), and the person
 /// rig's Rig button.
 struct RigOptionsBar: View {
     @Bindable var editor: EditorModel

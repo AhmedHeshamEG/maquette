@@ -22,7 +22,7 @@ public enum StageTool: String, CaseIterable, Identifiable, Sendable {
     case model
     /// Paint ▸ Colour: colour painted on models with the brush engine (`ColourPaintSettings`).
     case paint
-    /// Cast ▸ Rig: bones drawn through an object, weights painted, the person rig's dots (`RigSettings`).
+    /// Rig: bones drawn through an object, weights painted, the person rig's dots (`RigSettings`).
     case rig
 
     public var id: String { rawValue }
@@ -75,26 +75,26 @@ public enum StageTool: String, CaseIterable, Identifiable, Sendable {
 }
 
 /// The floating panels the corner clusters open. One at a time; tapping its button again closes it. Animate, the
-/// fourth making tool, has no panel: it calls the timeline (docs/LAYOUT.md).
+/// last making tool, has no panel: it calls the timeline (docs/LAYOUT.md).
 public enum ClusterPanel: String, Identifiable, Sendable {
     // Top-left: document and app.
-    case actions, look, select
+    case actions, look, select, library
     // Top-right: making.
-    case model, draw, paint, cast
+    case model, draw, paint, rig
 
     public var id: String { rawValue }
 
     public var isLeading: Bool {
         switch self {
-        case .actions, .look, .select: true
+        case .actions, .look, .select, .library: true
         default: false
         }
     }
 }
 
-/// The Model panel's pages: things to add, shaping (sketch, push/pull, booleans), the library of models, snapping.
+/// The Model panel's pages: things to add, shaping (sketch, push/pull, booleans), snapping and measuring.
 public enum ModelPage: String, CaseIterable, Identifiable, Sendable {
-    case add, shape, library, precision
+    case add, shape, precision
 
     public var id: String { rawValue }
 
@@ -102,7 +102,6 @@ public enum ModelPage: String, CaseIterable, Identifiable, Sendable {
         switch self {
         case .add: "Add"
         case .shape: "Edit"
-        case .library: "Library"
         case .precision: "Precision"
         }
     }
@@ -111,8 +110,28 @@ public enum ModelPage: String, CaseIterable, Identifiable, Sendable {
         switch self {
         case .add: "plus"
         case .shape: "cube.transparent"
-        case .library: "books.vertical"
         case .precision: "ruler"
+        }
+    }
+}
+
+/// The Library's pages: Things (the characters, the Kit) and Yours (what you imported, built and saved).
+public enum LibraryPage: String, CaseIterable, Identifiable, Sendable {
+    case things, yours
+
+    public var id: String { rawValue }
+
+    public var title: String {
+        switch self {
+        case .things: "Things"
+        case .yours: "Yours"
+        }
+    }
+
+    public var systemImage: String {
+        switch self {
+        case .things: "shippingbox"
+        case .yours: "person.crop.square"
         }
     }
 }

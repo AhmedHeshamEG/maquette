@@ -35,7 +35,8 @@ let package = Package(
                 .product(name: "HmmDiagnostics", package: "HmmKit"),
                 .product(name: "HmmTranscript", package: "HmmKit"),
                 .product(name: "HmmMedia", package: "HmmKit"),
-                .product(name: "HmmPerception", package: "HmmKit")
+                .product(name: "HmmPerception", package: "HmmKit"),
+                .product(name: "HmmHeld", package: "HmmKit")
             ],
             path: "Sources/LoweyFeatures"
         ),

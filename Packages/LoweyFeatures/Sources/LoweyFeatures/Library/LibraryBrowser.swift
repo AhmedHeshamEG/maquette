@@ -3,12 +3,14 @@ import LoweyCore
 import SwiftUI
 import UIKit
 
-/// Model ▸ Library. Search first, browse second: the Kit, your models, builds, worlds and scripts. Tap to place, drag
-/// onto the stage, touch and hold for options. While swapping, tapping a model swaps the selection for it.
+/// The Library's pages. Search first, browse second: Things (the characters and the Kit by set) and Yours (your
+/// models, builds, worlds and scripts). Tap to place, drag onto the stage, touch and hold for options. While swapping,
+/// tapping a model swaps the selection for it.
 struct LibraryBrowser: View {
     @Bindable var editor: EditorModel
+    let page: LibraryPage
     @State private var query = ""
-    @State private var filter: LibraryFilter = .sets
+    @State private var filter: LibraryFilter = .all
     @State private var kitSet: String?
     @State private var expanded: Set<String> = []
     @State private var importing = false
@@ -32,17 +34,20 @@ struct LibraryBrowser: View {
             .padding(.horizontal, HmmSpacing.s)
             .frame(height: 44)
             .background(RoundedRectangle(cornerRadius: HmmRadius.control, style: .continuous).fill(theme.surface2))
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: HmmSpacing.xs) {
-                    ForEach(isSwapping ? [.models, .favorites, .recent] : LibraryFilter.allCases, id: \.self) { item in
-                        ChoiceChip(title: item.displayName, isOn: filter == item) { filter = item }
+            if page == .yours {
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: HmmSpacing.xs) {
+                        ForEach(isSwapping ? [.models, .favorites, .recent] : Self.yoursFilters, id: \.self) { item in
+                            ChoiceChip(title: item.displayName, isOn: filter == item) { filter = item }
+                        }
                     }
                 }
             }
             if library.importing > 0 {
                 Label("Importing \(library.importing)…", systemImage: "arrow.down.circle").font(.hmm(.footnote)).foregroundStyle(theme.text2)
             }
-            if filter == .sets, query.isEmpty, !isSwapping {
+            if page == .things, query.isEmpty, !isSwapping {
+                CharacterRow(editor: editor)
                 KitBrowser(editor: editor, selectedSet: $kitSet, expanded: $expanded)
             } else if results.isEmpty {
                 HmmEmptyState(query.isEmpty ? "shippingbox" : "questionmark.folder",
@@ -70,7 +75,10 @@ struct LibraryBrowser: View {
             Task {
                 let count = await library.importFiles(urls)
                 editor.app.show(count == 0 ? "No models there (USDZ, glTF, GLB, OBJ)" : "Imported \(count) model\(count == 1 ? "" : "s")")
-                if count > 0 { filter = .models }
+                if count > 0 {
+                    filter = .models
+                    editor.libraryPage = .yours
+                }
             }
         }
         .alert("Edit", isPresented: Binding(get: { editingItem != nil }, set: { if !$0 { editingItem = nil } })) {
@@ -88,13 +96,19 @@ struct LibraryBrowser: View {
         .onAppear { if isSwapping { filter = .models } }
     }
 
+    /// Yours: everything but the Kit's sets (those are Things).
+    private static let yoursFilters: [LibraryFilter] = [.all, .favorites, .recent, .models, .prefabs, .looks, .scripts]
+
     private var isSwapping: Bool {
         if case .swap = editor.libraryPurpose { return true }
         return false
     }
 
     private var results: [LibraryItem] {
-        let items = LibrarySearch.search(query, in: library.manifest, filter: filter)
+        // Searching Things looks through everything, the Kit included.
+        var items = LibrarySearch.search(query, in: library.manifest, filter: page == .things ? .all : filter)
+        // Yours holds your own things; the Kit is on Things (a favourite or a recent Kit model still shows).
+        if page == .yours, !isSwapping, filter == .all || filter == .models { items = items.filter { !$0.isKit } }
         guard isSwapping else { return items }
         return items.filter {
             if case .asset = $0 {

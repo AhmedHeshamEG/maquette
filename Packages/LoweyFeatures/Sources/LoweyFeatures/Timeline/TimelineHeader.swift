@@ -179,6 +179,7 @@ private struct PerformControls: View {
         }
         .buttonStyle(.plain)
         .accessibilityIdentifier("perform-record")
+        PerformCharacterButton(editor: editor)
         Toggle(isOn: $editor.performSettings.barrelRoll) {
             Label("Pencil roll", systemImage: "applepencil.and.scribble").font(.hmm(.footnote, weight: .semibold))
         }

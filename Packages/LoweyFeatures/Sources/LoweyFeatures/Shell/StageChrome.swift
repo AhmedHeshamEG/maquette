@@ -72,7 +72,8 @@ struct StageChrome: View {
             HmmClusterItem(id: "home", systemName: "square.grid.2x2", label: "Home") { app.closeEditor() },
             item(.actions, "ellipsis.circle", "Actions"),
             item(.look, "paintpalette", "Look"),
-            item(.select, editor.tool == .lasso ? "lasso" : "hand.point.up.left", "Select", on: editor.tool == .lasso)
+            item(.select, editor.tool == .lasso ? "lasso" : "hand.point.up.left", "Select", on: editor.tool == .lasso),
+            item(.library, "books.vertical", "Library")
         ])
         .overlay(alignment: .bottomLeading) {
             Text(editor.baseScene.name)
@@ -84,16 +85,16 @@ struct StageChrome: View {
         }
     }
 
-    /// The making tools: Model, Draw, Paint, Animate (calls the timeline) and Cast.
+    /// The making tools, in the order a thing gets made: Model, Draw, Paint, Rig, and Animate (it calls the timeline).
     private var trailingCluster: some View {
         HmmCornerCluster([
-            item(.model, "cube", "Model"),
+            item(.model, "cube", "Model", on: editor.tool == .model),
             item(.draw, drawIcon, "Draw", on: editor.tool.draws),
             item(.paint, editor.tool == .scatter ? "circle.hexagongrid" : "paintbrush.pointed", "Paint", on: editor.tool.paintsSurfaces),
+            item(.rig, "figure.arms.open", "Rig", on: editor.tool == .rig),
             HmmClusterItem(id: "animate", systemName: "figure.walk.motion", label: "Animate", isOn: editor.timelinePresence == .full) {
                 editor.toggleAnimate()
-            },
-            item(.cast, "person.2", "Cast")
+            }
         ])
     }
 
@@ -105,10 +106,11 @@ struct StageChrome: View {
         }
     }
 
+    /// A cluster button. `on` is the tool in the hand: with chrome restraint, the one thing that wears the accent.
     private func item(_ panel: ClusterPanel, _ systemName: String, _ label: String, on: Bool = false) -> HmmClusterItem {
-        HmmClusterItem(id: panel.rawValue, systemName: systemName, label: label, isOn: editor.openPanel == panel || on) {
+        HmmClusterItem(id: panel.rawValue, systemName: systemName, label: label, isOn: editor.openPanel == panel || on, accent: on) {
             editor.openPanel = editor.openPanel == panel ? nil : panel
-            if panel == .model, editor.openPanel == nil { editor.libraryPurpose = .place }
+            if panel == .library, editor.openPanel == nil { editor.libraryPurpose = .place }
         }
     }
 
@@ -145,10 +147,11 @@ private struct ClusterPanelView: View {
         case .actions: ActionsPanel(editor: editor)
         case .look: LookPanel(editor: editor)
         case .select: SelectPanel(editor: editor)
+        case .library: LibraryPanel(editor: editor)
         case .model: ModelPanel(editor: editor)
         case .draw: DrawToolsPanel(editor: editor)
         case .paint: PaintPanel(editor: editor)
-        case .cast: CastPanel(editor: editor)
+        case .rig: RigPanel(editor: editor)
         }
     }
 }

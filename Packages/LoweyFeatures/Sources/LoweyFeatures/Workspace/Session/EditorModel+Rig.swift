@@ -4,7 +4,7 @@ import HmmDesign
 import LoweyCore
 import LoweyEngine
 
-/// Cast ▸ Rig (CONTEXT §10.5): a Pencil stroke through a limb, tail or rope becomes a chain of bones, the weights are
+/// Rig (CONTEXT §10.5): a Pencil stroke through a limb, tail or rope becomes a chain of bones, the weights are
 /// worked out by bone heat, and the brush paints them by hand if wanted. Every change is one `setRig` (its weights'
 /// file written first). While the Rig tool is on, the object stands as it was made (its rest pose), so bones and
 /// weights land where they're drawn.
@@ -37,7 +37,7 @@ extension EditorModel {
         return library.models.model(asset, catalog: library.catalog)
     }
 
-    /// The object Cast ▸ Rig works on: the one being rigged while it's there, else the selection when it can be rigged.
+    /// The object Rig works on: the one being rigged while it's there, else the selection when it can be rigged.
     var rigTarget: SceneObject? {
         if let id = rigging.target, let object = baseScene.objects[id], rigBlocker(object) == nil { return object }
         return singleSelection.flatMap { rigBlocker($0) == nil ? $0 : nil }

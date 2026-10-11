@@ -42,14 +42,14 @@ public struct LoweyMenuCommands: Commands {
             Button("Model") { panel(.model) }.keyboardShortcut("1", modifiers: .command)
             Button("Draw") { tool(.ink, panel: .draw) }.keyboardShortcut("2", modifiers: .command)
             Button("Paint") { tool(.shadowBrush, panel: .paint) }.keyboardShortcut("3", modifiers: .command)
-            Button("Animate") { editor?.toggleAnimate() }.keyboardShortcut("4", modifiers: .command)
-            Button("Cast") { panel(.cast) }.keyboardShortcut("5", modifiers: .command)
+            Button("Rig") { panel(.rig) }.keyboardShortcut("4", modifiers: .command)
+            Button("Animate") { editor?.toggleAnimate() }.keyboardShortcut("5", modifiers: .command)
             Divider()
             Button("Actions") { panel(.actions) }.keyboardShortcut("6", modifiers: .command)
             Button("Look") { panel(.look) }.keyboardShortcut("7", modifiers: .command)
             Button("Select") { tool(.select, panel: .select) }.keyboardShortcut("8", modifiers: .command)
+            Button("Library") { panel(.library) }.keyboardShortcut("l", modifiers: .command)
             Divider()
-            Button("Library") { modelPage(.library) }.keyboardShortcut("l", modifiers: .command)
             Button("Precision") { modelPage(.precision) }
             Button("Solid Shape") { tool(.draw, panel: .draw) }
             Button("Flipbook") { tool(.flipbook, panel: .draw) }
@@ -90,14 +90,17 @@ public struct LoweyMenuCommands: Commands {
             Button("Keys After the Playhead") { editor?.selectKeys(.afterPlayhead) }.keyboardShortcut(.rightArrow, modifiers: [.command, .shift])
             Button("Keys at the Playhead") { editor?.selectKeys(.atPlayhead) }
         }
-        CommandMenu("Perform") {
-            Button(editor?.live.voiceOn == true ? "Stop the Microphone" : "Mouth from the Microphone") { editor?.toggleVoice() }
-                .keyboardShortcut("m", modifiers: [.command, .option])
-            Divider()
-            ForEach(TriggerDeck.keys, id: \.self) { key in
-                Button("Trigger \(key)") { editor?.fireTriggerKey(key) }
-                    .keyboardShortcut(KeyEquivalent(Character(key)), modifiers: [])
-                    .disabled(board != nil || editor?.hasTrigger(key: key) != true)
+        // Live performance airs as 1.2 (held in App Store builds until then).
+        if Held.isOn(.livePerformance) {
+            CommandMenu("Perform") {
+                Button(editor?.live.voiceOn == true ? "Stop the Microphone" : "Mouth from the Microphone") { editor?.toggleVoice() }
+                    .keyboardShortcut("m", modifiers: [.command, .option])
+                Divider()
+                ForEach(TriggerDeck.keys, id: \.self) { key in
+                    Button("Trigger \(key)") { editor?.fireTriggerKey(key) }
+                        .keyboardShortcut(KeyEquivalent(Character(key)), modifiers: [])
+                        .disabled(board != nil || editor?.hasTrigger(key: key) != true)
+                }
             }
         }
     }

@@ -2,7 +2,7 @@ import LoweyCore
 import LoweyEngine
 import UIKit
 
-/// The Pencil on Cast ▸ Rig: a stroke through a limb becomes a chain of bones (Bones), or paints the chosen bone's
+/// The Pencil on Rig: a stroke through a limb becomes a chain of bones (Bones), or paints the chosen bone's
 /// weight (Skin). While a bone is drawn, the chain it will make shows inside the object, following the stroke; the
 /// stroke becomes one undo step when it ends.
 extension StageGestures {

@@ -1,7 +1,7 @@
 import Foundation
 import LoweyCore
 
-/// Cast ▸ Rig (CONTEXT §10.5): the step rigging is at, what the Pencil does on the object being rigged, and the
+/// Rig (CONTEXT §10.5): the step rigging is at, what the Pencil does on the object being rigged, and the
 /// person rig being placed.
 public struct RigSettings: Equatable {
     /// Rigging in three steps, in order: give it bones, let the skin follow them, pose it. Each step shows only its
@@ -52,7 +52,7 @@ public struct RigSettings: Equatable {
     }
 
     public var mode: Mode = .bone
-    /// The step Cast ▸ Rig shows for the object being rigged.
+    /// The step Rig shows for the object being rigged.
     public var step: Step = .bones
     /// The object being rigged.
     public var target: ObjectID?

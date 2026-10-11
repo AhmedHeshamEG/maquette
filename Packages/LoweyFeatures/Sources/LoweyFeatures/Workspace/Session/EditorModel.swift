@@ -67,7 +67,7 @@ final class EditorModel {
     var ink = InkSettings()
     var flipbook = FlipbookSettings()
     var colourPaint = ColourPaintSettings()
-    /// Cast ▸ Rig: drawing bones, painting weights, the person rig's dots.
+    /// Rig: drawing bones, painting weights, the person rig's dots.
     var rigging = RigSettings() {
         didSet {
             guard rigging.joint != oldValue.joint || rigging.mode != oldValue.mode || rigging.target != oldValue.target
@@ -108,6 +108,7 @@ final class EditorModel {
     var currentColor: ColorValue = .palette(0)
     var openPanel: ClusterPanel?
     var modelPage: ModelPage = .add
+    var libraryPage: LibraryPage = .things
     var sheet: EditorSheet?
     var libraryPurpose: LibraryPurpose = .place
     /// Four-finger tap: everything but the stage hides.

@@ -19,7 +19,7 @@ struct TourOverlay: View {
     private let steps: [Step] = [
         Step(title: "This is the stage", text: "One finger orbits, two pan and pinch. Double-tap something to frame it. Tap to select.",
              systemImage: "hand.draw", alignment: .center, action: { $0.openPanel = nil }),
-        Step(title: "Make things, top right", text: "Model adds shapes, lights, words and the Kit's models; Draw, Paint, Animate and Cast do the rest.",
+        Step(title: "Make things, top right", text: "Model adds shapes, lights and words; Draw, Paint, Rig and Animate do the rest. Ready-made models and characters are in the Library.",
              systemImage: "cube", alignment: .topTrailing, action: { $0.openPanel = .model }),
         Step(title: "The look, top left", text: "Ink, Comic, Sketch, Clay or Low-poly, the mood and the palette. Actions and select live here too.",
              systemImage: "paintpalette", alignment: .topLeading, action: { $0.openPanel = .look }),
