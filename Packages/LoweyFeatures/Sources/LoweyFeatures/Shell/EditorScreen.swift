@@ -35,6 +35,8 @@ struct EditorScreen: View {
             }
         }
         .overlay { PerformCountdown(editor: editor) }
+        .hmmUndoLine($editor.undoLine)
+        .hmmGuideLine(editor.chromeHidden ? nil : editor.guideLine)
         .overlay {
             if app.showTour { TourOverlay(editor: editor) }
         }

@@ -82,7 +82,6 @@ struct ShadowBrushOptionsBar: View {
 /// Scatter options while the Scatter tool is on.
 struct ScatterOptionsBar: View {
     @Bindable var editor: EditorModel
-    @Environment(\.hmmTheme) private var theme
 
     var body: some View {
         HStack(spacing: HmmSpacing.m) {
@@ -100,11 +99,5 @@ struct ScatterOptionsBar: View {
         }
         .padding(HmmSpacing.s)
         .hmmPanelBackground()
-        .overlay(alignment: .top) {
-            Text(editor.selection.isEmpty ? "Select something to scatter" : "Drag on the ground to paint an area")
-                .font(.hmm(.caption, weight: .semibold))
-                .foregroundStyle(editor.selection.isEmpty ? theme.danger : theme.text2)
-                .offset(y: -18)
-        }
     }
 }

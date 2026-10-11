@@ -19,7 +19,6 @@ struct EditorSidebar: View {
         let (top, bottom) = sliders
         HmmSidebar(top: top, bottom: bottom, pickActive: editor.pickActive, pick: {
             editor.pickActive.toggle()
-            if editor.pickActive { editor.app.show("Tap an object to take its colour into palette slot \(editor.pickSlot + 1)") }
         }, accessory: showsWell ? AnyView(SidebarColourWell(editor: editor)) : nil, resting: resting, wake: { woken = true },
         canUndo: editor.canUndo, canRedo: editor.canRedo, undo: editor.undo, redo: editor.redo)
             .animation(HmmMotion.standard.animation(reduceMotion: reduceMotion), value: resting)

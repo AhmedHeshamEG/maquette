@@ -306,6 +306,8 @@ final class EditorModel {
     var projectSetUp: StarterTemplate.Kind = .blank
     /// Save to the library is asking for a name (the alert is on the editor's screen).
     var savingPrefab = false
+    /// What an undo or a redo just changed, said for a second at the top centre (CONTEXT §10.10).
+    var undoLine: HmmUndoLineMessage?
     @ObservationIgnored let logger = Logger(subsystem: AppIdentity.subsystem, category: "editor")
 
     var library: LibraryModel { app.library }
@@ -381,8 +383,10 @@ final class EditorModel {
 
     func undo() {
         if historyScrub != nil { closeHistory() }
+        let title = undoTitle
         do {
             guard let changes = try session.undo() else { return }
+            undoLine = HmmUndoLineMessage(title)
             loadOlderUndoIfNeeded()
             refreshDisplay(changes)
             afterChange()
@@ -393,8 +397,10 @@ final class EditorModel {
 
     func redo() {
         if historyScrub != nil { closeHistory() }
+        let title = redoTitle
         do {
             guard let changes = try session.redo() else { return }
+            undoLine = HmmUndoLineMessage(title)
             refreshDisplay(changes)
             afterChange()
         } catch {

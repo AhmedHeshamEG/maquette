@@ -161,7 +161,7 @@ struct LibraryTile: View {
                 }
                 .padding(6)
             }
-            Text(item.name).font(.hmm(.footnote, weight: .semibold)).lineLimit(1).foregroundStyle(theme.text)
+            Text(item.name).font(.hmm(.footnote, weight: .semibold)).lineLimit(2).foregroundStyle(theme.text)
         }
         .contentShape(Rectangle())
         .accessibilityElement(children: .combine)
