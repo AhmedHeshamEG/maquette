@@ -63,10 +63,11 @@ final class EditorFlowTests: XCTestCase {
         editor.redo()
         XCTAssertNotNil(editor.baseScene.objects[cube.id])
         editor.setSelection([cube.id])
-        editor.translateSelection(by: Vec3(1, 0, 0), gesture: "compose")
+        editor.translateSelection(by: Vec3(1, 0, 0), gesture: "build")
         editor.endGesture()
-        XCTAssertTrue(editor.timeline.tracks.isEmpty, "Compose never creates keys")
+        XCTAssertTrue(editor.timeline.tracks.isEmpty, "the first key is deliberate: building never creates keys")
         editor.timelineMode = .keyframe
+        editor.keySelection()
         editor.setTime(1)
         editor.translateSelection(by: Vec3(1, 0, 0), gesture: "keyframe")
         editor.endGesture()

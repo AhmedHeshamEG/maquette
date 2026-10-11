@@ -90,9 +90,9 @@ final class LiveFlowTests: XCTestCase {
         XCTAssertEqual(smile.value(at: 2.5), .float(0))
         XCTAssertTrue(smile.keyframes.allSatisfy { $0.easing == .step })
         XCTAssertEqual(editor.recordedTakes.count, 1)
-        // Not recording, in Compose: the trigger just sets the face, one undo step.
+        // Not recording, in Perform: the trigger just sets the face, one undo step.
         editor.undo()
-        editor.timelineMode = .compose
+        editor.timelineMode = .perform
         editor.pressTrigger(trigger, on: id)
         XCTAssertEqual(editor.baseScene.objects[id]?[.smile], .float(0.8))
         XCTAssertNil(editor.timeline.track(for: id, .smile))

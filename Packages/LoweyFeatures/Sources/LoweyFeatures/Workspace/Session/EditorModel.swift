@@ -160,8 +160,9 @@ final class EditorModel {
 
     var time: Double = 0
     var isPlaying = false
-    var timelineMode: TimelineMode = .compose
+    var timelineMode: TimelineMode = .keyframe
     /// In Keyframe mode, edits become keys at the playhead.
+    /// Keys add themselves to animated things in Keys (`keyed`); off only while placing (a crowd's jitter isn't motion).
     var autoKey = true
     /// Points per second.
     var timelineZoom: Double = 90

@@ -8,6 +8,9 @@ import UIKit
 extension StageGestures {
     @objc func handleStroke(_ recognizer: StrokeGestureRecognizer) {
         guard let editor, let stage else { return }
+        // While the Pencil draws, the panel is closed (CONTEXT §10.10): the first stroke folds Draw's or Paint's panel
+        // away and the tool's bar under the stage stays. Tapping the tool again opens it.
+        if recognizer.state == .began, editor.openPanel == .draw || editor.openPanel == .paint { editor.openPanel = nil }
         if editor.tool == .shadowBrush {
             brushStroke(recognizer, editor: editor, stage: stage)
             return

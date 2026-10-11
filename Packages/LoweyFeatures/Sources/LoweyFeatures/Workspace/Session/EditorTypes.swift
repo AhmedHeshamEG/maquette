@@ -261,22 +261,22 @@ public struct ScatterPanelSettings: Equatable, Sendable {
     public init() {}
 }
 
+/// The timeline's two modes, shown as words (CONTEXT §10.10): Perform (record by moving things while time runs) and
+/// Keys. Sliding a whole animation in time is dragging its bar, in either.
 public enum TimelineMode: String, CaseIterable, Identifiable, Sendable {
-    case compose, perform, keyframe
+    case perform, keyframe
 
     public var id: String { rawValue }
 
     public var title: String {
         switch self {
-        case .compose: "Compose"
         case .perform: "Perform"
-        case .keyframe: "Keyframe"
+        case .keyframe: "Keys"
         }
     }
 
     public var systemImage: String {
         switch self {
-        case .compose: "rectangle.split.3x1"
         case .perform: "record.circle"
         case .keyframe: "diamond"
         }
@@ -285,8 +285,14 @@ public enum TimelineMode: String, CaseIterable, Identifiable, Sendable {
 
 public enum PerformPhase: Equatable, Sendable {
     case idle
+    /// Armed (Procreate Dreams' Performing): "Ready" shows, and the first touch on the stage starts time.
+    case ready
+    /// A face, a voice or the iPad's motion performs without a touch: 3-2-1, then time runs.
     case countdown(Int)
     case recording
+
+    /// Ready or recording: a touch on the stage performs.
+    public var isArmed: Bool { self == .ready || self == .recording }
 }
 
 public struct PerformSettings: Equatable, Sendable {

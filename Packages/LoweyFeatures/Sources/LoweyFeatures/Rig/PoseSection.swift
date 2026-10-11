@@ -28,9 +28,6 @@ struct PoseSection: View {
                     .accessibilityIdentifier("save-pose")
                 HmmPillButton("Mirror", systemName: "arrow.left.and.right.righttriangle.left.righttriangle.right") { editor.mirrorPose(of: character) }
             }
-            if editor.timelineMode == .compose {
-                Hint("Switch the timeline to Keyframe to drag hands and feet directly.")
-            }
         }
         .alert("Pose name", isPresented: Binding(get: { renaming != nil }, set: { if !$0 { renaming = nil } })) {
             TextField("Name", text: $name)

@@ -29,6 +29,7 @@ final class HoldMenuFlowTests: XCTestCase {
         editor.addPrimitive(.cube)
         let cube = try XCTUnwrap(editor.singleSelection?.id)
         editor.timelineMode = .keyframe
+        editor.keySelection()
         editor.setTime(1)
         editor.translateSelection(by: Vec3(1, 0, 0), gesture: "key")
         editor.endGesture()

@@ -18,12 +18,15 @@ final class MotionToolsTests: XCTestCase {
         editor.addPrimitive(.cube)
         let cube = try XCTUnwrap(editor.singleSelection?.id)
         editor.timelineMode = .keyframe
+        // The first key is deliberate; after it, moves at other times key themselves.
+        editor.setTime(0)
+        editor.keySelection()
         for second in 0 ... 2 {
             editor.setTime(Double(second))
             editor.translateSelection(by: Vec3(1, 0, 0), gesture: "key-\(second)")
             editor.endGesture()
         }
-        editor.timelineMode = .compose
+        editor.timelineMode = .perform
         editor.setTime(1.5)
         return cube
     }

@@ -63,13 +63,10 @@ extension EditorModel {
 
     // MARK: IK handles
 
-    /// The selected character's joints on screen (select tool, not while playing). Puppets and Blobs show theirs in
-    /// Keyframe and Perform modes (in Compose a drag moves the whole character); drawn rigs and rigged models show
-    /// theirs in every mode, since their joints are the only way to pose them.
+    /// The selected character's joints on screen (select tool, not while playing): drag one and the limb follows.
     func ikHandlesOnScreen() -> [(handle: IKHandle, point: CGPoint)] {
         guard let stage, tool == .select, !isPlaying || performPhase == .recording, let character = poseCharacter else { return [] }
         let rigs = libraryRigs()
-        if timelineMode == .compose, CharacterRig.of(character, in: displayed.scene, rigs: rigs)?.body != .bones { return [] }
         let pose = displayed.poses[character]
         return IKHandles.handles(of: character, in: displayed.scene, rigs: rigs).compactMap { handle in
             IKHandles.position(of: handle, in: displayed.scene, pose: pose, rigs: rigs).flatMap(stage.screenPoint(of:)).map { (handle, $0) }

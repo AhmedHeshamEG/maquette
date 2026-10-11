@@ -3,7 +3,9 @@ import HmmDesign
 import LoweyCore
 
 /// Perform: record direct manipulation as keys while the timeline plays (touch, sliders, a flown camera, the iPad's
-/// motion, a face). Lifting the finger pauses the take; one recording is one undo step.
+/// motion, a face). Procreate Dreams' Performing: Record arms it ("Ready"), touching the stage starts time, lifting the
+/// hand stops it and touching again goes on from there; one recording is one undo step. A face, a voice or the iPad's
+/// motion performs without a touch, so for them time runs after a 3-2-1.
 extension EditorModel {
     /// What performing moves: in the Director view with nothing else selected, the shot camera (fly it with the usual
     /// gestures); otherwise the selection's top-level objects.
@@ -20,6 +22,7 @@ extension EditorModel {
 
     /// A camera gesture (or the iPad's motion) starts moving the camera while recording: start its takes.
     func beginCameraTake(_ camera: ObjectID) {
+        beginPerformTime()
         guard performPhase == .recording, !performTouching else { return }
         performTouching = true
         for property in [PropertyKey.position, .rotation] {
@@ -47,6 +50,11 @@ extension EditorModel {
         performOverride = [:]
         clearTriggers()
         if !faceActive, !live.voiceOn { propertyOverride = [:] }
+        if performIsTouched {
+            performPhase = .ready
+            HmmHaptics.play(.selection)
+            return
+        }
         Task { @MainActor in
             for count in [3, 2, 1] {
                 performPhase = .countdown(count)
@@ -57,6 +65,30 @@ extension EditorModel {
             performPhase = .recording
             HmmHaptics.play(.commit)
             play()
+        }
+    }
+
+    /// Whether a touch performs (and so time runs only while one is down): not with a face, a voice or the iPad's motion.
+    var performIsTouched: Bool { !(faceActive || live.voiceOn || virtualCameraActive) }
+
+    /// A touch on the stage while armed: "Ready" becomes recording, and time runs again from where it stopped.
+    func beginPerformTime() {
+        if performPhase == .ready {
+            performPhase = .recording
+            HmmHaptics.play(.commit)
+        }
+        guard performPhase == .recording, !isPlaying else { return }
+        play()
+    }
+
+    /// Record's Stop: the take is kept whether time is running or held.
+    func stopPerform() {
+        if performPhase == .ready {
+            cancelPerform()
+        } else if isPlaying {
+            pause()
+        } else {
+            finishPerform()
         }
     }
 
@@ -98,6 +130,7 @@ extension EditorModel {
 
     /// A touch starts while recording: the performed values start from what's shown now.
     func performTouchBegan(_ channels: Set<PropertyKey>) {
+        beginPerformTime()
         guard performPhase == .recording else { return }
         performTouching = true
         for id in performTargets {
@@ -113,9 +146,10 @@ extension EditorModel {
         recordPerformSample()
     }
 
-    /// Lifting the finger pauses recording (the playhead keeps going).
+    /// Lifting the hand pauses: the take stops, and so does time (unless a face, a voice or the iPad performs too).
     func performTouchEnded() {
         performTouching = false
+        if performPhase == .recording, performIsTouched { holdPerformTime() }
     }
 
     func performMove(by delta: Vec3) {

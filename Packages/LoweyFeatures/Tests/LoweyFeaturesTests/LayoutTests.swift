@@ -57,7 +57,7 @@ final class LayoutTests: XCTestCase {
 
     func testCharacterAndAnimationTemplates() throws {
         let character = try makeEditor(.character)
-        XCTAssertEqual(character.openPanel, .cast)
+        XCTAssertEqual(character.openPanel, .rig)
         XCTAssertEqual(character.timelinePresence, .transport)
         XCTAssertFalse(character.showsGrid)
         let animation = try makeEditor(.animation)
