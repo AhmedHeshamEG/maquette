@@ -1667,3 +1667,27 @@ screenshot step past the job's 90 minutes, so `CI result` was red on a commit wh
 boots the simulator and waits for it before testing, and has 120 minutes. *Rejected:* re-running main until an
 attempt passes first time (it was 88 minutes on the 0.9 merge already); dropping the second attempt (R33's flakes
 are real).
+
+## Maquette 0.11 — U1, feel
+
+**D-217 — The feel recorder measures from the touch to the first refresh that can show the answer.** Each delivery of
+touches is followed until the app's answer is ready (the stage's frame finished on the GPU for a touch on the stage,
+else the main thread idle after the interface's commit) and then to the next refresh on the display link's grid. The
+time is split into input (hardware to the app), main thread, encode and GPU; `missed` counts refreshes that went by
+before the answer was ready, so 0 is "answered within one frame". The system compositor's own frame after that is the
+same for every app and can't be seen from inside one, so it isn't counted. *Rejected:* Instruments traces (no Mac);
+the existing signposts alone (only Instruments reads them); timing only the stage (panels and buttons are half of
+"all the feel is shit").
+
+**D-218 — The recorder lives in hmm-kit and watches through a gesture recogniser.** `FeelProbe` (HmmDiagnostics) is
+the app-independent half, so Cutaway gets it; `FeelLog` is its pure arithmetic, tested on Linux. Touches are seen by a
+recogniser on each window that never recognises, delays nor cancels anything, installed only while recording.
+*Rejected:* a `UIWindow` subclass or swizzled `sendEvent` (SwiftUI owns the window; swizzling is a side door);
+recording always (a cost on every touch for a file nobody reads).
+
+**D-219 — While it records, a small red dot at the top; at the end a haptic and a toast.** Nothing to touch, nothing
+that moves: the dot is drawn once. *Rejected:* a countdown (it redraws every second, inside the measurement);
+nothing at all (he'd not know when the minute ends).
+
+**D-220 — 0.10.1 ships the recorder alone.** So the first recording measures 0.10's feel unchanged: it is the "before"
+the phase notes keep, and every speed fix after it is aimed at what it ranks and proved by the same recording.

@@ -283,6 +283,8 @@ final class EditorModel {
     @ObservationIgnored var workspaceSaveTask: Task<Void, Never>?
     @ObservationIgnored var selectionRectTask: Task<Void, Never>?
     @ObservationIgnored var measuredSelection: [ObjectID] = []
+    /// When the project was asked to open, until the stage draws its first frame (`noteFirstFrame`).
+    @ObservationIgnored var openStarted: CFTimeInterval?
     /// The template the project began from and how it shows (`workspace.json`).
     @ObservationIgnored var workspace = ProjectWorkspace()
     @ObservationIgnored let logger = Logger(subsystem: AppIdentity.subsystem, category: "editor")

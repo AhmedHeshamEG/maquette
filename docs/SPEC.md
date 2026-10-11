@@ -486,6 +486,11 @@ sound-effects track with a synthesised CC0 foley set (whoosh, pop, impact, click
   120 Hz, 20 ms at 60 Hz) at a render scale near the top of the device tier's range (0.85 at Tier A), no hitch over
   33 ms. On an M iPad it also runs with the Tier B preview. It writes a JSON report.
 - Launch to the Theater in under a second; a project's first frame in under 500 ms.
+- **The feel recorder** (Diagnostics ▸ Feel ▸ Record a minute, 0.10.1): a minute of real use, every touch timed to
+  the refresh that shows its answer and split into input, main thread, encode and GPU; a small red dot at the top
+  while it listens. The JSON lands beside the benchmark reports; `Tools/feel_report.py` ranks the slowest moments
+  against the gates: every touch answered within one frame, a panel in under 0.1 s, a project's first frame in under
+  0.5 s, no dropped frames (D-217).
 - A 60-second 1080p Ink export in 90 seconds or less on the reference device.
 
 ## 12. AI and the laptop

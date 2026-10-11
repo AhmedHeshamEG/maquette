@@ -420,6 +420,20 @@ stills and thumbnails always render `.full`. `PerformanceMonitor` feeds hmm-kit'
 twenty calm seconds, longer when a recovery doesn't hold), and Diagnostics ▸ Smoothness shows the numbers
 (`EditorModel.loadSummary`). `-load-level over` puts a UI test's stage under load.
 
+## The feel recorder
+
+Diagnostics ▸ Feel ▸ *Record a minute* (`AppModel+Feel`) starts hmm-kit's `FeelProbe` for sixty seconds. It watches
+every touch in the app's windows with a gesture recogniser that never recognises (`FeelTouchWatcher`), the main
+thread's busy stretches with a run-loop observer ordered after the interface's commit, and every refresh with a display
+link. Metal surfaces report their frames: `StageView.draw` (and the board's canvas in hmm-kit) hands the probe each
+frame's start, end of encoding and GPU times once its command buffer completes. hmm-kit's `FeelLog` (pure, tested on
+Linux) follows each touch to its answer: the stage's next frame for a touch on the stage, else the main thread going
+idle, and the first refresh after that; `missed` counts the refreshes that went by first. `AppModel.feelScreen` /
+`EditorModel.feelScreen` name what was on screen at each touch. Two marks are measured always and logged: the cold
+launch (process start to Home's first pass, `FeelProbe.noteLaunched`) and opening a project to the stage's first frame
+(`EditorModel.noteFirstFrame`). The JSON (`FeelRecording`) goes into the Diagnostics folder and the log export;
+`Tools/feel_report.py` ranks it.
+
 ## Export
 
 `ExportSession` (Engine, main actor) renders frame by frame at full scale with no time budget, straight into the

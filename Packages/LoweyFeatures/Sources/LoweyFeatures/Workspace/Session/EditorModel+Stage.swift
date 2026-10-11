@@ -23,6 +23,7 @@ extension EditorModel {
             performance.record(gpu: gpu, total: total, scale: scale, work: max(gpu, stage.lastEncodeTime), budget: stage.dynamicScale.budget)
             performance.recordScene(stage.lastReport, tier: stage.renderer.quality.tier)
             adaptPreview()
+            noteFirstFrame()
         }
         stage.frameSource = { [weak self] stage in self?.stageFrame(for: stage) }
         stage.section = precision.section
