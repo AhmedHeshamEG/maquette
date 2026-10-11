@@ -343,7 +343,7 @@ flowchart LR
   mouth delivered on the main actor. `FaceLinkSender` also sends `eyeWide` and `browAngle`.
 - **Features**: `EditorModel+Live` (`LiveState`: the voice, the chosen joint, held triggers, the picked take, the live
   past; draggers, dangle, life, parts), `EditorModel+Triggers`, `EditorModel+Takes`; `Timeline/PerformSections` (`VoiceLevel`,
-  `TriggersSection`, `LifeSection`, `PartSection`, `DangleControl`, `TriggerDeckBar`), `Timeline/TakesStrip`. The
+  `TriggersSection`, `LifeSection`, `TriggerDeckBar`), `Rig/RigParts` (`PartSection`, `DangleControl`), `Timeline/TakesStrip`. The
   menu bar's Perform menu holds the microphone and the trigger keys.
 
 ## LoweyRender 2
