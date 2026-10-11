@@ -58,29 +58,36 @@ struct VectorRow: View {
     }
 }
 
+/// One number of a vector: tap it and our number pad opens beside it (plain arithmetic: `90`, `-45`, `2*12`).
 struct NumberField: View {
     let axis: CoreAxis
     let value: Double
     let commit: (Double) -> Void
-    @State private var text = ""
-    @FocusState private var focused: Bool
+    @State private var typing = false
     @Environment(\.hmmTheme) private var theme
 
     var body: some View {
-        TextField(axis.rawValue.uppercased(), text: $text)
-            .keyboardType(.numbersAndPunctuation)
-            .multilineTextAlignment(.center)
-            .font(.hmmNumbers(.footnote))
-            .frame(minWidth: 54, minHeight: 36)
-            .background(RoundedRectangle(cornerRadius: HmmRadius.control).fill(theme.surface2))
-            .overlay(alignment: .leading) {
-                Capsule().fill(color).frame(width: 3).padding(.vertical, 8)
-            }
-            .focused($focused)
-            .onAppear { text = NumberFormat.short(value) }
-            .onChange(of: value) { _, newValue in if !focused { text = NumberFormat.short(newValue) } }
-            .onSubmit { if let number = Double(text.replacingOccurrences(of: ",", with: ".")) { commit(number) } }
-            .accessibilityLabel(axis.rawValue.uppercased())
+        Button {
+            HmmHaptics.play(.selection)
+            typing = true
+        } label: {
+            Text(verbatim: NumberFormat.short(value))
+                .font(.hmmNumbers(.footnote))
+                .foregroundStyle(theme.text)
+                .frame(minWidth: 54, minHeight: 36)
+                .background(RoundedRectangle(cornerRadius: HmmRadius.control).fill(theme.surface2))
+                .overlay(alignment: .leading) {
+                    Capsule().fill(color).frame(width: 3).padding(.vertical, 8)
+                }
+                .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .hmmNumberPad(isPresented: $typing, title: axis.rawValue.uppercased(), placeholder: NumberFormat.short(value)) { text in
+            if let number = HmmArithmetic.evaluate(text) { commit(number) }
+        }
+        .accessibilityLabel(axis.rawValue.uppercased())
+        .accessibilityValue(NumberFormat.short(value))
+        .accessibilityIdentifier("number-\(axis.rawValue)")
     }
 
     private var color: Color {
