@@ -27,22 +27,24 @@ final class SmokeTests: XCTestCase {
         element.tap()
     }
 
-    private func newProject(_ name: String) {
+    /// The + on Home goes straight to a blank project in the dark studio, named by itself ("Untitled").
+    private func newProject() {
         tap("new-project")
-        let field = app.textFields["project-name"]
-        XCTAssertTrue(field.waitForExistence(timeout: 5))
-        field.tap()
-        field.typeText(name)
-        tap("look-comic")
-        shot("New project")
-        tap("create-project")
         XCTAssertTrue(app.otherElements["stage"].waitForExistence(timeout: 15))
+        shot("New project")
+    }
+
+    /// Diagnostics live in Settings ▸ About.
+    private func openDiagnostics() {
+        tap("Actions")
+        tap("Settings")
+        tap("Diagnostics")
     }
 
     func testCreateBuildUndoAndReopen() {
         launch()
         shot("Home")
-        newProject("Smoke")
+        newProject()
         shot("Empty stage")
         tap("Model")
         tap("add-cube")
@@ -55,7 +57,7 @@ final class SmokeTests: XCTestCase {
         tap("Undo")
         tap("Redo")
         tap("Home")
-        let card = app.descendants(matching: .any)["project-Smoke"].firstMatch
+        let card = app.descendants(matching: .any)["project-Untitled"].firstMatch
         XCTAssertTrue(card.waitForExistence(timeout: 10))
         card.tap()
         XCTAssertTrue(app.otherElements["stage"].waitForExistence(timeout: 15))
@@ -64,35 +66,32 @@ final class SmokeTests: XCTestCase {
 
     func testLookCameraDirectorViewAndExportSheet() {
         launch()
-        newProject("Director")
+        newProject()
         tap("Look")
         tap("look-clay")
         tap("duplicate-look")
         shot("My Look")
-        tap("Model")
-        tap("add-camera")
-        tap("director-view")
+        // The camera button: a tap with no camera makes one from this view and looks through it; again, back.
+        tap("camera-button")
         shot("Director view")
-        tap("director-view")
+        tap("camera-button")
         tap("Actions")
         tap("open-export")
         XCTAssertTrue(app.descendants(matching: .any)["export-hd1080"].firstMatch.waitForExistence(timeout: 5))
         shot("Export")
     }
 
-    func testCastTimelineAndDiagnostics() {
+    func testACharacterTheTimelineAndDiagnostics() {
         launch()
-        newProject("Cast")
-        tap("Cast")
+        newProject()
+        tap("Library")
         tap("add-me")
-        tap("Cast")
         shot("A Blob")
         tap("Animate")
         tap("timeline-mode-keyframe")
         tap("timeline-mode-perform")
         shot("Perform")
-        tap("Actions")
-        tap("Diagnostics")
+        openDiagnostics()
         XCTAssertTrue(app.descendants(matching: .any)["run-benchmark"].firstMatch.waitForExistence(timeout: 5))
         shot("Diagnostics")
     }
@@ -101,9 +100,8 @@ final class SmokeTests: XCTestCase {
     /// it listens, then the file to share in Diagnostics.
     func testTheFeelRecorder() {
         launch(["-feel-seconds", "3"])
-        newProject("Feel")
-        tap("Actions")
-        tap("Diagnostics")
+        newProject()
+        openDiagnostics()
         tap("record-feel")
         XCTAssertTrue(app.descendants(matching: .any)["feel-recording"].firstMatch.waitForExistence(timeout: 5), "the dot says it's listening")
         let stage = app.otherElements["stage"]
@@ -125,7 +123,7 @@ final class SmokeTests: XCTestCase {
     func testNothingAppearsOnTheCanvasUnderLoad() {
         // As an M-series iPad, whatever the simulator is: there is a lighter preview to go to.
         launch(["-load-level", "over", "-device-tier", "A"])
-        newProject("Heavy")
+        newProject()
         tap("Model")
         tap("add-cube")
         XCTAssertTrue(app.otherElements["inspector"].waitForExistence(timeout: 5))
@@ -135,8 +133,7 @@ final class SmokeTests: XCTestCase {
         let messages = app.staticTexts.matching(NSPredicate(format: "label CONTAINS[c] 'keeps smooth' OR label CONTAINS[c] 'lighter preview'"))
         XCTAssertEqual(messages.count, 0, "a message about smoothness is on the canvas")
         shot("Under load")
-        tap("Actions")
-        tap("Diagnostics")
+        openDiagnostics()
         XCTAssertTrue(app.descendants(matching: .any)["load-summary-lighter"].firstMatch.waitForExistence(timeout: 5),
                       "the preview lightened by itself")
         shot("Diagnostics under load")
@@ -157,7 +154,7 @@ final class SmokeTests: XCTestCase {
     func testArabicIsRightToLeft() {
         launch(["-AppleLanguages", "(ar)", "-AppleLocale", "ar_EG"])
         shot("Theater (ar)")
-        newProject("RTL")
+        newProject()
         let model = app.descendants(matching: .any)["Model"].firstMatch
         let look = app.descendants(matching: .any)["Look"].firstMatch
         XCTAssertTrue(model.waitForExistence(timeout: 10))
@@ -170,7 +167,7 @@ final class SmokeTests: XCTestCase {
 
     func testItalianLabels() {
         launch(["-AppleLanguages", "(it)", "-AppleLocale", "it_IT"])
-        newProject("Italiano")
+        newProject()
         let undo = app.descendants(matching: .any)["Undo"].firstMatch
         XCTAssertTrue(undo.waitForExistence(timeout: 10))
         XCTAssertEqual(undo.label, "Annulla")

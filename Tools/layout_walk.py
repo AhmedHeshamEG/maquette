@@ -6,6 +6,7 @@
 
 A walk is a table row whose last cell is one code span: an optional precondition in brackets, then steps joined by
 " › ". Rows whose last cell says something else (touch and hold a card, shown when…) are documented, not walked.
+A control marked *(held: 1.2)* is a held feature (CONTEXT §5): the App Store build's walk asserts it is absent.
 """
 from __future__ import annotations
 
@@ -18,9 +19,10 @@ LAYOUT = ROOT / "docs" / "LAYOUT.md"
 OUTPUT = ROOT / "AppUITests" / "LayoutWalk.swift"
 PRECONDITIONS = {"home", "cube", "blob", "timeline", "transport"}
 WALK = re.compile(r"^`(?:\[(?P<pre>[a-z]+)\]\s*)?(?P<steps>[^`\[\]]+)`$")
+HELD = re.compile(r"\*?\(held: (?P<version>[0-9.]+)\)\*?")
 
 
-def rows(text: str) -> list[tuple[str, str, str, list[str]]]:
+def rows(text: str) -> list[tuple[str, str, str, list[str], str]]:
     found = []
     section = ""
     last_control = ""
@@ -45,11 +47,13 @@ def rows(text: str) -> list[tuple[str, str, str, list[str]]]:
             raise SystemExit(f"LAYOUT.md: an empty step in {line!r}")
         control = control or last_control
         last_control = control
-        found.append((section, control, pre, steps))
+        held = HELD.search(control)
+        control = HELD.sub("", control).strip()
+        found.append((section, control, pre, steps, held.group("version") if held else ""))
     return found
 
 
-def swift(found: list[tuple[str, str, str, list[str]]]) -> str:
+def swift(found: list[tuple[str, str, str, list[str], str]]) -> str:
     def literal(value: str) -> str:
         return '"' + value.replace("\\", "\\\\").replace('"', '\\"') + '"'
 
@@ -63,6 +67,8 @@ def swift(found: list[tuple[str, str, str, list[str]]]) -> str:
         "        let precondition: String",
         "        let control: String",
         "        let steps: [String]",
+        "        /// The update that airs it, when it is a held feature (absent from the App Store build until then).",
+        "        let held: String",
         "    }",
         "",
         "    static let rows = layoutWalkRows",
@@ -71,11 +77,12 @@ def swift(found: list[tuple[str, str, str, list[str]]]) -> str:
         "/// The rows, outside the enum so its body stays short however many rows LAYOUT.md holds.",
         "private let layoutWalkRows: [LayoutWalk.Row] = [",
     ]
-    for index, (section, control, pre, steps) in enumerate(found):
+    for index, (section, control, pre, steps, held) in enumerate(found):
         lines += [
             f"    LayoutWalk.Row(home: {literal(section)}, precondition: {literal(pre)},",
             f"                   control: {literal(control)},",
-            f"                   steps: [{', '.join(literal(step) for step in steps)}])" + ("," if index < len(found) - 1 else ""),
+            f"                   steps: [{', '.join(literal(step) for step in steps)}], held: {literal(held)})"
+            + ("," if index < len(found) - 1 else ""),
         ]
     lines += ["]", ""]
     return "\n".join(lines)

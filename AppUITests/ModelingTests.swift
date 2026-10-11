@@ -54,13 +54,8 @@ final class ModelingTests: XCTestCase {
     }
 
     func testABlockWithAHoleThroughItInUnderThirtySeconds() {
-        XCTAssertTrue(tap("new-project", timeout: 15))
-        let name = app.textFields["project-name"]
-        XCTAssertTrue(name.waitForExistence(timeout: 5))
-        name.tap()
-        name.typeText("Bracket")
-        tap("template-print")
-        tap("create-project")
+        // Home's quiet row: a project set up for printing.
+        XCTAssertTrue(tap("start-print", timeout: 15))
         XCTAssertTrue(stage.waitForExistence(timeout: 15))
         // Model to print opens Model; its Shape page has the sketch shapes.
         if !element("model-shape").waitForExistence(timeout: 3) { tap("Model") }
