@@ -8,6 +8,7 @@ struct PreferencesForm: View {
     @AppStorage(HmmThemeMode.storageKey) private var themeMode = HmmThemeMode.dark.rawValue
     @AppStorage(HmmHaptics.storageKey) private var haptics = true
     @AppStorage(AppSettings.sidebarOnRight) private var sidebarOnRight = false
+    @AppStorage(AppSettings.alwaysShowsSidebar) private var alwaysShowsSidebar = false
     @AppStorage(AppSettings.pencilHoverPreview) private var pencilHover = false
     @AppStorage(HmmPencilOrHand.fingersAlwaysMakeKey) private var fingersMake = false
     @AppStorage(AppSettings.fullResolutionStage) private var fullResolution = false
@@ -35,6 +36,8 @@ struct PreferencesForm: View {
             Text("One finger draws until an Apple Pencil touches the screen. Then the Pencil draws and fingers move the view, unless this is on.")
         }
         Section("Stage") {
+            Toggle("Always show the sidebar", isOn: $alwaysShowsSidebar)
+                .accessibilityIdentifier("settings-always-sidebar")
             Toggle("Pencil hover preview", isOn: $pencilHover)
             Toggle("Always full resolution", isOn: $fullResolution)
             LabeledSlider(title: "Moving around (orbit, pan, zoom)", value: navigationSpeed, range: AppSettings.navigationSpeedRange,

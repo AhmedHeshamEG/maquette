@@ -52,7 +52,10 @@ struct PrecisionPage: View {
             }
             .pickerStyle(.segmented)
             .accessibilityIdentifier("units")
-            Hint("This project remembers these. How close a face must be to snap is the sidebar's top slider.")
+            LabeledSlider(title: "Snapping distance", value: editor.snap.objectThreshold, range: 0 ... 0.5,
+                          format: { "\(Int(($0 * 100).rounded())) cm" }) { editor.snap.objectThreshold = $0 }
+                .accessibilityIdentifier("snap-distance")
+            Hint("This project remembers these. The snapping distance is how close a thing must come before it snaps.")
         }
     }
 

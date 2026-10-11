@@ -78,6 +78,7 @@ fragment float4 lw_gridFragment(EditorVaryings in [[stage_in]], constant EditorU
     float2 h = length(direction.xz) > 1e-4 ? normalize(direction.xz) : float2(1.0, 0.0);
     float2 footprint = float2(length(float2(h.x * along, h.y * across)), length(float2(h.y * along, h.x * across)));
     float2 p = in.world.xz;
+    // Core's StageColors.gridMinorAlpha and gridMajorAlpha (checked there against the dark studio's ground).
     float alpha = max(lw_gridLines(p, footprint, 1.0, 1.1) * 0.16, lw_gridLines(p, footprint, 5.0, 1.7) * 0.32);
     float3 color = float3(1.0);
     float xAxis = lw_axisLine(p.y, footprint.y, 2.4);

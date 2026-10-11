@@ -58,7 +58,8 @@ public struct EditorScene {
 
     public init() {}
 
-    public static let axisColors: [CoreAxis: RGBA] = [.x: RGBA(0.96, 0.33, 0.36), .y: RGBA(0.45, 0.86, 0.4), .z: RGBA(0.35, 0.58, 1)]
+    /// The handles' colours (Core's `StageColors`, checked against the dark studio there).
+    public static let axisColors: [CoreAxis: RGBA] = StageColors.axes
     /// Radius of the rotate rings in gizmo units (the gizmo scales to stay the same size on screen).
     public static let ringRadius = 0.95
 }
