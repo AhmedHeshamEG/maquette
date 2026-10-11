@@ -33,9 +33,15 @@ struct PencilPage: View {
                     .background(RoundedRectangle(cornerRadius: HmmRadius.card).fill(theme.surface2))
                     .accessibilityIdentifier("pencil-test-pad")
                 HStack {
-                    Text("Pressure \(Int((pressure * 100).rounded())) %").monospacedDigit()
+                    HStack(spacing: 4) {
+                        Text("Pressure")
+                        Text(verbatim: "\(Int((pressure * 100).rounded())) %").monospacedDigit()
+                    }
                     Spacer()
-                    Text("Tilt \(Int(tilt.rounded()))°").monospacedDigit()
+                    HStack(spacing: 4) {
+                        Text("Tilt")
+                        Text(verbatim: "\(Int(tilt.rounded()))°").monospacedDigit()
+                    }
                     Spacer()
                     Button("Clear") { clears += 1 }
                 }

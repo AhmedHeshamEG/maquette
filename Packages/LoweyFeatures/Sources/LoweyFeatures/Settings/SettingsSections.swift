@@ -19,7 +19,10 @@ struct PencilAndHandsSection: View {
         } header: {
             Text("Pencil and hands")
         } footer: {
-            Text("Moving the view is always fingers. One finger draws until an Apple Pencil touches the screen; then the Pencil draws, unless a finger draws too.")
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Moving the view is always fingers.")
+                Text("One finger draws until an Apple Pencil touches the screen; then the Pencil draws, unless a finger draws too.")
+            }
         }
     }
 }
