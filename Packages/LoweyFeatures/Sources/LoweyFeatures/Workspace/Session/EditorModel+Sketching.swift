@@ -7,6 +7,15 @@ import LoweyEngine
 /// Sketching with the Model tool: taps place a shape's points on the face under the first tap (or the ground),
 /// closed shapes fill into regions, and the sizes of the shape just drawn float beside it, ready to type.
 extension EditorModel {
+    /// Precise sketching is in the hand (Draw ▸ Sketch, on the Model tool's sketch mode).
+    var isSketching: Bool { tool == .model && modeling.mode.sketchKind != nil }
+
+    /// Draw ▸ Sketch: a shape drawn on the sheet.
+    func startSketching(_ kind: SketchKind) {
+        startModeling(.sketch(kind))
+        refreshGuide()
+    }
+
     func sketch(_ id: ObjectID) -> Sketch? {
         guard case let .sketch(sketch)? = baseScene.objects[id]?.kind else { return nil }
         return sketch
@@ -77,12 +86,16 @@ extension EditorModel {
         }
     }
 
-    /// Where a new shape lies: the face under the tap (it can be pulled into or cut from that object), else the ground.
+    /// Where a new shape lies: on the sheet (CONTEXT §10.10: everything the Pencil draws lands on it; laid on a face, a
+    /// shape there can be pulled into or cut from that object), else the face under the tap, else the ground.
     private func startShape(at point: CGPoint) -> PendingSketch? {
         guard let stage else { return nil }
         var plane = PlaneFrame(origin: .zero, normal: .unitY, u: .unitX, v: Vec3(0, 0, -1))
         var target: ObjectID?
-        if let (id, _) = stage.pickObject(at: point), let (mesh, world) = modelMesh(of: id), let ray = stage.worldRay(at: point) {
+        if let sheet = currentSheet, let frame = sheetPlane(sheet) {
+            plane = PlaneFrame(origin: frame.origin, normal: frame.normal, u: frame.u, v: frame.v)
+            target = sheet.object.flatMap { baseScene.objects[$0].map(ModelingOperations.canModel) == true ? $0 : nil }
+        } else if let (id, _) = stage.pickObject(at: point), let (mesh, world) = modelMesh(of: id), let ray = stage.worldRay(at: point) {
             let local = Ray(origin: world.inverseApply(to: ray.origin), direction: world.inverseApplyDirection(ray.direction))
             if let hit = MeshPicking.face(local, in: mesh) {
                 let normal = world.applyDirection(mesh.normal(of: hit.face)).normalized
@@ -116,8 +129,8 @@ extension EditorModel {
             distanceOnScreen(lhs, pending.plane, to: screen) < distanceOnScreen(rhs, pending.plane, to: screen)
         }
         if let near, distanceOnScreen(near, pending.plane, to: screen) < 12 { return near }
-        guard snap.grid, snap.gridSize > 0 else { return point }
-        let step = min(snap.gridSize, pullStep)
+        guard snapping.grid, snapping.gridSize > 0 else { return point }
+        let step = min(snapping.gridSize, pullStep)
         return Vec2((point.x / step).rounded() * step, (point.y / step).rounded() * step)
     }
 
@@ -126,7 +139,7 @@ extension EditorModel {
         return hypot(projected.x - screen.x, projected.y - screen.y)
     }
 
-    private func addPoint(_ point: Vec2, kind: SketchKind) {
+    func addPoint(_ point: Vec2, kind: SketchKind) {
         guard let pending = modeling.pending else { return }
         let first = pending.points.first
         let closes = first.map { $0 == point } ?? false
@@ -259,6 +272,7 @@ extension EditorModel {
         case .shapeAmount: return modeling.shapeOp?.amount
         case .wallHeight: return precision.wallHeight
         case .wallThickness: return precision.wallThickness
+        case .sketching: return modeling.guess?.length
         case .measured: return measurement?.length
         case .kept, .rectangleSide, .diameter, .lineLength: break
         }

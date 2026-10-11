@@ -80,6 +80,7 @@ private struct DimensionChip: View {
         case let .kept(id): "kept-\(id.raw)"
         case .wallHeight: "wall-height"
         case .wallThickness: "wall-thickness"
+        case .sketching: "sketch-readout"
         }
     }
 

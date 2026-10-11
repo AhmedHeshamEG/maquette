@@ -219,6 +219,8 @@ enum DimensionField: Hashable, Sendable {
     case kept(ObjectID)
     case wallHeight
     case wallThickness
+    /// The line being drawn: its length and angle, and what it snapped to (read-only while drawing).
+    case sketching
 }
 
 /// The Model tool's state on the stage. View state, not the document: none of it is undone or saved.
@@ -244,11 +246,13 @@ struct ModelingState: Sendable {
     /// What the last point snapped to, marked on the stage.
     var snapMark: SnapResult?
     var shapeOp: ShapeOpRecord?
+    /// While a sketch's next point is drawn: where it would land and what it snapped to (`EditorModel+SketchAssist`).
+    var guess: SketchAssist.Guess?
 
     /// What the stage's marks depend on (they're rebuilt when it changes).
     var overlayKey: [AnyHashable] {
         [AnyHashable(mode), AnyHashable(target), AnyHashable(elements), AnyHashable(region), AnyHashable(pending?.points),
-         AnyHashable(pull), AnyHashable(offsetSource), AnyHashable(measure), AnyHashable(build), AnyHashable(snapMark)]
+         AnyHashable(pull), AnyHashable(offsetSource), AnyHashable(measure), AnyHashable(build), AnyHashable(snapMark), AnyHashable(guess)]
     }
 
     var hasPick: Bool { region != nil || (elements.map { !$0.isEmpty } ?? false) }

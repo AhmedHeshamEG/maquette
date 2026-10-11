@@ -130,7 +130,7 @@ extension StageGestures {
         case .changed:
             guard var turn = twoFingerRotation else { return }
             turn.total -= Double(recognizer.rotation)
-            let step = editor.snap.rotation ? editor.snap.rotationStep * .pi / 180 : 0
+            let step = editor.snapping.rotation ? editor.snapping.rotationStep * .pi / 180 : 0
             let wanted = step > 0 ? (turn.total / step).rounded() * step : turn.total
             if abs(wanted - turn.applied) > 1e-9 {
                 editor.rotateSelection(by: wanted - turn.applied, axis: .y, around: turn.pivot, gesture: twistKey)

@@ -23,7 +23,7 @@ extension EditorModel {
             stage.showModelOverlay(tool == .rig ? rigOverlays(stage) : [])
             return
         }
-        var overlays = sketchOverlays(stage) + measureOverlays(stage) + buildOverlays(stage)
+        var overlays = sketchOverlays(stage) + sketchGuessOverlays(stage) + measureOverlays(stage) + buildOverlays(stage)
         if let id = modeling.target ?? singleSelection.flatMap({ ModelingOperations.canModel($0) ? $0.id : nil }), let (mesh, world) = modelMesh(of: id) {
             let width = stage.worldPerPoint(at: world.position) * 1.2
             overlays.append(EditorOverlay(mesh: ModelOverlay.wireframe(mesh, world: world, width: width), color: RGBA(0.08, 0.08, 0.1), opacity: 0.7))
@@ -104,6 +104,7 @@ extension EditorModel {
             labels.append(DimensionLabel(field: .offset, point: point, text: String(localized: "Offset")))
         }
         if modeling.pending == nil { labels += curveLabels(stage) }
+        if let readout = sketchReadout(stage) { labels.append(readout) }
         return labels
     }
 
