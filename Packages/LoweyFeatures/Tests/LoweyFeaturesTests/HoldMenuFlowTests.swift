@@ -79,7 +79,8 @@ final class HoldMenuFlowTests: XCTestCase {
 
         try row("Rename", in: editor.holdMenu(for: [cube])).action()
         XCTAssertEqual(editor.renamingObject, cube)
-        XCTAssertThrowsError(try row("Group", in: editor.holdMenu(for: [cube])), "one thing can't be grouped: the row isn't there")
+        let rows = editor.holdMenu(for: [cube]).sections.joined().flatMap { [$0] + $0.children }.map(\.title)
+        XCTAssertFalse(rows.contains("Group"), "one thing can't be grouped: the row isn't there")
         XCTAssertNoThrow(try row("To the ground", in: editor.holdMenu(for: [cube])), "the one menu holds everything")
 
         try row("Delete", in: editor.holdMenu(for: [cube])).action()
