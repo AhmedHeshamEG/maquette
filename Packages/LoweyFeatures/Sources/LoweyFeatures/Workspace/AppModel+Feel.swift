@@ -1,5 +1,6 @@
 import Foundation
 import HmmDiagnostics
+import LoweyEngine
 import UIKit
 
 /// The feel recorder (Diagnostics ▸ Record): a minute of real use, every touch followed to the frame that answers it
@@ -16,7 +17,7 @@ extension AppModel {
     func startFeelRecording() {
         guard !FeelProbe.isRecording else { return }
         let recording = FeelRecording(app: AppIdentity.displayName, appVersion: AppIdentity.shortVersion, device: DiagnosticsCenter.deviceModel,
-                                      system: ProcessInfo.processInfo.operatingSystemVersionString)
+                                      system: "\(ProcessInfo.processInfo.operatingSystemVersionString) · preview tier \(PreviewQuality.current.tier.rawValue)")
         diagnostics.log("Feel recording started (\(Int(Self.feelSeconds)) s)")
         isRecordingFeel = true
         FeelProbe.start(seconds: Self.feelSeconds, recording: recording, screen: { [weak self] in self?.feelScreen ?? "" }) { [weak self] result in

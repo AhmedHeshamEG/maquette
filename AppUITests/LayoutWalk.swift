@@ -72,7 +72,7 @@ private let layoutWalkRows: [LayoutWalk.Row] = [
                    control: "The tour",
                    steps: ["Actions", "Tour"]),
     LayoutWalk.Row(home: "Actions", precondition: "",
-                   control: "Diagnostics, the benchmark, the Pencil's touch-to-screen latency",
+                   control: "Diagnostics, the feel recorder, the benchmark, the Pencil's touch-to-screen latency",
                    steps: ["Actions", "Diagnostics"]),
     LayoutWalk.Row(home: "Actions", precondition: "",
                    control: "Settings",
