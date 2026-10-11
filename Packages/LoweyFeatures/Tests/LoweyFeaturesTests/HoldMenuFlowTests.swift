@@ -21,7 +21,9 @@ final class HoldMenuFlowTests: XCTestCase {
     }
 
     private func row(_ title: String, in menu: HmmHoldMenu) throws -> HmmHoldMenu.Item {
-        try XCTUnwrap(menu.sections.joined().first { $0.title == title }, "no \(title) row")
+        // An object's More holds the rest of what it can do: look there too.
+        let rows = menu.sections.joined().flatMap { [$0] + $0.children }
+        return try XCTUnwrap(rows.first { $0.title == title }, "no \(title) row")
     }
 
     func testEveryKindOfThingStartsWithTheSameRows() throws {
@@ -77,7 +79,8 @@ final class HoldMenuFlowTests: XCTestCase {
 
         try row("Rename", in: editor.holdMenu(for: [cube])).action()
         XCTAssertEqual(editor.renamingObject, cube)
-        XCTAssertFalse(try row("Group", in: editor.holdMenu(for: [cube])).isEnabled, "one thing can't be grouped")
+        XCTAssertThrowsError(try row("Group", in: editor.holdMenu(for: [cube])), "one thing can't be grouped: the row isn't there")
+        XCTAssertNoThrow(try row("To the ground", in: editor.holdMenu(for: [cube])), "the one menu holds everything")
 
         try row("Delete", in: editor.holdMenu(for: [cube])).action()
         XCTAssertNil(editor.scene.objects[cube])
@@ -94,7 +97,7 @@ final class HoldMenuFlowTests: XCTestCase {
         try row("Group", in: menu).action()
         let group = try XCTUnwrap(editor.singleSelection)
         XCTAssertEqual(group.kind, .group)
-        XCTAssertEqual(titles(editor.holdMenu(for: [group.id]))[1].last, "Ungroup")
+        XCTAssertNoThrow(try row("Ungroup", in: editor.holdMenu(for: [group.id])))
     }
 
     func testSplittingAClipAtThePlayhead() throws {

@@ -70,6 +70,8 @@ final class PoseFlowTests: XCTestCase {
         let editor = try XCTUnwrap(app.editor)
         editor.buildBlob(.hesham)
         let blob = try XCTUnwrap(editor.poseCharacter)
+        // Outside Keys a pose sets the dials (in Keys it lands as keys at the playhead).
+        editor.timelineMode = .perform
         editor.perform(.setProperties([PropertyChange(object: blob, key: .handLeftY, value: .float(0.9)),
                                        PropertyChange(object: blob, key: .headYaw, value: .float(20))]))
         editor.savePose(of: blob, named: "Hand up")

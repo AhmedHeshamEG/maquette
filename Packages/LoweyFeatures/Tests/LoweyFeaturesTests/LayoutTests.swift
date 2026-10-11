@@ -92,7 +92,7 @@ final class LayoutTests: XCTestCase {
         XCTAssertTrue(StageTool.allCases.filter { $0.draws || $0.paintsSurfaces }.allSatisfy { $0 != .select && $0 != .lasso })
         XCTAssertFalse(ClusterPanel.model.isLeading)
         XCTAssertTrue(ClusterPanel.select.isLeading)
-        XCTAssertEqual(ModelPage.allCases.map(\.rawValue), ["add", "shape", "library", "precision"])
+        XCTAssertEqual(ModelPage.allCases.map(\.rawValue), ["add", "shape", "precision"])
         XCTAssertFalse(StageTool.model.paints, "the Model tool taps; fingers still navigate")
     }
 

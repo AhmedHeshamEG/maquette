@@ -83,7 +83,8 @@ extension EditorModel {
         case let .setProperties(changes):
             var plain: [PropertyChange] = []
             var keyedChanges: [PropertyChange] = []
-            let animated = autoKey && timelineMode == .keyframe ? timeline.animatedObjects : []
+            // Keyed things only: a Blob's breathing or a loop isn't a key to add to.
+            let animated = autoKey && timelineMode == .keyframe ? Set(timeline.tracks.map(\.target)) : []
             for change in changes {
                 let animatable = change.key.spec?.animatable == true && change.value != nil
                 let hasTrack = timeline.track(for: change.object, change.key) != nil
