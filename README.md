@@ -4,6 +4,12 @@ Shapr3D's ease, Procreate's feel, Dreams' animation and ToonSquid's rigging, in 
 or art degree. Build a set like Lego, drop in characters, direct them with a camera, sync them to your voice, and
 export the video. By **studio h.**; the continuation of 3D-lowey 2.0. All rights reserved (see [LICENSE](LICENSE)).
 
+**0.12** (phases U1 and U2): **feel and layout**. The map that freezes at 1.0: a Library and a Rig button where Cast
+was, the scene's name as a door to its set-up, scenes and objects, an object panel that fits one screen and moves by
+hand, one menu per object, a timeline of Perform and Keys where time runs while you touch, the + straight into a blank
+project in the dark studio, and nothing greyed out or cut on any iPad. Underneath: the feel recorder (Diagnostics ▸
+Feel), a stage that is sharp at rest and smooth in motion, no "getting ready", and the Kit's pictures baked in.
+
 **0.10** (phase M10): **live performance**. Your face, your voice and your hands drive any character live: Blobs,
 Puppets, drawn rigs (3D and 2D), person rigs and rigged models. The microphone gives the mouth its shape; characters
 breathe and blink on their own; loose bones (hair, ears, tails) dangle; triggers put a character in an expression or a
@@ -105,12 +111,13 @@ control's home is in [docs/LAYOUT.md](docs/LAYOUT.md).
 
 | Where | What's there |
 |---|---|
-| Top left | **Home** (your projects) · **Actions** (export, the project file, the Monitor, scenes, history, scripts, the AI & laptop bridge, gestures, tour, diagnostics, settings) · **Look** (Looks, mood, palette, finish) · **Select** (tap, lasso, select similar, the outliner) |
-| Top right | **Model** (shapes, lights and cameras, 3D text, titles, photos and videos, effects; sketch, push/pull and booleans; the Kit and your models; snapping and units) · **Draw** (ink strokes and flipbooks with brushes and drawing guides, solid shapes on guides) · **Paint** (Shadow Brush, Scatter) · **Animate** (opens the timeline) · **Cast** (Blob, Puppet, Rigged; clips, poses, faces, lip sync) |
-| Side | two sliders for what you're doing, **Pick**, undo, redo |
-| Beside the selection | the **inspector**: move, turn, size; numbers; Look override; motion; its menu has array, group, swap for a model, save to the library |
-| Bottom right | the **timeline** control (call the transport, send it away), views, frame the selection, the Director view |
-| Bottom, when called | the timeline: **Compose** (move animation in time), **Perform** (record by touch), **Keyframe** (keys, easing, auto-key), sound and words |
+| Top left | **Home** (your projects) · **Actions** (export, the project file, the Monitor, the Board, history, Learn, settings) · **Look** (Style, World, Finish) · **Select** (tap, lasso, all, none, similar) · **Library** (a Blob, you, a Puppet, the Kit; your models, builds, worlds, scripts) |
+| Under it | the **scene's name**: what it's set up for (Blank, Print, Room, Animation), its scenes, its objects |
+| Top right | **Model** (shapes, lights, 3D text, photos and videos, effects; sketch, push/pull; snapping and units) · **Draw** (ink strokes and flipbooks with brushes and drawing guides, solid shapes on guides) · **Paint** (colour on models, Shadow Brush) · **Rig** (bones, skin, pose; poses and clips) · **Animate** (opens the timeline) |
+| Side | size and opacity for what you're doing, **Pick**, the colour in the hand, undo, redo (a thin rail when nothing uses it) |
+| Beside the selection | the **object panel**: move, turn, size; colour; Make it move; combine, mirror, scatter; one step deeper its look, more ways to move, numbers. Drag its header to move it; it folds to a chip |
+| Bottom right | the **timeline** control (call the transport, send it away), views, frame the selection, the **camera** button |
+| Bottom, when called | the timeline: **Perform** (time runs while you touch) and **Keys**, + Overlay, + Sound |
 
 | Gesture | Does |
 |---|---|
@@ -121,7 +128,7 @@ control's home is in [docs/LAYOUT.md](docs/LAYOUT.md).
 | Four-finger tap | hide everything but the stage |
 | Pencil | draws; hover previews; Pencil Pro squeeze plays and pauses; roll during Perform |
 
-Keyboard: ⌘1–5 Model, Draw, Paint, Animate, Cast · ⌘6–8 Actions, Look, Select · ⌘L library · ⌘T timeline ·
+Keyboard: ⌘1–5 Model, Draw, Paint, Rig, Animate · ⌘6–8 Actions, Look, Select · ⌘L Library · ⌘T timeline ·
 ⌥⌘1–3 move, turn, size · Space play · ⌘K key · ⌘M marker · ⌥⌘D Director view ·
 ⌥⌘Y fly the camera · ⇧⌘R record a performance · ⌥⌘R record voiceover · ⇧⌘T transcript · ⇧⌘U audio · ⌘E export ·
 ⇧⌘B bridge · ⌥⌘V paste a Scene Script · ⌥⌘N monitor window · ⌘Z / ⇧⌘Z.
@@ -131,11 +138,11 @@ will export.
 
 ### A first shot
 
-1. Home → **New project**: a name and a template (a mood and a Look are suggested; change them if you like).
-2. **Model ▸ Library**: place models from the Kit (they arrive at real size); draw with **Draw ▸ Ink**; **Cast** → add a Blob.
-3. **Look** → try the five Looks; **Finish** for grain, bloom, outlines.
-4. Select something → the inspector's **Motion** → a preset (Pop in, Bounce…), or **Animate ▸ Perform** and move it while it plays.
-5. **Model** → camera, then **Director view** (⌥⌘D) to aim it; the inspector's Camera for moves and focus.
+1. Home → **+**: a blank project in the dark studio (tap its name on Home later to rename it).
+2. **Library**: place models from the Kit (they arrive at real size) or add a Blob; draw with **Draw ▸ Ink**.
+3. **Look** → try the five Looks; **Finish** for grain, bloom, outlines and motion on twos.
+4. Select something → its panel's **Make it move** (Bounce, Pop in…), or **Animate ▸ Perform**, Record, and move it.
+5. The **camera** button: a tap looks through a camera (made from this view the first time); fingers aim it.
 6. **Animate** → **Sound and words** to record a voiceover, then **Transcribe**; attach things to spoken words from the transcript.
 7. **Actions** → **Export** → a preset (YouTube 4K, Shorts, GIF loop…).
 

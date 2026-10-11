@@ -5,7 +5,7 @@ surface of that package: power users, scripts and MCP clients may **read** any o
 (the laptop bridge), so undo and the history journal stay true; a file changed behind the app's back is overwritten at
 the next checkpoint.
 
-Format version: package **2**, document schema **9** (`LoweySchema.currentVersion`), journal **1**.
+Format version: package **2**, document schema **12** (`LoweySchema.currentVersion`), journal **1**.
 
 ```
 My film.maquette/                 (3D-lowey's .lowey packages open too, and are upgraded in place)
@@ -59,7 +59,7 @@ renamed one gets a migration.
 | `id` | string | The project's id. |
 | `name` | string | Its name on the Home screen. |
 | `created`, `modified` | number | Dates (see above). `modified` decides which of `project.json` and a scene's journal is newer for project-wide settings. |
-| `look` | object | The project Look (every scene without its own uses it): `presetID` (`ink`, `comic`, `sketch`, `clay`, `lowPoly`), mood, palette, sky, fog, ground, shading, post. |
+| `look` | object | The project Look (every scene without its own uses it): `presetID` (`ink`, `comic`, `sketch`, `clay`, `lowPoly`), mood (`lightingPreset`: `day`, `goldenHour`, `dusk`, `night`, `space`, `studio`, and since schema 12 `darkStudio`), palette, sky, fog, ground, shading, post. |
 | `sceneOrder` | [string] | Scene ids in order. |
 | `sceneNames` | {id: string} | Scene names by id. |
 | `lastOpenedScene` | string? | Where the project reopens. |
@@ -318,6 +318,11 @@ The head and hand channels (`headYaw`, `headPitch`, `headRoll`, `handLeftX/Y`, `
 imported skeletons; a child with `faceRole` under a rigged object is a face part. Schema 11 only added these; files
 from schema 10 open unchanged, and Maquette 0.9 refuses schema 11.
 
+## The dark studio (schema 12)
+
+Looks gain the mood `darkStudio` (a blank project's world: a near-black ground, one soft key light). Schema 12 only
+added it; files from schema 11 open unchanged, and Maquette 0.11 refuses schema 12.
+
 ## workspace.json
 
 How the project shows when it opens. It isn't the project (it's never undone and isn't in the journal); it's
@@ -327,13 +332,13 @@ falls back to its default; unknown keys are ignored. Plain JSON, no envelope.
 | Key | Type | Meaning |
 |---|---|---|
 | `schemaVersion` | number | 1. |
-| `template` | string? | The starter template it began from: `blank`, `print`, `room`, `character`, `animation`, `sketch` (0.9). |
+| `template` | string? | What the project is set up for: `blank`, `print`, `room`, `animation` (0.12: switchable any time from the scene's name, which rewrites `snap`, `showsGrid`, `shapeSize`, `units`, `printBed` and raises `timeline`); `character` and `sketch` from older projects read as `blank`. |
 | `timeline` | string | `hidden` (the default), `transport` (the slim transport) or `full`. |
 | `timelineHeight` | number | The whole timeline's height in points, 150–900 (260 by default). |
 | `snap` | object | `grid`, `gridSize` (m), `rotation`, `rotationStep` (degrees), `ground`, `objects`, `objectThreshold` (m), and since 0.4 `corners`, `edges`, `faces` (points snap to corners and edge middles, edges, faces; on when missing). |
 | `showsGrid` | bool | The grid on the ground. |
 | `shapeSize` | number | New shapes' size in metres (1; `print` uses 0.05). |
-| `firstPanel` | string? | A tool panel to open the first time the project opens (then removed): `model`, `cast`, or `board` (0.9: the project opens on its Schizzo board). |
+| `firstPanel` | string? | A tool panel to open the first time the project opens (then removed): `model`, `rig` (`cast` before 0.12, now ignored), or `board` (0.9: the project opens on its Schizzo board). |
 | `units` | string | The unit lengths are shown and typed in: `mm`, `cm` (the default), `m`, `in`, `ft`. `print` uses `mm`, `room` `m`. |
 | `printBed` | string? | The 3D printer whose build volume the stage outlines (`PrintBed.presets`: `filament-220`, `filament-256`, `filament-180`, `prusa-mk4`, `bambu-x1`, `bambu-a1-mini`, `ender-3-v3`, `resin-218`, `form-4`); `print` starts with `filament-220`. An unknown id is dropped. |
 | `section` | object? | The section view: `{"normal": [x, y, z], "offset": d}`; what's beyond the plane (`normal · p > offset`) is cut away on the stage. Missing: off. |
