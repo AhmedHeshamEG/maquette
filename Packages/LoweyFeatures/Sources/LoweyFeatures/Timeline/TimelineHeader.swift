@@ -22,6 +22,7 @@ struct TimelineHeader: View {
                     }
                 }
             }
+            OverlayMenu(editor: editor)
             HmmButton("flag", label: "Add marker", size: 40) { editor.addMarker() }
             HmmButton("waveform", label: "Sound and words", size: 40) { editor.sheet = .audio }
             menu

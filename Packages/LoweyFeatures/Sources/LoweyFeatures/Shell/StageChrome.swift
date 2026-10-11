@@ -171,7 +171,7 @@ private struct JoystickHideButton: View {
     }
 }
 
-/// Bottom-right of the stage: the timeline on call, the views, framing the selection, the Director view.
+/// Bottom-right of the stage: the timeline on call, the views, framing the selection, the camera button.
 private struct ViewControls: View {
     let editor: EditorModel
 
@@ -191,13 +191,40 @@ private struct ViewControls: View {
             .accessibilityLabel("Views")
             .accessibilityIdentifier("views-menu")
             HmmButton("viewfinder", label: "Frame the selection") { editor.frameSelection() }
-            HmmButton("video", label: "Director view", isOn: editor.directorView) { editor.setDirectorView(!editor.directorView) }
-                .accessibilityIdentifier("director-view")
+            CameraButton(editor: editor)
         }
         .padding(HmmSpacing.xxs)
         .environment(\.hmmInsideGlass, true)
         .hmmGlass(in: Capsule(), interactive: false)
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("view-controls")
+    }
+}
+
+/// The camera button: tap to look through the camera (again for the next one, then back to the free view); hold for
+/// a new camera from this view, or to pick one.
+private struct CameraButton: View {
+    let editor: EditorModel
+
+    var body: some View {
+        HmmButton("video", label: "Camera", isOn: editor.directorView) { editor.tapCameraButton() }
+            .contextMenu {
+                Button("New camera from this view", systemImage: "plus") { editor.newCameraFromThisView() }
+                if !editor.cameras.isEmpty {
+                    Section("Look through") {
+                        ForEach(editor.cameras, id: \.self) { id in
+                            Button {
+                                editor.lookThrough(id)
+                            } label: {
+                                Text(verbatim: editor.baseScene.objects[id]?.name ?? "Camera")
+                            }
+                        }
+                    }
+                }
+                if editor.directorView {
+                    Button("Back to the free view", systemImage: "arrow.uturn.backward") { editor.setDirectorView(false) }
+                }
+            }
+            .accessibilityIdentifier("camera-button")
     }
 }

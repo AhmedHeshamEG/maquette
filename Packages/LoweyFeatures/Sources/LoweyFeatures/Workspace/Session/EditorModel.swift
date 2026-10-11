@@ -138,6 +138,8 @@ final class EditorModel {
         didSet { if directorView != oldValue { refreshSelectionOverlay() } }
     }
 
+    /// The camera the camera button's taps started from (a full round of taps comes back to the free view).
+    @ObservationIgnored var cameraTourStart: ObjectID?
     var deliveryFraming: Framing = .landscape
     var showsThirds = true
     var showsSafeAreas = false
@@ -289,6 +291,8 @@ final class EditorModel {
     @ObservationIgnored var openStarted: CFTimeInterval?
     /// The template the project began from and how it shows (`workspace.json`).
     @ObservationIgnored var workspace = ProjectWorkspace()
+    /// What the project is set up for (Blank, Print, Room, Animation): it decides what is in reach.
+    var projectSetUp: StarterTemplate.Kind = .blank
     @ObservationIgnored let logger = Logger(subsystem: AppIdentity.subsystem, category: "editor")
 
     var library: LibraryModel { app.library }

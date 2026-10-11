@@ -18,12 +18,56 @@ extension EditorModel {
         guard on != directorView else { return }
         if !on { stopFlying() }
         if on, shotCamera == nil {
-            app.show("Add a camera first (Build ▸ Camera saves this view)")
+            app.show("Hold the camera button for a new camera from this view")
             return
         }
         directorView = on
+        if on { cameraTourStart = shotCamera }
         stage?.redraw()
         HmmHaptics.play(.selection)
+    }
+
+    /// The camera button. Tap: look through the shot camera (with none yet, one is made from this view first). Tap
+    /// again: the next camera; once every camera has had its turn, back to the free view. With cuts on the timeline
+    /// the shot is theirs, so a second tap simply leaves.
+    func tapCameraButton() {
+        if cameras.isEmpty {
+            addCamera()
+            setDirectorView(true)
+            return
+        }
+        guard directorView else {
+            setDirectorView(true)
+            return
+        }
+        guard timeline.cuts.isEmpty, cameras.count > 1, let current = baseScene.activeCamera,
+              let index = cameras.firstIndex(of: current) else {
+            setDirectorView(false)
+            return
+        }
+        let next = cameras[(index + 1) % cameras.count]
+        guard next != cameraTourStart else {
+            setDirectorView(false)
+            return
+        }
+        perform(.setActiveCamera(next))
+        stage?.redraw()
+        HmmHaptics.play(.selection)
+    }
+
+    /// The camera button held: a new camera where the view is now, looked through at once.
+    func newCameraFromThisView() {
+        addCamera()
+        cameraTourStart = baseScene.activeCamera
+        if !directorView { setDirectorView(true) }
+    }
+
+    /// Look through `id` (the camera button's menu).
+    func lookThrough(_ id: ObjectID) {
+        if timeline.cuts.isEmpty, baseScene.activeCamera != id { perform(.setActiveCamera(id)) }
+        cameraTourStart = id
+        if !directorView { setDirectorView(true) }
+        stage?.redraw()
     }
 
     func selectCamera(_ id: ObjectID) {
