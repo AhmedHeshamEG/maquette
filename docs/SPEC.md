@@ -23,7 +23,7 @@ reference and stays.
 | Live performance: the face, the voice and the hands driving any puppet (3D and 2D), blinking and breathing, triggers, draggers, dangling bones, takes and comping, the iPhone as the face camera | **0.10.** The voice gives the mouth the shape of the sound, not of the words (D-211); hands are the wrists (D-212); draggers stay where they're left (D-210). |
 | The layout pass (U2): the Library and Rig, the scene as a door, the object panel on one screen and moved by hand, one menu per object, Perform and Keys, the dark studio, the resting sidebar, the held features | **0.12.** [LAYOUT.md](LAYOUT.md) is the map; D-226 … D-239. Live performance's entry points are held in App Store builds until 1.2 (D-228). |
 | Draw (U3): the sheet (four shapes, placed by hand, kept and named), Sketch in Draw and talking back, flipbooks on the sheet with the frame strip, the hand shortcuts and the squeeze menu, the Snap magnet, our number pad, Settings ▸ Pencil and hands (who does what, the Pencil page with its test pad and calibration), the Reference window, the timeline as Dreams has it, the brush library dropping down | **0.13.** D-240 … D-258. Hold-to-clean-shape and the squeeze menu on the board's own drawings come with the Board's finish (M14) as far as clean shapes go. |
-| Rig, and bring your sculpt (pins and dots, a rig you can change, the Nomad bridge) | U4 |
+| Rig, and bring your sculpt: pins and dots, Person / Chain / Four legs / Wings guessed from the shape, rigs you change any time, solid parts hinged, shapes cut finer to bend; motion saved to the Library and dropped anywhere, repeats by a motion's end, four feels; sculpts in painted and lightened with Detail, landing with Rig it; skinned glTF and our own FBX for game engines | **0.14.** D-259 … D-277. The Nomad fixture joins when Hesham exports one (D-275); Unity is a computer check (D-276). |
 | Shape and paint (touch-and-drag modelling, deformations, the full colour picker, layers on the bottom bar, smudge) | U5 |
 | Mechanisms + AR, web layer (held) | M12 |
 | Content and finish: the house kit, waiting designed, the Board's finish | M14 |
@@ -34,6 +34,25 @@ reference and stays.
 Cast is gone (D-227): what said *Cast ▸ Voice & face*, *Triggers* and *Life* below is the selected character's
 button beside Record in the timeline's Perform; *Cast ▸ Rig* is Rig; *Make it part of* is in Rig. Everything below
 still works the same way.
+
+### Rig, and bring your sculpt (0.14)
+
+- **Pins and dots** (D-260, D-266): Rig ▸ *Pins and dots*, or a body shortcut. The Pencil taps a dot on a joint or a pin
+  where a soft thing holds and bends; a stroke along a part lays a chain; a mark dragged moves, held goes, double-tapped
+  switches. A dot pulled with a finger brings its limb along; a pin bends only its stretch.
+- **Body shortcuts** (D-264, D-265): Person (its dots guessed on the front view; drag the wrong ones, Rig), Chain, Four
+  legs and Wings (guessed, or in the usual places).
+- **Rigs change** (D-260): *Change the rig* relaxes the thing and shows its marks; poses and keys stay. Shapes too coarse
+  to bend are cut finer (D-262). Groups rig rigid, a dot between two parts hinges them; *Rig these together* for several
+  things (D-263).
+- **Motion in the Library** (D-268): Motion and Rigs pages; poses, clips and loops saved from their menus and dropped with
+  a tap. A row's grip repeats the motion by its end dot and loops it forever from its menu (D-269); keys have four feels
+  (D-270).
+- **Bring your sculpt** (D-271 … D-275): vertex colours in from glTF and OBJ as paint; heavy sculpts lightened on the way
+  in to the tier's budget; Detail in the panel; Open in, the share sheet, a drop and Home's import land it on the stage
+  with *Rig it*.
+- **Game engines** (D-276, D-277): glTF carries skins and joint keys; FBX from our own writer; both checked in Godot and
+  Blender on CI.
 
 ### Live performance (0.10)
 
