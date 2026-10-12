@@ -71,6 +71,8 @@ final class RigTests: XCTestCase {
         // Frame it: the cylinder stands in the middle of the stage.
         point(0.5, 0.5).doubleTap()
         _ = XCTWaiter.wait(for: [XCTestExpectation(description: "camera settles")], timeout: 0.8)
+        // The object panel folds to its chip, so nothing floats over the cylinder.
+        tap("fold-inspector")
 
         let start = Date()
         tap("Rig")
@@ -80,8 +82,11 @@ final class RigTests: XCTestCase {
         XCTAssertTrue(waitForTrail("cmd=Rig a chain"), "the chain was stored: \(trail)")
         let marks = app.descendants(matching: .any).matching(NSPredicate(format: "identifier BEGINSWITH 'rig-mark-'")).allElementsBoundByIndex
         XCTAssertGreaterThanOrEqual(marks.count, 2, "pins at its base and its tip")
-        let tip = marks.map(\.frame).min { $0.midY < $1.midY } ?? .zero
         tap("rig-done")
+        // The pin at its tip is a handle now: pull it.
+        let handles = app.descendants(matching: .any).matching(NSPredicate(format: "identifier BEGINSWITH 'ik-'"))
+        XCTAssertTrue(handles.firstMatch.waitForExistence(timeout: 5), "its pins are handles")
+        let tip = handles.allElementsBoundByIndex.map(\.frame).min { $0.midY < $1.midY } ?? .zero
         // Pull the tip to the side: the stretch bends, the base holds.
         at(CGPoint(x: tip.midX, y: tip.midY)).press(forDuration: 0.1, thenDragTo: at(CGPoint(x: tip.midX + 120, y: tip.midY + 30)))
         let elapsed = Date().timeIntervalSince(start)

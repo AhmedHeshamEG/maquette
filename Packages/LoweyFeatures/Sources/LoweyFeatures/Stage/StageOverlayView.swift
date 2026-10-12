@@ -148,6 +148,7 @@ private struct IKHandleMarks: View {
                 .frame(width: item.handle.isEnd ? 26 : 16, height: item.handle.isEnd ? 26 : 16)
                 .position(item.point)
                 .accessibilityLabel(item.handle.name)
+                .accessibilityIdentifier("ik-\(item.handle.name)")
         }
     }
 }
