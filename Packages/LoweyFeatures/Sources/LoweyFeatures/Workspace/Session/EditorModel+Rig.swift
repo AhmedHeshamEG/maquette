@@ -143,7 +143,8 @@ extension EditorModel {
         default:
             return mesh
         }
-        let bones = rig.segments.map { (head: $0.head, tail: $0.tail) }
+        // Bones between marks (a pin's stretch counts once), else the skeleton's own.
+        let bones = rig.marks.isEmpty ? rig.segments.map { (head: $0.head, tail: $0.tail) } : RigMarks.segments(rig.marks)
         guard object[.bendDetail] == nil, let cuts = MeshDensify.cuts(for: mesh, bones: bones) else { return mesh }
         object[.bendDetail] = .float(Double(cuts))
         commands.append(.setProperties([PropertyChange(object: object.id, key: .bendDetail, value: .float(Double(cuts)))]))

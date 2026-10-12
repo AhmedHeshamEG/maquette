@@ -12,7 +12,7 @@ public extension PropertyKey {
 /// surface stays closed.
 public enum MeshDensify {
     /// Most cuts a shape is given across its largest side.
-    public static let maximumCuts = 48
+    public static let maximumCuts = 24
 
     /// The object's mesh cut as its `bendDetail` asks (the mesh itself when it asks for none).
     public static func apply(_ mesh: MeshData, for object: SceneObject) -> MeshData {
@@ -20,14 +20,15 @@ public enum MeshDensify {
         return densified(mesh, cuts: Int(cuts))
     }
 
-    /// The cuts a shape needs to bend at its joints: about three across the shortest bone, when its edges are
-    /// longer than that (nil when it bends well as it is). Positions in the mesh's own space.
+    /// The cuts a shape needs to bend at its joints: about two across the shortest bone, when its edges are longer
+    /// than that (nil when it bends well as it is). Positions in the mesh's own space; the bones are between marks (a
+    /// pin's stretch is one bone here: it bends smoothly over its joints anyway).
     public static func cuts(for mesh: MeshData, bones: [(head: Vec3, tail: Vec3)]) -> Int? {
         guard let bounds = mesh.bounds, !mesh.isEmpty else { return nil }
         let size = max(bounds.size.x, bounds.size.y, bounds.size.z)
         let lengths = bones.map { $0.head.distance(to: $0.tail) }.filter { $0 > size * 0.01 }
         guard let shortest = lengths.min(), size > 0 else { return nil }
-        let target = max(shortest / 3, size / Double(maximumCuts))
+        let target = max(shortest / 2, size / Double(maximumCuts))
         guard longestEdge(mesh) > target * 1.5 else { return nil }
         return min(Int((size / target).rounded(.up)), maximumCuts)
     }

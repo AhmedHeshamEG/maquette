@@ -158,7 +158,7 @@ final class RigMarksTests: XCTestCase {
         let cube = PrimitiveMesh.make(.cube, shading: .smooth)
         let bones = [(head: Vec3(0, 0.05, 0), tail: Vec3(0, 0.5, 0)), (head: Vec3(0, 0.5, 0), tail: Vec3(0, 0.95, 0))]
         let cuts = try XCTUnwrap(MeshDensify.cuts(for: cube, bones: bones), "eight corners can't bend at the middle")
-        XCTAssertGreaterThanOrEqual(cuts, 6)
+        XCTAssertGreaterThanOrEqual(cuts, 4)
         let dense = MeshDensify.densified(cube, cuts: cuts)
         XCTAssertGreaterThan(dense.positions.count, cube.positions.count * 10)
         XCTAssertEqual(dense.bounds, cube.bounds, "the same shape")

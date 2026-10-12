@@ -1931,8 +1931,8 @@ mark, a `root` joint there carries it, so a cat's body holds still while its tai
 mark the root (pinning a tail would swing the whole cat).
 
 **D-262 — Rigging adds the geometry a shape lacks, through one property.** When a shape's longest edge is more than
-half again a third of its shortest bone (a cube is eight corners), rigging sets `bendDetail` (cuts across the largest
-side, up to 48) in the same step; `MeshDensify` splits long edges at their middles until none is longer, the same in
+half again half its shortest bone between marks (a cube is eight corners), rigging sets `bendDetail` (cuts across the
+largest side, up to 24: finer made a cylinder's weights take over 20 s on CI's simulator) in the same step; `MeshDensify` splits long edges at their middles until none is longer, the same in
 `PaintSource`, the renderer's mesh cache (`MeshKey.dense`) and every export, so weights, paint and drawing agree.
 Placed models aren't cut (they carry their own detail). *Rejected:* converting to an editable mesh (MeshBuilder merges
 coplanar triangles back into one face); subdividing inside the skinned twin only (paint and picking would disagree).
@@ -1995,7 +1995,7 @@ path beside paint).
 
 **D-272 — SPIKE passed: our own quadric simplifier.** `MeshSimplify` (Garland–Heckbert error, Forstmann's fast threshold
 form, MIT, in Swift, portable to Linux) lightens a 1.3 million triangle lumpy sphere to a tenth in about 4.5 s in a
-release build on the Docker CPU (CI's release step reports its own number), every corner within 1 % of the surface,
+release build on the Docker CPU and 2.55 s on CI's Linux runner, every corner within 1 % of the surface,
 open edges kept; colours carry from the nearest original corner. Fallback (meshoptimizer) not needed.
 
 **D-273 — Lightening budgets, by tier, and the Detail slider.** One model may keep 500 000 triangles on Tier A, 200 000

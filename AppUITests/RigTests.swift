@@ -48,7 +48,7 @@ final class RigTests: XCTestCase {
     private var trail: String { element("debug-trail").label }
 
     /// Waits until the trail shows a command (weights land in the background).
-    private func waitForTrail(_ text: String, timeout: TimeInterval = 20) -> Bool {
+    private func waitForTrail(_ text: String, timeout: TimeInterval = 40) -> Bool {
         let deadline = Date().addingTimeInterval(timeout)
         while Date() < deadline {
             if trail.contains(text) { return true }
@@ -101,7 +101,8 @@ final class RigTests: XCTestCase {
         search.tap()
         search.typeText("astronaut")
         XCTAssertTrue(tap("library-item-Astronaut a", timeout: 10), "the Kit's astronaut")
-        XCTAssertTrue(element("inspector").waitForExistence(timeout: 10))
+        // The object panel stays a chip while the Library is open; the selection says it landed.
+        XCTAssertTrue(waitForTrail("sel=[Astronaut", timeout: 15), "the astronaut is placed: \(trail)")
 
         let start = Date()
         tap("Rig")
