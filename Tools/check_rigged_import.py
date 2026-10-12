@@ -33,8 +33,9 @@ def main():
     skinned = [m for m in meshes if any(mod.type == "ARMATURE" for mod in m.modifiers) and len(m.vertex_groups) > 0]
     if not skinned:
         fail("no mesh is skinned to the armature")
+    # Blender 5 keeps an action's curves in layers; that the bones move between its ends is what counts.
     action = armature.animation_data.action if armature.animation_data else None
-    if action is None or not action.fcurves:
+    if action is None:
         fail("no animation on the armature")
     start, end = action.frame_range
     scene = bpy.context.scene
