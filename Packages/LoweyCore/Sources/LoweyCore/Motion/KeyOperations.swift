@@ -290,7 +290,30 @@ public struct KeyOperations: Sendable {
         }
         guard !keys.isEmpty else { return nil }
         let earliest = keys.map(\.time).min() ?? 0
-        return move(keys, by: max(delta, -earliest), in: timeline)
+        let applied = max(delta, -earliest)
+        guard case let .setTracks(edits)? = move(keys, by: applied, in: timeline) else { return nil }
+        // A repeating row repeats from where it now starts.
+        return .setTracks(edits.map { edit in
+            guard var track = edit.track, let cycle = track.cycle else { return edit }
+            track.cycle = TrackCycle(start: cycle.start + applied, end: cycle.end + applied, repeats: cycle.repeats)
+            return TrackEdit(id: edit.id, track: track, index: edit.index)
+        })
+    }
+
+    /// The objects' whole motion played again after it ends (CONTEXT §10.10: drag a motion's end to repeat it):
+    /// `repeats` more times, forever when nil, or just once at 0. Every property repeats together, over the stretch
+    /// from the first key of any of them to the last.
+    public func repeating(_ objects: Set<ObjectID>, repeats: Int?, in timeline: Timeline) -> EditCommand? {
+        let tracks = timeline.tracks.filter { objects.contains($0.target) }
+        let times = tracks.flatMap { $0.keyframes.map(\.time) }
+        guard let start = times.min(), let end = times.max(), end > start else { return nil }
+        let cycle = repeats == 0 ? nil : TrackCycle(start: start, end: end, repeats: repeats.map { max($0, 0) })
+        let edits = tracks.filter { $0.cycle != cycle }.map { track -> TrackEdit in
+            var copy = track
+            copy.cycle = cycle
+            return TrackEdit(copy)
+        }
+        return edits.isEmpty ? nil : .setTracks(edits)
     }
 
     /// Removes every track of the objects (clear animation).

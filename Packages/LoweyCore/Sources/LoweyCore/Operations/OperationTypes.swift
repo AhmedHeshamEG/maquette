@@ -182,7 +182,7 @@ public enum TimelineTools {
                     return moved
                 }
             }
-            tracks.append(TrackEdit(Track(id: ids.next(), target: target, property: track.property, keyframes: keys)))
+            tracks.append(TrackEdit(Track(id: ids.next(), target: target, property: track.property, keyframes: keys, cycle: track.cycle)))
         }
         var behaviors: [Behavior] = []
         for behavior in timeline.behaviors {

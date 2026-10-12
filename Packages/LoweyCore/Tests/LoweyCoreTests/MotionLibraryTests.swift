@@ -30,6 +30,26 @@ final class MotionLibraryTests: XCTestCase {
         XCTAssertEqual(try LoweyJSON.decode(Track.self, from: LoweyJSON.encode(track)), track)
     }
 
+    func testARowRepeatsTogetherAndSlidesWithItsRepeats() throws {
+        var timeline = Timeline()
+        timeline.tracks = [
+            Track(id: "a", target: "o", property: .position, keyframes: [Keyframe(time: 1, value: .vec3(.zero)), Keyframe(time: 2, value: .vec3(.unitX))]),
+            Track(id: "b", target: "o", property: .boneTurn("j1"), keyframes: [Keyframe(time: 1.5, value: .quat(.identity)),
+                                                                               Keyframe(time: 3, value: .quat(Quat(angle: 1, axis: .unitZ)))])
+        ]
+        guard case let .setTracks(edits)? = KeyOperations().repeating(["o"], repeats: 2, in: timeline) else { return XCTFail("repeats") }
+        XCTAssertEqual(edits.compactMap(\.track?.cycle), [TrackCycle(start: 1, end: 3, repeats: 2), TrackCycle(start: 1, end: 3, repeats: 2)],
+                       "every property repeats over the whole row's stretch")
+        for edit in edits {
+            if let track = edit.track, let index = timeline.tracks.firstIndex(where: { $0.id == track.id }) { timeline.tracks[index] = track }
+        }
+        XCTAssertNil(KeyOperations().repeating(["o"], repeats: 2, in: timeline), "nothing changes")
+        guard case let .setTracks(shifted)? = KeyOperations().shift(["o"], by: 2, in: timeline) else { return XCTFail("shift") }
+        XCTAssertEqual(shifted.first?.track?.cycle, TrackCycle(start: 3, end: 5, repeats: 2), "the repeats slide with it")
+        guard case let .setTracks(once)? = KeyOperations().repeating(["o"], repeats: 0, in: timeline) else { return XCTFail("once") }
+        XCTAssertTrue(once.allSatisfy { $0.track?.cycle == nil })
+    }
+
     func testAPoseSavedOnOneRigDropsOnAnotherWhereTheJointsMatch() throws {
         var scene = Scene(id: "s", name: "S")
         let source = Self.rope(["base", "mid", "tip"])
