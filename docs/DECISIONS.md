@@ -2028,3 +2028,7 @@ writer passed, and needing a computer for Unity breaks idea → done.
 selected overlays' frames and the onion skin were drawn in a view inside the top safe area while the stage they mark
 fills it, so on an iPad each was drawn about 24 points below where a touch grabs it (found by U4's timed tail test: a
 pull on the ring moved the object). Since 0.14 the overlay ignores the top safe area like the stage.
+
+**D-279 — The timed rig tests allow CI 20 s for the tail and pull slowly.** On main's first 0.14 run the tail took 16.7 s
+(11.5 s on the PR) and a fast synthetic drag sometimes missed the handle; the pull is now held a moment and drawn at
+250 points a second. The claim on the iPad stays 10 s and 30 s (device checklist).
