@@ -9,11 +9,14 @@ public enum GLTFScene {
         public var name: String
         public var mesh: MeshData
         public var material: ExportMaterial
+        /// A colour per vertex (sRGB), written as `COLOR_0` (a painted sculpt).
+        public var colors: [SIMD4<Float>]
 
-        public init(name: String, mesh: MeshData, material: ExportMaterial) {
+        public init(name: String, mesh: MeshData, material: ExportMaterial, colors: [SIMD4<Float>] = []) {
             self.name = name
             self.mesh = mesh
             self.material = material
+            self.colors = colors
         }
     }
 
@@ -125,13 +128,13 @@ struct GLTFSceneWriter {
         }
         guard !pieces.isEmpty else { return nil }
         let primitives = pieces.map { piece -> [String: Any] in
-            ["attributes": attributes(piece.mesh), "indices": indices(piece.mesh), "material": addMaterial(piece)]
+            ["attributes": attributes(piece.mesh, colors: piece.colors), "indices": indices(piece.mesh), "material": addMaterial(piece)]
         }
         meshes.append(["name": object.name, "primitives": primitives])
         return meshes.count - 1
     }
 
-    mutating func attributes(_ mesh: MeshData) -> [String: Int] {
+    mutating func attributes(_ mesh: MeshData, colors: [SIMD4<Float>] = []) -> [String: Int] {
         let bounds = mesh.bounds ?? Bounds(min: .zero, max: .zero)
         var result = ["POSITION": addAccessor(Self.floats(mesh.positions.flatMap { [$0.x, $0.y, $0.z] }), target: Self.arrayBuffer,
                                               count: mesh.positions.count, type: "VEC3",
@@ -146,6 +149,14 @@ struct GLTFSceneWriter {
         if mesh.uvs.count == mesh.positions.count {
             result["TEXCOORD_0"] = addAccessor(Self.floats(mesh.uvs.flatMap { [$0.x, $0.y] }), target: Self.arrayBuffer, count: mesh.uvs.count,
                                                type: "VEC2")
+        }
+        if colors.count == mesh.positions.count {
+            // glTF keeps colours as linear light.
+            let linear = colors.flatMap { color -> [Float] in
+                [Float(ColorSpace.linear(fromSRGB: Double(color.x))), Float(ColorSpace.linear(fromSRGB: Double(color.y))),
+                 Float(ColorSpace.linear(fromSRGB: Double(color.z))), color.w]
+            }
+            result["COLOR_0"] = addAccessor(Self.floats(linear), target: Self.arrayBuffer, count: colors.count, type: "VEC4")
         }
         return result
     }

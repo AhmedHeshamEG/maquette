@@ -158,7 +158,7 @@ public final class ModelLibrary: Sendable {
             model = try GLTFMeshReader.model(data: data, baseURL: url.deletingLastPathComponent())
             rig = try GLTFReader.rig(data: data, baseURL: url.deletingLastPathComponent())
         case .obj:
-            model = try ImportedModel(mesh: OBJParser.parse(String(contentsOf: url, encoding: .utf8)), name: url.deletingPathExtension().lastPathComponent)
+            model = try OBJParser.model(Data(contentsOf: url), name: url.deletingPathExtension().lastPathComponent)
         case .stl:
             model = try ImportedModel(mesh: STLFile.read(Data(contentsOf: url)), name: url.deletingPathExtension().lastPathComponent)
         case .threeMF:

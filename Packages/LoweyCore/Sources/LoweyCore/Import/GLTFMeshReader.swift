@@ -98,6 +98,7 @@ public enum GLTFMeshReader {
                 SIMD2<Float>(Float(uvs.values[$0]), Float(uvs.values[$0 + 1]))
             }
         }
+        let colors = try vertexColors(file, attributes: attributes, count: mesh.positions.count)
         if let indices {
             mesh.indices = try GLTFReader.accessor(file, indices).values.map { UInt32(max($0, 0)) }
         } else {
@@ -107,7 +108,7 @@ public enum GLTFMeshReader {
         mesh.indices.removeLast(mesh.indices.count % 3)
         if mesh.normals.count != mesh.positions.count { mesh.computeSmoothNormals() }
         if mesh.uvs.count != mesh.positions.count { mesh.uvs = Array(repeating: .zero, count: mesh.positions.count) }
-        var part = ImportedPart(name: name, mesh: mesh, material: material)
+        var part = ImportedPart(name: name, mesh: mesh, material: material, colors: colors)
         if skinned, let jointAccessor = attributes["JOINTS_0"] as? Int, let weightAccessor = attributes["WEIGHTS_0"] as? Int {
             let joints = try GLTFReader.accessor(file, jointAccessor)
             let weights = try GLTFReader.accessor(file, weightAccessor)
@@ -124,6 +125,19 @@ public enum GLTFMeshReader {
             }
         }
         return part
+    }
+
+    /// `COLOR_0`, turned from glTF's linear light into sRGB as people see it (empty when there's none).
+    static func vertexColors(_ file: GLTFReader.File, attributes: [String: Any], count: Int) throws -> [SIMD4<Float>] {
+        guard let accessor = attributes["COLOR_0"] as? Int else { return [] }
+        let colors = try GLTFReader.accessor(file, accessor)
+        guard colors.components == 3 || colors.components == 4, colors.count == count else { return [] }
+        return (0 ..< colors.count).map { vertex in
+            let base = vertex * colors.components
+            let alpha = colors.components == 4 ? Float(colors.values[base + 3]) : 1
+            return SIMD4<Float>(Float(ColorSpace.srgb(fromLinear: colors.values[base])), Float(ColorSpace.srgb(fromLinear: colors.values[base + 1])),
+                                Float(ColorSpace.srgb(fromLinear: colors.values[base + 2])), alpha)
+        }
     }
 
     // MARK: Materials & images

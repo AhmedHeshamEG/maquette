@@ -46,6 +46,10 @@ public struct LibraryAsset: Codable, Hashable, Sendable, Identifiable {
     public var lastUsed: Date?
     /// Kit assets: set, real size, front, surfaces (nil for imported models).
     public var kit: KitInfo?
+    /// A model lightened as it came in: the file it came from, kept beside `file` so Detail can lighten it again.
+    public var original: String?
+    /// The detail it was lightened to (1 is what this iPad keeps smooth; `SculptImport.detailRange`).
+    public var detail: Double?
 
     public init(
         id: AssetID, name: String, tags: [String] = [], format: AssetFormat, file: String,

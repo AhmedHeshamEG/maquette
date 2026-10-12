@@ -107,9 +107,19 @@ public enum AssetPaint {
         model.parts.enumerated().flatMap { index, part in Array(repeating: index, count: part.mesh.triangleCount) }
     }
 
-    /// The model's colours (material colour times its texture at the part's own uvs) on the unwrap.
+    /// Each merged vertex's own colour (white where a part has none), when any part has them.
+    static func mergedColors(_ model: ImportedModel) -> [SIMD4<Float>]? {
+        guard model.hasVertexColors else { return nil }
+        return model.parts.flatMap { part in
+            part.hasColors ? part.colors : Array(repeating: SIMD4<Float>(1, 1, 1, 1), count: part.mesh.positions.count)
+        }
+    }
+
+    /// The model's colours (material colour times its texture at the part's own uvs, times a sculpt's vertex colours)
+    /// on the unwrap.
     public static func bake(_ model: ImportedModel, merged: MeshData, unwrap: PaintUnwrap, size: Int) -> RGBAImage {
         let parts = partOfTriangle(model)
+        let vertexColors = mergedColors(model).flatMap { $0.count == merged.positions.count ? $0 : nil }
         var textures: [Int: RGBAImage] = [:]
         for (index, texture) in model.textures.enumerated() {
             if let image = decode(texture.data) { textures[index] = image }
@@ -124,6 +134,11 @@ public enum AssetPaint {
                 let uv = merged.uvs[corners.0] * weights.x + merged.uvs[corners.1] * weights.y + merged.uvs[corners.2] * weights.z
                 let texel = image.sample(u: Double(uv.x), v: Double(uv.y))
                 color = RGBA(color.r * texel.r, color.g * texel.g, color.b * texel.b, 1)
+            }
+            if let vertexColors {
+                let corners = (Int(merged.indices[triangle * 3]), Int(merged.indices[triangle * 3 + 1]), Int(merged.indices[triangle * 3 + 2]))
+                let painted = vertexColors[corners.0] * weights.x + vertexColors[corners.1] * weights.y + vertexColors[corners.2] * weights.z
+                color = RGBA(color.r * Double(painted.x), color.g * Double(painted.y), color.b * Double(painted.z), 1)
             }
             return color
         }

@@ -151,6 +151,13 @@ jobs:
           echo "Line coverage: $COVERAGE%"
           echo "### LoweyCore line coverage: ${COVERAGE}%" >> "$GITHUB_STEP_SUMMARY"
           awk -v c="$COVERAGE" 'BEGIN { exit !(c >= 80) }'
+      - name: SPIKE (U4) lighten a 1.3 million triangle sculpt in a release build
+        working-directory: Packages/LoweyCore
+        shell: bash
+        run: |
+          set -o pipefail
+          swift test -c release --filter MeshSimplifyTests 2>&1 | tee spike.txt
+          grep SPIKE spike.txt >> "$GITHUB_STEP_SUMMARY"
 
   interop:
     name: Print files (slicer check) + Blender package + painted glTF (Blender ${{ matrix.blender }})
