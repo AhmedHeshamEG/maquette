@@ -3,8 +3,9 @@ import LoweyCore
 @testable import LoweyFeatures
 import XCTest
 
-/// Cast ▸ Rig in the editor: a drawn bone rigs an object in one undo step (its weights written to the project first),
-/// joints turned in Keyframe mode are keyed like any property, and removing the rig takes its pose and keys with it.
+/// Rig in the editor (U4): pins and dots rig an object in one undo step (its weights written to the project first, a
+/// shape too coarse to bend cut finer in the same step), a changed rig keeps the pose of the joints that stay, a group
+/// rigs rigid, joints turned in Keys are keyed like any property, and removing the rig takes its pose and keys with it.
 @MainActor
 final class RigFlowTests: XCTestCase {
     private var app: AppModel?
@@ -16,107 +17,93 @@ final class RigFlowTests: XCTestCase {
         return try XCTUnwrap(app.editor)
     }
 
-    /// Waits for the background weighing to land.
-    private func waitForRig(on id: ObjectID, in editor: EditorModel, file: StaticString = #filePath, line: UInt = #line) async throws -> ObjectRig {
-        for _ in 0 ..< 200 where editor.baseScene.objects[id]?.rig == nil {
+    /// Waits until the object's rig is no longer `old` (the background weighing landed).
+    private func waitForRig(on id: ObjectID, in editor: EditorModel, changedFrom old: ObjectRig? = nil, file: StaticString = #filePath,
+                            line: UInt = #line) async throws -> ObjectRig {
+        // Bone heat on CI's simulator takes several seconds.
+        for _ in 0 ..< 900 where editor.baseScene.objects[id]?.rig == old || editor.rigging.weighing[id] != nil {
             try await Task.sleep(for: .milliseconds(50))
         }
         return try XCTUnwrap(editor.baseScene.objects[id]?.rig, "the rig arrived", file: file, line: line)
     }
 
-    /// A stroke straight down through the cube's top, left to right.
-    private func stroke(across id: ObjectID, in editor: EditorModel) -> [Ray] {
-        let centre = editor.baseScene.worldTransform(of: id).position
-        return stride(from: -0.45, through: 0.45, by: 0.05).map { Ray(origin: centre + Vec3($0, 3, 0), direction: Vec3(0, -1, 0)) }
+    /// Three dots up the middle of a unit cube (rig space): its base, its middle, its top.
+    private func dots() -> [RigMark] {
+        [RigMark(name: "j1", kind: .dot, position: Vec3(0, 0.1, 0), thickness: 1),
+         RigMark(name: "j2", kind: .dot, position: Vec3(0, 0.5, 0), parent: "j1", thickness: 1),
+         RigMark(name: "j3", kind: .dot, position: Vec3(0, 0.9, 0), parent: "j2", thickness: 1)]
     }
 
-    func testADrawnBoneRigsACubeInOneStep() async throws {
+    func testDotsRigACubeInOneStepAndCutItFiner() async throws {
         let editor = try makeEditor()
         editor.addPrimitive(.cube)
         let cube = try XCTUnwrap(editor.singleSelection)
         XCTAssertNil(editor.rigBlocker(cube))
-        editor.startRigging(cube.id)
+        editor.startMarking(cube.id)
         XCTAssertEqual(editor.tool, .rig)
-        editor.drawBone(rays: stroke(across: cube.id, in: editor))
+        XCTAssertEqual(editor.rigging.mode, .marks)
+        editor.storeMarks(dots(), on: cube, label: "Rig Cube")
         let rig = try await waitForRig(on: cube.id, in: editor)
-        XCTAssertGreaterThanOrEqual(rig.skeleton.joints.count, 3)
-        let file = try XCTUnwrap(rig.skin)
-        XCTAssertNotNil(editor.paintFiles(file), "the weights are in the project")
-        XCTAssertTrue(try editor.rigFits(XCTUnwrap(editor.baseScene.objects[cube.id])))
+        XCTAssertEqual(rig.marks.map(\.name), ["j1", "j2", "j3"], "the marks travel with the rig")
+        XCTAssertNotNil(editor.paintFiles(try XCTUnwrap(rig.skin)), "the weights are in the project")
+        let rigged = try XCTUnwrap(editor.baseScene.objects[cube.id])
+        XCTAssertNotNil(rigged[.bendDetail], "eight corners can't bend: the cube was cut finer")
+        XCTAssertTrue(editor.rigFits(rigged))
+        XCTAssertEqual(editor.shownMarks(of: rigged).count, 3)
         XCTAssertEqual(editor.castType(of: cube.id), .drawn, "a rigged object joins the cast")
         editor.undo()
         XCTAssertNil(editor.baseScene.objects[cube.id]?.rig, "one undo step")
+        XCTAssertNil(editor.baseScene.objects[cube.id]?[.bendDetail], "the cut goes with it")
     }
 
-    func testRiggingGoesBonesThenSkinThenPose() async throws {
-        let editor = try makeEditor()
-        editor.addPrimitive(.cube)
-        var cube = try XCTUnwrap(editor.singleSelection)
-        XCTAssertEqual(editor.rigStep(for: cube), .bones)
-        XCTAssertTrue(editor.rigStepIsOpen(.bones, for: cube))
-        XCTAssertFalse(editor.rigStepIsOpen(.skin, for: cube), "no bones yet")
-        XCTAssertFalse(editor.rigStepIsOpen(.pose, for: cube))
-        editor.setRigStep(.pose, on: cube.id)
-        XCTAssertEqual(editor.rigStep(for: cube), .bones, "a step that isn't open can't be entered")
-
-        editor.startRigging(cube.id)
-        editor.drawBone(rays: stroke(across: cube.id, in: editor))
-        _ = try await waitForRig(on: cube.id, in: editor)
-        cube = try XCTUnwrap(editor.baseScene.objects[cube.id])
-        XCTAssertNil(editor.rigBlocker(cube), "a rigged object goes on being rigged")
-        XCTAssertEqual(editor.rigTarget?.id, cube.id)
-        XCTAssertTrue(editor.rigStepIsOpen(.skin, for: cube), "the next step lights up")
-        XCTAssertTrue(editor.rigStepIsOpen(.pose, for: cube))
-        XCTAssertEqual(editor.rigStep(for: cube), .bones, "it stays on Bones until you move on")
-
-        editor.setRigStep(.skin, on: cube.id)
-        XCTAssertEqual(editor.rigging.mode, .weights)
-        XCTAssertEqual(editor.tool, .rig)
-        XCTAssertNotNil(editor.rigging.joint, "a bone is chosen to paint")
-
-        editor.setRigStep(.pose, on: cube.id)
-        XCTAssertEqual(editor.tool, .select, "joints are dragged with the Select tool")
-        XCTAssertEqual(editor.selection, [cube.id])
-        XCTAssertEqual(editor.rigStep(for: cube), .pose)
-
-        editor.setRigStep(.bones, on: cube.id)
-        XCTAssertEqual(editor.rigging.mode, .bone)
-    }
-
-    func testDrawingABoneAgainReplacesItAndForgetsItsPose() async throws {
+    func testAChangedRigKeepsThePoseOfTheJointsThatStay() async throws {
         let editor = try makeEditor()
         editor.addPrimitive(.cube)
         let cube = try XCTUnwrap(editor.singleSelection)
-        editor.startRigging(cube.id)
-        editor.drawBone(rays: stroke(across: cube.id, in: editor))
+        editor.storeMarks(dots(), on: cube, label: "Rig Cube")
         let first = try await waitForRig(on: cube.id, in: editor)
-        let turned = try XCTUnwrap(first.skeleton.names.last)
-        editor.setProperty(.boneTurn(turned), .quat(Quat(angle: 0.4, axis: .unitZ)))
-        XCTAssertNotNil(editor.baseScene.objects[cube.id]?[.boneTurn(turned)])
-
-        // The same stroke a little to one side: the chain is replaced, not doubled.
-        let again = stroke(across: cube.id, in: editor).map { Ray(origin: $0.origin + Vec3(0, 0, 0.04), direction: $0.direction) }
-        editor.drawBone(rays: again)
-        // Bone heat on CI's simulator takes several seconds each time.
-        for _ in 0 ..< 900 where editor.baseScene.objects[cube.id]?.rig == first {
-            try await Task.sleep(for: .milliseconds(50))
-        }
-        let second = try XCTUnwrap(editor.baseScene.objects[cube.id]?.rig)
-        XCTAssertEqual(second.skeleton.joints.count, first.skeleton.joints.count, "one chain, as before")
-        XCTAssertNotEqual(second.restPositions, first.restPositions, "where it was drawn this time")
-        XCTAssertNil(editor.baseScene.objects[cube.id]?[.boneTurn(turned)], "the old joint's turn went with it")
-        XCTAssertTrue(editor.rigging.preview.isEmpty)
+        editor.setProperty(.boneTurn("j2"), .quat(Quat(angle: 0.4, axis: .unitZ)))
+        editor.setProperty(.boneTurn("j3"), .quat(Quat(angle: 0.2, axis: .unitZ)))
+        // Move the middle dot up and take the top one away.
+        var marks = RigMarks.moving("j2", to: Vec3(0, 0.6, 0), in: first.marks)
+        marks = RigMarks.removing("j3", from: marks)
+        editor.storeMarks(marks, on: try XCTUnwrap(editor.baseScene.objects[cube.id]), label: "Change the rig")
+        let second = try await waitForRig(on: cube.id, in: editor, changedFrom: first)
+        XCTAssertEqual(second.skeleton.names, ["j1", "j2"])
+        XCTAssertNotNil(editor.baseScene.objects[cube.id]?[.boneTurn("j2")], "the moved joint keeps its turn")
+        XCTAssertNil(editor.baseScene.objects[cube.id]?[.boneTurn("j3")], "the removed joint's turn went with it")
         editor.undo()
         XCTAssertEqual(editor.baseScene.objects[cube.id]?.rig, first, "one undo step")
-        XCTAssertNotNil(editor.baseScene.objects[cube.id]?[.boneTurn(turned)])
+        XCTAssertNotNil(editor.baseScene.objects[cube.id]?[.boneTurn("j3")])
     }
 
-    func testJointsTurnedInKeyframeModeAreKeyedAndGoWithTheRig() async throws {
+    func testAGroupRigsRigidAndItsPartsRideTheirBones() throws {
+        let editor = try makeEditor()
+        editor.addPrimitive(.cube)
+        let lower = try XCTUnwrap(editor.singleSelection)
+        editor.addPrimitive(.cube)
+        let upper = try XCTUnwrap(editor.singleSelection)
+        editor.setSelection([lower.id, upper.id])
+        editor.rigTogether()
+        let group = try XCTUnwrap(editor.singleSelection)
+        XCTAssertEqual(group.kind, .group)
+        XCTAssertEqual(editor.tool, .rig)
+        let marks = [RigMark(name: RigMarks.rootName, kind: .dot, position: .zero),
+                     RigMark(name: "j2", kind: .dot, position: Vec3(0, 1, 0), parent: RigMarks.rootName)]
+        editor.storeMarks(marks, on: group, label: "Rig Group")
+        // No skin to work out: the parts are bound at once.
+        XCTAssertNotNil(editor.baseScene.objects[group.id]?.rig)
+        let bound = [lower.id, upper.id].compactMap { editor.baseScene.objects[$0]?[.attachBone]?.stringValue }
+        XCTAssertEqual(bound.count, 2, "every part rides a bone")
+        editor.removeRig(group.id)
+        XCTAssertNil(editor.baseScene.objects[lower.id]?[.attachBone], "removing the rig lets the parts go")
+    }
+
+    func testJointsTurnedInKeysAreKeyedAndGoWithTheRig() async throws {
         let editor = try makeEditor()
         editor.addPrimitive(.cube)
         let cube = try XCTUnwrap(editor.singleSelection)
-        editor.startRigging(cube.id)
-        editor.drawBone(rays: stroke(across: cube.id, in: editor))
+        editor.storeMarks(dots(), on: cube, label: "Rig Cube")
         let rig = try await waitForRig(on: cube.id, in: editor)
         editor.tool = .select
         let character = try XCTUnwrap(CharacterRig.of(cube.id, in: editor.baseScene))
@@ -124,15 +111,33 @@ final class RigFlowTests: XCTestCase {
         editor.setSelection([cube.id])
         editor.keySelection()
         editor.setTime(1)
-        _ = editor.perform(.setProperties(character.changes(turning: [rig.skeleton.joints.count - 2: Quat(angle: 0.5, axis: .unitZ)])))
-        let key = PropertyKey.boneTurn(rig.skeleton.joints[rig.skeleton.joints.count - 2].name)
+        let joint = try XCTUnwrap(rig.skeleton.index(of: "j2"))
+        _ = editor.perform(.setProperties(character.changes(turning: [joint: Quat(angle: 0.5, axis: .unitZ)])))
+        let key = PropertyKey.boneTurn("j2")
         XCTAssertNotNil(editor.timeline.track(for: cube.id, key), "a bone turn is keyed at the playhead")
         let handles = IKHandles.handles(of: cube.id, in: editor.displayed.scene)
-        XCTAssertFalse(handles.isEmpty, "its joints are handles")
+        XCTAssertEqual(Set(handles.map(\.name)), ["j2", "j3"], "the dots below the first are handles")
         editor.removeRig(cube.id)
         XCTAssertNil(editor.baseScene.objects[cube.id]?.rig)
         XCTAssertNil(editor.timeline.track(for: cube.id, key), "its keys go with it")
         XCTAssertFalse(editor.baseScene.objects[cube.id]?.properties.keys.contains { $0.boneJoint != nil } ?? true)
+    }
+
+    func testAMotionSavedToTheLibraryDropsOnAnotherThing() async throws {
+        let editor = try makeEditor()
+        editor.addPrimitive(.cube)
+        let first = try XCTUnwrap(editor.singleSelection)
+        editor.storeMarks(dots(), on: first, label: "Rig Cube")
+        _ = try await waitForRig(on: first.id, in: editor)
+        let pose = CharacterPose(id: "p", name: "Bent", joints: ["j2": Quat(angle: 0.6, axis: .unitZ), "tail": Quat(angle: 0.1, axis: .unitX)])
+        let before = editor.library.manifest.motions.count
+        editor.savePoseToLibrary(pose, of: first.id)
+        let saved = try XCTUnwrap(editor.library.manifest.motions.last)
+        XCTAssertEqual(editor.library.manifest.motions.count, before + 1)
+        editor.setSelection([first.id])
+        editor.applyMotion(saved)
+        XCTAssertNotNil(editor.baseScene.objects[first.id]?[.boneTurn("j2")], "it played where the joints match")
+        editor.library.removeMotion(saved.id)
     }
 
     func testRiggingIsRefusedWhereItCantWork() throws {
@@ -140,7 +145,7 @@ final class RigFlowTests: XCTestCase {
         editor.addPrimitive(.plane)
         let plane = try XCTUnwrap(editor.singleSelection)
         XCTAssertNotNil(editor.rigBlocker(plane))
-        editor.startRigging(plane.id)
+        editor.startMarking(plane.id)
         XCTAssertNotEqual(editor.tool, .rig)
     }
 }
