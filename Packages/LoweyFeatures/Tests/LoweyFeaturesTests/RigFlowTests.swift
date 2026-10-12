@@ -45,7 +45,7 @@ final class RigFlowTests: XCTestCase {
         editor.storeMarks(dots(), on: cube, label: "Rig Cube")
         let rig = try await waitForRig(on: cube.id, in: editor)
         XCTAssertEqual(rig.marks.map(\.name), ["j1", "j2", "j3"], "the marks travel with the rig")
-        XCTAssertNotNil(editor.paintFiles(try XCTUnwrap(rig.skin)), "the weights are in the project")
+        XCTAssertNotNil(try editor.paintFiles(XCTUnwrap(rig.skin)), "the weights are in the project")
         let rigged = try XCTUnwrap(editor.baseScene.objects[cube.id])
         XCTAssertNotNil(rigged[.bendDetail], "eight corners can't bend: the cube was cut finer")
         XCTAssertTrue(editor.rigFits(rigged))
@@ -67,7 +67,7 @@ final class RigFlowTests: XCTestCase {
         // Move the middle dot up and take the top one away.
         var marks = RigMarks.moving("j2", to: Vec3(0, 0.6, 0), in: first.marks)
         marks = RigMarks.removing("j3", from: marks)
-        editor.storeMarks(marks, on: try XCTUnwrap(editor.baseScene.objects[cube.id]), label: "Change the rig")
+        try editor.storeMarks(marks, on: XCTUnwrap(editor.baseScene.objects[cube.id]), label: "Change the rig")
         let second = try await waitForRig(on: cube.id, in: editor, changedFrom: first)
         XCTAssertEqual(second.skeleton.names, ["j1", "j2"])
         XCTAssertNotNil(editor.baseScene.objects[cube.id]?[.boneTurn("j2")], "the moved joint keeps its turn")
