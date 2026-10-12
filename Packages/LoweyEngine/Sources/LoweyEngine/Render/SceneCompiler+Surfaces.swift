@@ -18,13 +18,13 @@ extension SceneCompiler {
             compileInk(recipe, object: object, state: state, base: base, casts: object[.castsShadow]?.boolValue ?? false, input: input,
                        scene: &scene)
         case let .drawing(recipe):
-            if let mesh = mesh(.drawing(recipe), dabs: object.shadowDabs, label: object.name, make: {
+            if let mesh = mesh(.drawing(recipe), object: object, label: object.name, make: {
                 DrawingMesher.mesh(for: recipe).shaded(.smooth)
             }) {
                 addSurface(mesh, object: object, state: state, world: world, base: base, casts: casts, input: input, scene: &scene)
             }
         case let .mesh(editable):
-            if let mesh = mesh(.editable(editable), dabs: object.shadowDabs, label: object.name, make: { editable.renderMesh() }) {
+            if let mesh = mesh(.editable(editable), object: object, label: object.name, make: { editable.renderMesh() }) {
                 addSurface(mesh, object: object, state: state, world: world, base: base, casts: casts, input: input, scene: &scene)
             }
         case let .text(recipe):
@@ -56,6 +56,17 @@ extension SceneCompiler {
         }
     }
 
+    /// The object's mesh from the cache: cut finer when its rig asked for it (`MeshDensify`), with its Shadow Brush
+    /// painting baked in.
+    func mesh(_ key: MeshKey, object: SceneObject, label: String, make: () -> MeshData) -> GPUMesh? {
+        guard let cuts = object[.bendDetail]?.floatValue, cuts >= 1 else {
+            return mesh(key, dabs: object.shadowDabs, label: label, make: make)
+        }
+        return mesh(.dense(key, cuts: Int(cuts)), dabs: object.shadowDabs, label: label) {
+            MeshDensify.densified(make(), cuts: Int(cuts))
+        }
+    }
+
     /// A mesh from the cache, with the object's Shadow Brush painting baked into its vertices.
     func mesh(_ key: MeshKey, dabs: [ShadowDab] = [], label: String, make: () -> MeshData) -> GPUMesh? {
         let device = device
@@ -79,7 +90,7 @@ extension SceneCompiler {
             let key = MeshKey.bevelled(shape, size: SIMD3<Int32>(MeshKey.mm(Double(size.x)), MeshKey.mm(Double(size.y)),
                                                                  MeshKey.mm(Double(size.z))),
                                        radius: MeshKey.mm(bevel.radius), segments: bevel.segments)
-            guard let mesh = mesh(key, dabs: object.shadowDabs, label: shape.rawValue, make: {
+            guard let mesh = mesh(key, object: object, label: shape.rawValue, make: {
                 BevelMesh.make(shape, size: size, bevel: bevel) ?? PrimitiveMesh.make(shape, shading: .smooth)
             }) else { return }
             let signs = SIMD3<Float>(scale.x < 0 ? -1 : 1, scale.y < 0 ? -1 : 1, scale.z < 0 ? -1 : 1)
@@ -88,7 +99,7 @@ extension SceneCompiler {
                        scene: &scene)
             return
         }
-        guard let mesh = mesh(.primitive(shape, faceted: false), dabs: object.shadowDabs, label: shape.rawValue, make: {
+        guard let mesh = mesh(.primitive(shape, faceted: false), object: object, label: shape.rawValue, make: {
             PrimitiveMesh.make(shape, shading: .smooth)
         }) else { return }
         addSurface(mesh, object: object, state: state, world: state.world.matrix, base: base, casts: casts && shape != .plane, input: input,

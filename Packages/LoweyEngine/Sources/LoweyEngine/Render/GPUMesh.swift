@@ -81,6 +81,8 @@ indirect enum MeshKey: Hashable {
     case picture(width: Int32, height: Int32)
     case asset(AssetID, part: Int)
     case painted(MeshKey, dabs: [ShadowDab])
+    /// A shape cut finer so its rig can bend it (`MeshDensify`).
+    case dense(MeshKey, cuts: Int)
     /// A painted surface: the unwrap (file or carried key) over the mesh with this fingerprint.
     case paintSurface(String, mesh: String, dabs: [ShadowDab])
     /// A placed model's parts as one mesh (painting).

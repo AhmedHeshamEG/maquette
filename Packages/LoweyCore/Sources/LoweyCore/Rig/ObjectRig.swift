@@ -18,18 +18,25 @@ public struct ObjectRig: Codable, Hashable, Sendable {
     public var points: SkinWeights?
     /// The fingerprint of the surface the weights were made for (`PaintMesh.fingerprint`, or the drawing's points).
     public var surface: String?
+    /// The pins and dots the skeleton was built from (`RigMarks`), so it can be changed afterwards. Empty for a person
+    /// and for rigs from before 0.14 (their joints are read as dots when they're changed).
+    public var marks: [RigMark]
+    /// A person's dots (`HumanRig.Dot` raw values → the middle of the limb there), so a person rig can be changed.
+    public var person: [String: Vec3]?
 
     public init(skeleton: Skeleton, standard: SkeletonStandard = .custom, tips: [String: Vec3] = [:], skin: String? = nil,
-                points: SkinWeights? = nil, surface: String? = nil) {
+                points: SkinWeights? = nil, surface: String? = nil, marks: [RigMark] = [], person: [String: Vec3]? = nil) {
         self.skeleton = skeleton
         self.standard = standard
         self.tips = tips
         self.skin = skin
         self.points = points
         self.surface = surface
+        self.marks = marks
+        self.person = person
     }
 
-    private enum CodingKeys: String, CodingKey { case skeleton, standard, tips, skin, points, surface }
+    private enum CodingKeys: String, CodingKey { case skeleton, standard, tips, skin, points, surface, marks, person }
 
     public init(from decoder: Decoder) throws {
         let c = try decoder.container(keyedBy: CodingKeys.self)
@@ -39,15 +46,30 @@ public struct ObjectRig: Codable, Hashable, Sendable {
         skin = try c.decodeIfPresent(String.self, forKey: .skin)
         points = try c.decodeIfPresent(SkinWeights.self, forKey: .points)
         surface = try c.decodeIfPresent(String.self, forKey: .surface)
+        marks = try c.decodeIfPresent([RigMark].self, forKey: .marks) ?? []
+        person = try c.decodeIfPresent([String: Vec3].self, forKey: .person)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var c = encoder.container(keyedBy: CodingKeys.self)
+        try c.encode(skeleton, forKey: .skeleton)
+        try c.encode(standard, forKey: .standard)
+        try c.encode(tips, forKey: .tips)
+        try c.encodeIfPresent(skin, forKey: .skin)
+        try c.encodeIfPresent(points, forKey: .points)
+        try c.encodeIfPresent(surface, forKey: .surface)
+        if !marks.isEmpty { try c.encode(marks, forKey: .marks) }
+        try c.encodeIfPresent(person, forKey: .person)
     }
 
     /// A rig from joint positions in the object's space (parents first).
-    public init(names: [String], parents: [Int?], positions: [Vec3], standard: SkeletonStandard = .custom, tips: [String: Vec3] = [:]) {
+    public init(names: [String], parents: [Int?], positions: [Vec3], standard: SkeletonStandard = .custom, tips: [String: Vec3] = [:],
+                marks: [RigMark] = []) {
         let joints = names.indices.map { index in
             let offset = parents[index].map { positions[index] - positions[$0] } ?? positions[index]
             return Joint(name: names[index], parent: parents[index], rest: Transform(position: offset))
         }
-        self.init(skeleton: Skeleton(joints: joints), standard: standard, tips: tips)
+        self.init(skeleton: Skeleton(joints: joints), standard: standard, tips: tips, marks: marks)
     }
 
     /// Each joint's rest position in the object's space.
