@@ -143,17 +143,21 @@ public struct LibraryManifest: Codable, Hashable, Sendable {
     public var prefabs: [Prefab]
     public var looks: [SavedLook]
     public var scripts: [ScriptAsset]
+    /// Poses, clips and loops saved to drop on anything (`MotionItem`).
+    public var motions: [MotionItem]
     /// The Kit's assets (shipped with the app; never saved in `library.json`).
     public var kit: [LibraryAsset] = []
 
-    public init(assets: [LibraryAsset] = [], prefabs: [Prefab] = [], looks: [SavedLook] = [], scripts: [ScriptAsset] = []) {
+    public init(assets: [LibraryAsset] = [], prefabs: [Prefab] = [], looks: [SavedLook] = [], scripts: [ScriptAsset] = [],
+                motions: [MotionItem] = []) {
         self.assets = assets
         self.prefabs = prefabs
         self.looks = looks
         self.scripts = scripts
+        self.motions = motions
     }
 
-    private enum CodingKeys: String, CodingKey { case assets, prefabs, looks, scripts }
+    private enum CodingKeys: String, CodingKey { case assets, prefabs, looks, scripts, motions }
 
     public init(from decoder: Decoder) throws {
         let c = try decoder.container(keyedBy: CodingKeys.self)
@@ -161,6 +165,16 @@ public struct LibraryManifest: Codable, Hashable, Sendable {
         prefabs = try c.decodeIfPresent([Prefab].self, forKey: .prefabs) ?? []
         looks = try c.decodeIfPresent([SavedLook].self, forKey: .looks) ?? []
         scripts = try c.decodeIfPresent([ScriptAsset].self, forKey: .scripts) ?? []
+        motions = try c.decodeIfPresent([MotionItem].self, forKey: .motions) ?? []
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var c = encoder.container(keyedBy: CodingKeys.self)
+        try c.encode(assets, forKey: .assets)
+        try c.encode(prefabs, forKey: .prefabs)
+        try c.encode(looks, forKey: .looks)
+        try c.encode(scripts, forKey: .scripts)
+        if !motions.isEmpty { try c.encode(motions, forKey: .motions) }
     }
 
     public func asset(_ id: AssetID) -> LibraryAsset? {

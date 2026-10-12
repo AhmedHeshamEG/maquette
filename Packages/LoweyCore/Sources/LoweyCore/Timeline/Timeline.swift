@@ -156,12 +156,15 @@ public struct Track: Codable, Hashable, Sendable, Identifiable {
     public var property: PropertyKey
     /// Kept sorted by time.
     public private(set) var keyframes: [Keyframe]
+    /// Played again after its stretch ends (a motion's end dragged on, or set to loop); nil plays once.
+    public var cycle: TrackCycle?
 
-    public init(id: TrackID, target: ObjectID, property: PropertyKey, keyframes: [Keyframe] = []) {
+    public init(id: TrackID, target: ObjectID, property: PropertyKey, keyframes: [Keyframe] = [], cycle: TrackCycle? = nil) {
         self.id = id
         self.target = target
         self.property = property
         self.keyframes = keyframes.sorted { $0.time < $1.time }
+        self.cycle = cycle
     }
 
     /// Inserts or replaces the key at `time` (within half a millisecond).
@@ -197,8 +200,9 @@ public struct Track: Codable, Hashable, Sendable, Identifiable {
         return TimeRange(start: first.time, end: last.time)
     }
 
-    /// Value at `time`: holds before the first and after the last key.
+    /// Value at `time`: holds before the first and after the last key; a cycled track plays its stretch again.
     public func value(at time: Double, palette: Palette = .empty) -> PropertyValue? {
+        let time = cycle?.time(at: time) ?? time
         guard let first = keyframes.first, let last = keyframes.last else { return nil }
         if time <= first.time { return first.value }
         if time >= last.time { return last.value }
@@ -215,6 +219,34 @@ public struct Track: Codable, Hashable, Sendable, Identifiable {
         guard span > 0 else { return b.value }
         let progress = a.easing.apply((time - a.time) / span)
         return a.value.interpolated(to: b.value, progress, palette: palette)
+    }
+}
+
+/// A motion played again after it ends: the stretch from `start` to `end` (the whole row's animation, so every
+/// property of a thing repeats together) comes back `repeats` more times, or forever when that's nil.
+public struct TrackCycle: Codable, Hashable, Sendable {
+    public var start: Double
+    public var end: Double
+    /// Plays after the first; nil loops forever.
+    public var repeats: Int?
+
+    public init(start: Double, end: Double, repeats: Int? = nil) {
+        self.start = start
+        self.end = end
+        self.repeats = repeats
+    }
+
+    public var span: Double { end - start }
+
+    /// When the last repeat ends (nil: never).
+    public var finish: Double? { repeats.map { end + span * Double(max($0, 0)) } }
+
+    /// The moment of the first play that `time` shows.
+    public func time(at time: Double) -> Double {
+        guard span > 1e-9, time > end else { return time }
+        if let finish, time >= finish { return end }
+        let into = (time - start).truncatingRemainder(dividingBy: span)
+        return start + into
     }
 }
 
