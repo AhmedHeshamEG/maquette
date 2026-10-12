@@ -23,13 +23,16 @@ public enum GLTFScene {
     /// A GLB of the objects (and everything under them; the whole scene when nil). `parts` supplies the shapes Core
     /// can't make itself (library models, prefabs), in the object's own space.
     /// `painted` gives a painted object's paint mesh and texture.
-    /// `posed` gives a rigged object's surface as its skeleton bends it.
+    /// `posed` gives a rigged object's surface as its skeleton bends it; `skinned` gives it as a skin with its bones
+    /// instead (game engines play those), and wins when both answer.
     public static func glb(_ ids: [ObjectID]?, in scene: Scene, look: Look, parts: @escaping (SceneObject) -> [LocalPart] = { _ in [] },
                            painted: @escaping (SceneObject) -> PaintedExport? = { _ in nil },
-                           posed: @escaping (SceneObject) -> [LocalPart]? = { _ in nil }, generator: String = "Maquette") -> Data {
+                           posed: @escaping (SceneObject) -> [LocalPart]? = { _ in nil },
+                           skinned: @escaping (SceneObject) -> SkinnedExport? = { _ in nil }, generator: String = "Maquette") -> Data {
         var writer = GLTFSceneWriter(scene: scene, look: look, parts: parts)
         writer.painted = painted
         writer.posed = posed
+        writer.skinned = skinned
         for root in ids ?? scene.roots {
             if let node = writer.addNode(root, isRoot: true) { writer.roots.append(node) }
         }
@@ -47,6 +50,10 @@ struct GLTFSceneWriter {
     let parts: (SceneObject) -> [GLTFScene.LocalPart]
     var painted: (SceneObject) -> PaintedExport? = { _ in nil }
     var posed: (SceneObject) -> [GLTFScene.LocalPart]? = { _ in nil }
+    var skinned: (SceneObject) -> GLTFScene.SkinnedExport? = { _ in nil }
+    var skins: [[String: Any]] = []
+    /// Each skinned object's joint nodes by joint name (where its `bone.` keys go).
+    var jointNodes: [ObjectID: [String: Int]] = [:]
     var binary = Data()
     var bufferViews: [[String: Any]] = []
     var accessors: [[String: Any]] = []
@@ -85,7 +92,8 @@ struct GLTFSceneWriter {
             "scale": [transform.scale.x, transform.scale.y, transform.scale.z]
         ]
         var extras: [String: Any] = ["id": id.raw, "kind": object.kind.typeName]
-        if let mesh = addMesh(for: object) { node["mesh"] = mesh }
+        let skin = skinned(object)
+        if skin == nil, let mesh = addMesh(for: object) { node["mesh"] = mesh }
         switch object.kind {
         case .camera:
             node["camera"] = addCamera(object)
@@ -101,7 +109,8 @@ struct GLTFSceneWriter {
         let index = nodes.count
         nodes.append(node)
         nodeOf[id] = index
-        let children = object.children.compactMap { addNode($0, isRoot: false) }
+        let rig = skin.flatMap { addSkin($0, name: object.name.isEmpty ? object.kind.typeName : object.name, id: id) }
+        let children = (rig.map { [$0] } ?? []) + object.children.compactMap { addNode($0, isRoot: false) }
         if !children.isEmpty { nodes[index]["children"] = children }
         return index
     }
@@ -237,13 +246,16 @@ struct GLTFSceneWriter {
         var channels: [[String: Any]] = []
         let fps = Double(max(scene.timeline.fps, 1))
         for track in scene.timeline.tracks {
-            guard let node = nodeOf[track.target], let path = Self.path(track.property), track.keyframes.count >= 1 else { continue }
+            // A joint's turn goes to its joint node; anything else the object's own node knows how to play.
+            let joint = jointNode(for: track)
+            guard let node = joint ?? nodeOf[track.target], let path = joint == nil ? Self.path(track.property) : "rotation",
+                  track.keyframes.count >= 1 else { continue }
             let (times, interpolation) = Self.times(track, fps: fps)
             var values: [Float] = []
             var previous: Quat?
             for time in times {
                 guard let value = track.value(at: time, palette: look.palette) else { continue }
-                values += componentValues(value, path: path, root: rootFrames[track.target], previous: &previous)
+                values += componentValues(value, path: path, root: joint == nil ? rootFrames[track.target] : nil, previous: &previous)
             }
             let width = path == "rotation" ? 4 : 3
             guard values.count == times.count * width else { continue }
@@ -272,6 +284,11 @@ struct GLTFSceneWriter {
     /// plus the keys themselves.
     static func times(_ track: Track, fps: Double) -> ([Double], String) {
         let keys = track.keyframes
+        // Repeats played out frame by frame (a loop that runs forever is its one stretch: players loop it).
+        if let finish = track.cycle?.finish, let first = keys.first?.time, finish > (keys.last?.time ?? 0) {
+            let frames = Int(((finish - first) * fps).rounded(.up))
+            return ((0 ... frames).map { min(first + Double($0) / fps, finish) }, "LINEAR")
+        }
         let segments = keys.dropLast()
         if segments.allSatisfy({ $0.easing == .linear }) { return (keys.map(\.time), "LINEAR") }
         if segments.allSatisfy({ $0.easing == .step }) { return (keys.map(\.time), "STEP") }
@@ -350,6 +367,7 @@ struct GLTFSceneWriter {
         }
         if !cameras.isEmpty { json["cameras"] = cameras }
         if !animations.isEmpty { json["animations"] = animations }
+        if !skins.isEmpty { json["skins"] = skins }
         if !lights.isEmpty {
             json["extensions"] = ["KHR_lights_punctual": ["lights": lights]]
             json["extensionsUsed"] = ["KHR_lights_punctual"]

@@ -41,48 +41,46 @@ public enum MeshSimplify {
 
     // MARK: The collapse
 
-    /// A symmetric 4×4 matrix kept as its ten distinct entries.
+    /// A symmetric 4×4 matrix kept as its ten distinct entries: `a` the first eight, `b` the last two.
     struct Quadric {
-        var m: (Double, Double, Double, Double, Double, Double, Double, Double, Double, Double) = (0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+        var a = SIMD8<Double>(repeating: 0)
+        var b = SIMD2<Double>(repeating: 0)
 
         init() {}
 
-        /// The plane ax + by + cz + d = 0.
-        init(plane a: Double, _ b: Double, _ c: Double, _ d: Double) {
-            m = (a * a, a * b, a * c, a * d, b * b, b * c, b * d, c * c, c * d, d * d)
+        /// The plane px + qy + rz + s = 0.
+        init(plane p: Double, _ q: Double, _ r: Double, _ s: Double) {
+            a = SIMD8(p * p, p * q, p * r, p * s, q * q, q * r, q * s, r * r)
+            b = SIMD2(r * s, s * s)
         }
 
         static func + (l: Quadric, r: Quadric) -> Quadric {
             var q = Quadric()
-            q.m = (l.m.0 + r.m.0, l.m.1 + r.m.1, l.m.2 + r.m.2, l.m.3 + r.m.3, l.m.4 + r.m.4, l.m.5 + r.m.5, l.m.6 + r.m.6, l.m.7 + r.m.7,
-                   l.m.8 + r.m.8, l.m.9 + r.m.9)
+            q.a = l.a + r.a
+            q.b = l.b + r.b
             return q
         }
 
-        subscript(index: Int) -> Double {
-            switch index {
-            case 0: m.0
-            case 1: m.1
-            case 2: m.2
-            case 3: m.3
-            case 4: m.4
-            case 5: m.5
-            case 6: m.6
-            case 7: m.7
-            case 8: m.8
-            default: m.9
-            }
+        static func += (l: inout Quadric, r: Quadric) {
+            l.a += r.a
+            l.b += r.b
         }
 
-        func det(_ a11: Int, _ a12: Int, _ a13: Int, _ a21: Int, _ a22: Int, _ a23: Int, _ a31: Int, _ a32: Int, _ a33: Int) -> Double {
-            self[a11] * self[a22] * self[a33] + self[a13] * self[a21] * self[a32] + self[a12] * self[a23] * self[a31]
-                - self[a13] * self[a22] * self[a31] - self[a11] * self[a23] * self[a32] - self[a12] * self[a21] * self[a33]
+        /// The point where the error is least (Cramer's rule on the 3×3 part), nil when that part can't be solved.
+        var best: SIMD3<Double>? {
+            let m0 = a[0], m1 = a[1], m2 = a[2], m3 = a[3], m4 = a[4], m5 = a[5], m6 = a[6], m7 = a[7], m8 = b[0]
+            let det = m0 * m4 * m7 + m2 * m1 * m5 + m1 * m5 * m2 - m2 * m4 * m2 - m0 * m5 * m5 - m1 * m1 * m7
+            guard det != 0 else { return nil }
+            let x = m1 * m5 * m8 + m3 * m4 * m7 + m2 * m6 * m5 - m3 * m5 * m5 - m1 * m6 * m7 - m2 * m4 * m8
+            let y = m0 * m5 * m8 + m3 * m1 * m7 + m2 * m6 * m2 - m3 * m5 * m2 - m0 * m6 * m7 - m2 * m1 * m8
+            let z = m0 * m4 * m8 + m3 * m1 * m5 + m1 * m6 * m2 - m3 * m4 * m2 - m0 * m6 * m5 - m1 * m1 * m8
+            return SIMD3(-x / det, y / det, -z / det)
         }
 
         func error(_ p: SIMD3<Double>) -> Double {
             let x = p.x, y = p.y, z = p.z
-            return m.0 * x * x + 2 * m.1 * x * y + 2 * m.2 * x * z + 2 * m.3 * x + m.4 * y * y + 2 * m.5 * y * z + 2 * m.6 * y + m.7 * z * z
-                + 2 * m.8 * z + m.9
+            return a[0] * x * x + 2 * a[1] * x * y + 2 * a[2] * x * z + 2 * a[3] * x + a[4] * y * y + 2 * a[5] * y * z + 2 * a[6] * y
+                + a[7] * z * z + 2 * b[0] * z + b[1]
         }
     }
 
@@ -179,7 +177,7 @@ public enum MeshSimplify {
             gone1 = Array(repeating: false, count: vertices[i1].tcount)
             if flipped(p, i0, i1, &gone0) || flipped(p, i1, i0, &gone1) { return false }
             vertices[i0].p = p
-            vertices[i0].q = vertices[i1].q + vertices[i0].q
+            vertices[i0].q += vertices[i1].q
             let tstart = refs.count
             update(i0, from: i0, gone: gone0, deleted: &deleted)
             update(i0, from: i1, gone: gone1, deleted: &deleted)
@@ -245,12 +243,7 @@ public enum MeshSimplify {
         func error(_ a: Int, _ b: Int) -> (error: Double, point: SIMD3<Double>) {
             let q = vertices[a].q + vertices[b].q
             let border = vertices[a].border && vertices[b].border
-            let det = q.det(0, 1, 2, 1, 4, 5, 2, 5, 7)
-            if det != 0, !border {
-                let p = SIMD3<Double>(-1 / det * q.det(1, 2, 3, 4, 5, 6, 5, 7, 8), 1 / det * q.det(0, 2, 3, 1, 5, 6, 2, 7, 8),
-                                      -1 / det * q.det(0, 1, 3, 1, 4, 6, 2, 5, 8))
-                return (q.error(p), p)
-            }
+            if !border, let p = q.best { return (q.error(p), p) }
             let p1 = vertices[a].p, p2 = vertices[b].p, p3 = (p1 + p2) / 2
             let candidates = [(q.error(p1), p1), (q.error(p2), p2), (q.error(p3), p3)]
             return candidates.min { $0.0 < $1.0 } ?? (q.error(p3), p3)
@@ -295,7 +288,7 @@ public enum MeshSimplify {
                 triangles[t].n = n.x.isFinite ? n : SIMD3<Double>(0, 1, 0)
                 let plane = Quadric(plane: n.x, n.y, n.z, -dot(n, p0))
                 for v in [triangle.v.0, triangle.v.1, triangle.v.2] {
-                    vertices[v].q = vertices[v].q + plane
+                    vertices[v].q += plane
                 }
             }
             for t in triangles.indices {

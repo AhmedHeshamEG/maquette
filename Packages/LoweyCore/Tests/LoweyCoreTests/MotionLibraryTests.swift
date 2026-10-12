@@ -96,7 +96,8 @@ final class MotionLibraryTests: XCTestCase {
             let frame = Animator.evaluate(document, at: 1)
             let rig = try XCTUnwrap(frame.scene.objects[object.id]?.rig)
             let pose = try XCTUnwrap(frame.poses[object.id])
-            return rig.skeleton.modelSpace(pose)[try XCTUnwrap(rig.skeleton.index(of: "tip"))].position
+            let index = try XCTUnwrap(rig.skeleton.index(of: "tip"))
+            return rig.skeleton.modelSpace(pose)[index].position
         }
         XCTAssertEqual(try tip(document).y, 1, accuracy: 1e-6, "the tip swung up")
         // Move the middle dot and add one past the tip: the turn on "mid" still plays.

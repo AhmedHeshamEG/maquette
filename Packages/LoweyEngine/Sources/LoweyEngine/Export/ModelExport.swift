@@ -92,6 +92,30 @@ public enum ModelExport {
         return [GLTFScene.LocalPart(name: object.name, mesh: mesh, material: SceneExport.material(of: object, look: look))]
     }
 
+    /// A rigged solid as a skin for glTF (game engines play its bones): its surface at rest with its weights, a placed
+    /// model's parts each with their slice. Nil for drawings and painted objects, which leave posed.
+    public static func skinned(_ object: SceneObject, look: Look, catalog: AssetCatalog, models: ModelLibrary = .shared,
+                               file: (String) -> Data?) -> GLTFScene.SkinnedExport? {
+        guard let rig = object.rig, object.paint == nil, let name = rig.skin,
+              let weights = file(name).flatMap({ try? SkinWeights(data: $0) }) else { return nil }
+        let pose = RigPoses.posed(rig.skeleton.restPose, skeleton: rig.skeleton, by: object)
+        if object.kind.assetID != nil {
+            let pieces = localParts(object, look: look, catalog: catalog, models: models)
+            guard pieces.reduce(0, { $0 + $1.mesh.positions.count }) == weights.count else { return nil }
+            var start = 0
+            let slices = pieces.map { piece in
+                let range = start ..< start + piece.mesh.positions.count
+                start = range.upperBound
+                return SkinWeights(joints: Array(weights.joints[range]), weights: Array(weights.weights[range]))
+            }
+            return GLTFScene.SkinnedExport(rig: rig, parts: pieces, weights: slices, pose: pose)
+        }
+        guard let source = PaintSource.mesh(of: object), source.positions.count == weights.count else { return nil }
+        let factor = PaintSource.toObjectSpace(of: object).map { Vec3(Double($0.x), Double($0.y), Double($0.z)) } ?? .one
+        let part = GLTFScene.LocalPart(name: object.name, mesh: source, material: SceneExport.material(of: object, look: look))
+        return GLTFScene.SkinnedExport(rig: rig, parts: [part], weights: [weights], toObject: factor, pose: pose)
+    }
+
     /// A painted object's paint mesh and texture (its shape from Core, or a placed model's parts as one).
     /// A rigged object's paint lies on its surface as `pose` bends it (see `posedParts`).
     public static func painted(_ object: SceneObject, look: Look, catalog: AssetCatalog, models: ModelLibrary = .shared,
@@ -154,9 +178,12 @@ public enum ModelExport {
         let posed: (SceneObject) -> [GLTFScene.LocalPart]? = {
             posedParts($0, pose: poses[$0.id], look: look, catalog: catalog, models: models, file: paintFile)
         }
+        let skinnedOf: (SceneObject) -> GLTFScene.SkinnedExport? = {
+            skinned($0, look: look, catalog: catalog, models: models, file: paintFile)
+        }
         switch format {
         case .glb:
-            return [("\(name).glb", GLTFScene.glb(ids, in: scene, look: look, parts: parts, painted: paintOf, posed: posed))]
+            return [("\(name).glb", GLTFScene.glb(ids, in: scene, look: look, parts: parts, painted: paintOf, posed: posed, skinned: skinnedOf))]
         case .blender:
             let selected = ids.map { scene.restricted(to: $0) } ?? scene
             return [("\(name) for Blender.zip", BlenderPackage.archive(selected, look: look, preset: preset, parts: parts, painted: paintOf,
