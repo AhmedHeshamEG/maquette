@@ -4,6 +4,11 @@ import Foundation
 /// meshes come from the renderer's loaded copy, so they aren't here).
 public enum PaintSource {
     public static func mesh(of object: SceneObject) -> MeshData? {
+        base(of: object).map { MeshDensify.apply($0, for: object) }
+    }
+
+    /// The mesh before rigging cuts it finer (`MeshDensify`).
+    static func base(of object: SceneObject) -> MeshData? {
         switch object.kind {
         case let .primitive(shape):
             if let bevel = BevelSpec(object), BevelSpec.applies(to: shape) {

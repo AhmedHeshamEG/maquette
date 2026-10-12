@@ -3,6 +3,25 @@
 What's known and not done yet, so nothing lives only in someone's head. What Maquette is: [SPEC.md](SPEC.md). The
 phase plan (the pass U1 … U5, M12, M14, M16, then 1.0) lives in studio-h's `PHASES.md`; ideas go to its `IDEAS.md`.
 
+## Left from U4 (Maquette 0.14)
+
+- [ ] The device checklist in the "Maquette 0.14 — U4" PR (pins and dots with the Pencil, each body shortcut on real
+      models, changing a rig after animating, rigid parts, motion saved and dropped, repeats, a real Nomad sculpt, a 1.5
+      million triangle sculpt on a Tier B iPad, the FBX in Unity).
+- [ ] Hesham's own painted Nomad export joins the test resources as the fixture, with his name as the author (D-275).
+- [ ] Unity has no licence-free headless run: the rigged glTF (with glTFast) and the FBX are checked on a computer (D-276).
+- [ ] Painted and drawn rigs still leave glTF posed, not as skins; FBX carries one rigged thing per file and no paint
+      texture (D-276, D-277).
+- [ ] Clip-track clips (a walk on a person) aren't baked into glTF or FBX skins: only `bone.` keys are (D-276).
+- [ ] A person rig's dots move but can't be added to (a tail on a person is a separate chain on another object for now).
+- [ ] Placed models aren't cut finer for rigging; a very low-poly model bends at its own corners (D-262).
+- [ ] Motion drops with a tap on the selection; dragging a motion tile onto a thing isn't offered (D-268).
+- [ ] A forever loop exports as one stretch (engines loop it); repeats are played out frame by frame (D-269).
+- [ ] An old lighter copy is left in the asset's folder when Detail goes back to the original.
+- [x] Who does what gains placing pins and dots (D-252, D-267). Done in 0.14.
+- [x] The Library's Motion and Rigs pages (D-227). Done in 0.14.
+- [x] The rig steps' dimmed chips (D-238): the steps are gone (D-266).
+
 ## Left from U3 (Maquette 0.13)
 
 - [ ] The device checklist in the "Maquette 0.13 — U3" PR (every gesture with misfires counted over a session, the

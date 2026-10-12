@@ -82,7 +82,8 @@ final class EditorModel {
     var rigging = RigSettings() {
         didSet {
             guard rigging.joint != oldValue.joint || rigging.mode != oldValue.mode || rigging.target != oldValue.target
-                || rigging.preview != oldValue.preview || (rigging.person == nil) != (oldValue.person == nil) else { return }
+                || rigging.preview != oldValue.preview || (rigging.person == nil) != (oldValue.person == nil)
+                || rigging.dragging != oldValue.dragging || rigging.weighing != oldValue.weighing else { return }
             refreshModelOverlay()
             stage?.redraw()
         }
@@ -254,6 +255,8 @@ final class EditorModel {
     var isSaving = false
     /// Where the selection sits on the stage (view points), for the floating inspector; settles after the camera does.
     var selectionScreenRect: CGRect?
+    /// A model that just came in, offered "Rig it" once beside it (gone when anything else is chosen).
+    var rigItOffer: ObjectID?
 
     // MARK: Not observed
 

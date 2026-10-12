@@ -2,54 +2,71 @@ import HmmDesign
 import LoweyCore
 import SwiftUI
 
-/// Rig: give anything a skeleton, in three steps in order. **Bones**: draw a bone through a limb, tail or rope
-/// (or rig a human-like model as a person). **Skin**: the weights are worked out by themselves; paint them only if you
-/// want to. **Pose**: drag the joints. Each step shows only its own tools, and the next one lights up when this one is
-/// done.
+/// Rig: give anything a skeleton, fast, and change it afterwards (CONTEXT §10.10, ToonSquid the bar). With nothing on
+/// it yet: the four body shortcuts, or pins and dots by hand. Rigged: change the rig (it relaxes to its rest shape
+/// and shows its marks), put the pose back, and one step deeper, how it bends.
 struct RigSection: View {
     @Bindable var editor: EditorModel
 
     var body: some View {
-        if let object = editor.singleSelection, editor.castType(of: object.id) == nil || object.rig != nil {
+        if editor.selection.count > 1 {
+            PanelSection("Rig") {
+                HmmPillButton("Rig these together", systemName: "square.on.square", prominent: true) { editor.rigTogether() }
+                    .accessibilityIdentifier("rig-together")
+                Hint("They become one thing: each part rides the bone nearest it, and a dot between two parts hinges them.")
+            }
+        } else if let object = editor.rigSubject, editor.castType(of: object.id) == nil || object.rig != nil {
             PanelSection("Rig") {
                 if let blocker = editor.rigBlocker(object) {
                     Hint(blocker)
+                } else if object.rig == nil, editor.rigging.weighing[object.id] == nil {
+                    start(object)
                 } else {
-                    // While the weights are worked out the step stays as it is; Skin and Pose light up when they land.
-                    RigStepRow(editor: editor, object: object)
-                    switch editor.rigStep(for: object) {
-                    case .bones: bones(object)
-                    case .skin: skin(object)
-                    case .pose: pose(object)
-                    }
+                    rigged(object)
                 }
             }
         }
     }
 
-    @ViewBuilder private func bones(_ object: SceneObject) -> some View {
-        HStack(spacing: HmmSpacing.xs) {
-            HmmPillButton("Draw a bone", systemName: RigSettings.Mode.bone.systemImage, prominent: object.rig == nil) {
-                editor.startRigging(object.id)
-            }
-            .accessibilityIdentifier("rig-draw-bone")
-            if case .drawing = object.kind {} else {
-                HmmPillButton("Rig as a person", systemName: "figure.stand") { editor.startPersonRig(object.id) }
-                    .accessibilityIdentifier("rig-person")
+    @ViewBuilder private func start(_ object: SceneObject) -> some View {
+        TileGrid {
+            ForEach(shortcuts(for: object)) { body in
+                TileButton(title: body.title, systemName: body.systemImage, identifier: "rig-body-\(body.rawValue)") {
+                    editor.startBody(body, on: object.id)
+                }
             }
         }
-        if let rig = object.rig {
-            Hint("\(rig.skeleton.joints.count) joints. Draw another bone to add one; draw along a bone again to replace it.")
-            HmmPillButton("Remove the rig", systemName: "trash", role: .destructive) { editor.removeRig(object.id) }
-                .accessibilityIdentifier("rig-remove")
-        } else {
-            Hint("Draw through a limb, tail or rope: it bends where the stroke bends. A human-like model can be rigged as a person.")
-        }
+        HmmPillButton("Pins and dots", systemName: RigSettings.Mode.marks.systemImage) { editor.startMarking(object.id) }
+            .accessibilityIdentifier("rig-marks")
+        Hint("Tap a dot on each joint (a shoulder, an elbow, a wrist), or pins where a soft thing holds and bends. Drag them to pose it.")
     }
 
-    @ViewBuilder private func skin(_ object: SceneObject) -> some View {
+    /// A drawing lies on a plane: a person, four legs or wings can't be read from it; a chain and marks can.
+    private func shortcuts(for object: SceneObject) -> [BodyShortcut] {
+        if case .drawing = object.kind { return [.chain] }
+        return BodyShortcut.allCases
+    }
+
+    @ViewBuilder private func rigged(_ object: SceneObject) -> some View {
+        HmmPillButton("Change the rig", systemName: "slider.horizontal.3", prominent: true) { editor.startMarking(object.id) }
+            .accessibilityIdentifier("rig-change")
+        Hint(object.kind == .group ? "Each part rides the bone nearest it. Drag a hand or a foot on the stage to pose it."
+            : "Drag its joints on the stage to pose it. Change the rig any time: the pose and the keys stay.")
+        HmmPillButton("Reset the pose", systemName: "arrow.uturn.backward") { editor.resetPose(object.id) }
+            .accessibilityIdentifier("rig-reset-pose")
+        if object.kind != .group {
+            DisclosureRow("How it bends", systemName: "point.3.connected.trianglepath.dotted", identifier: "rig-bending") { bending(object) }
+        }
+        if Held.isOn(.livePerformance) { DangleControl(editor: editor, character: object.id) }
+        HmmPillButton("Remove the rig", systemName: "trash", role: .destructive) { editor.removeRig(object.id) }
+            .accessibilityIdentifier("rig-remove")
+    }
+
+    @ViewBuilder private func bending(_ object: SceneObject) -> some View {
         if editor.rigFits(object) {
             Hint("The skin follows the bones by itself. Paint a bone's weight only where a bend looks wrong.")
+            HmmPillButton("Paint weights", systemName: RigSettings.Mode.weights.systemImage) { editor.startPaintingWeights(object.id) }
+                .accessibilityIdentifier("rig-weights")
         } else {
             Hint("The shape changed since it was rigged.")
             HmmPillButton("Fit the weights to the new shape", systemName: "arrow.triangle.2.circlepath", prominent: true) {
@@ -57,63 +74,38 @@ struct RigSection: View {
             }
             .accessibilityIdentifier("rig-refit")
         }
-        HmmPillButton("Paint weights", systemName: RigSettings.Mode.weights.systemImage) { editor.startPaintingWeights(object.id) }
-            .accessibilityIdentifier("rig-weights")
-    }
-
-    @ViewBuilder private func pose(_ object: SceneObject) -> some View {
-        Hint("Drag its joints on the stage. In Keyframe, keys land at the playhead. Saved poses are below.")
-        HmmPillButton("Reset the pose", systemName: "arrow.uturn.backward") { editor.resetPose(object.id) }
-            .accessibilityIdentifier("rig-reset-pose")
-        if Held.isOn(.livePerformance) { DangleControl(editor: editor, character: object.id) }
     }
 }
 
-/// Bones → Skin → Pose. The step you're on is marked; a step that can't be entered yet is dimmed.
-struct RigStepRow: View {
-    let editor: EditorModel
-    let object: SceneObject
-
-    var body: some View {
-        let current = editor.rigStep(for: object)
-        HStack(spacing: HmmSpacing.xs) {
-            ForEach(RigSettings.Step.allCases) { step in
-                ChoiceChip(title: step.title, systemName: step.systemImage, isOn: step == current) { editor.setRigStep(step, on: object.id) }
-                    .disabled(!editor.rigStepIsOpen(step, for: object))
-                    .accessibilityIdentifier("rig-step-\(step.rawValue)")
-            }
-        }
-    }
-}
-
-/// Under the stage while Rig is on: the three steps, the bone whose weight is painted (Skin), and the person
-/// rig's Rig button.
+/// Under the stage while Rig is on: pins or dots for the Pencil, a person's Rig button, the weight brush's bone, Done.
 struct RigOptionsBar: View {
     @Bindable var editor: EditorModel
     @Environment(\.hmmTheme) private var theme
 
     var body: some View {
         HStack(spacing: HmmSpacing.xs) {
-            if let person = editor.rigging.person {
-                if let next = person.next {
-                    Text("Tap \(String(localized: String.LocalizationValue(next.title)))").font(.hmm(.body, weight: .semibold))
-                } else {
-                    Text("Drag any dot, then Rig").font(.hmm(.body, weight: .semibold))
-                }
-                HmmPillButton("Rig", systemName: "checkmark", prominent: person.next == nil) { editor.finishPersonRig() }
-                    .shown(person.next == nil)
+            if editor.rigging.person != nil {
+                Text("Drag a dot that's wrong, then Rig").font(.hmm(.body, weight: .semibold))
+                HmmPillButton("Rig", systemName: "checkmark", prominent: true) { editor.finishPersonRig() }
                     .accessibilityIdentifier("rig-person-done")
                 HmmButton("xmark", label: "Cancel", size: 36) {
                     editor.cancelPersonRig()
                     editor.tool = .select
                 }
-            } else {
-                if let object = editor.rigTarget { RigStepRow(editor: editor, object: object) }
-                if editor.rigging.mode == .weights, let rig = editor.rigTarget?.rig {
-                    jointMenu(rig)
-                    ChoiceChip(title: "Erase", systemName: "eraser", isOn: editor.rigging.erase) { editor.rigging.erase.toggle() }
+            } else if editor.rigging.mode == .weights, let rig = editor.rigTarget?.rig {
+                jointMenu(rig)
+                ChoiceChip(title: "Erase", systemName: "eraser", isOn: editor.rigging.erase) { editor.rigging.erase.toggle() }
+                HmmButton("checkmark", label: "Done", size: 36) {
+                    if let id = editor.rigTarget?.id { editor.startMarking(id) }
                 }
-                HmmButton("xmark", label: "Done rigging", size: 36) { editor.tool = .select }
+            } else {
+                ForEach(RigMark.Kind.allCases, id: \.self) { kind in
+                    ChoiceChip(title: kind == .dot ? "Dots" : "Pins", systemName: kind == .dot ? "smallcircle.filled.circle" : "pin.fill",
+                               isOn: editor.rigging.markKind == kind) { editor.rigging.markKind = kind }
+                        .accessibilityIdentifier("rig-kind-\(kind.rawValue)")
+                }
+                HmmButton("checkmark", label: "Done rigging", size: 36) { editor.tool = .select }
+                    .accessibilityIdentifier("rig-done")
             }
         }
         .padding(HmmSpacing.xs)
@@ -122,7 +114,7 @@ struct RigOptionsBar: View {
 
     private func jointMenu(_ rig: ObjectRig) -> some View {
         Menu {
-            ForEach(rig.skeleton.joints.indices, id: \.self) { index in
+            ForEach(rig.skeleton.joints.indices.filter { !RigMarks.isBetween(rig.skeleton.joints[$0].name) }, id: \.self) { index in
                 Button(rig.skeleton.joints[index].name) { editor.rigging.joint = index }
             }
         } label: {
@@ -140,7 +132,7 @@ struct RigOptionsBar: View {
     }
 }
 
-/// The person rig's dots over the stage: drag any of them; the next one to tap glows.
+/// The person rig's dots over the stage: drag any of them.
 struct PersonDotMarks: View {
     let editor: EditorModel
     @Environment(\.hmmTheme) private var theme
@@ -148,13 +140,11 @@ struct PersonDotMarks: View {
     var body: some View {
         let revision = editor.displayRevision + Int(editor.viewYaw)
         let dots = revision >= 0 ? editor.personDotsOnScreen() : []
-        let next = editor.rigging.person?.next
-        let placed = editor.rigging.person?.placed ?? []
         ZStack {
             ForEach(dots, id: \.dot) { item in
                 Circle()
-                    .fill(placed.contains(item.dot) || next == nil ? theme.accent : theme.surface2.opacity(0.7))
-                    .overlay(Circle().stroke(item.dot == next ? theme.accent : Color.white.opacity(0.8), lineWidth: item.dot == next ? 3 : 1.5))
+                    .fill(theme.accent)
+                    .overlay(Circle().stroke(Color.white.opacity(0.85), lineWidth: 1.5))
                     .frame(width: 22, height: 22)
                     .contentShape(Circle().inset(by: -10))
                     .position(item.point)
@@ -164,5 +154,55 @@ struct PersonDotMarks: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .coordinateSpace(.named("person-dots"))
+    }
+}
+
+/// Pins and dots over the stage, where they can be touched: drag one to move it, hold one to take it away, tap one so
+/// the next hangs from it (it glows). A dot is a joint; a pin, a soft bend.
+struct RigMarksOverlay: View {
+    let editor: EditorModel
+    @Environment(\.hmmTheme) private var theme
+
+    var body: some View {
+        let revision = editor.displayRevision + Int(editor.viewYaw)
+        let marks = revision >= 0 ? editor.marksOnScreen() : []
+        ZStack {
+            ForEach(marks, id: \.mark.name) { item in
+                mark(item.mark)
+                    .position(item.point)
+                    .gesture(DragGesture(minimumDistance: 4, coordinateSpace: .named("rig-marks"))
+                        .onChanged { editor.dragMark(item.mark.name, to: $0.location, ended: false) }
+                        .onEnded { editor.dragMark(item.mark.name, to: $0.location, ended: true) })
+                    .simultaneousGesture(LongPressGesture(minimumDuration: 0.5).onEnded { _ in editor.removeMark(item.mark.name) })
+                    .onTapGesture(count: 2) { editor.toggleMarkKind(item.mark.name) }
+                    .onTapGesture {
+                        editor.rigging.current = item.mark.name
+                        HmmHaptics.play(.selection)
+                    }
+                    .accessibilityLabel(item.mark.kind == .dot ? "Dot" : "Pin")
+                    .accessibilityHint("Drag to move it; touch and hold to take it away")
+                    .accessibilityIdentifier("rig-mark-\(item.mark.name)")
+            }
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .coordinateSpace(.named("rig-marks"))
+    }
+
+    @ViewBuilder private func mark(_ mark: RigMark) -> some View {
+        let current = editor.rigging.current == mark.name
+        Group {
+            if mark.kind == .dot {
+                Circle().fill(current ? theme.accent : Color.white)
+                    .overlay(Circle().stroke(Color.black.opacity(0.35), lineWidth: 1))
+                    .frame(width: current ? 20 : 16, height: current ? 20 : 16)
+            } else {
+                Image(systemName: "pin.fill")
+                    .font(.system(size: current ? 22 : 18, weight: .semibold))
+                    .foregroundStyle(current ? theme.accent : Color.white)
+                    .shadow(color: .black.opacity(0.4), radius: 1)
+            }
+        }
+        .frame(width: 44, height: 44)
+        .contentShape(Rectangle())
     }
 }

@@ -96,6 +96,8 @@ final class StageGestures: NSObject, UIGestureRecognizerDelegate {
     /// A flipbook stroke's samples in stage points.
     var flipSamples: [BrushInput<Vec2>] = []
     var consumedSamples = 0
+    /// A touch on Rig that isn't the one placing pins and dots (Settings ▸ Gestures): ignored to its end.
+    var ignoringRigStroke = false
     /// The shape a held stroke snapped to, where the tip was then, and the stroke's pressure.
     var snapped: (shape: QuickShape.Result, anchor: CGPoint, pressure: Double)?
     /// The Shadow Brush's target and its world mesh (raycast on the CPU for every sample).
@@ -200,7 +202,12 @@ final class StageGestures: NSObject, UIGestureRecognizerDelegate {
     /// A finger landing here would make something with the tool in the hand: fingers may make, and there is something
     /// under it to make on (an object to paint or rig, the guide to draw on). Anywhere else it orbits.
     func fingerMakes(at point: CGPoint) -> Bool {
-        guard let editor, let stage, pencilOrHand.fingerMakes else { return false }
+        guard let editor, let stage else { return false }
+        // Pins and dots placed by fingers when Settings gives them that job (the Pencil's otherwise).
+        if editor.tool == .rig, editor.rigging.mode == .marks, InputJob.marks.hand != .pencil {
+            return stage.pickObject(at: point) != nil
+        }
+        guard pencilOrHand.fingerMakes else { return false }
         switch editor.tool {
         case .paint, .shadowBrush, .rig:
             return stage.pickObject(at: point) != nil

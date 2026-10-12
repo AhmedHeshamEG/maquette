@@ -34,7 +34,7 @@ struct ExportSheet: View {
             }
             if preset.kind == .model {
                 Picker("Format", selection: $editor.precision.exportFormat) {
-                    ForEach(ModelExportFormat.allCases) { Text($0.title).tag($0) }
+                    ForEach(ModelExportFormat.allCases.filter { $0 != .fbx || editor.canExportFBX }) { Text($0.title).tag($0) }
                 }
                 .pickerStyle(.segmented)
                 .accessibilityIdentifier("model-format")

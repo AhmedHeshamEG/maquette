@@ -1,0 +1,5 @@
+; A project only so Godot can run Tools/godot/check_skin.gd headless on CI (the U4 game-engine check).
+config_version=5
+
+[application]
+config/name="Maquette glTF check"

@@ -48,6 +48,8 @@ final class TimelineLayout {
     /// The Pencil's loop over the lanes (selects the keys inside it).
     var lasso: [CGPoint] = []
     var composeDrag: (ids: Set<ObjectID>, delta: Double)?
+    /// A row's end being dragged on to repeat its motion: how many repeats it would add now.
+    var repeatDrag: (ids: Set<ObjectID>, repeats: Int)?
     var marquee: CGRect?
     var marqueeKeys: Set<KeyRef> = []
     var marqueeArmed = false

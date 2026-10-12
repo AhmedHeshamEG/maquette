@@ -163,12 +163,22 @@ extension EditorModel {
 
     // MARK: Files
 
-    /// The scene (or the selection) as a 3D file: glTF, USDZ, OBJ (with its materials), STL, 3MF or a Blender package.
+    /// Whether the export holds a rigged solid FBX can carry (FBX is offered only then).
+    var canExportFBX: Bool {
+        let ids = selection.isEmpty ? baseScene.roots : selection
+        return ids.flatMap { baseScene.subtree(of: $0) }.contains { id in
+            guard let object = baseScene.objects[id], let rig = object.rig else { return false }
+            return rig.skin != nil && object.paint == nil
+        }
+    }
+
+    /// The scene (or the selection) as a 3D file: glTF, USDZ, OBJ (with its materials), STL, 3MF, a Blender package, or
+    /// one rigged thing as FBX.
     func exportModel(_ format: ModelExportFormat, selectionOnly: Bool) -> [URL] {
         let ids = selectionOnly && !selection.isEmpty ? selection : nil
         let name = ProjectStore.sanitize(ids.flatMap { $0.count == 1 ? displayed.scene.objects[$0[0]]?.name : nil } ?? baseScene.name)
         // The scene as edited for the timeline's keys (glTF, Blender); as shown for the rest.
-        let edited = format == .glb || format == .blender
+        let edited = format == .glb || format == .blender || format == .fbx
         let source = edited ? baseScene : displayed.scene
         let files = ModelExport.files(format, ids: ids, scene: source, look: look, preset: lookPreset, catalog: library.catalog, models: library.models,
                                       name: name, paintFile: paintFiles, poses: edited ? [:] : displayed.poses)

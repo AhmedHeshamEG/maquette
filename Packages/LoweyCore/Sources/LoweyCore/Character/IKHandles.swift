@@ -45,6 +45,9 @@ public enum IKHandles {
                 return IKHandle(name: left ? "Left hand" : "Right hand", character: character, kind: .blobHand(left: left, hand: id), isEnd: true)
             }
         case .bones, .joints:
+            if rig.body == .bones, let marks = scene.objects[character]?.rig?.marks, !marks.isEmpty {
+                return markHandles(rig, marks: marks)
+            }
             if rig.standard == .humanoid {
                 return limbs.compactMap { limb in
                     let chain = limb.bones.compactMap(rig.joint)
@@ -71,6 +74,32 @@ public enum IKHandles {
             guard chain.count >= 2 else { return nil }
             let isEnd = skeleton.children(of: index).isEmpty
             return IKHandle(name: skeleton.joints[index].name, character: rig.character, kind: .chain(chain), isEnd: isEnd)
+        }
+    }
+
+    /// A rig made of pins and dots: every mark but the first can be pulled. A pin bends only its own stretch (the mark
+    /// above it holds); a dot brings its limb along, up to where the limb starts (a fork, a pin, or the first mark).
+    static func markHandles(_ rig: CharacterRig, marks: [RigMark]) -> [IKHandle] {
+        let skeleton = rig.skeleton
+        let byName = Dictionary(marks.map { ($0.name, $0) }, uniquingKeysWith: { first, _ in first })
+        func children(_ name: String) -> Int { marks.count { $0.parent == name } }
+        return marks.compactMap { mark in
+            guard let joint = skeleton.index(of: mark.name), let parent = mark.parent.flatMap({ byName[$0] }) else { return nil }
+            var chain: [Int]
+            if mark.kind == .pin {
+                chain = (0 ..< RigMarks.pinSteps).compactMap { skeleton.index(of: RigMarks.between(mark.name, $0)) } + [joint]
+            } else {
+                // Up through the limb: a mark with one bone below it turns with the pull; a fork stays put.
+                chain = [joint]
+                var current: RigMark? = parent
+                while let above = current, children(above.name) == 1, let index = skeleton.index(of: above.name), chain.count < 12 {
+                    chain.insert(index, at: 0)
+                    guard above.kind == .dot else { break }
+                    current = above.parent.flatMap { byName[$0] }
+                }
+            }
+            guard chain.count >= 2 else { return nil }
+            return IKHandle(name: mark.name, character: rig.character, kind: .chain(chain), isEnd: children(mark.name) == 0)
         }
     }
 

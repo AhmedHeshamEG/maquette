@@ -46,9 +46,15 @@ struct LibraryBrowser: View {
             if library.importing > 0 {
                 Label("Importing \(library.importing)…", systemImage: "arrow.down.circle").font(.hmm(.footnote)).foregroundStyle(theme.text2)
             }
-            if page == .things, query.isEmpty, !isSwapping {
+            if page == .motion, !isSwapping {
+                MotionBrowser(editor: editor, query: query)
+            } else if page == .things, query.isEmpty, !isSwapping {
                 CharacterRow(editor: editor)
                 KitBrowser(editor: editor, selectedSet: $kitSet, expanded: $expanded)
+            } else if page == .rigs, results.isEmpty {
+                HmmEmptyState("figure.stand", title: query.isEmpty ? "No rigs yet" : "No rig called “\(query)”",
+                              message: "Rig something, then Save to library from its menu: it lands here with its bones.",
+                              actionTitle: "Import models") { importing = true }
             } else if results.isEmpty {
                 HmmEmptyState(query.isEmpty ? "shippingbox" : "questionmark.folder",
                               title: query.isEmpty ? "Your library is empty" : "Nothing called “\(query)” yet",
@@ -106,7 +112,9 @@ struct LibraryBrowser: View {
 
     private var results: [LibraryItem] {
         // Searching Things looks through everything, the Kit included.
-        var items = LibrarySearch.search(query, in: library.manifest, filter: page == .things ? .all : filter)
+        var items = LibrarySearch.search(query, in: library.manifest, filter: page == .things || page == .rigs ? .all : filter)
+        // Rigs: everything with a skeleton, the Kit's characters included.
+        if page == .rigs { return items.filter(LibraryModel.isRigged) }
         // Yours holds your own things; the Kit is on Things (a favourite or a recent Kit model still shows).
         if page == .yours, !isSwapping, filter == .all || filter == .models { items = items.filter { !$0.isKit } }
         guard isSwapping else { return items }

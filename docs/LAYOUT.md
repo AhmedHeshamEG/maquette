@@ -126,6 +126,9 @@ A small bar.
 | Things: Me | `Library › library-things › add-me` |
 | Things: a Puppet | `Library › library-things › add-character` |
 | Things: the Kit by set | `Library › library-things › kit-sets` |
+| Motion: poses, clips and loops; tap one to drop it on the selected thing; hold for its menu | `Library › library-motion` |
+| A dropped motion plays where the joints match and says which it skipped; a motion's menu: rename, favourite, delete | tap or touch and hold a motion |
+| Rigs: everything with a skeleton (the Kit's people, rigged models, saved rigged builds) | `Library › library-rigs` |
 | Yours: your models, builds, worlds, scripts, favourites, recent; import models (USDZ, glTF, GLB, OBJ, STL, 3MF) | `Library › library-yours › Import models` |
 | An item's menu (the hold menu): rename, favourite; replace with the selection (builds); delete | touch and hold an item |
 | Swap a shape for a model | the object's menu ▸ More ▸ Swap for a model… (the Library opens to swap) |
@@ -215,18 +218,23 @@ The panel closes on the first stroke; the tool's bar under the stage stays. Tap 
 | Control | Walk |
 |---|---|
 | With nothing selected: where characters come from | `Rig › rig-open-library` |
-| Rig, in three steps: Bones, Skin, Pose (each shows only its tools; a step opens when the one before is done) | `[cube] Rig › rig-step-bones` |
-| Bones: draw a bone through a limb, tail or rope of anything with a surface; draw along one again to replace it | `[cube] Rig › rig-draw-bone` |
-| Bones: rig as a person (the front view, tap eight dots or drag them, Rig); remove the rig | `[cube] Rig › rig-person` |
-| Skin: the weights come by themselves; paint weights, fit the weights to a new shape | Rig ▸ Skin once there are bones |
-| Pose: drag the joints (the Select tool), reset the pose | Rig ▸ Pose once the skin fits |
-| Pose: Dangle for the joint last touched (and everything below it) *(held: 1.2)* | Rig ▸ Pose, after touching a joint |
+| Body shortcuts: Person (the dots guessed from the shape on its front view; drag the wrong ones, Rig) | `[cube] Rig › rig-body-person` |
+| Body shortcuts: Chain (one stroke along a tail or a rope lays pins down it) | `[cube] Rig › rig-body-chain` |
+| Body shortcuts: Four legs, Wings (the dots guessed from the shape, or in the usual places; drag the wrong ones) | `[cube] Rig › rig-body-fourLegs` |
+| Pins and dots by hand (tap to place one, a stroke for a chain, drag to move, hold to take away) | `[cube] Rig › rig-marks` |
+| A dot is a joint, a pin a soft bend; tap a mark so the next hangs from it, double-tap it to switch pin and dot | the marks on the stage while Rig is on |
+| The Rig tool's bar: Dots or Pins for the Pencil, done; a person's Rig and cancel; the weight brush's bone, erase and done | shown under the stage while Rig is on |
+| Several things chosen: rig them together (each part rides the bone nearest it; a dot between two parts hinges them) | Rig with two or more things selected |
+| Rigged: change the rig (it relaxes to its rest shape and shows its pins and dots; poses and keys stay), reset the pose, remove the rig | Rig on a rigged thing |
+| How it bends: paint weights; fit the weights to a new shape | Rig ▸ How it bends, on a rigged thing |
+| Pose: Dangle for the joint last touched (and everything below it) *(held: 1.2)* | Rig on a rigged thing, after touching a joint |
 | A character's poses: save, apply, mirror | `[blob] Rig › save-pose` |
+| A pose's hold menu: apply mirrored, save a mirrored copy, save to the Library | touch and hold a pose |
 | A character's clips: play from the playhead, tune, feet on the ground, look at, walk speed, crowds | `[blob] Rig › section-Clips` |
 | Make a loose object a part of a drawn rig (it rides the nearest bone); a part's face role, its bone, take it off *(held: 1.2)* | Rig ▸ Make it part of / Part, with that object selected |
-| The Rig tool's bar: the three steps, the bone whose weight is painted and erase (Skin), done; the person rig's Rig and cancel | shown under the stage while Rig is on |
 | The weight brush's size and strength | the sidebar's two sliders while painting weights |
-| Pose any character by dragging its joints (IK) | the joints on the stage when a character is selected |
+| Pose any character by dragging its joints (IK): a pin bends only its stretch, a dot brings its limb along | the joints on the stage when a character is selected |
+| A model that just came in (Open in, the share sheet, a drop, Home's import): Rig it, once, at the top of its panel | after a model lands |
 
 ### Animate
 
@@ -300,8 +308,9 @@ Eight controls: play, the time, Perform | Keys, the mode's one button, + Overlay
 | Collapse to the slim transport | `[timeline] Collapse the timeline` |
 | Resize, or switch to the transport | `[timeline] timeline-divider` |
 | The ruler: drag to scrub; tap just beside the playhead to step a frame; flick left to go to the start | `[timeline] timeline-ruler` |
-| A selected row's whole animation: drag the grip under it to slide it in time | under a selected animated row |
-| A key's hold menu: copy, paste; easing, reverse, mirror; delete | touch and hold a key |
+| A selected row's whole animation: drag the grip under it to slide it in time; drag the dot at its end to repeat it (the repeats show lighter) | under a selected animated row |
+| The grip's hold menu: loop forever or play once; save as a clip or a loop to the Library | touch and hold the grip |
+| A key's hold menu: copy, paste; feel (ease, snap, bounce, straight; the curve one step deeper), reverse, mirror; delete | touch and hold a key |
 | A clip's hold menu: split at the playhead, loop or play once; delete | touch and hold a clip |
 | A flipbook drawing's hold menu: duplicate; hold longer, hold shorter; delete (the track's is on its name) | touch and hold a drawing |
 | Perform with a character: its button beside Record | `[blob] Animate › timeline-mode-perform › perform-character` |

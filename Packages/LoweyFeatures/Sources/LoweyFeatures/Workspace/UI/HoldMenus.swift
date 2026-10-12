@@ -45,9 +45,12 @@ extension EditorModel {
     /// A key on the timeline (with the other picked keys, when it is one of them).
     func holdMenu(forKey key: KeyRef) -> HmmHoldMenu {
         if !selectedKeys.contains(key) { selectedKeys = [key] }
-        let easing = HmmHoldMenu.Item("Easing", systemName: "point.topleft.down.to.point.bottomright.curvepath", children: EasingChoice.allCases.map { choice in
-            HmmHoldMenu.Item(choice.title) { [weak self] in self?.setEasing(choice.easing) }
-        })
+        // Moves ease by default; four named feels, and the curve itself one step deeper (CONTEXT §10.10).
+        let feels = KeyFeel.allCases.map { feel in
+            HmmHoldMenu.Item(feel.title, systemName: feel.systemImage) { [weak self] in self?.setEasing(feel.easing) }
+        }
+        let curve = HmmHoldMenu.Item("Curve…", systemName: "point.topleft.down.to.point.bottomright.curvepath") { [weak self] in self?.graphKey = key }
+        let easing = HmmHoldMenu.Item("Feel", systemName: "waveform.path", children: feels + [curve])
         let several = selectedKeys.count > 1
         return HmmHoldMenu(copy: { [weak self] in self?.copyKeys() },
                            paste: holdAction(if: hasKeyClipboard) { [weak self] in self?.pasteKeys() },

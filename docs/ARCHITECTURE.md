@@ -255,6 +255,39 @@ flowchart LR
   `EditorModel+Poses` drags any character's joints through `IKHandles`; `restingRigTarget` shows the object being
   rigged or painted in its rest pose (D-171).
 
+## Pins and dots (0.14)
+
+```mermaid
+flowchart LR
+    Tap[Pencil tap / stroke<br/>StageGestures+Rig] --> Marks[EditorModel+RigMarks<br/>tapMark · drawChain · dragMark · removeMark]
+    Overlay[RigMarksOverlay<br/>drag · hold · double-tap] --> Marks
+    Guess[BodyGuess<br/>person · four legs · wings] --> Marks
+    Marks --> Build[RigMarks.rig<br/>joints named by marks · pin stretches · root]
+    Build --> Weigh[EditorModel.weigh<br/>bendDetail when too coarse · bone heat off the main thread]
+    Build --> Rigid[RigidParts.binding<br/>a group's parts ride their bones]
+    Weigh & Rigid --> Set[setRig · setProperties]
+    Set --> Handles[IKHandles.markHandles<br/>dots bring the limb · pins bend their stretch]
+```
+
+- **Core `Rig/`**: `RigMark` and `RigMarks` (build a skeleton from marks, add, move, remove, switch, read old rigs as dots),
+  `RigidParts` (the joint each part of a group rides, `attachBone`), `BodyGuess` and `BodyGuess+Animals` (guesses and
+  standard layouts), `HumanRig.dots(of:)`; `ObjectRig.marks` and `person`. `Geometry/MeshDensify` (`bendDetail`, read by
+  `PaintSource`, `SceneExport.localMesh` and the renderer's `MeshKey.dense`).
+- **Core `Motion/`**: `MotionItem` and `MotionLibrary` (capture a pose or a stretch of keys, apply by joint name with what
+  was skipped), `Timeline/TrackCycle` (`Track.cycle`), `KeyOperations.repeating`.
+- **Core `Import/`**: `GLTFMeshReader.vertexColors`, `OBJParser` (bytes, colours), `Geometry/MeshSimplify` (quadric
+  collapse), `SculptImport` (budgets, lightening, the lighter GLB, `LibraryStore.storeLightened`).
+- **Core `Interop/`**: `GLTFSceneWriter+Skin` (`GLTFScene.SkinnedExport`: rig node, joints, inverse binds, weights, joint
+  channels), `FBXBinary` and `FBXSkin` (+`Animation`). Engine's `ModelExport.skinned` hands Core the skins; `.fbx` writes one
+  rigged thing.
+- **Features**: `EditorModel+Rig` (what can be rigged, weighing, densify, rigid binding, weights), `EditorModel+RigMarks`,
+  `EditorModel+RigSteps` (the surface marks land on, a group's parts as one), `EditorModel+PersonRig` (guess then fix),
+  `Rig/RigSection` (`RigSection`, `RigOptionsBar`, `PersonDotMarks`, `RigMarksOverlay`), `EditorModel+MotionLibrary`
+  (save, drop, land, Rig it), `LibraryModel+Motion`, `LibraryModel+Sculpt` (lightening, Detail), `Library/MotionBrowser`,
+  `Timeline/TimelineRows`' `AnimationGrip` (repeats). `InputJob.marks` is who places marks.
+- **CI**: `Tools/godot/check_skin.gd` (Godot 4.3, glTF and FBX) and `Tools/check_rigged_import.py` (Blender 4.2 and 5.2)
+  open the rigged tail `SkinExportTests` writes.
+
 ## Touch (0.8)
 
 - **The hold menu** is hmm-kit's `HmmHoldMenu` (HmmDesign): the standard rows, up to three extras, Delete.

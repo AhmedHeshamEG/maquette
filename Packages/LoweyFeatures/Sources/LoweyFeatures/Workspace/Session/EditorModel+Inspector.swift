@@ -19,6 +19,7 @@ extension EditorModel {
     var guideLine: String? {
         if pickActive { return "Tap something to take its colour into palette slot \(pickSlot + 1)" }
         if tool == .scatter { return selection.isEmpty ? "Select what to scatter first" : "Drag on the ground to fill an area with copies" }
+        if tool == .rig { return rigGuide }
         switch modeling.mode.buildTool {
         case .walls?: return modeling.build.isEmpty ? "Tap where the first wall starts" : "Tap each corner, then Done"
         case .floor?: return modeling.build.isEmpty ? "Tap the floor's first corner" : "Tap each corner, then Done"
@@ -26,6 +27,18 @@ extension EditorModel {
         case .stairs?: return "Tap where the stairs start"
         case nil: return nil
         }
+    }
+
+    /// Rig's one line: what the Pencil does next (nothing while a guess is placing the dots: they appear by themselves).
+    private var rigGuide: String? {
+        guard rigging.guessing == nil else { return nil }
+        if rigging.person != nil { return "Drag a dot that's wrong, then Rig" }
+        if rigging.mode == .weights { return "Paint where the chosen bone should pull" }
+        guard let object = rigTarget else { return "Choose what to rig" }
+        if shownMarks(of: object).isEmpty {
+            return rigging.markKind == .pin ? "Drag along it with the Pencil, from where it holds to its end" : "Tap a dot on each joint with the Pencil"
+        }
+        return "Tap to add · drag to move · hold to take one away · double-tap to switch pin and dot"
     }
 
     /// Fold the object panel to its chip, or unfold it. Unfolding is choosing it as the one big thing: an open panel

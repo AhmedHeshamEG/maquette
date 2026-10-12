@@ -346,6 +346,39 @@ A flipbook track's `anchor` may be `"sheet:<id>"`: its strokes' points are then 
 perspective through the camera; their half-widths are metres too. Schema 13 only added these; files from schema 12
 open unchanged, and Maquette 0.12 refuses schema 13.
 
+## Rigs you can change, repeats, motion and sculpts (schema 14)
+
+A rig made of pins and dots keeps them, so it can be changed afterwards:
+
+```json
+"rig": {
+  "skeleton": {"joints": [ … ]},
+  "standard": "custom",
+  "marks": [
+    {"name": "j1", "kind": "pin", "position": [0.42, 0.62, 0], "thickness": 0.15},
+    {"name": "j2", "kind": "pin", "position": [1.57, 0.62, 0], "parent": "j1", "thickness": 0.07}
+  ]
+}
+```
+
+- `marks[]`: each a joint of the same `name`; `kind` is `dot` (a joint) or `pin` (a soft bend: a pin with a mark above it
+  makes three bones between them, joints `<name>~0`, `~1`, `~2`); `parent` is the mark it hangs from; `thickness` how thick
+  the part is there (0 when unknown). The skeleton is built from them (plus a `root` in the middle of what they leave
+  uncovered); joints keep their marks' names, so `bone.` keys survive a change.
+- `person`: a person rig's dots (`head`, `chin`, `leftShoulder` … `rightAnkle` → a point in the limb's middle).
+- A group's rig has no skin: each part names its joint in `attachBone`.
+- `bendDetail` (property, a number): a shape rigging cut finer so it can bend, in cuts across its largest side; every
+  reader cuts it the same way (split every edge longer than the side over the cuts at its middle, until none is).
+
+A track may repeat: `"cycle": {"start": 1, "end": 3, "repeats": 2}` plays the stretch from `start` to `end` that many more
+times after it ends (`repeats` missing: forever). A row's tracks share one cycle.
+
+The library (`library.json`) keeps `motions`: `{id, name, kind: pose|clip|loop, standard, joints: {name: [keys]},
+travel: {position|rotation: [keys relative to the start]}, duration, favorite, added, lastUsed}`. An asset lightened as it
+came in has `original` (the file it came from, kept beside it) and `detail` (1 is what the device keeps smooth).
+
+Schema 14 only adds optional keys; files from schema 13 open unchanged, and Maquette 0.13 refuses schema 14.
+
 ## workspace.json
 
 How the project shows when it opens. It isn't the project (it's never undone and isn't in the journal); it's

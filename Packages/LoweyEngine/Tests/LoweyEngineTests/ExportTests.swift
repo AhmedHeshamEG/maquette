@@ -145,7 +145,8 @@ final class ExportTests: XCTestCase {
         for format in ModelExportFormat.allCases {
             let files = ModelExport.files(format, ids: nil, scene: cave, look: look, preset: .ink, catalog: .empty, models: ModelLibrary(),
                                           name: "cave")
-            XCTAssertFalse(files.isEmpty, format.title)
+            // FBX carries one rigged thing; the cave has none, so there is nothing to write.
+            XCTAssertEqual(files.isEmpty, format == .fbx, format.title)
             for file in files {
                 XCTAssertGreaterThan(file.data.count, 100, file.name)
                 try file.data.write(to: folder.appendingPathComponent(file.name))

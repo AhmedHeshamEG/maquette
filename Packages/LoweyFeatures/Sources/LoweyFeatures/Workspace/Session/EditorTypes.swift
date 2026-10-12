@@ -118,13 +118,15 @@ public enum ModelPage: String, CaseIterable, Identifiable, Sendable {
 
 /// The Library's pages: Things (the characters, the Kit) and Yours (what you imported, built and saved).
 public enum LibraryPage: String, CaseIterable, Identifiable, Sendable {
-    case things, yours
+    case things, motion, rigs, yours
 
     public var id: String { rawValue }
 
     public var title: String {
         switch self {
         case .things: "Things"
+        case .motion: "Motion"
+        case .rigs: "Rigs"
         case .yours: "Yours"
         }
     }
@@ -132,6 +134,8 @@ public enum LibraryPage: String, CaseIterable, Identifiable, Sendable {
     public var systemImage: String {
         switch self {
         case .things: "shippingbox"
+        case .motion: "figure.run"
+        case .rigs: "figure.stand"
         case .yours: "person.crop.square"
         }
     }
@@ -348,6 +352,41 @@ public enum LibraryPurpose: Equatable, Sendable {
 }
 
 /// Easing presets offered for selected keys.
+/// How a move feels between two keys, in four words (a key's menu); the graph editor holds the rest.
+public enum KeyFeel: String, CaseIterable, Identifiable, Sendable {
+    case ease, snap, bounce, straight
+
+    public var id: String { rawValue }
+
+    public var title: String {
+        switch self {
+        case .ease: "Ease"
+        case .snap: "Snap"
+        case .bounce: "Bounce"
+        case .straight: "Straight"
+        }
+    }
+
+    public var systemImage: String {
+        switch self {
+        case .ease: "point.topleft.down.to.point.bottomright.curvepath"
+        case .snap: "bolt"
+        case .bounce: "arrow.up.and.down"
+        case .straight: "line.diagonal"
+        }
+    }
+
+    /// Ease in and out; a quick start that overshoots and settles; a bounce at the end; an even speed.
+    public var easing: Easing {
+        switch self {
+        case .ease: .easeInOut
+        case .snap: .backOut
+        case .bounce: .bounce
+        case .straight: .linear
+        }
+    }
+}
+
 public enum EasingChoice: String, CaseIterable, Identifiable, Sendable {
     case linear, easeIn, easeOut, easeInOut, backOut, bounce, elastic, step
 

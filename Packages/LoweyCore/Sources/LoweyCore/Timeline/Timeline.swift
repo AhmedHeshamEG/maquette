@@ -156,12 +156,15 @@ public struct Track: Codable, Hashable, Sendable, Identifiable {
     public var property: PropertyKey
     /// Kept sorted by time.
     public private(set) var keyframes: [Keyframe]
+    /// Played again after its stretch ends (a motion's end dragged on, or set to loop); nil plays once.
+    public var cycle: TrackCycle?
 
-    public init(id: TrackID, target: ObjectID, property: PropertyKey, keyframes: [Keyframe] = []) {
+    public init(id: TrackID, target: ObjectID, property: PropertyKey, keyframes: [Keyframe] = [], cycle: TrackCycle? = nil) {
         self.id = id
         self.target = target
         self.property = property
         self.keyframes = keyframes.sorted { $0.time < $1.time }
+        self.cycle = cycle
     }
 
     /// Inserts or replaces the key at `time` (within half a millisecond).
@@ -197,8 +200,9 @@ public struct Track: Codable, Hashable, Sendable, Identifiable {
         return TimeRange(start: first.time, end: last.time)
     }
 
-    /// Value at `time`: holds before the first and after the last key.
+    /// Value at `time`: holds before the first and after the last key; a cycled track plays its stretch again.
     public func value(at time: Double, palette: Palette = .empty) -> PropertyValue? {
+        let time = cycle?.time(at: time) ?? time
         guard let first = keyframes.first, let last = keyframes.last else { return nil }
         if time <= first.time { return first.value }
         if time >= last.time { return last.value }

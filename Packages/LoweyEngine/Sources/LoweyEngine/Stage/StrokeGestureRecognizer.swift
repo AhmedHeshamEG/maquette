@@ -26,6 +26,8 @@ public final class StrokeGestureRecognizer: UIGestureRecognizer {
     /// kept), which hides most of a frame of latency.
     public private(set) var predicted: [Sample] = []
     private var trackedTouch: UITouch?
+    /// Whether the stroke is the Pencil's (not a finger's).
+    public var isPencil: Bool { trackedTouch?.type == .pencil }
     /// Draw, then hold still: called once per stroke (QuickShape). Moving on after it keeps reporting samples.
     public var onHold: (() -> Void)?
     /// How long the tip must rest, and how far it may drift while resting (points).

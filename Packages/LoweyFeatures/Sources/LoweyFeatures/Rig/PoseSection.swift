@@ -47,7 +47,8 @@ struct PoseSection: View {
             HmmHoldMenu.Item("Apply mirrored", systemName: "arrow.left.and.right.righttriangle.left.righttriangle.right") {
                 editor.applyPose(PoseLibrary.mirrored(pose), to: character)
             },
-            HmmHoldMenu.Item("Save a mirrored copy", systemName: "plus.square.on.square") { editor.saveMirrored(pose, of: character) }
+            HmmHoldMenu.Item("Save a mirrored copy", systemName: "plus.square.on.square") { editor.saveMirrored(pose, of: character) },
+            HmmHoldMenu.Item("Save to the Library", systemName: "books.vertical") { editor.savePoseToLibrary(pose, of: character) }
         ], delete: { editor.deletePose(pose.id, of: character) })
     }
 }

@@ -123,6 +123,13 @@ extension EditorModel {
         perform(KeyOperations().shift(objects, by: timeline.snapped(delta), in: timeline))
     }
 
+    /// The objects' whole motion played again after it ends: `repeats` more times, forever (nil), or once (0).
+    func repeatAnimation(of objects: Set<ObjectID>, repeats: Int?) {
+        guard let command = KeyOperations().repeating(objects, repeats: repeats, in: timeline) else { return }
+        perform(.batch(repeats == 0 ? "Play once" : (repeats == nil ? "Loop forever" : "Repeat the motion"), [command]))
+        HmmHaptics.play(.commit)
+    }
+
     func clearAnimation() {
         let ids = Set(selection.flatMap { baseScene.subtree(of: $0) })
         var cleaned = TimelineTools.removingReferences(to: ids, from: timeline)

@@ -3,6 +3,38 @@
 All notable changes. 1.x grew in four phases (v0.1 → v1.4); 2.0 is the remaster, released as betas first. Maquette
 continues from 2.0 and numbers its phases again from 0.1 (each phase bumps the minor version until 1.0).
 
+## [0.14] — Maquette — rig, and bring your sculpt (phase U4)
+
+Rig anything, fast, and change it afterwards; a sculpt from another app arrives painted, gets rigged and moves.
+
+- **Pins and dots, one tool.** In Rig, the Pencil taps a **dot** on each joint (a shoulder, an elbow, a wrist) or a
+  **pin** where a soft thing holds and bends (a tail, a rope, an ear). A stroke along a part lays a chain of them down its
+  middle. Drag a mark to move it, hold it to take it away, double-tap it to switch pin and dot. Pull a dot and its limb
+  follows; pull a pin and only its stretch bends while the mark above holds.
+- **Body shortcuts**: **Person**, **Chain**, **Four legs**, **Wings**. Person, four legs and wings start from a guess
+  read from the shape (the dots land where its joints are); drag the wrong ones. A shape that can't be read gets the dots
+  in the usual places.
+- **Change a rig any time.** Change the rig: the thing relaxes to its rest shape and shows its pins and dots; move, add or
+  remove them and the skin updates by itself. Poses and keys stay. A person shows its dots again.
+- **Rigging adds what a shape lacks**: a cube is cut finer so it can bend where its joints are.
+- **Solid parts hinge.** Rig a group, or choose several things and *Rig these together*: each part rides the bone
+  nearest it, and a dot between two parts hinges them, no skin.
+- **Motion is library material.** The Library has four pages: Things, **Motion**, **Rigs**, Yours. Save a pose from its
+  menu, or a row's whole move as a clip or a loop from its grip's menu; tap it in Motion to drop it on the selected thing.
+  On a rig of another kind it plays where the joints match and says which it skipped.
+- **Drag a motion's end to repeat it**: the dot at the end of a selected row's grip; repeats show lighter. *Loop forever*
+  is in the grip's menu.
+- **Four feels on a key**: Ease, Snap, Bounce, Straight; the curve one step deeper.
+- **Bring your sculpt.** glTF and OBJ files keep the colours painted on their corners and arrive painted (and stay
+  paintable). A sculpt heavier than this iPad keeps smooth is lightened as it comes in, with no question; the
+  **Detail** slider in its panel asks for more or less. Open in, the share sheet, a drop and Home's import put it on the
+  stage, with **Rig it** beside it once.
+- **Out to game engines.** glTF exports carry rigged things as skins with their bones and keys; **FBX** (our own writer)
+  is in Export for a rigged thing. Checked in Godot and Blender on every build.
+- Settings ▸ Pencil and hands: placing pins and dots is the Pencil's by default.
+- Fixed: joint handles, the lasso and motion paths were drawn a little below where a touch grabs them.
+- Projects are schema 14; Maquette 0.13 can't open them.
+
 ## [0.13] — Maquette — draw (phase U3)
 
 Drawing in 3D, rebuilt on **the sheet**, and hands and Pencil given their jobs.

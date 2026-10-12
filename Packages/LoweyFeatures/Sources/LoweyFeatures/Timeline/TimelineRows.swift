@@ -181,11 +181,14 @@ struct AnimationGrip: View {
 
     var body: some View {
         let ids = layout.members(of: id)
-        let times = editor.timeline.tracks.filter { ids.contains($0.target) }.flatMap { $0.keyframes.map(\.time) }
+        let tracks = editor.timeline.tracks.filter { ids.contains($0.target) }
+        let times = tracks.flatMap { $0.keyframes.map(\.time) }
         let moving = layout.composeDrag.map { !$0.ids.isDisjoint(with: ids) } ?? false
         let delta = moving ? layout.composeDrag?.delta ?? 0 : 0
+        let cycle = tracks.compactMap(\.cycle).first
         ZStack(alignment: .bottomLeading) {
             if let start = times.min(), let end = times.max() {
+                repeats(start: start + delta, span: end - start, cycle: cycle, ids: ids)
                 Capsule()
                     .fill(theme.accent.opacity(moving ? 0.95 : 0.7))
                     .frame(width: max(CGFloat((end - start) * layout.pps), 10), height: 4)
@@ -202,10 +205,69 @@ struct AnimationGrip: View {
                     )
                     .accessibilityLabel("Slide the whole animation")
                     .accessibilityIdentifier("animation-grip")
+                    .hmmHoldMenu(menu(ids: ids, cycle: cycle))
+                endHandle(at: start + delta, span: end - start, cycle: cycle, ids: ids)
             }
         }
         .frame(width: width, height: TimelineLayout.rowHeight, alignment: .bottomLeading)
         .clipped()
+    }
+
+    /// The motion played again after it ends: lighter copies, one a repeat (a loop that goes on forever fades out).
+    @ViewBuilder private func repeats(start: Double, span: Double, cycle: TrackCycle?, ids: Set<ObjectID>) -> some View {
+        let dragged = layout.repeatDrag.flatMap { $0.ids == ids ? $0.repeats : nil }
+        let count = dragged ?? cycle.map { $0.repeats ?? 4 } ?? 0
+        let forever = dragged == nil && cycle != nil && cycle?.repeats == nil
+        if span > 0 {
+            ForEach(Array(stride(from: 1, through: max(count, 0), by: 1)), id: \.self) { index in
+                Capsule()
+                    .fill(theme.accent.opacity(forever ? 0.35 / Double(index) : 0.3))
+                    .frame(width: max(CGFloat(span * layout.pps) - 2, 4), height: 4)
+                    .padding(.vertical, 3)
+                    .offset(x: layout.x(start + span * Double(index)) + 1)
+                    .allowsHitTesting(false)
+            }
+        }
+    }
+
+    /// The handle at the end of the motion (or of its last repeat): drag it on to repeat the motion, back to repeat it
+    /// less.
+    @ViewBuilder private func endHandle(at start: Double, span: Double, cycle: TrackCycle?, ids: Set<ObjectID>) -> some View {
+        if span > 0, cycle == nil || cycle?.repeats != nil {
+            let shown = layout.repeatDrag.flatMap { $0.ids == ids ? $0.repeats : nil } ?? cycle?.repeats ?? 0
+            Circle()
+                .fill(theme.accent)
+                .overlay(Circle().stroke(Color.white.opacity(0.8), lineWidth: 1))
+                .frame(width: 12, height: 12)
+                .frame(width: 30, height: TimelineLayout.rowHeight)
+                .contentShape(Rectangle())
+                .offset(x: layout.x(start + span * Double(shown + 1)) - 15)
+                .gesture(
+                    DragGesture(minimumDistance: 2)
+                        .onChanged { value in
+                            let base = cycle?.repeats ?? 0
+                            let more = Int((Double(value.translation.width) / layout.pps / span).rounded())
+                            layout.repeatDrag = (ids, max(base + more, 0))
+                        }
+                        .onEnded { _ in
+                            if let drag = layout.repeatDrag { editor.repeatAnimation(of: ids, repeats: drag.repeats) }
+                            layout.repeatDrag = nil
+                        }
+                )
+                .accessibilityLabel("Drag to repeat the motion")
+                .accessibilityIdentifier("animation-repeat")
+        }
+    }
+
+    private func menu(ids: Set<ObjectID>, cycle: TrackCycle?) -> HmmHoldMenu {
+        let loops = cycle != nil && cycle?.repeats == nil
+        return HmmHoldMenu(extras: [
+            HmmHoldMenu.Item(loops ? "Play once" : "Loop forever", systemName: "repeat") {
+                editor.repeatAnimation(of: ids, repeats: loops ? 0 : nil)
+            },
+            HmmHoldMenu.Item("Save as a clip", systemName: "film") { editor.saveMotionToLibrary(of: id, loops: false) },
+            HmmHoldMenu.Item("Save as a loop", systemName: "repeat.circle") { editor.saveMotionToLibrary(of: id, loops: true) }
+        ])
     }
 
     /// A selected bar moves what it stands for and every other selected animated thing.

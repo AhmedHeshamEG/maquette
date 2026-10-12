@@ -4,17 +4,16 @@ import HmmDesign
 import LoweyCore
 import LoweyEngine
 
-/// Rig (CONTEXT §10.5): a Pencil stroke through a limb, tail or rope becomes a chain of bones, the weights are
-/// worked out by bone heat, and the brush paints them by hand if wanted. Every change is one `setRig` (its weights'
-/// file written first). While the Rig tool is on, the object stands as it was made (its rest pose), so bones and
-/// weights land where they're drawn.
+/// Rig (CONTEXT §10.5, U4): pins and dots make the skeleton (`EditorModel+RigMarks`), the weights are worked out by
+/// bone heat in the background, and the brush paints them by hand one step deeper. Every change is one `setRig` (its
+/// weights' file written first). While the Rig tool is on, the object stands as it was made (its rest pose), so marks
+/// land where they're placed; leaving it returns the pose.
 extension EditorModel {
     // MARK: What can be rigged
 
-    /// Why an object can't take a drawn skeleton (nil when it can).
+    /// Why an object can't take pins and dots (nil when it can).
     func rigBlocker(_ object: SceneObject) -> String? {
-        // Something with a drawn rig is in the cast too, and is exactly what goes on being rigged: more bones, its
-        // skin, its pose.
+        // Something with a drawn rig is in the cast too, and is exactly what goes on being rigged.
         if let type = castType(of: object.id, object: object), type != .drawn {
             return type == .rigged ? "This model has its own skeleton: drag its joints to pose it"
                 : "A \(type.title) has its skeleton built in: drag its hands and feet to pose it"
@@ -24,11 +23,13 @@ extension EditorModel {
             return "A flat plane has nothing to bend: draw on it, then rig the drawing"
         case .primitive, .mesh, .drawing:
             return nil
+        case .group:
+            return object.children.isEmpty ? "This group is empty" : nil
         case let .asset(id):
             guard let model = loadedModel(id) else { return "This model hasn't loaded yet" }
             return model.parts.contains(where: \.isSkinned) ? "This model has its own skeleton: drag its joints to pose it" : nil
         default:
-            return "Rig a shape, a modelled part, a drawing or a placed model"
+            return "Rig a shape, a modelled part, a drawing, a group of parts or a placed model"
         }
     }
 
@@ -40,7 +41,24 @@ extension EditorModel {
     /// The object Rig works on: the one being rigged while it's there, else the selection when it can be rigged.
     var rigTarget: SceneObject? {
         if let id = rigging.target, let object = baseScene.objects[id], rigBlocker(object) == nil { return object }
-        return singleSelection.flatMap { rigBlocker($0) == nil ? $0 : nil }
+        return rigSubject.flatMap { rigBlocker($0) == nil ? $0 : nil }
+    }
+
+    /// What the Rig panel speaks of: the selection, or (a part of a rigged group chosen) its group.
+    var rigSubject: SceneObject? {
+        guard let object = singleSelection else { return nil }
+        guard object.rig == nil else { return object }
+        let group = baseScene.ancestors(of: object.id).compactMap { baseScene.objects[$0] }.first { $0.kind == .group && $0.rig != nil }
+        return group ?? object
+    }
+
+    /// Several parts chosen: they're grouped, and the group is rigged with pins and dots (ToonSquid's "bind a whole
+    /// group": each part rides the bone nearest it).
+    func rigTogether() {
+        guard selection.count > 1 else { return }
+        groupSelection()
+        guard let group = singleSelection, group.kind == .group else { return }
+        startMarking(group.id, kind: .dot)
     }
 
     /// Where the object's rig lives in the world, as it was made (the edited scene, unposed).
@@ -56,78 +74,44 @@ extension EditorModel {
         return Ray(origin: origin, direction: (ahead - origin).normalized)
     }
 
-    /// Whether the rig's weights still fit the object (its shape may have been modelled since).
+    /// Whether the rig's weights still fit the object (its shape may have been modelled since). A group's parts ride
+    /// their bones whole, so its rig always fits.
     func rigFits(_ object: SceneObject) -> Bool {
         guard let rig = object.rig else { return true }
-        if case .drawing = object.kind { return RigOperations.fits(rig, object: object, mesh: nil) }
-        return RigOperations.fits(rig, object: object, mesh: paintSource(of: object))
-    }
-
-    // MARK: Draw a bone
-
-    /// Starts rigging an object: the Rig tool with Draw a bone.
-    func startRigging(_ id: ObjectID) {
-        guard let object = baseScene.objects[id] else { return }
-        if let blocker = rigBlocker(object) {
-            app.show(String.LocalizationValue(blocker))
-            return
-        }
-        rigging.target = id
-        rigging.mode = .bone
-        rigging.step = .bones
-        rigging.person = nil
-        tool = .rig
-        openPanel = nil
-        app.show("Draw a bone through the part that should bend")
-    }
-
-    /// A stroke on the stage (its points) becomes a chain of bones in the rig's object.
-    func drawBone(along points: [CGPoint]) {
-        drawBone(rays: points.compactMap { stage?.worldRay(at: $0) })
-    }
-
-    /// A stroke's rays into the scene (one per Pencil sample) become a chain of bones in the rig's object.
-    func drawBone(rays worldRays: [Ray]) {
-        guard let object = rigTarget else {
-            app.show("Choose what to rig first")
-            return
-        }
-        guard let surface = boneSurface(of: object) else {
-            endBonePreview()
-            app.show("This model hasn't loaded yet")
-            return
-        }
-        let samples = boneSamples(worldRays, through: surface, of: object)
-        // A stroke drawn while the last one's weights are still being worked out adds to that rig.
-        let base = rigging.weighing[object.id] ?? (rigFits(object) ? object.rig : nil)
-        do {
-            let rig = try BoneStroke.addingChain(samples, to: base, surface: surface.points)
-            // Drawing along a chain again replaces it: what its joints held (poses, keys) goes with them.
-            let gone = base.map { jointsGone(from: $0, in: rig) } ?? []
-            let label = base == nil ? "Rig \(object.name)" : (gone.isEmpty ? "Add a bone" : "Redraw a bone")
-            // The stroke is over; its bone stays on the stage until the weights land (no waiting message).
-            boneSurface = nil
-            weigh(rig, on: object, label: label, also: forgetting(gone, of: object))
-        } catch {
-            endBonePreview()
-            app.show(String.LocalizationValue(error.description))
+        switch object.kind {
+        case .group: return true
+        case .drawing: return RigOperations.fits(rig, object: object, mesh: nil)
+        default: return RigOperations.fits(rig, object: object, mesh: paintSource(of: object))
         }
     }
 
-    /// Works out the rig's weights (in the background: bone heat over a big model takes a moment), then stores it and
-    /// says `done` when there's something to say.
-    func weigh(_ rig: ObjectRig, on object: SceneObject, label: String, also commands: [EditCommand] = [], done: String.LocalizationValue? = nil) {
+    // MARK: Storing a rig
+
+    /// Stores the rig a change made: a group binds its parts to the bones at once; anything with a surface has its
+    /// weights worked out in the background (the shape cut finer first when it has too few corners to bend), then
+    /// lands as one step. `done` is said when there's something to say.
+    func weigh(_ rig: ObjectRig, on object: SceneObject, label: String, also commands: [EditCommand] = [],
+               done: String.LocalizationValue? = nil) {
         let id = object.id
+        if case .group = object.kind {
+            let binding = RigidParts.binding(id, rig: rig, in: baseScene)
+            perform(.batch(label, [.setRig(id, rig)] + (binding.isEmpty ? [] : [.setProperties(binding)]) + commands))
+            if let done { app.show(done) }
+            return
+        }
+        var shaped = object
+        var detail: [EditCommand] = []
         let mesh: MeshData? = if case .drawing = object.kind {
             nil
         } else {
-            paintSource(of: object)
+            denser(&shaped, for: rig, commands: &detail)
         }
         rigging.weighing[id] = rig
         let folder = assetsFolder
+        let target = shaped
         Task {
-            let result = await Task.detached(priority: .userInitiated) { RigOperations.weighted(rig, object: object, mesh: mesh) }.value
-            // A newer stroke is being weighed: it holds this one's bones too, and lands as one step.
+            let result = await Task.detached(priority: .userInitiated) { RigOperations.weighted(rig, object: target, mesh: mesh) }.value
+            // A newer change is being weighed: it holds this one's marks too, and lands as one step.
             guard rigging.weighing[id] == rig else { return }
             rigging.weighing[id] = nil
             if boneSurface == nil { endBonePreview() }
@@ -142,11 +126,29 @@ extension EditorModel {
                 return
             }
             guard baseScene.objects[id] != nil else { return }
-            perform(.batch(label, [.setRig(id, result.rig)] + commands))
+            perform(.batch(label, detail + [.setRig(id, result.rig)] + commands))
             if let done { app.show(done) }
             if rigging.joint == nil || rigging.joint ?? 0 >= result.rig.skeleton.joints.count { rigging.joint = result.rig.skeleton.joints.count - 1 }
             HmmHaptics.play(.commit)
         }
+    }
+
+    /// The mesh a rig is weighed on: the object's own, or (a shape with too few corners to bend at its joints) cut
+    /// finer, with the change that keeps it cut (CONTEXT §10.10: rigging adds the geometry a shape lacks).
+    private func denser(_ object: inout SceneObject, for rig: ObjectRig, commands: inout [EditCommand]) -> MeshData? {
+        guard let mesh = paintSource(of: object) else { return nil }
+        switch object.kind {
+        case .primitive, .mesh:
+            break
+        default:
+            return mesh
+        }
+        // Bones between marks (a pin's stretch counts once), else the skeleton's own.
+        let bones = rig.marks.isEmpty ? rig.segments.map { (head: $0.head, tail: $0.tail) } : RigMarks.segments(rig.marks)
+        guard object[.bendDetail] == nil, let cuts = MeshDensify.cuts(for: mesh, bones: bones) else { return mesh }
+        object[.bendDetail] = .float(Double(cuts))
+        commands.append(.setProperties([PropertyChange(object: object.id, key: .bendDetail, value: .float(Double(cuts)))]))
+        return MeshDensify.densified(mesh, cuts: cuts)
     }
 
     /// The weights worked out again for the object's shape as it is now.
@@ -158,16 +160,18 @@ extension EditorModel {
         weigh(fresh, on: object, label: "Fit the weights")
     }
 
-    /// Removes the skeleton, its pose and its keys (one undo step).
+    /// Removes the skeleton, its pose and its keys, and lets a group's parts go (one undo step).
     func removeRig(_ id: ObjectID) {
         guard let object = baseScene.objects[id], object.rig != nil else { return }
         var commands: [EditCommand] = [.setRig(id, nil)]
-        let turns = object.properties.keys.filter { $0.boneJoint != nil }.sorted().map { PropertyChange(object: id, key: $0, value: nil) }
-        if !turns.isEmpty { commands.append(.setProperties(turns)) }
+        var changes = object.properties.keys.filter { $0.boneJoint != nil }.sorted().map { PropertyChange(object: id, key: $0, value: nil) }
+        if case .group = object.kind { changes += RigidParts.binding(id, rig: nil, in: baseScene) }
+        if !changes.isEmpty { commands.append(.setProperties(changes)) }
         let tracks = timeline.tracks.filter { $0.target == id && $0.property.boneJoint != nil }.map { TrackEdit(id: $0.id, track: nil) }
         if !tracks.isEmpty { commands.append(.setTracks(tracks)) }
         perform(.batch("Remove the rig", commands))
         rigging.joint = nil
+        rigging.current = nil
         if tool == .rig { tool = .select }
     }
 
@@ -187,6 +191,17 @@ extension EditorModel {
         if let points = rig.points { return points }
         guard let file = rig.skin, let data = paintFiles(file) else { return nil }
         return try? SkinWeights(data: data)
+    }
+
+    /// Paint weights (one step deeper than the marks): the Rig tool with the weight brush.
+    func startPaintingWeights(_ id: ObjectID) {
+        guard let object = baseScene.objects[id], let rig = object.rig, rigFits(object), object.kind != .group else { return }
+        rigging.target = id
+        rigging.mode = .weights
+        rigging.person = nil
+        if rigging.joint.map({ $0 >= rig.skeleton.joints.count }) ?? true { rigging.joint = rig.skeleton.joints.count - 1 }
+        tool = .rig
+        openPanel = nil
     }
 
     /// A weight brush stroke (stage points, pressure): the chosen joint's weight added (or taken away) under it.
@@ -243,32 +258,32 @@ extension EditorModel {
         return WeightView(object: object.id, joint: joint)
     }
 
-    /// The bones of the object being rigged, as it was made: a line along each bone and a dot at each joint, the bone
-    /// whose weight is being painted in the accent colour. Drawn over everything, so bones inside the body show.
+    /// The bones of the object being rigged, as it was made: a line between each mark and the one it hangs from (the
+    /// marks themselves are drawn over the stage, where they can be touched), and while painting weights the bone
+    /// being painted in the accent colour. Drawn over everything, so bones inside the body show.
     func rigOverlays(_ stage: StageView) -> [EditorOverlay] {
         guard rigging.person == nil, let object = rigTarget else { return [] }
         let drawing = bonePreviewOverlays(stage)
-        guard let rig = object.rig, !rig.skeleton.isEmpty else { return drawing }
         let frame = rigFrame(object.id)
-        let joints = rig.restPositions.map { frame.apply(to: $0) }
-        let width = stage.worldPerPoint(at: joints[0]) * 2
         var lines = MeshData()
         var picked = MeshData()
-        var dots = MeshData()
-        for segment in rig.segments {
-            let head = frame.apply(to: segment.head)
-            let tail = frame.apply(to: segment.tail)
-            if rigging.mode == .weights, segment.joint == rigging.joint {
-                ModelOverlay.line(head, tail, width: width * 1.6, into: &picked)
-            } else {
-                ModelOverlay.line(head, tail, width: width, into: &lines)
+        if rigging.mode == .weights, let rig = object.rig {
+            for segment in rig.segments {
+                let head = frame.apply(to: segment.head), tail = frame.apply(to: segment.tail)
+                let width = stage.worldPerPoint(at: head) * 2
+                if segment.joint == rigging.joint {
+                    ModelOverlay.line(head, tail, width: width * 1.6, into: &picked)
+                } else {
+                    ModelOverlay.line(head, tail, width: width, into: &lines)
+                }
+            }
+        } else {
+            for (head, tail) in RigMarks.segments(shownMarks(of: object)) {
+                let start = frame.apply(to: head), end = frame.apply(to: tail)
+                ModelOverlay.line(start, end, width: stage.worldPerPoint(at: start) * 2, into: &lines)
             }
         }
-        for joint in joints {
-            ModelOverlay.dot(joint, radius: width * 2.2, into: &dots)
-        }
-        var overlays = [EditorOverlay(mesh: lines, color: RGBA(1, 1, 1), opacity: 0.9, onTop: true),
-                        EditorOverlay(mesh: dots, color: Self.modelAccent, onTop: true)]
+        var overlays = [EditorOverlay(mesh: lines, color: RGBA(1, 1, 1), opacity: 0.9, onTop: true)]
         if !picked.isEmpty { overlays.append(EditorOverlay(mesh: picked, color: Self.modelAccent, onTop: true)) }
         return overlays + drawing
     }

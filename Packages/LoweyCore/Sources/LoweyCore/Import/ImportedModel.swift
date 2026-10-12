@@ -50,16 +50,23 @@ public struct ImportedPart: Hashable, Sendable {
     /// Four skin joint indices (into `ImportedSkin.joints`) and weights per vertex; empty for static parts.
     public var joints: [SIMD4<UInt16>]
     public var weights: [SIMD4<Float>]
+    /// A colour per vertex (sRGB, 0…1, as people see it), as sculpting apps paint; empty when the file has none.
+    public var colors: [SIMD4<Float>]
 
-    public init(name: String, mesh: MeshData, material: Int, joints: [SIMD4<UInt16>] = [], weights: [SIMD4<Float>] = []) {
+    public init(name: String, mesh: MeshData, material: Int, joints: [SIMD4<UInt16>] = [], weights: [SIMD4<Float>] = [],
+                colors: [SIMD4<Float>] = []) {
         self.name = name
         self.mesh = mesh
         self.material = material
         self.joints = joints
         self.weights = weights
+        self.colors = colors
     }
 
     public var isSkinned: Bool { !joints.isEmpty && joints.count == mesh.positions.count }
+
+    /// Whether every vertex has a colour of its own.
+    public var hasColors: Bool { !colors.isEmpty && colors.count == mesh.positions.count }
 }
 
 /// How a model's skin binds to its skeleton.
@@ -98,6 +105,9 @@ public struct ImportedModel: Hashable, Sendable {
     }
 
     public var triangleCount: Int { parts.reduce(0) { $0 + $1.mesh.triangleCount } }
+
+    /// Whether any part carries its own vertex colours (a painted sculpt).
+    public var hasVertexColors: Bool { parts.contains(where: \.hasColors) }
 
     /// A model from a plain mesh (OBJ, generated geometry).
     public init(mesh: MeshData, name: String = "Model") {

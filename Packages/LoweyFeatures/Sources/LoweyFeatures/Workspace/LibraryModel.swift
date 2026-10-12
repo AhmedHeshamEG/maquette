@@ -12,7 +12,7 @@ import UniformTypeIdentifiers
 @MainActor
 final class LibraryModel {
     let store: LibraryStore
-    private(set) var manifest = LibraryManifest()
+    var manifest = LibraryManifest()
     private(set) var thumbnails: [String: UIImage] = [:]
     private(set) var importing = 0
     /// The Kit's Sets (Room & Desk, City Street…), shipped with the app.
@@ -82,7 +82,7 @@ final class LibraryModel {
     /// A Set's assets by category.
     func browse(_ set: String) -> [(category: String, assets: [LibraryAsset])] { kitIndex.browse(set) }
 
-    private func save() {
+    func save() {
         do {
             try store.save(manifest)
         } catch {
@@ -186,6 +186,11 @@ final class LibraryModel {
     /// Imports model files and folders (glTF packs). Returns how many models were added.
     @discardableResult
     func importFiles(_ urls: [URL]) async -> Int {
+        await importAssets(urls).count
+    }
+
+    /// Imports model files and folders and returns the assets they became (a heavy sculpt lightened on the way in).
+    func importAssets(_ urls: [URL]) async -> [LibraryAsset] {
         var files: [URL] = []
         var scoped: [URL] = []
         for url in urls {
@@ -193,23 +198,23 @@ final class LibraryModel {
             files += Self.modelFiles(in: url)
         }
         defer { scoped.forEach { $0.stopAccessingSecurityScopedResource() } }
-        var added = 0
+        var added: [LibraryAsset] = []
         importing += files.count
         for file in files {
             defer { importing -= 1 }
-            if await importModel(file) { added += 1 }
+            if let asset = await importModel(file) { added.append(asset) }
         }
         return added
     }
 
-    private func importModel(_ file: URL) async -> Bool {
+    private func importModel(_ file: URL) async -> LibraryAsset? {
         do {
             var asset = try store.importModel(from: file)
             manifest.assets.append(asset)
             guard let info = await models.inspect(asset, catalog: catalog) else {
                 manifest.assets.removeAll { $0.id == asset.id }
                 store.removeAsset(asset.id)
-                return false
+                return nil
             }
             asset.bounds = info.bounds
             asset.triangleCount = info.triangleCount
@@ -218,12 +223,13 @@ final class LibraryModel {
             if asset.rig.isRigged, !asset.tags.contains("rigged") { asset.tags.append("rigged") }
             if let index = manifest.assets.firstIndex(where: { $0.id == asset.id }) { manifest.assets[index] = asset }
             save()
+            asset = await lightenIfHeavy(asset)
             let object = SceneObject(id: .make(), name: asset.name, kind: .asset(asset.id))
             await renderThumbnail(of: SceneFragment(objects: [object], roots: [object.id]), named: LibraryItem.asset(asset).thumbnailName)
-            return true
+            return asset
         } catch {
             logger.error("Import of \(file.lastPathComponent) failed: \(String(describing: error))")
-            return false
+            return nil
         }
     }
 

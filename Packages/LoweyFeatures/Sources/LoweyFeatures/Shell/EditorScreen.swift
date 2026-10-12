@@ -81,8 +81,8 @@ struct EditorScreen: View {
             }
         }
         .hmmEditBar(isPresented: $editor.hands.editBar, items: editor.editBarItems)
-        .dropDestination(for: URL.self) { urls, _ in
-            Task { await app.library.importFiles(urls) }
+        .dropDestination(for: URL.self) { urls, location in
+            app.landModels(urls, at: location)
             return true
         }
         .animation(HmmMotion.standard.animation(reduceMotion: reduceMotion), value: editor.chromeHidden)
@@ -101,8 +101,10 @@ struct EditorScreen: View {
                     }
                     return !items.isEmpty
                 }
-            // Overlays sit on 3D positions and frame coordinates: they never mirror.
+            // Overlays sit on 3D positions and frame coordinates: they never mirror, and they reach under the status bar
+            // as the stage does, so a joint's ring is drawn where a touch grabs it.
             StageOverlayView(editor: editor)
+                .ignoresSafeArea(edges: [.top, .horizontal])
                 .environment(\.layoutDirection, .leftToRight)
             // A picture being placed to project: in the stage's own points, like the stage.
             if editor.tool == .paint, editor.colourPaint.picture != nil {
@@ -110,9 +112,13 @@ struct EditorScreen: View {
                     .ignoresSafeArea(edges: [.top, .horizontal])
                     .environment(\.layoutDirection, .leftToRight)
             }
-            // The person rig's dots: dragged in the stage's own points.
+            // The person rig's dots, and pins and dots: dragged in the stage's own points.
             if editor.tool == .rig, editor.rigging.person != nil {
                 PersonDotMarks(editor: editor)
+                    .ignoresSafeArea(edges: [.top, .horizontal])
+                    .environment(\.layoutDirection, .leftToRight)
+            } else if editor.tool == .rig, editor.rigging.mode == .marks {
+                RigMarksOverlay(editor: editor)
                     .ignoresSafeArea(edges: [.top, .horizontal])
                     .environment(\.layoutDirection, .leftToRight)
             }

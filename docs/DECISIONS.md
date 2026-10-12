@@ -1910,3 +1910,121 @@ right; the whole library (Brush Studio, sets, imports) is its last row. *Rejecte
 **D-258 — SPIKE: squeeze, the Pencil's haptics and the loupe are on the pinned SDK.** `PencilSDKSpikeTests` (hmm-kit)
 builds and runs a `UIPencilInteraction` squeeze delegate, `UICanvasFeedbackGenerator` and `UITextLoupeSession` on CI's
 simulator. Squeeze and haptics need an Apple Pencil Pro to happen: device checks. No fallback needed.
+
+## Maquette 0.14 — U4, rig, and bring your sculpt
+
+**D-259 — U4 starts from main, after U3.** U1 (PR #30) still waits for the first feel recording; main carries U1's
+finished steps. *Rejected:* stacking on U1's branch.
+
+**D-260 — Pins and dots are marks kept on the rig; the skeleton is built from them.** `RigMark` (a name, dot or pin, a
+place, the mark it hangs from, the part's thickness) lives in `ObjectRig.marks`; `RigMarks.rig` builds the skeleton:
+a dot is one joint, a pin with a mark above it gets three bones between them (`<pin>~0…~2`, the first sitting on the
+mark above, so pulling the pin turns only its stretch). Joints keep their marks' names, so moving, adding or removing
+a mark keeps every pose and key on the others. A dot pulled brings its limb along (up to a fork, a pin or the first
+mark); a pin pulled bends its stretch while the mark above holds. Rigs from before 0.14 read their joints as dots.
+*Rejected:* keeping draw-a-bone as the main move (he didn't know how to use it on device, "felt really useless");
+storing only the skeleton (it couldn't be changed afterwards, his frustration).
+
+**D-261 — A body the marks leave uncovered gets a root.** As drawn bones did: vertices farther than one and a half times
+the part's thickness from every mark are the body; when there are enough of them and their middle is away from the first
+mark, a `root` joint there carries it, so a cat's body holds still while its tail bends. *Rejected:* making the first
+mark the root (pinning a tail would swing the whole cat).
+
+**D-262 — Rigging adds the geometry a shape lacks, through one property.** When a shape's longest edge is more than
+half again half its shortest bone between marks (a cube is eight corners), rigging sets `bendDetail` (cuts across the
+largest side, up to 24: finer made a cylinder's weights take over 20 s on CI's simulator) in the same step; `MeshDensify` splits long edges at their middles until none is longer, the same in
+`PaintSource`, the renderer's mesh cache (`MeshKey.dense`) and every export, so weights, paint and drawing agree.
+Placed models aren't cut (they carry their own detail). *Rejected:* converting to an editable mesh (MeshBuilder merges
+coplanar triangles back into one face); subdividing inside the skinned twin only (paint and picking would disagree).
+
+**D-263 — A group rigs rigid: each part rides its bone, no skin.** Rigging a group (or several things, which are
+grouped first: "Rig these together") keeps the rig on the group and sets each part's `attachBone` to the joint whose
+bone runs nearest the part's middle (`RigidParts`, a chain's last joint reaching on past its end), so `LiveRig.carryParts`
+moves the parts. The first dot on a group also places a dot in the middle of the part nearest it, which holds; a dot
+between two parts hinges them. This is ToonSquid's "bind a whole group". *Rejected:* skinning every part to one skeleton
+(solid parts would melt at the joints).
+
+**D-264 — SPIKE passed: guessing a person, four legs and wings from the shape.** `BodyGuess` reads a shape standing on
+its lowest point, facing +z, sampled at 96 cuts across: legs are the separate columns at the bottom (tracked up until
+two meet), a person's hands are the points reaching out furthest sideways, its neck the narrowing below the head, its
+hips above where the legs meet by an amount that grows with leg length; four legs take the higher end as the head and a
+tail where the shape goes on past the hips; wings are where the body thins out across x. Checked on CI against the
+Kit's rigged people's own skeletons (every joint within a tenth of the height; the UAL model too, kept out of the suite
+for its half-minute of clips), the Kit's astronaut and made animals both ways round. Ship the guess; a shape that can't be
+read gets the dots in a standard layout to drag (`fourLegsLayout`, `wingsLayout`, the person template). *Rejected:*
+Apple's body-pose model (failed on CI in M7, D-168).
+
+**D-265 — Person is guess then fix, and a person rig opens again with its dots.** The dots land placed (no eight taps);
+the Pencil moves the nearest dot where it touches, any dot can be dragged, Rig builds the humanoid. `ObjectRig.person`
+keeps the dots so Change the rig shows them again; a person rig from before reads them back from its joints. Standard
+names stay, so poses and built-in clips survive a change.
+
+**D-266 — Rig is two moves in one tool, with the body shortcuts first.** With nothing rigged, the panel shows Person ·
+Chain · Four legs · Wings and "Pins and dots"; the tool's bar chooses Dots or Pins for the Pencil. A tap places a mark
+(hung from the last one, or from one tapped first); a stroke along a part lays a chain down its middle (dots at every
+joint, pins every three); a mark dragged moves, held goes, double-tapped switches pin and dot. Rigged: Change the rig,
+Reset the pose, How it bends (weights, one step deeper), Remove. The three steps (Bones → Skin → Pose) are gone.
+*Rejected:* a separate tool per move (one more mode).
+
+**D-267 — Placing pins and dots joins who does what (the Pencil by default).** `InputJob.marks`; a stroke reports
+whether it's the Pencil's (`StrokeGestureRecognizer.isPencil`). Marks themselves are dragged by either hand over the
+stage. Closes D-252's "joins with U4".
+
+**D-268 — Motion is library material: poses, clips and loops by joint name.** `MotionItem` keeps keys per joint name
+(humanoids by the standard names) and the thing's own move and turn relative to where it started; the library manifest
+keeps them (`motions`). Dropped on the selected thing: a pose turns its joints like applying a pose, a clip lays its keys
+at the playhead, a loop loops forever; joints with no match are skipped and named in one line. Saved from a pose's menu
+and from a row's grip menu. Dropping is a tap on the Motion page with the thing selected. *Rejected:* dragging motion
+tiles onto the stage (a tile over a character and over empty space would need two meanings); clip tracks for saved
+motion (they only play library models' clips).
+
+**D-269 — A motion repeats by its end; one switch loops it forever.** `Track.cycle` (`TrackCycle`: start, end, repeats or
+nil for forever) plays a stretch again; a row repeats over its whole stretch, so every property stays in step. The grip
+under a selected row has a dot at its end: drag it on to repeat, back to repeat less; repeats are drawn lighter. Shifting
+a row moves its repeats; duplicates keep them; glTF and FBX play repeats out frame by frame (a forever loop exports one
+stretch: engines loop it). Clips on clip tracks already loop by stretching.
+
+**D-270 — Four feels on a key.** Ease (ease in and out, the default), Snap (overshoot and settle), Bounce, Straight;
+"Curve…" opens the graph editor. Keys already eased by default and add themselves after the first (D-234).
+
+**D-271 — Vertex colours in, as paint.** glTF `COLOR_0` (linear, any component type) and OBJ's `v x y z r g b` (0…1 or
+0…255) become `ImportedPart.colors` in sRGB; `AssetPaint.bake` multiplies them into the first paint layer, and a model
+that carries them is made paintable the moment it lands, so it arrives painted and stays paintable. OBJ is read byte by
+byte (a sculpt's OBJ is a hundred megabytes). *Rejected:* a vertex colour attribute in the renderer (a second colour
+path beside paint).
+
+**D-272 — SPIKE passed: our own quadric simplifier.** `MeshSimplify` (Garland–Heckbert error, Forstmann's fast threshold
+form, MIT, in Swift, portable to Linux) lightens a 1.3 million triangle lumpy sphere to a tenth in about 4.5 s in a
+release build on the Docker CPU and 2.55 s on CI's Linux runner, every corner within 1 % of the surface,
+open edges kept; colours carry from the nearest original corner. Fallback (meshoptimizer) not needed.
+
+**D-273 — Lightening budgets, by tier, and the Detail slider.** One model may keep 500 000 triangles on Tier A, 200 000
+on B, 80 000 on C (`SculptImport.budget`). A heavier import with no picture wrapped on it is lightened on the way in,
+written as `light-<detail>.glb` beside the original, which the asset keeps (`original`, `detail`). The object panel's
+Detail slider (¼ to 2× the budget) lightens again from the original off the main thread, or goes back to the original
+when asked for more than it has. Textured models aren't lightened (their pictures would lose their place).
+
+**D-274 — The way in lands on the stage.** Open in, the share sheet, a drop on the editor and Home's import put a model
+file on the stage (a new project when none is open), chosen, with "Rig it" offered once at the top of its panel; extra
+files wait in the Library. The bridge's import still only adds to the Library. No Nomad name or logo anywhere.
+
+**D-275 — The Nomad fixture waits for Hesham's export.** Until his painted sculpt arrives, the Core tests make one the
+way Nomad writes one (a single mesh, colours on its corners, no texture) through glTF and OBJ. It joins the test
+resources with his name as the author when he sends it (device checklist).
+
+**D-276 — Rigged things leave glTF as skins.** A rigged solid writes a rig node holding the skinned mesh
+(`JOINTS_0`/`WEIGHTS_0`) and its joints, inverse bind matrices from the rest pose (the same answer whether a reader applies
+the mesh node's place or not), a still pose in the joints' rotations and `bone.` keys as rotation channels. Painted and
+drawn rigs still leave posed. CI opens the rigged tail in Godot 4.3 (skeleton, skin, animation, bones moving) and in
+Blender 4.2 and 5.2. Unity has no licence-free headless run: device (computer) checklist.
+
+**D-277 — SPIKE passed: our own FBX writer.** A binary FBX 7.4 (`FBXBinary`, `FBXSkin`: geometry, limb nodes, a skin of
+clusters with Transform and TransformLink, a bind pose, rotation curves in Euler degrees, metres with UnitScaleFactor 100,
+y up) opens and plays in Godot 4.3 (ufbx) and Blender 4.2 and 5.2, on CI. Export ▸ 3D model offers FBX when a rigged solid
+is in the export (one thing per file). *Rejected:* the fallback (the Blender package writing FBX on a computer): the
+writer passed, and needing a computer for Unity breaks idea → done.
+
+**D-278 — The stage's overlay reaches under the status bar, as the stage does.** Joint handles, the lasso, motion paths,
+selected overlays' frames and the onion skin were drawn in a view inside the top safe area while the stage they mark
+fills it, so on an iPad each was drawn about 24 points below where a touch grabs it (found by U4's timed tail test: a
+pull on the ring moved the object). Since 0.14 the overlay ignores the top safe area like the stage.

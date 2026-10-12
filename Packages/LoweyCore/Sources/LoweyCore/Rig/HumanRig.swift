@@ -117,6 +117,30 @@ public enum HumanRig {
             add("\(side)Toes", "\(side)Foot", toes)
             tips["\(side)Toes"] = toes + Vec3(0, 0, height * 0.04)
         }
-        return ObjectRig(names: names, parents: parents, positions: positions, standard: .humanoid, tips: tips)
+        var rig = ObjectRig(names: names, parents: parents, positions: positions, standard: .humanoid, tips: tips)
+        rig.person = Dictionary(uniqueKeysWithValues: dots.map { ($0.key.rawValue, $0.value) })
+        return rig
+    }
+
+    /// A person rig's dots, to change it: the ones it keeps, or (a rig from before 0.14) read back from its joints.
+    public static func dots(of rig: ObjectRig) -> [Dot: Vec3]? {
+        guard rig.standard == .humanoid else { return nil }
+        if let person = rig.person {
+            let dots = Dictionary(uniqueKeysWithValues: person.compactMap { key, value in Dot(rawValue: key).map { ($0, value) } })
+            return Dot.allCases.allSatisfy { dots[$0] != nil } ? dots : nil
+        }
+        let rest = Dictionary(zip(rig.skeleton.names, rig.restPositions), uniquingKeysWith: { first, _ in first })
+        guard let head = rig.tips["head"], let headJoint = rest["head"] else { return nil }
+        // The head joint sits 15 % of the way from the chin to the top of the head.
+        var result: [Dot: Vec3] = [.head: head, .chin: (headJoint - head * 0.15) / 0.85]
+        let joints: [(String, String)] = [("Shoulder", "UpperArm"), ("Elbow", "LowerArm"), ("Wrist", "Hand"), ("Hip", "UpperLeg"),
+                                          ("Knee", "LowerLeg"), ("Ankle", "Foot")]
+        for side in ["left", "right"] {
+            for (dot, joint) in joints {
+                guard let key = Dot(rawValue: side + dot), let point = rest[side + joint] else { return nil }
+                result[key] = point
+            }
+        }
+        return result
     }
 }

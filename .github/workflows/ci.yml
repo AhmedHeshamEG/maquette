@@ -151,6 +151,34 @@ jobs:
           echo "Line coverage: $COVERAGE%"
           echo "### LoweyCore line coverage: ${COVERAGE}%" >> "$GITHUB_STEP_SUMMARY"
           awk -v c="$COVERAGE" 'BEGIN { exit !(c >= 80) }'
+      - name: SPIKE (U4) lighten a 1.3 million triangle sculpt in a release build
+        working-directory: Packages/LoweyCore
+        shell: bash
+        run: |
+          set -o pipefail
+          swift test -c release --filter MeshSimplifyTests 2>&1 | tee spike.txt
+          grep SPIKE spike.txt >> "$GITHUB_STEP_SUMMARY"
+
+  godot:
+    name: A rigged, animated glTF plays in Godot 4.3
+    needs: core-tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: acceptance
+          path: acceptance
+      - name: Godot opens the rigged tail (glTF and FBX), finds its skeleton and skin, and its bones move when it plays
+        run: |
+          set -o pipefail
+          curl -sSL -o godot.zip https://github.com/godotengine/godot/releases/download/4.3-stable/Godot_v4.3-stable_linux.x86_64.zip
+          unzip -q godot.zip
+          for file in tail.glb tail.fbx; do
+            ./Godot_v4.3-stable_linux.x86_64 --headless --path Tools/godot --script check_skin.gd -- "$GITHUB_WORKSPACE/acceptance/rigged/$file" 2>&1 | tee "godot-$file.log"
+            grep -q "MAQUETTE GODOT: .* bones" "godot-$file.log"
+            grep "MAQUETTE GODOT" "godot-$file.log" >> "$GITHUB_STEP_SUMMARY"
+          done
 
   interop:
     name: Print files (slicer check) + Blender package + painted glTF (Blender ${{ matrix.blender }})
@@ -197,6 +225,13 @@ jobs:
           set -o pipefail
           "$GITHUB_WORKSPACE/blender-${{ matrix.blender }}-linux-x64/blender" -b --factory-startup --python-exit-code 1             --python Tools/check_painted_render.py -- acceptance/painted/painted.glb acceptance/painted/render.png 2>&1             | tee painted.log | grep -E "MAQUETTE|Error|Traceback" || true
           grep -q "MAQUETTE: paint shows" painted.log
+      - name: The rigged tail plays in Blender (glTF and our own FBX)
+        run: |
+          set -o pipefail
+          for file in tail.glb tail.fbx; do
+            "$GITHUB_WORKSPACE/blender-${{ matrix.blender }}-linux-x64/blender" -b --factory-startup --python-exit-code 1               --python Tools/check_rigged_import.py -- "acceptance/rigged/$file" 6 2>&1 | tee rigged.log | grep -E "MAQUETTE|Error|Traceback" || true
+            grep -q "MAQUETTE: rigged" rigged.log
+          done
       - name: A painted Blender package builds and renders
         working-directory: acceptance/painted-blender
         run: |
@@ -482,7 +517,7 @@ jobs:
 
   result:
     name: CI result
-    needs: [changes, lint, core-tests, interop, tools, engine, features, app, appstore]
+    needs: [changes, lint, core-tests, interop, godot, tools, engine, features, app, appstore]
     if: always()
     runs-on: ubuntu-latest
     steps:

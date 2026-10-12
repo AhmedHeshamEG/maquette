@@ -1,5 +1,18 @@
 import Foundation
 
+/// Turning light between linear values (what files like glTF store) and sRGB (what people see and pick).
+public enum ColorSpace {
+    public static func srgb(fromLinear value: Double) -> Double {
+        let v = min(max(value, 0), 1)
+        return v <= 0.003_130_8 ? v * 12.92 : 1.055 * pow(v, 1 / 2.4) - 0.055
+    }
+
+    public static func linear(fromSRGB value: Double) -> Double {
+        let v = min(max(value, 0), 1)
+        return v <= 0.040_45 ? v / 12.92 : pow((v + 0.055) / 1.055, 2.4)
+    }
+}
+
 /// RGBA color with components in 0...1 (sRGB, as people pick them).
 /// Encodes as a hex string: `"#RRGGBB"` or `"#RRGGBBAA"`.
 ///
