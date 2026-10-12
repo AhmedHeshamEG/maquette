@@ -3,7 +3,8 @@ import LoweyCore
 import SwiftUI
 
 /// The Library (top left): everything ready to place. **Things**: the characters (a Blob, Me, a Puppet) and the Kit by
-/// set. **Yours**: what you imported, built and saved, your favourites and what you used last. One search across both.
+/// set. **Motion**: poses, clips and loops to drop on anything with joints. **Rigs**: everything with a skeleton.
+/// **Yours**: what you imported, built and saved, your favourites and what you used last. One search across them.
 /// Tap to place, drag onto the stage, touch and hold for the item's menu. While swapping a shape for a model, a tap
 /// swaps it.
 struct LibraryPanel: View {
