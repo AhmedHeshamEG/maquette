@@ -25,6 +25,7 @@ struct RigPanel: View {
     private var currentCharacter: ObjectID? {
         editor.selectedPuppet ?? editor.selectedCharacter?.object.id
             ?? editor.selection.first.flatMap { editor.isBlob($0) || editor.baseScene.objects[$0]?.rig != nil ? $0 : nil }
+            ?? editor.rigSubject.flatMap { $0.rig != nil ? $0.id : nil }
     }
 
     private var nothingSelected: some View {

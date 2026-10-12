@@ -5,7 +5,7 @@ import Foundation
 /// Pencil's. Drawing and painting follow Pencil or hand (`HmmPencilOrHand`), and moving the view is always fingers.
 /// Until a Pencil has touched this iPad, a finger does the Pencil's jobs too.
 enum InputJob: String, CaseIterable, Identifiable, Sendable {
-    case move, shape
+    case move, shape, marks
 
     var id: String { rawValue }
 
@@ -13,13 +13,14 @@ enum InputJob: String, CaseIterable, Identifiable, Sendable {
         switch self {
         case .move: "Move objects and pose them"
         case .shape: "Pull faces, edges and corners"
+        case .marks: "Place pins and dots"
         }
     }
 
     var standard: InputHand {
         switch self {
         case .move: .fingers
-        case .shape: .pencil
+        case .shape, .marks: .pencil
         }
     }
 
