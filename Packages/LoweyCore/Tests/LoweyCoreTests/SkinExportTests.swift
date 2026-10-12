@@ -47,6 +47,23 @@ final class SkinExportTests: XCTestCase {
         }
     }
 
+    /// SPIKE (U4 step 7): our own FBX writer. CI opens this file in Godot (ufbx) and Blender.
+    func testARiggedThingLeavesAsAnFBXOfItsOwn() throws {
+        let (scene, skin) = try Self.animatedTail()
+        let fbx = FBXSkin.file(skin, name: "Creature", tracks: scene.timeline.tracks, fps: 30)
+        XCTAssertEqual(fbx.prefix(20), Data("Kaydara FBX Binary  ".utf8))
+        XCTAssertEqual(fbx[23 ..< 27].withUnsafeBytes { $0.loadUnaligned(as: UInt32.self) }.littleEndian, 7400)
+        XCTAssertGreaterThan(fbx.count, 10000)
+        let angle = FBXSkin.euler(Quat(angle: .pi / 2, axis: .unitZ))
+        XCTAssertEqual(angle.z, 90, accuracy: 1e-9)
+        XCTAssertEqual(FBXSkin.Builder.unwrapped(Vec3(-179, 0, 0), near: Vec3(179, 0, 0)).x, 181, accuracy: 1e-9)
+        if let directory = ProcessInfo.processInfo.environment["ACCEPTANCE_DIR"] {
+            let folder = URL(fileURLWithPath: directory).appendingPathComponent("rigged")
+            try FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
+            try fbx.write(to: folder.appendingPathComponent("tail.fbx"))
+        }
+    }
+
     func testRepeatsArePlayedOutAndAStillPoseStandsInTheJoints() throws {
         var (scene, skin) = try Self.animatedTail()
         for index in scene.timeline.tracks.indices {

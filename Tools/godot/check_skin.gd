@@ -1,7 +1,7 @@
 extends SceneTree
-## Opens a rigged, animated glTF the way Godot's importer does and checks it plays: a skeleton with bones, a mesh skinned
+## Opens a rigged, animated glTF or FBX the way Godot's importer does and checks it plays: a skeleton with bones, a mesh skinned
 ## to it, an animation, and bones that move when the animation runs. Prints "MAQUETTE GODOT: ..." and exits 1 on any
-## failure. Usage: godot --headless --path Tools/godot --script check_skin.gd -- /absolute/path/to/file.glb
+## failure. Usage: godot --headless --path Tools/godot --script check_skin.gd -- /absolute/path/to/file.glb (or .fbx)
 
 
 func fail(message: String) -> void:
@@ -14,8 +14,9 @@ func _initialize() -> void:
 	if args.is_empty():
 		fail("no file given")
 		return
-	var document := GLTFDocument.new()
-	var state := GLTFState.new()
+	# FBX goes through Godot's own FBX reader (ufbx), glTF through its glTF reader.
+	var document: GLTFDocument = FBXDocument.new() if args[0].ends_with(".fbx") else GLTFDocument.new()
+	var state: GLTFState = FBXState.new() if args[0].ends_with(".fbx") else GLTFState.new()
 	var error := document.append_from_file(args[0], state)
 	if error != OK:
 		fail("could not read %s (error %d)" % [args[0], error])
@@ -33,9 +34,13 @@ func _initialize() -> void:
 	if skeleton.get_bone_count() < 2:
 		fail("only %d bones" % skeleton.get_bone_count())
 		return
+	# glTF gives mesh instances; the FBX reader gives importer mesh instances (the editor turns them into the same).
 	var skinned := false
 	for mesh in scene.find_children("*", "MeshInstance3D", true, false):
 		if (mesh as MeshInstance3D).skin != null:
+			skinned = true
+	for mesh in scene.find_children("*", "ImporterMeshInstance3D", true, false):
+		if (mesh as ImporterMeshInstance3D).skin != null:
 			skinned = true
 	if not skinned:
 		fail("no mesh is skinned to the skeleton")
