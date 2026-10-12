@@ -28,7 +28,7 @@ struct RigSection: View {
         }
     }
 
-    @ViewBuilder private func start(_ object: SceneObject) {
+    @ViewBuilder private func start(_ object: SceneObject) -> some View {
         TileGrid {
             ForEach(shortcuts(for: object)) { body in
                 TileButton(title: body.title, systemName: body.systemImage, identifier: "rig-body-\(body.rawValue)") {
@@ -47,7 +47,7 @@ struct RigSection: View {
         return BodyShortcut.allCases
     }
 
-    @ViewBuilder private func rigged(_ object: SceneObject) {
+    @ViewBuilder private func rigged(_ object: SceneObject) -> some View {
         HmmPillButton("Change the rig", systemName: "slider.horizontal.3", prominent: true) { editor.startMarking(object.id) }
             .accessibilityIdentifier("rig-change")
         Hint(object.kind == .group ? "Each part rides the bone nearest it. Drag a hand or a foot on the stage to pose it."
@@ -62,7 +62,7 @@ struct RigSection: View {
             .accessibilityIdentifier("rig-remove")
     }
 
-    @ViewBuilder private func bending(_ object: SceneObject) {
+    @ViewBuilder private func bending(_ object: SceneObject) -> some View {
         if editor.rigFits(object) {
             Hint("The skin follows the bones by itself. Paint a bone's weight only where a bend looks wrong.")
             HmmPillButton("Paint weights", systemName: RigSettings.Mode.weights.systemImage) { editor.startPaintingWeights(object.id) }
