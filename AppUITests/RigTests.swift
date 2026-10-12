@@ -3,7 +3,7 @@ import XCTest
 /// U4's acceptance on the iPad simulator, timed as a person would do it (taps and strokes; checks come after). With
 /// no Pencil a finger does the Pencil's jobs, so the strokes here place the pins and dots. Under 10 s for a tail and 30 s
 /// for a person is the claim for a person on an iPad (the device checklist); CI's shared simulator spends seconds of
-/// its own on each tap, so a run fails only past half as much again (D-175).
+/// its own on each tap and on the weights, so a run fails only past 20 s and 45 s (D-175, D-279).
 @MainActor
 final class RigTests: XCTestCase {
     private var app: XCUIApplication!
@@ -47,6 +47,11 @@ final class RigTests: XCTestCase {
 
     private var trail: String { element("debug-trail").label }
 
+    /// A slow pull from one point to another, held a moment first, so the stage reads where it started.
+    private func pull(from start: CGPoint, to end: CGPoint) {
+        at(start).press(forDuration: 0.25, thenDragTo: at(end), withVelocity: XCUIGestureVelocity(250), thenHoldForDuration: 0.1)
+    }
+
     /// Waits until the trail shows a command (weights land in the background).
     private func waitForTrail(_ text: String, timeout: TimeInterval = 40) -> Bool {
         let deadline = Date().addingTimeInterval(timeout)
@@ -88,14 +93,14 @@ final class RigTests: XCTestCase {
         XCTAssertTrue(handles.firstMatch.waitForExistence(timeout: 5), "its pins are handles")
         let tip = handles.allElementsBoundByIndex.map(\.frame).min { $0.midY < $1.midY } ?? .zero
         // Pull the tip to the side: the stretch bends, the base holds.
-        at(CGPoint(x: tip.midX, y: tip.midY)).press(forDuration: 0.1, thenDragTo: at(CGPoint(x: tip.midX + 120, y: tip.midY + 30)))
+        pull(from: CGPoint(x: tip.midX, y: tip.midY), to: CGPoint(x: tip.midX + 120, y: tip.midY + 30))
         let elapsed = Date().timeIntervalSince(start)
         shot("A tail pinned and posed")
         XCTAssertTrue(waitForTrail("cmd=Change", timeout: 5), "the pull turned its joints: \(trail)")
         let report = XCTAttachment(string: String(format: "Pinned and posed in %.1f s", elapsed))
         report.lifetime = .keepAlways
         add(report)
-        XCTAssertLessThan(elapsed, 15)
+        XCTAssertLessThan(elapsed, 20)
     }
 
     func testAPersonIsRiggedAndPosedInUnderThirtySeconds() {
@@ -121,7 +126,7 @@ final class RigTests: XCTestCase {
         tap("rig-person-done")
         XCTAssertTrue(waitForTrail("as a person"), "the person rig was stored: \(trail)")
         // Raise a hand: the arm follows.
-        at(CGPoint(x: hand.midX, y: hand.midY)).press(forDuration: 0.1, thenDragTo: at(CGPoint(x: hand.midX + 40, y: hand.midY - 140)))
+        pull(from: CGPoint(x: hand.midX, y: hand.midY), to: CGPoint(x: hand.midX + 40, y: hand.midY - 140))
         let elapsed = Date().timeIntervalSince(start)
         shot("A person rigged and posed")
         XCTAssertTrue(waitForTrail("cmd=Change", timeout: 5), "the pull turned its arm: \(trail)")
