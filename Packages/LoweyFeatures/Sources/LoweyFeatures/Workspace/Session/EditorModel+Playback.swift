@@ -9,7 +9,7 @@ extension EditorModel {
     var timeline: Timeline { session.document.scene.timeline }
 
     /// The range playback loops over (the loop region, else the whole timeline).
-    var playRange: TimeRange { timeline.loop ?? TimeRange(start: 0, end: timeline.duration) }
+    var playRange: TimeRange { flipbookLoopRange ?? timeline.loop ?? TimeRange(start: 0, end: timeline.duration) }
 
     // MARK: Display
 

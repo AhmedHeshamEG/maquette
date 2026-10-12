@@ -137,14 +137,15 @@ extension EditorModel {
     }
 
     func refreshGuide() {
-        stage?.showGuide(currentGuide)
+        if drawsOnSheet { ensureSheet() }
+        refreshSheet()
         stage?.showScreenGuide(screenGuide)
         refreshPrecisionOverlay()
     }
 
     /// The frame's drawing guide over the stage while the flipbook tool draws.
     var screenGuide: ScreenGuide? {
-        guard tool == .flipbook, flipbook.mode == .draw, let guide = frameGuide else { return nil }
+        guard tool == .flipbook, flipbook.mode == .draw, flipbook.onCamera, let guide = frameGuide else { return nil }
         let rect = frameRect
         guard rect.height > 1 else { return nil }
         let halfWidth = Double(rect.width / rect.height) / 2
@@ -156,6 +157,7 @@ extension EditorModel {
     }
 
     func toolChanged(from oldTool: StageTool) {
+        lastTool = oldTool
         lassoPoints = []
         scatterPreview = nil
         if tool == .scatter, selection.isEmpty { app.show("Select what to scatter first (a tree, a rock…), then drag an area") }
@@ -179,7 +181,7 @@ extension EditorModel {
     func cameraMoved(_ viewpoint: Viewpoint) {
         if projection != viewpoint.projection { projection = viewpoint.projection }
         if abs(viewYaw - viewpoint.yaw) > 1 { viewYaw = viewpoint.yaw }
-        if tool.usesGuide { refreshGuide() }
+        if drawsOnSheet { viewRevision &+= 1 }
         if tool == .model { modelCameraMoved() }
         if tool == .rig { refreshModelOverlay() }
         if precision.bed != nil || precision.showsDimensions { refreshPrecisionOverlay() }
@@ -217,12 +219,12 @@ extension EditorModel {
         guard let stage else { return .zero }
         let point = screenPoint ?? CGPoint(x: stage.bounds.midX, y: stage.bounds.midY)
         if let (_, hit) = stage.pickObject(at: point), hit.normal.y > 0.6 {
-            return snap.grid ? Snapping.snapToGrid(hit.point, size: snap.gridSize) : hit.point
+            return snapping.grid ? Snapping.snapToGrid(hit.point, size: snapping.gridSize) : hit.point
         }
         let target = stage.viewpoint.target
         let ground = stage.groundPoint(at: point) ?? baseScene.viewpoint.target
         let clamped = ground.distance(to: target) > 60 ? Vec3(target.x, 0, target.z) : ground
-        return snap.grid ? Snapping.snapToGrid(clamped, size: snap.gridSize) : clamped
+        return snapping.grid ? Snapping.snapToGrid(clamped, size: snapping.gridSize) : clamped
     }
 
     /// Continuous drawing while something moves by itself (playback, a performance, face or iPad camera).

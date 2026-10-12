@@ -3,7 +3,9 @@ import LoweyCore
 import LoweyEngine
 import UIKit
 
-/// The Pencil on a flipbook: draws a stroke into the drawing at the playhead, or erases from it.
+/// The Pencil on a flipbook: draws a stroke into the drawing at the playhead (on the sheet, or on the camera's frame),
+/// or erases from it. Draw, then hold: the stroke becomes a clean line, arc or circle. While the frame strip loops the
+/// drawings, the one under the playhead holds still for the stroke.
 extension StageGestures {
     func flipbookStroke(_ recognizer: StrokeGestureRecognizer, editor: EditorModel) {
         let samples = recognizer.samples
@@ -12,13 +14,22 @@ extension StageGestures {
             gestureKey = UUID().uuidString
             strokeSeed = EditorModel.strokeSeed()
             consumedSamples = 0
+            snapped = nil
             inkPath = []
             flipSamples = []
+            editor.holdFlipbookLoop()
+            editor.ensureSheet()
             flipbookContinue(Array(samples), recognizer: recognizer, editor: editor)
         case .changed:
-            flipbookContinue(Array(samples.suffix(from: min(consumedSamples, samples.count))), recognizer: recognizer, editor: editor)
+            if snapped != nil {
+                adjustFlipbookShape(editor: editor)
+            } else {
+                flipbookContinue(Array(samples.suffix(from: min(consumedSamples, samples.count))), recognizer: recognizer, editor: editor)
+            }
         case .ended:
-            flipbookContinue(Array(samples.suffix(from: min(consumedSamples, samples.count))), recognizer: recognizer, editor: editor)
+            if snapped == nil {
+                flipbookContinue(Array(samples.suffix(from: min(consumedSamples, samples.count))), recognizer: recognizer, editor: editor)
+            }
             if editor.flipbook.mode == .draw { editor.commitFlipbookStrokes(flipbookCopies(flipSamples, editor: editor), seed: strokeSeed) }
             flipbookFinish(editor: editor)
         default:
@@ -39,12 +50,40 @@ extension StageGestures {
         }
     }
 
+    /// Held after drawing: the flipbook stroke becomes its clean shape (in stage points, like the stroke).
+    func snapFlipbookToQuickShape(editor: EditorModel) {
+        guard editor.flipbook.mode == .draw, let anchor = stroke.samples.last?.location else { return }
+        let points = flipSamples.map(\.point)
+        guard let shape = QuickShape.fit(points) else { return }
+        let pressure = flipSamples.map(\.pressure).reduce(0, +) / Double(max(flipSamples.count, 1))
+        snapped = (shape, anchor, pressure)
+        redrawFlipbookShape(shape.points, pressure: pressure, editor: editor)
+        HmmHaptics.play(.selection)
+        if let stage { HmmPencilHaptics.completed(at: anchor, in: stage) }
+        editor.app.show("\(shape.kind.title). Keep holding and drag to adjust")
+    }
+
+    private func adjustFlipbookShape(editor: EditorModel) {
+        guard let snapped, let tip = stroke.samples.last?.location else { return }
+        let shape = QuickShape.adjusted(snapped.shape, anchor: Vec2(Double(snapped.anchor.x), Double(snapped.anchor.y)),
+                                        current: Vec2(Double(tip.x), Double(tip.y)))
+        redrawFlipbookShape(shape.points, pressure: snapped.pressure, editor: editor)
+    }
+
+    private func redrawFlipbookShape(_ points: [Vec2], pressure: Double, editor: EditorModel) {
+        let start = flipSamples.first?.time ?? 0
+        flipSamples = points.enumerated().map { index, point in BrushInput(point: point, pressure: pressure, time: start + Double(index) / 240) }
+        if let stage { showFlipbookPreview(stroke, editor: editor, stage: stage) }
+    }
+
     private func flipbookFinish(editor: EditorModel) {
         stage?.showLiveStroke(nil)
         editor.strokeEnded()
         editor.endGesture()
+        editor.resumeFlipbookLoop()
         inkPath = []
         flipSamples = []
         consumedSamples = 0
+        snapped = nil
     }
 }

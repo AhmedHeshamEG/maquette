@@ -641,6 +641,22 @@
         }
       }
     },
+    "A finger held down while the Pencil works": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Un dito appoggiato mentre lavora la Pencil"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "إصبع مضغوط بينما يعمل القلم"
+          }
+        }
+      }
+    },
     "a hip": {
       "localizations": {
         "it": {
@@ -2089,6 +2105,22 @@
         }
       }
     },
+    "Around": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Avvolto"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ملتفّ"
+          }
+        }
+      }
+    },
     "Array": {
       "localizations": {
         "it": {
@@ -2117,6 +2149,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "سهم"
+          }
+        }
+      }
+    },
+    "As the iPad's Pencil setting says": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Come dice l'impostazione della Pencil dell'iPad"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "كما يقول إعداد القلم في iPad"
           }
         }
       }
@@ -2677,6 +2725,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "العمليات المنطقية على المجسمات (اتحاد، طرح، تقاطع). Copyright The Manifold Authors. Apache License 2.0."
+          }
+        }
+      }
+    },
+    "Both": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Entrambi"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "كلاهما"
           }
         }
       }
@@ -3765,6 +3829,22 @@
         }
       }
     },
+    "Closed shapes fill: pull one up into a solid with Model ▸ Edit.": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le forme chiuse si riempiono: tirane una in un solido con Modello ▸ Modifica."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الأشكال المغلقة تمتلئ: اسحب أحدها لتصبح مجسمًا من النموذج ▸ تحرير."
+          }
+        }
+      }
+    },
     "CMU Pronouncing Dictionary": {
       "localizations": {
         "it": {
@@ -4085,6 +4165,22 @@
         }
       }
     },
+    "Corner": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Angolo"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "زاوية"
+          }
+        }
+      }
+    },
     "Corner cluster": {
       "localizations": {
         "it": {
@@ -4305,6 +4401,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "تعذّر الاستيراد: %@"
+          }
+        }
+      }
+    },
+    "Couldn't keep that picture: %@": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Impossibile tenere quell'immagine: %@"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تعذّر الاحتفاظ بتلك الصورة: %@"
           }
         }
       }
@@ -4741,6 +4853,38 @@
         }
       }
     },
+    "Curve less": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Curva meno"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "انحناء أقل"
+          }
+        }
+      }
+    },
+    "Curve more": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Curva di più"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "انحناء أكثر"
+          }
+        }
+      }
+    },
     "Custom size, frame rate and quality": {
       "localizations": {
         "it": {
@@ -4817,6 +4961,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "اقطع هنا إلى…"
+          }
+        }
+      }
+    },
+    "Cut, copy and paste": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Taglia, copia e incolla"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "قص ونسخ ولصق"
           }
         }
       }
@@ -5121,6 +5281,22 @@
         }
       }
     },
+    "Delete sheet": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Elimina foglio"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "حذف الورقة"
+          }
+        }
+      }
+    },
     "Delete strokes": {
       "localizations": {
         "it": {
@@ -5133,6 +5309,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "حذف الخطوط"
+          }
+        }
+      }
+    },
+    "Delete the sheet and its drawings": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Elimina il foglio e i suoi disegni"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "حذف الورقة ورسوماتها"
           }
         }
       }
@@ -5377,6 +5569,22 @@
         }
       }
     },
+    "Dome": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cupola"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "قبّة"
+          }
+        }
+      }
+    },
     "Done": {
       "localizations": {
         "it": {
@@ -5549,6 +5757,22 @@
         }
       }
     },
+    "Double-tap": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Doppio tocco"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "نقر مزدوج"
+          }
+        }
+      }
+    },
     "Double-tap for the original size": {
       "localizations": {
         "it": {
@@ -5561,6 +5785,38 @@
           "stringUnit": {
             "state": "translated",
             "value": "اضغط مرتين للحجم الأصلي"
+          }
+        }
+      }
+    },
+    "Double-tap the Pencil": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Doppio tocco sulla Pencil"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "انقر القلم مرتين"
+          }
+        }
+      }
+    },
+    "Double-tap with a finger": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Doppio tocco con un dito"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "نقر مزدوج بإصبع"
           }
         }
       }
@@ -5917,6 +6173,22 @@
         }
       }
     },
+    "Draw on the sheet with the Pencil, or tap the corners. Its length and angle show as you go; tap a number to type it.": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Disegna sul foglio con la Pencil, o tocca gli angoli. Lunghezza e angolo si vedono mentre disegni; tocca un numero per scriverlo."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ارسم على الورقة بالقلم، أو انقر الزوايا. يظهر الطول والزاوية أثناء الرسم؛ انقر رقمًا لتكتبه."
+          }
+        }
+      }
+    },
     "Draw the bones of a drawing with the Pencil": {
       "localizations": {
         "it": {
@@ -5929,6 +6201,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "ارسم عظام الرسمة بالقلم"
+          }
+        }
+      }
+    },
+    "Draw the first drawing": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fai il primo disegno"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ارسم الرسمة الأولى"
           }
         }
       }
@@ -5965,6 +6253,22 @@
         }
       }
     },
+    "Draw to try the curve: the line is as wide as the pressure it gets.": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Disegna per provare la curva: la linea è larga quanto la pressione che riceve."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ارسم لتجرّب المنحنى: عرض الخط بقدر الضغط الذي يصله."
+          }
+        }
+      }
+    },
     "Draw with a finger too": {
       "localizations": {
         "it": {
@@ -5981,6 +6285,22 @@
         }
       }
     },
+    "Draw your lightest line.": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Disegna la tua linea più leggera."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ارسم أخفّ خط لديك."
+          }
+        }
+      }
+    },
     "Draw, drop a picture or add a note.": {
       "localizations": {
         "it": {
@@ -5993,6 +6313,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "ارسم، أو أفلت صورة، أو أضف ملاحظة."
+          }
+        }
+      }
+    },
+    "Drawing %lld, held %lld frames": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Disegno %lld, tenuto %lld fotogrammi"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الرسمة %lld، تبقى %lld إطارات"
           }
         }
       }
@@ -6281,6 +6617,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "الديناميكيات"
+          }
+        }
+      }
+    },
+    "Each one can be switched off. Nothing here pops up on the screen: they are felt in the hand.": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ognuna si può spegnere. Niente compare sullo schermo: si sentono nella mano."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "يمكن إيقاف كل واحدة. لا شيء هنا يظهر على الشاشة: إنها تُحَسّ في اليد."
           }
         }
       }
@@ -6713,6 +7065,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "مسح"
+          }
+        }
+      }
+    },
+    "Eraser": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gomma"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الممحاة"
           }
         }
       }
@@ -7537,6 +7905,22 @@
         }
       }
     },
+    "Fingers": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dita"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الأصابع"
+          }
+        }
+      }
+    },
     "Finish": {
       "localizations": {
         "it": {
@@ -7693,6 +8077,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "مسطّحة"
+          }
+        }
+      }
+    },
+    "Flat strips on the sheet.": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Strisce piatte sul foglio."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "شرائط مسطحة على الورقة."
           }
         }
       }
@@ -7985,6 +8385,22 @@
         }
       }
     },
+    "Fold": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chiudi"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "طيّ"
+          }
+        }
+      }
+    },
     "Fold the panel": {
       "localizations": {
         "it": {
@@ -8253,6 +8669,22 @@
         }
       }
     },
+    "Four-finger tap": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tocco con quattro dita"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "نقر بأربعة أصابع"
+          }
+        }
+      }
+    },
     "Fours": {
       "localizations": {
         "it": {
@@ -8281,6 +8713,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "تأطير"
+          }
+        }
+      }
+    },
+    "Frame a thing; again, look straight at the face you touched": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Inquadra una cosa; di nuovo, guarda dritto la faccia toccata"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تأطير شيء؛ ومرة أخرى، النظر مباشرةً إلى الوجه الذي لمسته"
           }
         }
       }
@@ -8857,6 +9305,22 @@
         }
       }
     },
+    "Grid and units": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Griglia e unità"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الشبكة والوحدات"
+          }
+        }
+      }
+    },
     "Grid on the ground": {
       "localizations": {
         "it": {
@@ -9001,6 +9465,22 @@
         }
       }
     },
+    "Hand": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mano"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "اليد"
+          }
+        }
+      }
+    },
     "Haptics": {
       "localizations": {
         "it": {
@@ -9045,6 +9525,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "الرأس: %@"
+          }
+        }
+      }
+    },
+    "Heavy hand": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mano pesante"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "يد ثقيلة"
           }
         }
       }
@@ -9097,6 +9593,22 @@
         }
       }
     },
+    "Hide everything": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nascondi tutto"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "إخفاء كل شيء"
+          }
+        }
+      }
+    },
     "Hide Interface": {
       "localizations": {
         "it": {
@@ -9109,6 +9621,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "إخفاء الواجهة"
+          }
+        }
+      }
+    },
+    "Hide or show everything but the canvas": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nascondi o mostra tutto tranne la tela"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "إخفاء أو إظهار كل شيء ما عدا اللوحة"
           }
         }
       }
@@ -9205,6 +9733,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "السجلّ"
+          }
+        }
+      }
+    },
+    "Hold at the end of a stroke": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tieni premuto alla fine di un tratto"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "اضغط مطولًا في نهاية الخط"
           }
         }
       }
@@ -9321,6 +9865,22 @@
         }
       }
     },
+    "Hover and double-tap": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Passaggio e doppio tocco"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "التحويم والنقر المزدوج"
+          }
+        }
+      }
+    },
     "Hover glow": {
       "localizations": {
         "it": {
@@ -9365,6 +9925,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "طريقة رسم الحركة (ناعمة، على اثنين) في المظهر ▸ اللمسة الأخيرة."
+          }
+        }
+      }
+    },
+    "How near": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Quanto vicino"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "إلى أي قرب"
           }
         }
       }
@@ -10441,6 +11017,22 @@
         }
       }
     },
+    "Last tool": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ultimo strumento"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الأداة السابقة"
+          }
+        }
+      }
+    },
     "Lathe": {
       "localizations": {
         "it": {
@@ -10793,6 +11385,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "الضوء والكاميرا"
+          }
+        }
+      }
+    },
+    "Light hand": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mano leggera"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "يد خفيفة"
           }
         }
       }
@@ -11769,6 +12377,22 @@
         }
       }
     },
+    "Midpoint": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Punto medio"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "منتصف"
+          }
+        }
+      }
+    },
     "Millimetres": {
       "localizations": {
         "it": {
@@ -11813,6 +12437,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "الأدنى"
+          }
+        }
+      }
+    },
+    "Mine": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La mia"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "خاصتي"
           }
         }
       }
@@ -12245,6 +12885,22 @@
         }
       }
     },
+    "Move objects and pose them": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Spostare gli oggetti e metterli in posa"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تحريك الأشياء ووضعها في وضعيات"
+          }
+        }
+      }
+    },
     "Move out": {
       "localizations": {
         "it": {
@@ -12445,6 +13101,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "التنقل (دوران، تحريك، تكبير)"
+          }
+        }
+      }
+    },
+    "Moving the view is always fingers.": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lo sguardo si muove sempre con le dita."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تحريك المنظر دائمًا بالأصابع."
           }
         }
       }
@@ -12737,6 +13409,22 @@
         }
       }
     },
+    "New sheet": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nuovo foglio"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ورقة جديدة"
+          }
+        }
+      }
+    },
     "New stack": {
       "localizations": {
         "it": {
@@ -12769,6 +13457,22 @@
         }
       }
     },
+    "New track": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nuova traccia"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "مسار جديد"
+          }
+        }
+      }
+    },
     "New variation": {
       "localizations": {
         "it": {
@@ -12781,6 +13485,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "تنويع جديد"
+          }
+        }
+      }
+    },
+    "Next drawing": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Disegno successivo"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الرسمة التالية"
           }
         }
       }
@@ -13185,6 +13905,22 @@
         }
       }
     },
+    "Now your heaviest.": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ora la più pesante."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "والآن أثقل خط."
+          }
+        }
+      }
+    },
     "Now · %lld steps back are kept": {
       "localizations": {
         "it": {
@@ -13377,6 +14113,22 @@
         }
       }
     },
+    "On the object": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sull'oggetto"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "على الشيء"
+          }
+        }
+      }
+    },
     "On the selected object, else on the camera, starting at the playhead.": {
       "localizations": {
         "it": {
@@ -13405,6 +14157,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "على التحديد؛ وللشخصية يوضع على رأسها."
+          }
+        }
+      }
+    },
+    "On the sheet, half see-through: draw over it": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sul foglio, semitrasparente: disegnaci sopra"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "على الورقة، شبه شفافة: ارسم فوقها"
           }
         }
       }
@@ -13533,6 +14301,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "إصبع واحد يرسم إلى أن يلمس قلم Apple الشاشة. بعدها يرسم القلم وتحرّك الأصابع المشهد، ما لم يكن هذا الخيار مفعّلًا."
+          }
+        }
+      }
+    },
+    "One finger draws until an Apple Pencil touches the screen; then the Pencil draws, unless a finger draws too.": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Un dito disegna finché una Apple Pencil non tocca lo schermo; poi disegna la Pencil, a meno che disegni anche un dito."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "إصبع واحد يرسم حتى يلمس قلم Apple الشاشة؛ ثم يرسم القلم، إلا إذا كان الإصبع يرسم أيضًا."
           }
         }
       }
@@ -13885,6 +14669,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "افتح المكتبة"
+          }
+        }
+      }
+    },
+    "Open the reference": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Apri il riferimento"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "فتح المرجع"
           }
         }
       }
@@ -14385,6 +15185,22 @@
         }
       }
     },
+    "Parallel": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Parallela"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "موازٍ"
+          }
+        }
+      }
+    },
     "Part": {
       "localizations": {
         "it": {
@@ -14413,6 +15229,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "لصق"
+          }
+        }
+      }
+    },
+    "Paste a reference": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Incolla un riferimento"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "لصق مرجع"
           }
         }
       }
@@ -14669,6 +15501,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "تم تسجيل الأداء"
+          }
+        }
+      }
+    },
+    "Perpendicular": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Perpendicolare"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "عمودي"
           }
         }
       }
@@ -15393,6 +16241,22 @@
         }
       }
     },
+    "Pressure curve": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Curva di pressione"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "منحنى الضغط"
+          }
+        }
+      }
+    },
     "Preview of the change": {
       "localizations": {
         "it": {
@@ -15437,6 +16301,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "مستوى المعاينة %@: تُصدَّر الأعمال دائمًا بأعلى جودة."
+          }
+        }
+      }
+    },
+    "Previous drawing": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Disegno precedente"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الرسمة السابقة"
           }
         }
       }
@@ -15581,6 +16461,22 @@
         }
       }
     },
+    "Pull faces, edges and corners": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tirare facce, spigoli e vertici"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "سحب الأوجه والحواف والزوايا"
+          }
+        }
+      }
+    },
     "Pull light out": {
       "localizations": {
         "it": {
@@ -15721,6 +16617,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "دفع الظل"
+          }
+        }
+      }
+    },
+    "Push the sheet nearer or farther": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Avvicina o allontana il foglio"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "قرّب الورقة أو أبعدها"
           }
         }
       }
@@ -16185,6 +17097,22 @@
         }
       }
     },
+    "Redo; hold to keep redoing": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ripeti; tieni premuto per continuare"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "إعادة؛ اضغط مطولًا للاستمرار"
+          }
+        }
+      }
+    },
     "Reference": {
       "localizations": {
         "it": {
@@ -16429,6 +17357,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "إعادة تسمية الرزمة"
+          }
+        }
+      }
+    },
+    "Rename the sheet": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rinomina il foglio"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "إعادة تسمية الورقة"
           }
         }
       }
@@ -18161,6 +19105,22 @@
         }
       }
     },
+    "Select with a finger (draw around keys and clips)": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Seleziona con un dito (disegna intorno a chiavi e clip)"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "التحديد بالإصبع (ارسم حول المفاتيح والمقاطع)"
+          }
+        }
+      }
+    },
     "Select your character first": {
       "localizations": {
         "it": {
@@ -18609,6 +19569,54 @@
         }
       }
     },
+    "Sheet": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Foglio"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ورقة"
+          }
+        }
+      }
+    },
+    "Sheet: %@": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Foglio: %@"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الورقة: %@"
+          }
+        }
+      }
+    },
+    "Sheets": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fogli"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الأوراق"
+          }
+        }
+      }
+    },
     "Shell": {
       "localizations": {
         "it": {
@@ -18637,6 +19645,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "تجويف مع ترك هذه مفتوحة"
+          }
+        }
+      }
+    },
+    "Shortcuts": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Scorciatoie"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الاختصارات"
           }
         }
       }
@@ -19149,6 +20173,22 @@
         }
       }
     },
+    "Slot %lld": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Posto %lld"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الخانة %lld"
+          }
+        }
+      }
+    },
     "Smallest size": {
       "localizations": {
         "it": {
@@ -19449,6 +20489,54 @@
           "stringUnit": {
             "state": "translated",
             "value": "مسافة الالتقاط"
+          }
+        }
+      }
+    },
+    "Snapping flips for that one move": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "L'aggancio si inverte per quella mossa"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ينقلب الالتقاط لتلك الحركة"
+          }
+        }
+      }
+    },
+    "Snapping off": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aggancio spento"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الالتقاط متوقف"
+          }
+        }
+      }
+    },
+    "Snapping on": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aggancio acceso"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الالتقاط مفعّل"
           }
         }
       }
@@ -19933,6 +21021,70 @@
         }
       }
     },
+    "Squeeze an Apple Pencil Pro and these six open around its tip. A Pencil that can't squeeze opens them with a double-tap.": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Stringi una Apple Pencil Pro e questi sei si aprono intorno alla punta. Una Pencil che non si stringe li apre con un doppio tocco."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "اضغط على قلم Apple Pro فتنفتح هذه الستة حول طرفه. القلم الذي لا يُضغط يفتحها بنقر مزدوج."
+          }
+        }
+      }
+    },
+    "Squeeze menu": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Menu della stretta"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "قائمة الضغط"
+          }
+        }
+      }
+    },
+    "Squeeze the Pencil": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Stringi la Pencil"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "اضغط على القلم"
+          }
+        }
+      }
+    },
+    "Stabilisation": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Stabilizzazione"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "التثبيت"
+          }
+        }
+      }
+    },
     "Stack": {
       "localizations": {
         "it": {
@@ -20393,6 +21545,54 @@
           "stringUnit": {
             "state": "translated",
             "value": "الضربة"
+          }
+        }
+      }
+    },
+    "Strokes go into the drawing at the playhead; past the last drawing they start a new one.": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "I tratti vanno nel disegno sotto la testina; dopo l'ultimo disegno ne iniziano uno nuovo."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الخطوط تذهب إلى الرسمة عند رأس التشغيل؛ بعد آخر رسمة تبدأ واحدة جديدة."
+          }
+        }
+      }
+    },
+    "Strokes join “%@”. Tap empty space with a finger to start a new drawing.": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "I tratti si uniscono a “%@”. Tocca uno spazio vuoto con un dito per iniziare un nuovo disegno."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الخطوط تنضم إلى “%@”. انقر مساحة فارغة بإصبع لتبدأ رسمة جديدة."
+          }
+        }
+      }
+    },
+    "Stuck to the camera": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Attaccato alla camera"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ملتصق بالكاميرا"
           }
         }
       }
@@ -20925,6 +22125,22 @@
         }
       }
     },
+    "Tap a face, or a shape sketched in Draw, and drag it. Tap the number to type an exact size, like 25 or 2*12.": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tocca una faccia, o una forma disegnata in Disegna, e trascinala. Tocca il numero per scrivere una misura esatta, come 25 o 2*12."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "انقر وجهًا، أو شكلًا رُسم في الرسم، واسحبه. انقر الرقم لتكتب مقاسًا دقيقًا، مثل 25 أو 2*12."
+          }
+        }
+      }
+    },
     "Tap a line of a sketch to offset it": {
       "localizations": {
         "it": {
@@ -21369,6 +22585,22 @@
         }
       }
     },
+    "Tap with a finger to move the sheet there: onto a surface, or into the air facing you. Drag its grip to push it nearer or farther.": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tocca con un dito per spostare lì il foglio: su una superficie, o nell'aria verso di te. Trascina la maniglia per avvicinarlo o allontanarlo."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "انقر بإصبع لتنقل الورقة إلى هناك: على سطح، أو في الهواء مواجهةً لك. اسحب مقبضها لتقرّبها أو تبعدها."
+          }
+        }
+      }
+    },
     "Taper": {
       "localizations": {
         "it": {
@@ -21397,6 +22629,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "الأسنان (إي، س)"
+          }
+        }
+      }
+    },
+    "Test pad": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Area di prova"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "لوحة التجربة"
           }
         }
       }
@@ -21477,6 +22725,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "لم ينجح ذلك: %@"
+          }
+        }
+      }
+    },
+    "That isn't a picture": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Non è un'immagine"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "هذه ليست صورة"
           }
         }
       }
@@ -21801,6 +23065,22 @@
         }
       }
     },
+    "The iPad's own setting is in Settings ▸ Apple Pencil: the eraser, the last tool or the colours.": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "L'impostazione dell'iPad è in Impostazioni ▸ Apple Pencil: la gomma, l'ultimo strumento o i colori."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "إعداد iPad نفسه في الإعدادات ▸ Apple Pencil: الممحاة أو الأداة السابقة أو الألوان."
+          }
+        }
+      }
+    },
     "The joystick is in Settings ▸ Stage when you want it back": {
       "localizations": {
         "it": {
@@ -21957,6 +23237,54 @@
           "stringUnit": {
             "state": "translated",
             "value": "تعذّر نقل الطلاء إلى الشكل الجديد"
+          }
+        }
+      }
+    },
+    "The Pencil's hover scrubs": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Il passaggio della Pencil scorre il tempo"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تحويم القلم يحرّك الزمن"
+          }
+        }
+      }
+    },
+    "The quick menu": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Il menu rapido"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "القائمة السريعة"
+          }
+        }
+      }
+    },
+    "The quick menu at the tip": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Il menu rapido sulla punta"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "القائمة السريعة عند الطرف"
           }
         }
       }
@@ -22153,6 +23481,22 @@
         }
       }
     },
+    "The stroke becomes a clean line, arc or circle": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Il tratto diventa una linea, un arco o un cerchio puliti"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "يصبح الخط مستقيمًا أو قوسًا أو دائرة نظيفة"
+          }
+        }
+      }
+    },
     "The subject isn't in the previous shot": {
       "localizations": {
         "it": {
@@ -22265,6 +23609,22 @@
         }
       }
     },
+    "The whole library: Brush Studio, new sets, imports": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tutta la libreria: Brush Studio, nuovi set, importazioni"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "المكتبة كاملة: استوديو الفرش، مجموعات جديدة، الاستيراد"
+          }
+        }
+      }
+    },
     "The whole scene as a glTF (.glb).": {
       "localizations": {
         "it": {
@@ -22345,6 +23705,22 @@
         }
       }
     },
+    "There's no picture on the clipboard": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Negli appunti non c'è un'immagine"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "لا توجد صورة في الحافظة"
+          }
+        }
+      }
+    },
     "There's no solid to check yet": {
       "localizations": {
         "it": {
@@ -22373,6 +23749,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "أسمك"
+          }
+        }
+      }
+    },
+    "Thickness follows speed on a Pencil without pressure": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Su una Pencil senza pressione lo spessore segue la velocità"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "في قلم بلا ضغط، يتبع السُّمك السرعة"
           }
         }
       }
@@ -22713,6 +24105,22 @@
         }
       }
     },
+    "This project remembers these. What snaps: hold the magnet on the stage.": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Questo progetto li ricorda. Cosa si aggancia: tieni premuto il magnete sulla scena."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "يتذكر هذا المشروع هذه الإعدادات. ما يلتقط: اضغط مطولًا على المغناطيس في المسرح."
+          }
+        }
+      }
+    },
     "This property has no curve (colours and switches step from key to key).": {
       "localizations": {
         "it": {
@@ -22817,6 +24225,38 @@
           "stringUnit": {
             "state": "translated",
             "value": "هذا المفتاح لأصحاب المجالات الأخرى الذين يريدون مساعدًا يدير التطبيق من حاسوبهم. يبقى مطفأً حتى تشغّله."
+          }
+        }
+      }
+    },
+    "Three-finger swipe down": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tre dita verso il basso"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "سحب ثلاثة أصابع للأسفل"
+          }
+        }
+      }
+    },
+    "Three-finger tap": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tocco con tre dita"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "نقر بثلاثة أصابع"
           }
         }
       }
@@ -23285,6 +24725,38 @@
         }
       }
     },
+    "Trace it on the sheet": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ricalcalo sul foglio"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "شفّها على الورقة"
+          }
+        }
+      }
+    },
+    "Trace: %@": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ricalco: %@"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "شفّ: %@"
+          }
+        }
+      }
+    },
     "Track": {
       "localizations": {
         "it": {
@@ -23733,6 +25205,22 @@
         }
       }
     },
+    "Two-finger tap": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tocco con due dita"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "نقر بإصبعين"
+          }
+        }
+      }
+    },
     "Two-shot": {
       "localizations": {
         "it": {
@@ -23857,6 +25345,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "فشل التراجع: %@"
+          }
+        }
+      }
+    },
+    "Undo; hold to keep undoing": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Annulla; tieni premuto per continuare"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تراجع؛ اضغط مطولًا للاستمرار"
           }
         }
       }
@@ -24485,6 +25989,22 @@
         }
       }
     },
+    "What the iPad's Pencil setting says (the eraser, the last tool, the colours)": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ciò che dice l'impostazione Pencil dell'iPad (la gomma, l'ultimo strumento, i colori)"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ما يقوله إعداد القلم في iPad (الممحاة، الأداة السابقة، الألوان)"
+          }
+        }
+      }
+    },
     "What was said": {
       "localizations": {
         "it": {
@@ -24641,6 +26161,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "العرض والعتامة هما منزلقا الشريط الجانبي."
+          }
+        }
+      }
+    },
+    "Width and opacity are the sidebar's sliders. The drawings are on the strip under the stage: + adds the next one.": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Spessore e opacità sono i cursori della barra laterale. I disegni sono sulla striscia sotto la scena: + aggiunge il prossimo."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "العرض والشفافية هما منزلقا الشريط الجانبي. الرسومات على الشريط أسفل المسرح: + يضيف التالية."
           }
         }
       }
@@ -24901,6 +26437,54 @@
         }
       }
     },
+    "Your first stroke starts a flipbook on the camera.": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Il primo tratto avvia un flipbook sulla camera."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "أول خط يبدأ دفتر رسوم متحركة على الكاميرا."
+          }
+        }
+      }
+    },
+    "Your first stroke starts a flipbook on the sheet, where it stays in the space.": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Il primo tratto avvia un flipbook sul foglio, dove resta nello spazio."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "أول خط يبدأ دفتر رسوم متحركة على الورقة، حيث يبقى في الفضاء."
+          }
+        }
+      }
+    },
+    "Your first stroke starts a new ink drawing; the next ones join it. Tap empty space with a finger to start another.": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Il primo tratto avvia un nuovo disegno a inchiostro; i successivi si uniscono. Tocca uno spazio vuoto con un dito per iniziarne un altro."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "أول خط يبدأ رسمة حبر جديدة؛ والخطوط التالية تنضم إليها. انقر مساحة فارغة بإصبع لتبدأ أخرى."
+          }
+        }
+      }
+    },
     "Your library": {
       "localizations": {
         "it": {
@@ -24913,6 +26497,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "مكتبتك"
+          }
+        }
+      }
+    },
+    "Your Pencil": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La tua Pencil"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "قلمك"
           }
         }
       }

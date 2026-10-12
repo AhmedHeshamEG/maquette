@@ -41,6 +41,8 @@ public enum AlignMode: String, Sendable, Codable, CaseIterable {
 
 /// Snapping configuration.
 public struct SnapSettings: Hashable, Sendable, Codable {
+    /// The Snap magnet on the stage (CONTEXT §10.10): off, nothing snaps whatever the switches below say.
+    public var magnet: Bool
     public var grid: Bool
     public var gridSize: Double
     public var rotation: Bool
@@ -58,7 +60,8 @@ public struct SnapSettings: Hashable, Sendable, Codable {
 
     public init(grid: Bool = false, gridSize: Double = 0.25, rotation: Bool = true, rotationStep: Double = 15,
                 ground: Bool = true, objects: Bool = true, objectThreshold: Double = 0.12, corners: Bool = true, edges: Bool = true,
-                faces: Bool = true) {
+                faces: Bool = true, magnet: Bool = true) {
+        self.magnet = magnet
         self.grid = grid
         self.gridSize = gridSize
         self.rotation = rotation
@@ -72,13 +75,14 @@ public struct SnapSettings: Hashable, Sendable, Codable {
     }
 
     private enum CodingKeys: String, CodingKey {
-        case grid, gridSize, rotation, rotationStep, ground, objects, objectThreshold, corners, edges, faces
+        case magnet, grid, gridSize, rotation, rotationStep, ground, objects, objectThreshold, corners, edges, faces
     }
 
     /// Settings saved before a switch existed read it as on (the default), instead of losing the rest.
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         let defaults = SnapSettings()
+        magnet = try container.decodeIfPresent(Bool.self, forKey: .magnet) ?? defaults.magnet
         grid = try container.decodeIfPresent(Bool.self, forKey: .grid) ?? defaults.grid
         gridSize = try container.decodeIfPresent(Double.self, forKey: .gridSize) ?? defaults.gridSize
         rotation = try container.decodeIfPresent(Bool.self, forKey: .rotation) ?? defaults.rotation
@@ -90,6 +94,19 @@ public struct SnapSettings: Hashable, Sendable, Codable {
         edges = try container.decodeIfPresent(Bool.self, forKey: .edges) ?? defaults.edges
         faces = try container.decodeIfPresent(Bool.self, forKey: .faces) ?? defaults.faces
     }
+
+    /// What snaps right now: these settings with the magnet on, nothing with it off. `flipped` is a finger held down
+    /// while the Pencil works: the magnet the other way for that one move.
+    public func effective(flipped: Bool = false) -> SnapSettings {
+        guard magnet != flipped else { return .off }
+        var settings = self
+        settings.magnet = true
+        return settings
+    }
+
+    /// Nothing snaps.
+    public static let off = SnapSettings(grid: false, rotation: false, ground: false, objects: false, corners: false, edges: false, faces: false,
+                                         magnet: false)
 }
 
 public enum Snapping {

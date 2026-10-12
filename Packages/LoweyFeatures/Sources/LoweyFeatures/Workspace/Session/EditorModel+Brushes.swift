@@ -68,20 +68,17 @@ extension EditorModel {
         return GuideAssist.copies(onGuide, guide: guide).map { $0.map(stagePoint(fromFrameGuide:)) }
     }
 
-    // MARK: The guide plane's guide (ink and solid shapes)
+    // MARK: The sheet's guide (ink and solid shapes)
 
-    /// The plane's two axes and origin (the guide plane's own grid: u across, v up the plane).
-    func planeBasis(_ guide: GuideSurface?) -> (origin: Vec3, u: Vec3, v: Vec3)? {
-        guard case let .plane(origin, normal) = guide else { return nil }
-        let n = normal.normalized
-        let up = abs(n.y) > 0.9 ? Vec3(0, 0, -1) : Vec3.unitY
-        let u = up.cross(n).normalized
-        return (origin, u, n.cross(u).normalized)
+    /// The flat sheet's two axes and origin (its own grid: u across, v up the sheet). Curved sheets have no plane guide.
+    func planeBasis(_ sheet: DrawingSheet?) -> (origin: Vec3, u: Vec3, v: Vec3)? {
+        guard sheet?.shape == .flat, let plane = sheetPlane(sheet) else { return nil }
+        return (plane.origin, plane.u, plane.v)
     }
 
-    /// A stroke on the guide plane as its guide makes it (grid, isometric or symmetry on the plane).
-    func guidedOnPlane(_ points: [Vec3], guide surface: GuideSurface?) -> [[Vec3]] {
-        guard let guide = planeGuide, guide.assisted, points.count > 1, let basis = planeBasis(surface) else { return [points] }
+    /// A stroke on a flat sheet as its guide makes it (grid, isometric or symmetry on the sheet).
+    func guidedOnPlane(_ points: [Vec3], sheet: DrawingSheet?) -> [[Vec3]] {
+        guard let guide = planeGuide, guide.assisted, points.count > 1, let basis = planeBasis(sheet) else { return [points] }
         let flat = points.map { Vec2(($0 - basis.origin).dot(basis.u), ($0 - basis.origin).dot(basis.v)) }
         let onGuide = GuideAssist.constrained(flat, guide: guide)
         return GuideAssist.copies(onGuide, guide: guide).map { copy in

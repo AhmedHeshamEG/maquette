@@ -24,6 +24,12 @@ final class StageGestures: NSObject, UIGestureRecognizerDelegate {
     let twist = UIRotationGestureRecognizer()
     let pencilRoll = PencilRollRecognizer()
     let hover = UIHoverGestureRecognizer()
+    /// The Pencil's own drag (pulling faces, sketching, picking loops), apart from the fingers', so a finger resting as
+    /// a modifier never stops it.
+    let pencilPan = UIPanGestureRecognizer()
+    let heldFinger = HeldFingerWatcher()
+    /// What a finger's double-tap framed last (a second double-tap on it looks straight at the face).
+    var lastFramed: ObjectID?
 
     /// A finger held still on an object with the Select tool: its menu (CONTEXT §4.1). A finger that moves is a drag.
     private lazy var holdMenu = HmmHoldMenuInteraction { [weak self] point in self?.editor?.stageHoldMenu(at: point) }
@@ -47,6 +53,8 @@ final class StageGestures: NSObject, UIGestureRecognizerDelegate {
         case pushPull(PullAxis, grab: Double)
         /// A Pencil loop around faces, edges or corners.
         case modelLasso
+        /// Drawing a sketch shape's next point (it lands where the tip lifts).
+        case sketch
         case none
     }
 
@@ -74,7 +82,9 @@ final class StageGestures: NSObject, UIGestureRecognizerDelegate {
     var twoFingerOnSelection: Bool?
     var twoFingerActive = Set<ObjectIdentifier>()
     var twoFingerRotation: (pivot: Vec3, total: Double, applied: Double)?
-    var strokeGuide: GuideSurface?
+    /// The sheet the stroke lands on, fixed when it starts (and the world mesh of the object an "on the object" sheet
+    /// lies on).
+    var strokeSheet: DrawingSheet?
     var strokeTargetMesh: MeshData?
     var strokePoints: [Vec3] = []
     var strokePressures: [Double] = []
@@ -97,6 +107,10 @@ final class StageGestures: NSObject, UIGestureRecognizerDelegate {
     var inkDragLast: CGPoint?
     /// The kind of touch that started the current one-finger drag (a Pencil loops, a finger orbits).
     var panTouchIsPencil = false
+    /// The magnifier over a finger that sketches (it would hide the point it draws).
+    var loupe: UITextLoupeSession?
+    /// The last tap came from the Pencil (a finger's tap places the sheet; the Pencil's draws, picks or sketches).
+    var tapTouchIsPencil = false
 
     /// How far orbit, pan and zoom go per finger movement (Settings ▸ Speed).
     var navigationSpeed: Double { AppSettings.navigationFactor }
@@ -115,6 +129,11 @@ final class StageGestures: NSObject, UIGestureRecognizerDelegate {
         tap.require(toFail: doubleTap)
         oneFingerPan.maximumNumberOfTouches = 1
         oneFingerPan.addTarget(self, action: #selector(handleOneFingerPan(_:)))
+        pencilPan.maximumNumberOfTouches = 1
+        pencilPan.allowedTouchTypes = [NSNumber(value: UITouch.TouchType.pencil.rawValue)]
+        pencilPan.addTarget(self, action: #selector(handleOneFingerPan(_:)))
+        heldFinger.configure()
+        heldFinger.onChange = { [weak self] held, pencil in self?.heldFingerChanged(fingerHeld: held, pencilDown: pencil) }
         twoFingerPan.minimumNumberOfTouches = 2
         twoFingerPan.maximumNumberOfTouches = 2
         twoFingerPan.addTarget(self, action: #selector(handleTwoFingerPan(_:)))
@@ -127,7 +146,8 @@ final class StageGestures: NSObject, UIGestureRecognizerDelegate {
         hover.addTarget(self, action: #selector(handleHover(_:)))
         pencilRoll.configure()
         pencilRoll.onRoll = { [weak self] delta in self?.handlePencilRoll(delta) }
-        let all: [UIGestureRecognizer] = [tap, doubleTap, oneFingerPan, twoFingerPan, pinch, longPress, stroke, twist, pencilRoll, hover]
+        let all: [UIGestureRecognizer] = [tap, doubleTap, oneFingerPan, pencilPan, twoFingerPan, pinch, longPress, stroke, twist, pencilRoll, hover,
+                                          heldFinger]
         for recognizer in all {
             recognizer.delegate = self
             stage.addGestureRecognizer(recognizer)
@@ -146,14 +166,11 @@ final class StageGestures: NSObject, UIGestureRecognizerDelegate {
         // With the Select tool a hold is the object's menu; the other tools keep hold-to-add.
         longPress.isEnabled = editor.tool != .select
         stroke.isEnabled = painting
-        if painting {
-            stroke.allowedTouchTypes = [pencil, finger]
-            oneFingerPan.allowedTouchTypes = [finger]
-            oneFingerPan.isEnabled = true
-        } else {
-            oneFingerPan.isEnabled = true
-            oneFingerPan.allowedTouchTypes = [finger, pencil]
-        }
+        stroke.allowedTouchTypes = [pencil, finger]
+        // Fingers and the Pencil drag through their own recognizers; with a making tool the stroke has the Pencil.
+        oneFingerPan.allowedTouchTypes = [finger]
+        oneFingerPan.isEnabled = true
+        pencilPan.isEnabled = !painting
     }
 
     // MARK: Delegate
@@ -161,6 +178,8 @@ final class StageGestures: NSObject, UIGestureRecognizerDelegate {
     func gestureRecognizer(_ recognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
         if touch.type == .pencil { notePencil() }
         if recognizer === oneFingerPan { panTouchIsPencil = touch.type == .pencil }
+        if recognizer === pencilPan { panTouchIsPencil = true }
+        if recognizer === tap { tapTouchIsPencil = touch.type == .pencil }
         guard let editor, editor.tool.paints, touch.type == .direct, recognizer === stroke || recognizer === oneFingerPan else { return true }
         // A finger with a making tool: it makes, or it orbits. Never both.
         let makes = fingerMakes(at: touch.location(in: stage))
@@ -188,18 +207,19 @@ final class StageGestures: NSObject, UIGestureRecognizerDelegate {
         case .ink where editor.ink.mode != .draw:
             // Erasing and picking strokes: they can be anywhere.
             return true
-        case .ink, .draw:
-            if editor.draw.guide == .object { return stage.pickObject(at: point) != nil }
-            guard let ray = stage.worldRay(at: point), let guide = editor.currentGuide else { return false }
-            return guide.intersect(ray) != nil
+        case .ink, .draw, .flipbook:
+            // Stuck to the camera, the flipbook's page is the whole frame; otherwise only where the sheet is.
+            if editor.tool == .flipbook, editor.flipbook.onCamera { return true }
+            guard let sheet = editor.currentSheet, let ray = stage.worldRay(at: point) else { return false }
+            return editor.land(ray, on: sheet, objectMesh: editor.sheetObjectMesh(sheet)) != nil
         default:
-            // The flipbook's page is the whole frame.
             return true
         }
     }
 
     func gestureRecognizer(_ first: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith second: UIGestureRecognizer) -> Bool {
         if first === pencilRoll || second === pencilRoll || first === hover || second === hover { return true }
+        if first === heldFinger || second === heldFinger { return true }
         let pair: Set<ObjectIdentifier> = [ObjectIdentifier(first), ObjectIdentifier(second)]
         let twoFinger: Set<ObjectIdentifier> = [ObjectIdentifier(twoFingerPan), ObjectIdentifier(pinch), ObjectIdentifier(twist)]
         return pair.isSubset(of: twoFinger)
@@ -242,6 +262,11 @@ final class StageGestures: NSObject, UIGestureRecognizerDelegate {
             editor.select(overlay)
             return
         }
+        // A finger's tap places the sheet for the tools that draw on it (CONTEXT §10.10: hands place, the Pencil draws).
+        if editor.drawsOnSheet, !editor.pickActive, !tapTouchIsPencil, !pencilOrHand.fingerMakes || editor.tool != .model {
+            editor.placeSheet(at: point)
+            return
+        }
         if editor.tool == .model, !editor.pickActive {
             editor.modelTap(at: point)
             return
@@ -266,10 +291,6 @@ final class StageGestures: NSObject, UIGestureRecognizerDelegate {
         }
         editor.select(picked?.0)
         editor.refreshGuide()
-    }
-
-    @objc private func handleDoubleTap(_: UITapGestureRecognizer) {
-        editor?.frameSelection()
     }
 
     /// Touch and hold with a tool other than Select: add to (or take out of) the selection, or the Model tool's pick.

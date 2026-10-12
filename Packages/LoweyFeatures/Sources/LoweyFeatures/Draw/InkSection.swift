@@ -2,8 +2,8 @@ import HmmDesign
 import LoweyCore
 import SwiftUI
 
-/// Draw ▸ Ink: Pencil strokes in 3D that always face the camera. Draw, erase, or pick strokes to move, smooth,
-/// thicken or delete them; a drawing can write itself on.
+/// Draw ▸ Ink: Pencil strokes in 3D, on the sheet, that always face the camera. Draw, erase, or pick strokes to move,
+/// smooth, thicken or delete them; a drawing can write itself on.
 struct InkSection: View {
     @Bindable var editor: EditorModel
 
@@ -18,8 +18,7 @@ struct InkSection: View {
             switch editor.ink.mode {
             case .draw:
                 BrushRow(editor: editor, tool: .ink)
-                GuideSection(editor: editor)
-                if editor.draw.guide == .plane {
+                if editor.currentSheet?.shape == .flat {
                     DrawingGuideControls(guide: editor.planeGuide, kinds: [.grid, .isometric, .symmetry], spacing: 0.01 ... 1,
                                          formatSpacing: { editor.units.format($0) }) { editor.setPlaneGuide($0) }
                 }
@@ -42,9 +41,9 @@ struct InkSection: View {
 
     private var drawHint: String {
         if let active = editor.activeInk {
-            return "Strokes join “\(active.name)”. Tap empty space to start a new drawing."
+            return String(localized: "Strokes join “\(active.name)”. Tap empty space with a finger to start a new drawing.")
         }
-        return "Your first stroke starts a new ink drawing; the next ones join it. Tap empty space to start another."
+        return String(localized: "Your first stroke starts a new ink drawing; the next ones join it. Tap empty space with a finger to start another.")
     }
 
     @ViewBuilder private var picked: some View {
@@ -59,27 +58,6 @@ struct InkSection: View {
                 HmmButton("plus.circle", label: "Thicker", size: 40) { editor.scaleInkStrokes(by: 1.33) }
                 HmmButton("trash", label: "Delete strokes", size: 40, role: .destructive) { editor.deleteInkStrokes() }
                 HmmButton("xmark", label: "Done", size: 40) { editor.inkStrokes = [] }
-            }
-        }
-    }
-}
-
-/// What strokes are drawn on: a plane (facing me, ground, front, side), a box, cylinder or sphere, or an object.
-struct GuideSection: View {
-    @Bindable var editor: EditorModel
-
-    var body: some View {
-        PanelSection("Draws on") {
-            FlowChips(items: GuideKind.allCases.map { ($0.rawValue, $0.title) }, isOn: { $0 == editor.draw.guide.rawValue }) { key in
-                if let kind = GuideKind(rawValue: key) { editor.draw.guide = kind }
-            }
-            if editor.draw.guide == .plane {
-                FlowChips(items: PlaneLock.allCases.map { ($0.rawValue, $0.title) }, isOn: { $0 == editor.draw.planeLock.rawValue }) { key in
-                    if let lock = PlaneLock(rawValue: key) { editor.draw.planeLock = lock }
-                }
-                LabeledSlider(title: "Plane offset", value: editor.draw.planeOffset, range: -3 ... 3) { editor.draw.planeOffset = $0 }
-            } else if editor.draw.guide != .object {
-                LabeledSlider(title: "Guide size", value: editor.draw.guideSize, range: 0.3 ... 6) { editor.draw.guideSize = $0 }
             }
         }
     }

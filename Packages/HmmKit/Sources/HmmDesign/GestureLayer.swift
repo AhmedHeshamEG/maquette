@@ -37,14 +37,17 @@ public enum HmmUniversalGesture: String, Sendable, CaseIterable, Identifiable {
         public var undo: () -> Void
         public var redo: () -> Void
         public var toggleChrome: () -> Void
-        /// Seconds between steps while two fingers are held.
+        /// Three fingers swiped down: cut, copy and paste (nil: the screen has nothing to cut).
+        public var editMenu: (() -> Void)?
+        /// Seconds between steps while two (undo) or three (redo) fingers are held.
         public var rapidUndoInterval: Double
 
         public init(undo: @escaping () -> Void, redo: @escaping () -> Void, toggleChrome: @escaping () -> Void,
-                    rapidUndoInterval: Double = 0.12) {
+                    editMenu: (() -> Void)? = nil, rapidUndoInterval: Double = 0.12) {
             self.undo = undo
             self.redo = redo
             self.toggleChrome = toggleChrome
+            self.editMenu = editMenu
             self.rapidUndoInterval = rapidUndoInterval
         }
     }
@@ -86,11 +89,12 @@ public enum HmmUniversalGesture: String, Sendable, CaseIterable, Identifiable {
                 let undo = tap(touches: 2, action: #selector(undoTapped))
                 let redo = tap(touches: 3, action: #selector(redoTapped))
                 let chrome = tap(touches: 4, action: #selector(chromeTapped))
-                let hold = UILongPressGestureRecognizer(target: self, action: #selector(held(_:)))
-                hold.numberOfTouchesRequired = 2
-                hold.minimumPressDuration = 0.55
-                hold.allowableMovement = 12
-                recognizers = [undo, redo, chrome, hold]
+                let hold = press(touches: 2, action: #selector(held(_:)))
+                let redoHold = press(touches: 3, action: #selector(redoHeld(_:)))
+                let swipe = UIPanGestureRecognizer(target: self, action: #selector(swiped(_:)))
+                swipe.minimumNumberOfTouches = 3
+                swipe.maximumNumberOfTouches = 3
+                recognizers = [undo, redo, chrome, hold, redoHold, swipe]
                 for recognizer in recognizers {
                     recognizer.cancelsTouchesInView = false
                     recognizer.delaysTouchesEnded = false
@@ -116,28 +120,58 @@ public enum HmmUniversalGesture: String, Sendable, CaseIterable, Identifiable {
                 return recognizer
             }
 
+            private func press(touches: Int, action: Selector) -> UILongPressGestureRecognizer {
+                let recognizer = UILongPressGestureRecognizer(target: self, action: action)
+                recognizer.numberOfTouchesRequired = touches
+                recognizer.minimumPressDuration = 0.55
+                recognizer.allowableMovement = 12
+                return recognizer
+            }
+
             @objc private func undoTapped() {
+                guard HmmShortcut.undo.isOn() else { return }
                 HmmHaptics.play(.undo)
                 actions?.undo()
             }
 
             @objc private func redoTapped() {
+                guard HmmShortcut.redo.isOn() else { return }
                 HmmHaptics.play(.undo)
                 actions?.redo()
             }
 
             @objc private func chromeTapped() {
+                guard HmmShortcut.hideChrome.isOn() else { return }
                 HmmHaptics.play(.selection)
                 actions?.toggleChrome()
             }
 
+            /// Three fingers swiped down (and not sideways): the edit menu.
+            @objc private func swiped(_ recognizer: UIPanGestureRecognizer) {
+                guard recognizer.state == .ended, HmmShortcut.editMenu.isOn(), let editMenu = actions?.editMenu else { return }
+                let travel = recognizer.translation(in: recognizer.view)
+                guard travel.y > 60, abs(travel.x) < travel.y * 0.6 else { return }
+                HmmHaptics.play(.selection)
+                editMenu()
+            }
+
             @objc private func held(_ recognizer: UILongPressGestureRecognizer) {
+                repeating(recognizer) { [weak self] in self?.undoTapped() }
+            }
+
+            @objc private func redoHeld(_ recognizer: UILongPressGestureRecognizer) {
+                repeating(recognizer) { [weak self] in self?.redoTapped() }
+            }
+
+            /// Held still: the step once, then again and again until the fingers lift.
+            private func repeating(_ recognizer: UILongPressGestureRecognizer, step: @escaping @MainActor () -> Void) {
                 switch recognizer.state {
                 case .began:
-                    undoTapped()
+                    step()
+                    stopRepeating()
                     let interval = actions?.rapidUndoInterval ?? 0.12
-                    repeatTimer = Timer.scheduledTimer(withTimeInterval: interval, repeats: true) { [weak self] _ in
-                        MainActor.assumeIsolated { self?.undoTapped() }
+                    repeatTimer = Timer.scheduledTimer(withTimeInterval: interval, repeats: true) { _ in
+                        MainActor.assumeIsolated { step() }
                     }
                 case .ended, .cancelled, .failed:
                     stopRepeating()
@@ -164,8 +198,9 @@ public enum HmmUniversalGesture: String, Sendable, CaseIterable, Identifiable {
     }
 
     public extension View {
-        /// Adds the universal gestures (two-finger tap undo, three-finger tap redo, two-finger hold rapid undo,
-        /// four-finger tap hides the chrome) to this screen.
+        /// Adds the universal gestures (two-finger tap undo, three-finger tap redo, either held to repeat, four-finger tap
+        /// hides the chrome, three fingers swiped down for cut, copy and paste) to this screen. Each obeys its switch in
+        /// Settings ▸ Gestures (`HmmShortcut`).
         func hmmUniversalGestures(_ actions: HmmGestureActions) -> some View {
             background(HmmGestureLayer(actions).frame(width: 0, height: 0).accessibilityHidden(true))
         }

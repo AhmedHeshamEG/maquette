@@ -4,6 +4,13 @@ Shapr3D's ease, Procreate's feel, Dreams' animation and ToonSquid's rigging, in 
 or art degree. Build a set like Lego, drop in characters, direct them with a camera, sync them to your voice, and
 export the video. By **studio h.**; the continuation of 3D-lowey 2.0. All rights reserved (see [LICENSE](LICENSE)).
 
+**0.13** (phase U3): **draw**. Drawing in 3D on the sheet: a see-through sheet under the Pencil that your fingers lay on
+a surface or stand in the air, flat, wrapped, a dome or on the object. Ink, solid shapes, precise sketches that tell
+their length and angle and snap with a name, and flipbooks in the space with a frame strip. Hands and Pencil have their
+jobs (one Settings page decides who does what), the Pencil is calibrated on a test pad, squeeze opens a menu at its tip,
+every number has our own pad, the Snap magnet sits on the stage, the Reference window floats any picture, and the
+timeline is driven the way Procreate Dreams is.
+
 **0.12** (phases U1 and U2): **feel and layout**. The map that freezes at 1.0: a Library and a Rig button where Cast
 was, the scene's name as a door to its set-up, scenes and objects, an object panel that fits one screen and moves by
 hand, one menu per object, a timeline of Perform and Keys where time runs while you touch, the + straight into a blank

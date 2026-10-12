@@ -151,38 +151,43 @@ A small bar.
 | Add: a photo or video (a card in the world) | `Model › model-add › add-media` |
 | Add: effects (fire, sparks, smoke…) | `Model › model-add › add-fx-fire` |
 | Add: Building, walls along tapped corners, floor, door, window, stairs | Model ▸ Add while the scene is set up for a Room |
-| Edit: sketch on a face or the ground: line, rectangle, circle, arc, spline, offset | `Model › model-shape › sketch-rectangle` |
-| | `Model › model-shape › sketch-offset` |
-| Edit: push/pull: pick faces, edges or corners (tap, Pencil loop) | `Model › model-shape › pick-face` |
+| Edit: push/pull: pick faces, edges or corners (tap, Pencil loop), or a shape sketched in Draw | `Model › model-shape › pick-face` |
 | Edit: 3D print: the printer, check for printing, repair | `Model › model-shape › print-check` |
-| The Model tool's bar: pick modes, sketch shapes, Done, grow / shrink / select similar, bevel / round (edges), inset / shell (faces), the measurement and Keep, ✕ | shown at the bottom while the Model tool is on |
+| The Model tool's bar: pick modes, grow / shrink / select similar, bevel / round (edges), inset / shell (faces), the measurement and Keep, ✕ | shown at the bottom while the Model tool is on |
 | The numbers on the stage (pull distance, sides, diameter, length, offset, a bevel's or shell's size, the wall height and thickness): tap to type | shown beside what they measure |
 | Measurements and kept dimensions on the stage: tap one to keep it, or to select it | shown beside what they measure |
-| Precision: snap to grid and its size | `Model › model-precision › snap-grid` |
-| Precision: snap to corners and middles, edges, faces | `Model › model-precision › snap-corners` |
-| Precision: snap to objects, to the ground | `Model › model-precision › Snap to objects` |
-| Precision: turn in steps | `Model › model-precision › Turn in steps` |
 | Precision: the grid on the ground | `Model › model-precision › show-grid` |
 | Precision: units (mm, cm, m, in, ft) | `Model › model-precision › units` |
-| Precision: the snapping distance | `Model › model-precision › snap-distance` |
 | Precision: measure (two taps; keep it as a dimension) | `Model › model-precision › measure` |
 | Precision: show kept dimensions | `Model › model-precision › show-dimensions` |
 | Precision: section view across x, y or z, along the picked face; where it cuts; the other side | `Model › model-precision › section-x` |
 
 ### Draw
 
-The panel closes on the first stroke; the tool's bar under the stage stays. Tap Draw again for the panel.
+Everything the Pencil draws, all on **the sheet** (0.13): one see-through sheet under the Pencil. A finger-tap places it
+(on a surface it lies there; in empty space it stands facing you), its grip pushes it nearer or farther, and the control
+on its edge gives it one of four shapes. The panel closes on the first stroke; the tool's bar under the stage stays. Tap
+Draw again for the panel.
 
 | Control | Walk |
 |---|---|
 | Ink: draw, erase, select strokes | `Draw › tool-ink › ink-erase` |
 | The brush ink draws with (opens the brush library) | `Draw › tool-ink › brush-ink` |
-| Ink's drawing guide on the guide plane: grid, isometric, symmetry; Drawing assist | `Draw › tool-ink › drawing-guide` |
-| Solid shape: tube, ribbon, extrude, lathe; guide; mirror | `Draw › tool-draw › Tube` |
-| Flipbook: draw, erase, tracks | `Draw › tool-flipbook › flipbook-tracks` |
+| Ink's drawing guide on a flat sheet: grid, isometric, symmetry; Drawing assist | `Draw › tool-ink › drawing-guide` |
+| The sheet's edge: the grip (drag down: nearer, up: farther) | `Draw › tool-ink › sheet-grip` |
+| The sheet's edge: four shapes (flat, around, dome; on the object when it lies on one) | `Draw › tool-ink › sheet-dome` |
+| The sheet's edge: kept sheets, a new one, rename, curve, delete (with its drawings) | `Draw › tool-ink › sheet-menu` |
+| Solid shape: tube, ribbon, extrude, lathe; mirror | `Draw › tool-draw › Tube` |
+| Sketch on the sheet: line, rectangle, circle, arc, spline, offset; length, angle and snaps beside the tip | `Draw › tool-sketch › sketch-rectangle` |
+| | `Draw › tool-sketch › sketch-offset` |
+| The sketch's bar: the shapes, Done, ✕ | shown at the bottom while sketching |
+| Flipbook: draw, erase, tracks; on the sheet, or stuck to the camera | `Draw › tool-flipbook › flipbook-on-camera` |
+| | `Draw › tool-flipbook › flipbook-tracks` |
 | The brush flipbooks draw with (opens the brush library) | `Draw › tool-flipbook › brush-flipbook` |
-| The frame's drawing guide: 2D grid, isometric, 1-, 2- and 3-point perspective, symmetry; Drawing assist | `Draw › tool-flipbook › drawing-guide` |
-| Brush library: sets, choose a brush, new set, share a set, import Procreate (.brushset, .brush) and Photoshop (.abr) brushes | the brush row's sheet |
+| The frame strip: the drawings; step, add, reorder, hold longer, onion skin, loop, erase | `Draw › tool-flipbook › frame-strip` |
+| The frame's drawing guide (stuck to the camera): 2D grid, isometric, 1-, 2- and 3-point perspective, symmetry; Drawing assist | in Flipbook while it's stuck to the camera |
+| The brush library drops down from the brush row: sets on the left, the set's brushes on the right | `Draw › tool-ink › brush-ink › brush-dropdown` |
+| The whole library: sets, choose a brush, new set, share a set, import Procreate (.brushset, .brush) and Photoshop (.abr) brushes | the drop-down's last row |
 | A brush's menu (the hold menu): duplicate, rename; Brush Studio, reset, move to a set; delete | touch and hold a brush in the library |
 | Brush Studio: stroke, shape, grain, dynamics, Pencil, rendering, about; the pad to try it | a brush's menu ▸ Edit in Brush Studio |
 
@@ -272,10 +277,12 @@ The panel closes on the first stroke; the tool's bar under the stage stays. Tap 
 |---|---|
 | The timeline on call | `timeline-toggle` |
 | Views (top, front, side; perspective or orthographic) | `views-menu` |
+| The Snap magnet: everything that snaps, on or off (a finger held down while the Pencil works flips it for that move) | `snap-magnet` |
+| The magnet's details: the grid and its size, corners and middles, edges, faces, objects, the ground, turning in steps, how near | touch and hold the magnet |
 | Frame the selection | `Frame the selection` |
 | The camera button: tap to look through (again: the next, then back); hold for a new camera from this view | `camera-button` |
 | Joystick (on by default; its × hides it, Settings ▸ Stage brings it back) | `[cube] hide-joystick` |
-| Tool options (ink, solid shape, flipbook, Shadow Brush, scatter, Model, Rig) | below the stage while that tool is on |
+| Tool options (ink, solid shape, sketch, the flipbook's frame strip, Shadow Brush, scatter, Model, Rig) | below the stage while that tool is on |
 | The trigger deck: the selected character's triggers under the fingers *(held: 1.2)* | below the stage with Select in the hand while the timeline is in Perform |
 
 ## The timeline

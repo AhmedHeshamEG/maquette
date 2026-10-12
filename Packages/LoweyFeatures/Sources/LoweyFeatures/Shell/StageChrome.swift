@@ -18,6 +18,8 @@ struct StageChrome: View {
     var body: some View {
         ZStack {
             if editor.tool == .model || editor.precision.showsDimensions { ModelDimensions(editor: editor) }
+            // The sheet's edge: its grip, shapes and kept sheets, under it on the stage.
+            if editor.drawsOnSheet, editor.currentSheet != nil { SheetEdgeControl(editor: editor) }
             HStack {
                 if !sidebarOnRight { EditorSidebar(editor: editor) }
                 Spacer()
@@ -68,7 +70,7 @@ struct StageChrome: View {
     /// The object panel floats while something is selected (a chip while something bigger is open). While sketching it
     /// steps aside: the numbers on the stage are what you're working with then (D-124).
     private var showsInspector: Bool {
-        !editor.selection.isEmpty && !(editor.tool == .model && editor.modeling.mode.sketchKind != nil)
+        !editor.selection.isEmpty && !editor.isSketching
     }
 
     // MARK: Clusters
@@ -87,8 +89,8 @@ struct StageChrome: View {
     /// The making tools, in the order a thing gets made: Model, Draw, Paint, Rig, and Animate (it calls the timeline).
     private var trailingCluster: some View {
         HmmCornerCluster([
-            item(.model, "cube", "Model", on: editor.tool == .model),
-            item(.draw, drawIcon, "Draw", on: editor.tool.draws),
+            item(.model, "cube", "Model", on: editor.tool == .model && !editor.isSketching),
+            item(.draw, drawIcon, "Draw", on: editor.tool.draws || editor.isSketching),
             item(.paint, editor.tool == .scatter ? "circle.hexagongrid" : "paintbrush.pointed", "Paint", on: editor.tool.paintsSurfaces),
             item(.rig, "figure.arms.open", "Rig", on: editor.tool == .rig),
             HmmClusterItem(id: "animate", systemName: "figure.walk.motion", label: "Animate", isOn: editor.timelinePresence == .full) {
@@ -101,6 +103,7 @@ struct StageChrome: View {
         switch editor.tool {
         case .draw: "scribble.variable"
         case .flipbook: "book.pages"
+        case .model where editor.isSketching: "pencil.and.ruler"
         default: "pencil.tip"
         }
     }
@@ -218,6 +221,7 @@ private struct ViewControls: View {
             }
             .accessibilityLabel("Views")
             .accessibilityIdentifier("views-menu")
+            SnapMagnet(editor: editor)
             HmmButton("viewfinder", label: "Frame the selection") { editor.frameSelection() }
             CameraButton(editor: editor)
         }
@@ -226,6 +230,42 @@ private struct ViewControls: View {
         .hmmGlass(in: Capsule(), interactive: false)
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("view-controls")
+    }
+}
+
+/// The Snap magnet (CONTEXT §10.10): one switch for everything that snaps. Tap it on or off; hold it for the details
+/// (the grid and its size, corners and middles, edges, faces, objects, the ground, turning in steps, how near). A finger
+/// held down on the stage while the Pencil works flips it for that one move.
+private struct SnapMagnet: View {
+    @Bindable var editor: EditorModel
+
+    var body: some View {
+        HmmButton("magnet", label: "Snapping", isOn: editor.snap.magnet) { editor.toggleSnapMagnet() }
+            .contextMenu {
+                Toggle("Snap to grid", isOn: $editor.snap.grid)
+                Picker("Grid size", selection: $editor.snap.gridSize) {
+                    ForEach(PrecisionPage.gridSizes(for: editor.units), id: \.self) { size in
+                        Text(editor.units.format(size)).tag(size)
+                    }
+                }
+                Toggle("Snap to corners and middles", isOn: $editor.snap.corners)
+                Toggle("Snap to edges", isOn: $editor.snap.edges)
+                Toggle("Snap to faces", isOn: $editor.snap.faces)
+                Toggle("Snap to objects", isOn: $editor.snap.objects)
+                Toggle("Snap to the ground", isOn: $editor.snap.ground)
+                Toggle("Turn in steps", isOn: $editor.snap.rotation)
+                Picker("Step", selection: $editor.snap.rotationStep) {
+                    Text(verbatim: "15°").tag(15.0)
+                    Text(verbatim: "45°").tag(45.0)
+                    Text(verbatim: "90°").tag(90.0)
+                }
+                Picker("How near", selection: $editor.snap.objectThreshold) {
+                    ForEach([0.02, 0.05, 0.12, 0.25, 0.5], id: \.self) { distance in
+                        Text(editor.units.format(distance)).tag(distance)
+                    }
+                }
+            }
+            .accessibilityIdentifier("snap-magnet")
     }
 }
 

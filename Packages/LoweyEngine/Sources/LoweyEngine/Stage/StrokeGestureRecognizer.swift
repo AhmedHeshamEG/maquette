@@ -1,3 +1,4 @@
+import LoweyCore
 import UIKit.UIGestureRecognizerSubclass
 
 /// Captures one drawing stroke with pressure and coalesced (high-frequency) Pencil samples.
@@ -33,6 +34,10 @@ public final class StrokeGestureRecognizer: UIGestureRecognizer {
     public private(set) var held = false
     private var holdAnchor: CGPoint?
     private var holdTimer: Timer?
+    /// How this hand presses (Settings ▸ Pencil and hands, read as each stroke starts): every Pencil sample's pressure
+    /// goes through its curve, and a Pencil that reports no pressure gets it from its speed.
+    public private(set) var feel = HmmPencilFeel.default
+    private var rawPressures: [Double] = []
 
     override public func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent) {
         guard trackedTouch == nil, let touch = touches.first else {
@@ -42,6 +47,8 @@ public final class StrokeGestureRecognizer: UIGestureRecognizer {
             return
         }
         trackedTouch = touch
+        feel = HmmPencilFeel.load(from: .standard)
+        rawPressures = []
         samples = [sample(touch)]
         state = .began
         armHold(at: samples[0].location)
@@ -94,15 +101,23 @@ public final class StrokeGestureRecognizer: UIGestureRecognizer {
         holdAnchor = nil
         holdTimer?.invalidate()
         holdTimer = nil
+        rawPressures = []
     }
 
     private func sample(_ touch: UITouch) -> Sample {
-        let pressure: Double = if touch.type == .pencil, touch.maximumPossibleForce > 0 {
-            Double(touch.force / touch.maximumPossibleForce)
-        } else {
-            0.6
+        let location = touch.preciseLocation(in: view)
+        guard touch.type == .pencil else { return Sample(location: location, pressure: 0.6, time: touch.timestamp) }
+        let raw = touch.maximumPossibleForce > 0 ? Double(touch.force / touch.maximumPossibleForce) : 0
+        rawPressures.append(raw)
+        var pressure = feel.pressure(raw)
+        if feel.speedForPressure, touch.maximumPossibleForce <= 0 || HmmPencilFeel.isFlat(rawPressures), let last = samples.last {
+            // No pressure from this Pencil: slow is full, fast thins (smoothed, so the line doesn't flicker).
+            let span = touch.timestamp - last.time
+            let speed = span > 1e-4 ? Double(hypot(location.x - last.location.x, location.y - last.location.y)) / span : 0
+            pressure = last.pressure + (min(max(1 - speed / 2400, 0.25), 1) - last.pressure) * 0.25
+        } else if feel.speedForPressure, touch.maximumPossibleForce <= 0 {
+            pressure = 1
         }
-        let altitude: Double? = touch.type == .pencil ? Double(touch.altitudeAngle) : nil
-        return Sample(location: touch.preciseLocation(in: view), pressure: pressure, altitude: altitude, time: touch.timestamp)
+        return Sample(location: location, pressure: pressure, altitude: Double(touch.altitudeAngle), time: touch.timestamp)
     }
 }

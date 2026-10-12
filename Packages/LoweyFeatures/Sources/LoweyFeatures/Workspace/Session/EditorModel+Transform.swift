@@ -31,31 +31,31 @@ extension EditorModel {
 
     private func snapCorrection(for bounds: Bounds) -> Vec3 {
         var correction = Vec3.zero
-        if snap.grid {
+        if snapping.grid {
             let pivot = Vec3(bounds.center.x, bounds.min.y, bounds.center.z)
-            correction = Snapping.snapToGrid(pivot, size: snap.gridSize) - pivot
+            correction = Snapping.snapToGrid(pivot, size: snapping.gridSize) - pivot
             correction.y = 0
         }
-        if snap.objects {
+        if snapping.objects {
             let moved = Bounds(min: bounds.min + correction, max: bounds.max + correction)
             let others = baseScene.roots.filter { !selection.contains($0) }.compactMap { stage?.visualBounds(of: [$0]) }
-            correction += Snapping.objectSnapOffset(moving: moved, others: others, threshold: snap.objectThreshold)
+            correction += Snapping.objectSnapOffset(moving: moved, others: others, threshold: snapping.objectThreshold)
         }
-        if snap.ground, abs(bounds.min.y + correction.y) < snap.objectThreshold {
+        if snapping.ground, abs(bounds.min.y + correction.y) < snapping.objectThreshold {
             correction.y = -bounds.min.y
         }
         return correction
     }
 
     func snapRotation(gesture: String) {
-        guard snap.rotation else {
+        guard snapping.rotation else {
             endGesture()
             return
         }
         let changes = selectedObjects.map { object in
             let euler = object.transform.rotation.eulerDegrees
-            let snapped = Vec3(Snapping.snapAngle(euler.x, step: snap.rotationStep), Snapping.snapAngle(euler.y, step: snap.rotationStep),
-                               Snapping.snapAngle(euler.z, step: snap.rotationStep))
+            let snapped = Vec3(Snapping.snapAngle(euler.x, step: snapping.rotationStep), Snapping.snapAngle(euler.y, step: snapping.rotationStep),
+                               Snapping.snapAngle(euler.z, step: snapping.rotationStep))
             return PropertyChange(object: object.id, key: .rotation, value: .quat(Quat(eulerDegrees: snapped)))
         }
         perform(.setProperties(changes), coalesceKey: gesture)

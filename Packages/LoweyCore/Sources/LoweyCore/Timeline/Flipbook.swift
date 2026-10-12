@@ -8,18 +8,34 @@ public enum FlipbookAnchor: Hashable, Sendable {
     /// Follows an object: drawn on the plane facing the camera through the object's centre, in metres (x right, y up
     /// as seen from the camera), so it shrinks as the object moves away and rides along with it.
     case object(ObjectID)
+    /// Drawn on a kept sheet in the space (`Scene.sheets`): points are the sheet's own coordinates in metres
+    /// (`DrawingSheet.surfaceCoordinates`), so the drawing stays where it was drawn and turns with the view.
+    case sheet(String)
 
     public var object: ObjectID? {
         if case let .object(id) = self { return id }
         return nil
     }
+
+    public var sheet: String? {
+        if case let .sheet(id) = self { return id }
+        return nil
+    }
+
+    static let sheetPrefix = "sheet:"
 }
 
 extension FlipbookAnchor: Codable {
     public init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()
         let raw = try container.decode(String.self)
-        self = raw == "camera" ? .camera : .object(ObjectID(raw: raw))
+        if raw == "camera" {
+            self = .camera
+        } else if raw.hasPrefix(Self.sheetPrefix) {
+            self = .sheet(String(raw.dropFirst(Self.sheetPrefix.count)))
+        } else {
+            self = .object(ObjectID(raw: raw))
+        }
     }
 
     public func encode(to encoder: Encoder) throws {
@@ -27,6 +43,7 @@ extension FlipbookAnchor: Codable {
         switch self {
         case .camera: try container.encode("camera")
         case let .object(id): try container.encode(id.raw)
+        case let .sheet(id): try container.encode(Self.sheetPrefix + id)
         }
     }
 }
@@ -240,6 +257,16 @@ public enum FlipbookEditing {
         var copy = track.frames[index]
         copy.id = newID
         result.frames.insert(copy, at: index + 1)
+        return result
+    }
+
+    /// Drawing `index` moved to `destination` (the frame strip's drag): the drawings keep their holds, so the track
+    /// keeps its length.
+    public static func movingFrame(_ index: Int, to destination: Int, in track: FlipbookTrack) -> FlipbookTrack {
+        guard track.frames.indices.contains(index) else { return track }
+        var result = track
+        let frame = result.frames.remove(at: index)
+        result.frames.insert(frame, at: min(max(destination, 0), result.frames.count))
         return result
     }
 

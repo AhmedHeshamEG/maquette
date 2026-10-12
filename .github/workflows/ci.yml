@@ -463,7 +463,7 @@ jobs:
               -skipPackagePluginValidation -collect-test-diagnostics never -test-timeouts-enabled YES \
               -default-test-execution-time-allowance 600 -retry-tests-on-failure -test-iterations 3 \
               -only-testing:LoweyUITests/LayoutTests/testHomeControlsAreReachable \
-              -only-testing:LoweyUITests/LayoutTests/testPanelAndChromeControlsAreReachable \
+              -only-testing:LoweyUITests/LayoutTests/testPanelAndChromeControlsAreReachable               -only-testing:LoweyUITests/LayoutTests/testMakingControlsAreReachable \
               -only-testing:LoweyUITests/LayoutTests/testModelControlsAreReachable \
               -only-testing:LoweyUITests/LayoutTests/testMoreModelControlsAreReachable \
               -only-testing:LoweyUITests/LayoutTests/testSelectionControlsAreReachable \

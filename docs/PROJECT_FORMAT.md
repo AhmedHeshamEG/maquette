@@ -323,6 +323,29 @@ from schema 10 open unchanged, and Maquette 0.9 refuses schema 11.
 Looks gain the mood `darkStudio` (a blank project's world: a near-black ground, one soft key light). Schema 12 only
 added it; files from schema 11 open unchanged, and Maquette 0.11 refuses schema 12.
 
+## Sheets (schema 13)
+
+A scene keeps the sheets something was drawn on (`sheets`, missing when there are none). Each sheet:
+
+| Key | Type | Meaning |
+|---|---|---|
+| `id` | string | Unique in the scene. |
+| `name` | string | "Sheet 1"…, renamed by hand. |
+| `shape` | string | `flat`, `around` (a standing cylinder whose front passes through `origin`), `dome` (a sphere, the same) or `onObject` (strokes land on `object`'s surface). |
+| `origin` | [x, y, z] | Where it was placed: in `object`'s space when it lies on one (it rides with it), else the world. |
+| `rotation` | [x, y, z, w] | Its turn: local +z faces whoever placed it, +y is its up. |
+| `object` | string? | The object it lies on. |
+| `width`, `height` | number | The size shown (metres); strokes still land past the edge. `height` is a cylinder's height too. |
+| `radius` | number | How tightly `around` and `dome` curve (metres). |
+
+One journal command changes sheets: `setSheets` (`{"op": "setSheets", "sheets": [{"id", "sheet"?, "index"?}]}`: insert,
+replace, or remove when `sheet` is absent). A sheet is kept by the first stroke on it, in that stroke's step.
+
+A flipbook track's `anchor` may be `"sheet:<id>"`: its strokes' points are then the sheet's own coordinates in metres
+(flat: across and up; around: the arc from the front and the height; dome: the arcs across and up), drawn in
+perspective through the camera; their half-widths are metres too. Schema 13 only added these; files from schema 12
+open unchanged, and Maquette 0.12 refuses schema 13.
+
 ## workspace.json
 
 How the project shows when it opens. It isn't the project (it's never undone and isn't in the journal); it's
@@ -335,7 +358,7 @@ falls back to its default; unknown keys are ignored. Plain JSON, no envelope.
 | `template` | string? | What the project is set up for: `blank`, `print`, `room`, `animation` (0.12: switchable any time from the scene's name, which rewrites `snap`, `showsGrid`, `shapeSize`, `units`, `printBed` and raises `timeline`); `character` and `sketch` from older projects read as `blank`. |
 | `timeline` | string | `hidden` (the default), `transport` (the slim transport) or `full`. |
 | `timelineHeight` | number | The whole timeline's height in points, 150–900 (260 by default). |
-| `snap` | object | `grid`, `gridSize` (m), `rotation`, `rotationStep` (degrees), `ground`, `objects`, `objectThreshold` (m), and since 0.4 `corners`, `edges`, `faces` (points snap to corners and edge middles, edges, faces; on when missing). |
+| `snap` | object | `grid`, `gridSize` (m), `rotation`, `rotationStep` (degrees), `ground`, `objects`, `objectThreshold` (m), and since 0.4 `corners`, `edges`, `faces` (points snap to corners and edge middles, edges, faces; on when missing); since 0.13 `magnet` (the Snap magnet: off, nothing snaps; on when missing). |
 | `showsGrid` | bool | The grid on the ground. |
 | `shapeSize` | number | New shapes' size in metres (1; `print` uses 0.05). |
 | `firstPanel` | string? | A tool panel to open the first time the project opens (then removed): `model`, `rig` (`cast` before 0.12, now ignored), or `board` (0.9: the project opens on its Schizzo board). |
@@ -344,9 +367,9 @@ falls back to its default; unknown keys are ignored. Plain JSON, no envelope.
 | `section` | object? | The section view: `{"normal": [x, y, z], "offset": d}`; what's beyond the plane (`normal · p > offset`) is cut away on the stage. Missing: off. |
 | `showsDimensions` | bool | Kept dimensions show on the stage (true). |
 | `frameGuide` | object? | Since 0.5: the drawing guide over the frame for flipbooks. `kind` (`grid`, `isometric`, `perspective`, `symmetry`), `assisted`, `spacing` (frame heights), `origin` (`{"x","y"}`, frame heights from the centre, y up), `angle` (degrees), `vanishingPoints` (1–3, same units), `symmetry` (`vertical`, `horizontal`, `quadrant`, `radial`), `segments`, `mirrorRadial`. Missing: off. |
-| `planeGuide` | object? | Since 0.5: the same, laid on the guide plane for ink (`grid`, `isometric`, `symmetry`; `spacing` in metres). Missing: off. |
+| `planeGuide` | object? | Since 0.5: the same, laid on a flat sheet for ink (`grid`, `isometric`, `symmetry`; `spacing` in metres). Missing: off. |
 
-| `references` | array | Since 0.9: pictures pinned from the board, floating over the stage. Each: `id`, `image` (a file under `assets/`, `references/<hash>.png`), `title`, `x` and `y` (the card's middle as fractions of the stage, 0–1), `width` (points, 120–900), `aspect` (height ÷ width). Values out of range are brought back in; missing: none. |
+| `references` | array | Since 0.9: pictures pinned from the board, floating over the stage. Each: `id`, `image` (a file under `assets/`, `references/<hash>.png`), `title`, `x` and `y` (the card's middle as fractions of the stage, 0–1), `width` (points, 120–900), `aspect` (height ÷ width); since 0.13 `folded` (true: a small chip) and `window` (true: opened from Actions ▸ Reference, not pinned from the board, so it stays while the Board is off). Values out of range are brought back in; missing: none. |
 
 ## board/ (the Schizzo board)
 

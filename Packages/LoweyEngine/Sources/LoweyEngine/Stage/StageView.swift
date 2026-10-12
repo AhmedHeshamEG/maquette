@@ -48,6 +48,8 @@ public final class StageView: MTKView {
     private var modelOverlay: [EditorOverlay] = []
     /// Marks that stay whatever the tool: kept dimensions, the printer's build volume.
     private var precisionOverlay: [EditorOverlay] = []
+    /// The see-through sheet under the Pencil while a drawing tool is in the hand.
+    private var sheetOverlay: [EditorOverlay] = []
     /// The section view's cut (stage only).
     public var section: SectionPlane? {
         didSet { if section != oldValue { redraw() } }
@@ -296,6 +298,13 @@ public final class StageView: MTKView {
         redraw()
     }
 
+    /// The sheet the Pencil draws on (its fill and border), drawn under every other mark; empty hides it.
+    public func showSheet(_ overlays: [EditorOverlay]) {
+        guard overlays != sheetOverlay else { return }
+        sheetOverlay = overlays
+        redraw()
+    }
+
     /// World units per screen point at a point (for marks that should look the same size anywhere).
     public func worldPerPoint(at point: Vec3) -> Double {
         let pose = camera
@@ -321,7 +330,7 @@ public final class StageView: MTKView {
         if let pivot = gizmoPivot { scene.gizmo = (gizmoMode, pivot, gizmoScale) }
         scene.guide = guide
         scene.strokePreview = strokePreview
-        scene.modelOverlay = precisionOverlay + modelOverlay
+        scene.modelOverlay = sheetOverlay + precisionOverlay + modelOverlay
         scene.section = section
         scene.pointer = pointer
         scene.pixelsPerPoint = Double(contentScaleFactor)

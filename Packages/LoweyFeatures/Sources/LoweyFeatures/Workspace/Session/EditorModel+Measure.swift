@@ -83,6 +83,9 @@ extension EditorModel {
         case .measured:
             keepMeasurement()
             return true
+        case .sketching:
+            // Still being drawn: its length is typed once it lands.
+            return true
         case let .kept(id):
             HmmHaptics.play(.selection)
             if tool == .model { tool = .select }

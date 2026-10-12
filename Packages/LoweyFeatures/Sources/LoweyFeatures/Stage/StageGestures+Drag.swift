@@ -14,7 +14,10 @@ extension StageGestures {
             gestureKey = UUID().uuidString
             editor.showChrome()
             let translation = recognizer.translation(in: stage)
+            lastFramed = nil
             drag = beginDrag(at: CGPoint(x: point.x - translation.x, y: point.y - translation.y), editor: editor, stage: stage)
+            // Moving the view is always the fingers' (CONTEXT §10.10): a Pencil drag that does nothing else does nothing.
+            if panTouchIsPencil, case .orbit = drag { drag = .none }
             continueDrag(to: point, translation: translation, editor: editor, stage: stage)
             recognizer.setTranslation(.zero, in: stage)
         case .changed:
@@ -64,7 +67,7 @@ extension StageGestures {
     }
 
     private func beginSelectDrag(at point: CGPoint, editor: EditorModel, stage: StageView) -> DragKind {
-        guard !editor.directorView else { return .orbit }
+        guard !editor.directorView, InputJob.move.allows(pencil: panTouchIsPencil, fingerMakes: pencilOrHand.fingerMakes) else { return .orbit }
         if let handle = editor.ikHandle(at: point) {
             editor.chooseJoint(of: handle)
             return .ik(handle)
@@ -108,7 +111,7 @@ extension StageGestures {
             continueGizmo(handle, pivot: pivot, from: lastPoint, to: point, accumulated: accumulated, editor: editor, stage: stage)
         case var .turn(ring):
             ring.total = ringAngle(ring, at: point, stage: stage)
-            let step = editor.snap.rotation ? editor.snap.rotationStep * .pi / 180 : 0
+            let step = editor.snapping.rotation ? editor.snapping.rotationStep * .pi / 180 : 0
             let wanted = step > 0 ? (ring.total / step).rounded() * step : ring.total
             if abs(wanted - ring.applied) > 1e-9 {
                 editor.rotateSelection(by: wanted - ring.applied, axis: ring.axis, around: ring.pivot, gesture: gestureKey)
@@ -141,17 +144,27 @@ extension StageGestures {
             if let along = editor.pullDistance(at: point, axis: axis) { editor.updatePull(along - grab, axis: axis) }
         case .modelLasso:
             if let last = editor.lassoPoints.last, hypot(last.x - point.x, last.y - point.y) > 4 { editor.lassoPoints.append(point) }
+        case .sketch:
+            editor.sketchDragMoved(to: point)
+            loupe?.move(to: point, withCaretRect: .zero, trackingCaret: false)
         case .none:
             break
         }
     }
 
-    /// With the Model tool: a drag on the picked face or region pulls it; a Pencil loops in a pick mode; else orbit.
+    /// With the Model tool: a drag on the picked face or region pulls it; while sketching the Pencil (or a finger, where
+    /// fingers make) draws the shape's next point; a Pencil loops in a pick mode; else orbit.
     private func beginModelDrag(at point: CGPoint, editor: EditorModel) -> DragKind {
-        if editor.canPull(at: point), editor.prepareFacePull(), let axis = editor.pullAxis {
+        let shapes = InputJob.shape.allows(pencil: panTouchIsPencil, fingerMakes: pencilOrHand.fingerMakes)
+        if shapes, editor.canPull(at: point), editor.prepareFacePull(), let axis = editor.pullAxis {
             return .pushPull(axis, grab: editor.pullDistance(at: point, axis: axis) ?? 0)
         }
-        if panTouchIsPencil, editor.modeling.mode.pickMode != nil {
+        if editor.isSketching, editor.modeling.mode.sketchKind != .offset, panTouchIsPencil || pencilOrHand.fingerMakes {
+            editor.sketchDragBegan(at: point)
+            if !panTouchIsPencil, let stage { startLoupe(at: point, in: stage) }
+            return .sketch
+        }
+        if shapes, panTouchIsPencil, editor.modeling.mode.pickMode != nil {
             editor.lassoPoints = [point]
             return .modelLasso
         }
@@ -166,8 +179,8 @@ extension StageGestures {
             // With grid snapping, the object jumps cell by cell while the finger moves freely.
             let total = accumulated + result
             var step = result
-            if editor.snap.grid {
-                step = Snapping.snapToGrid(total, size: editor.snap.gridSize) - Snapping.snapToGrid(accumulated, size: editor.snap.gridSize)
+            if editor.snapping.grid {
+                step = Snapping.snapToGrid(total, size: editor.snapping.gridSize) - Snapping.snapToGrid(accumulated, size: editor.snapping.gridSize)
             }
             if step != 0 { editor.translateSelection(by: handle.axis.unit * step, gesture: gestureKey) }
             drag = .gizmo(handle, pivot: pivot + handle.axis.unit * step, lastPoint: point, accumulated: total)
@@ -214,6 +227,10 @@ extension StageGestures {
         case .modelLasso:
             if !cancelled { editor.pickElements(inLoop: editor.lassoPoints) }
             editor.lassoPoints = []
+        case .sketch:
+            editor.sketchDragEnded(commit: !cancelled)
+            loupe?.invalidate()
+            loupe = nil
         case .turn, .orbit, .aimCamera, .moveOverlay, .pathKey, .none:
             break
         }

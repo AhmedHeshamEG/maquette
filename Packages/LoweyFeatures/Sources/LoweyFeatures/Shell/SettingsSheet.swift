@@ -13,7 +13,7 @@ struct SettingsSheet: View {
             Form {
                 PencilAndHandsSection()
                 Section("Gestures") {
-                    NavigationLink("Every gesture and shortcut") { GestureGuide() }
+                    NavigationLink("Shortcuts, switched on and off") { GesturesPage() }
                         .accessibilityIdentifier("settings-gestures")
                 }
                 StageSettingsSection()

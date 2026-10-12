@@ -35,6 +35,7 @@ extension EditCommand: HmmCommands.EditCommand {
         if case let .setKind(a, _) = first, case let .setKind(b, _) = second, a == b { return second }
         if case let .setShadowPaint(a, _) = first, case let .setShadowPaint(b, _) = second, a == b { return second }
         if case let .setFlipbooks(a) = first, case let .setFlipbooks(b) = second, a.map(\.id) == b.map(\.id) { return second }
+        if case let .setSheets(a) = first, case let .setSheets(b) = second, a.map(\.id) == b.map(\.id) { return second }
         if case let .batch(label, commands) = first {
             return .batch(label, commands + [second])
         }
@@ -64,6 +65,7 @@ extension EditCommand: HmmCommands.EditCommand {
         if case let .setKind(a, _) = earlier, case let .setKind(b, _) = later, a == b { return earlier }
         if case let .setShadowPaint(a, _) = earlier, case let .setShadowPaint(b, _) = later, a == b { return earlier }
         if case let .setFlipbooks(a) = earlier, case let .setFlipbooks(b) = later, a.map(\.id) == b.map(\.id) { return earlier }
+        if case let .setSheets(a) = earlier, case let .setSheets(b) = later, a.map(\.id) == b.map(\.id) { return earlier }
         return .batch(earlier.label, [later, earlier])
     }
 }

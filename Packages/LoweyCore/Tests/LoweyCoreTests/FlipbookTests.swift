@@ -119,3 +119,49 @@ final class FlipbookTests: XCTestCase {
         }
     }
 }
+
+/// Flipbooks drawn on a sheet in the space (U3).
+final class SheetFlipbookTests: XCTestCase {
+    func testADrawingOnASheetStaysWhereItWasDrawnAndKeepsItsPerspective() throws {
+        var document = makeDocument()
+        let sheet = DrawingSheet.facing(eye: Vec3(0, 1, 5), at: Vec3(0, 1, 0), id: "s1", name: "Sheet 1", size: 2)
+        document.scene.sheets = [sheet]
+        let stroke = FlipStroke(points: [Vec2(-0.5, 0), Vec2(0.5, 0)], widths: [0.01, 0.01], color: .palette(0))
+        let track = FlipbookTrack(id: "t", name: "In the air", anchor: .sheet("s1"), frames: [FlipbookFrame(id: "f", strokes: [stroke])])
+        let layout = FlipbookLayout(width: 1000, height: 800, camera: Transform(position: Vec3(0, 1, 5)), fieldOfView: 50)
+        let pixels = layout.pixels(of: stroke, in: track, scene: document.scene)
+        XCTAssertEqual(pixels.count, 1)
+        let drawn = try XCTUnwrap(pixels.first)
+        XCTAssertEqual(drawn.points[0].y, 400, accuracy: 1e-6, "at the height it was drawn, which is the camera's")
+        XCTAssertEqual(drawn.points[0].x + drawn.points[1].x, 1000, accuracy: 1e-6, "centred")
+        XCTAssertLessThan(drawn.points[0].x, drawn.points[1].x)
+        // From twice as far it is half as big.
+        let far = FlipbookLayout(width: 1000, height: 800, camera: Transform(position: Vec3(0, 1, 10)), fieldOfView: 50)
+        let small = try XCTUnwrap(far.pixels(of: stroke, in: track, scene: document.scene).first)
+        XCTAssertEqual(small.points[1].x - small.points[0].x, (drawn.points[1].x - drawn.points[0].x) / 2, accuracy: 1e-6)
+        XCTAssertEqual(small.widths[0], drawn.widths[0] / 2, accuracy: 1e-9)
+        // Behind the camera it isn't drawn; its sheet gone, nor is it.
+        let behind = FlipbookLayout(width: 1000, height: 800, camera: Transform(position: Vec3(0, 1, -5)), fieldOfView: 50)
+        XCTAssertTrue(behind.pixels(of: stroke, in: track, scene: document.scene).isEmpty)
+        document.scene.sheets = []
+        XCTAssertTrue(layout.pixels(of: stroke, in: track, scene: document.scene).isEmpty)
+    }
+
+    func testTheSheetAnchorSurvivesJSONAndOldAnchorsStillRead() throws {
+        for anchor in [FlipbookAnchor.camera, .object("a"), .sheet("s1")] {
+            let data = try JSONEncoder().encode(anchor)
+            XCTAssertEqual(try JSONDecoder().decode(FlipbookAnchor.self, from: data), anchor)
+        }
+        XCTAssertEqual(try JSONDecoder().decode(FlipbookAnchor.self, from: Data("\"a\"".utf8)), .object("a"))
+    }
+
+    func testTheFrameStripReordersDrawingsKeepingTheirHolds() {
+        let dot = FlipStroke(points: [Vec2(0, 0)], widths: [0.01], color: .palette(0))
+        let track = FlipbookTrack(id: "t", name: "T", frames: [FlipbookFrame(id: "a", hold: 1, strokes: [dot]), FlipbookFrame(id: "b", hold: 3),
+                                                               FlipbookFrame(id: "c", hold: 2)])
+        let moved = FlipbookEditing.movingFrame(0, to: 2, in: track)
+        XCTAssertEqual(moved.frames.map(\.id), ["b", "c", "a"])
+        XCTAssertEqual(moved.lengthInFrames, track.lengthInFrames)
+        XCTAssertEqual(FlipbookEditing.movingFrame(5, to: 0, in: track), track)
+    }
+}

@@ -2,21 +2,46 @@ import HmmDesign
 import LoweyCore
 import SwiftUI
 
-/// Settings ▸ Pencil and hands: who makes and who moves the view, and the Pencil's hover point.
+/// Settings ▸ Pencil and hands: who does what (Procreate's gesture controls, CONTEXT §10.10), who draws, and the way
+/// to the Pencil's own page.
 struct PencilAndHandsSection: View {
     @AppStorage(HmmPencilOrHand.fingersAlwaysMakeKey) private var fingersMake = false
-    @AppStorage(AppSettings.pencilHoverPreview) private var pencilHover = false
 
     var body: some View {
         Section {
+            ForEach(InputJob.allCases) { job in
+                JobPicker(job: job)
+            }
             Toggle("Draw with a finger too", isOn: $fingersMake)
                 .accessibilityIdentifier("settings-fingers-make")
-            Toggle("Pencil hover preview", isOn: $pencilHover)
+            NavigationLink("Your Pencil") { PencilPage() }
+                .accessibilityIdentifier("settings-pencil")
         } header: {
             Text("Pencil and hands")
         } footer: {
-            Text("One finger draws until an Apple Pencil touches the screen. Then the Pencil draws and fingers move the view, unless a finger draws too.")
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Moving the view is always fingers.")
+                Text("One finger draws until an Apple Pencil touches the screen; then the Pencil draws, unless a finger draws too.")
+            }
         }
+    }
+}
+
+/// Who does one job: fingers, the Pencil, or both.
+private struct JobPicker: View {
+    let job: InputJob
+    @AppStorage private var hand: String
+
+    init(job: InputJob) {
+        self.job = job
+        _hand = AppStorage(wrappedValue: job.standard.rawValue, job.storageKey)
+    }
+
+    var body: some View {
+        Picker(LocalizedStringKey(job.title), selection: $hand) {
+            ForEach(InputHand.allCases) { Text(LocalizedStringKey($0.title)).tag($0.rawValue) }
+        }
+        .accessibilityIdentifier("settings-job-\(job.rawValue)")
     }
 }
 

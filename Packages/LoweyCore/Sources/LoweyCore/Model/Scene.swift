@@ -59,6 +59,8 @@ public struct Scene: Codable, Hashable, Sendable, Identifiable {
     public var activeCamera: ObjectID?
     public var viewpoint: Viewpoint
     public var timeline: Timeline
+    /// The sheets drawn on, kept and named (`DrawingSheet`); flipbooks drawn on one name it.
+    public var sheets: [DrawingSheet] = []
 
     public init(
         id: SceneID, name: String, objects: [ObjectID: SceneObject] = [:], roots: [ObjectID] = [],
@@ -182,7 +184,7 @@ public struct Scene: Codable, Hashable, Sendable, Identifiable {
     // MARK: Codable (objects as an id-keyed JSON object, stable key order via the encoder)
 
     private enum CodingKeys: String, CodingKey {
-        case id, name, objects, roots, look, activeCamera, viewpoint, timeline
+        case id, name, objects, roots, look, activeCamera, viewpoint, timeline, sheets
     }
 
     public init(from decoder: Decoder) throws {
@@ -195,6 +197,7 @@ public struct Scene: Codable, Hashable, Sendable, Identifiable {
         activeCamera = try container.decodeIfPresent(ObjectID.self, forKey: .activeCamera)
         viewpoint = try container.decodeIfPresent(Viewpoint.self, forKey: .viewpoint) ?? .default
         timeline = try container.decodeIfPresent(Timeline.self, forKey: .timeline) ?? Timeline()
+        sheets = try container.decodeIfPresent([DrawingSheet].self, forKey: .sheets) ?? []
     }
 
     public func encode(to encoder: Encoder) throws {
@@ -207,6 +210,7 @@ public struct Scene: Codable, Hashable, Sendable, Identifiable {
         try container.encodeIfPresent(activeCamera, forKey: .activeCamera)
         try container.encode(viewpoint, forKey: .viewpoint)
         try container.encode(timeline, forKey: .timeline)
+        if !sheets.isEmpty { try container.encode(sheets, forKey: .sheets) }
     }
 }
 

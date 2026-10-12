@@ -26,6 +26,8 @@
         private let doubleTap = UITapGestureRecognizer()
         private let hoverRecognizer = UIHoverGestureRecognizer()
         private var holdMenu: HmmHoldMenuInteraction?
+        /// How this hand presses (Settings ▸ Pencil, read as each stroke starts): the same feel as the app's canvas.
+        private var pencilFeel = HmmPencilFeel.default
         private var glide: Glide?
 
         /// The view easing from one place to another (double-tap to frame).
@@ -153,7 +155,7 @@
             let location = precise ? touch.preciseLocation(in: self) : touch.location(in: self)
             let point = model.session.viewport.toBoard(Vec2(location.x, location.y), size: viewSize)
             if touch.type == .pencil {
-                let pressure = touch.maximumPossibleForce > 0 ? Double(touch.force / touch.maximumPossibleForce) : 0.6
+                let pressure = touch.maximumPossibleForce > 0 ? pencilFeel.pressure(Double(touch.force / touch.maximumPossibleForce)) : 0.6
                 return BrushInput(point: point, pressure: pressure, altitude: Double(touch.altitudeAngle), time: touch.timestamp)
             }
             return BrushInput(point: point, pressure: 0.6, altitude: nil, time: touch.timestamp)
@@ -192,6 +194,7 @@
                 model.pencilTouched()
                 applyPencilOrHand()
             }
+            pencilFeel = HmmPencilFeel.load(from: .standard)
             makingTouch = touch
             let first = sample(touch), reach = slack(touch)
             model.hover = nil

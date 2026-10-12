@@ -32,6 +32,8 @@ final class TimelineLayout {
         case pan(start: Double)
         case scrollRows(start: CGFloat)
         case marquee(origin: CGPoint)
+        /// A finger drawing around keys and clips (Settings ▸ Gestures ▸ Select with a finger).
+        case lasso
         case ignore
     }
 
@@ -49,6 +51,8 @@ final class TimelineLayout {
     var marquee: CGRect?
     var marqueeKeys: Set<KeyRef> = []
     var marqueeArmed = false
+    /// A clip's edge held and being dragged: which clip, which edge, the drag's undo step.
+    @ObservationIgnored var retiming: (clip: String, end: Bool, gesture: String)?
     var stretch: (edge: StretchEdge, time: Double)?
     @ObservationIgnored var laneDrag: LaneDrag?
     @ObservationIgnored var zoomStart: Double?
@@ -157,6 +161,34 @@ final class TimelineLayout {
         let ids = members(of: id)
         let moment = time(at: point.x - Self.labelWidth)
         return timeline.clipTracks.filter { ids.contains($0.target) }.flatMap(\.segments).first { moment >= $0.start && moment <= $0.end }
+    }
+
+    /// A clip's start or end under a point (within 12 points), to retime it by its edge.
+    func clipEdge(at point: CGPoint) -> (clip: ClipSegment, end: Bool)? {
+        guard point.x >= Self.labelWidth, case let .object(id)? = row(at: point.y) else { return nil }
+        let ids = members(of: id)
+        let local = point.x - Self.labelWidth
+        for segment in timeline.clipTracks.filter({ ids.contains($0.target) }).flatMap(\.segments) {
+            if abs(x(segment.end) - local) <= 12 { return (segment, true) }
+            if abs(x(segment.start) - local) <= 12 { return (segment, false) }
+        }
+        return nil
+    }
+
+    /// The clips whose middle is inside a loop drawn over the lanes.
+    func clips(inside loop: [CGPoint]) -> Set<String> {
+        guard loop.count >= 3 else { return [] }
+        var result = Set<String>()
+        for slot in slots {
+            guard case let .object(id)? = slot.row else { continue }
+            let ids = members(of: id)
+            let y = slot.minY + slot.height / 2
+            for segment in timeline.clipTracks.filter({ ids.contains($0.target) }).flatMap(\.segments) {
+                let point = CGPoint(x: Self.labelWidth + x((segment.start + segment.end) / 2), y: y)
+                if EditorModel.polygon(loop, contains: point) { result.insert(segment.id) }
+            }
+        }
+        return result
     }
 
     /// The keys inside a loop drawn over the lanes (key dots at their row's middle).

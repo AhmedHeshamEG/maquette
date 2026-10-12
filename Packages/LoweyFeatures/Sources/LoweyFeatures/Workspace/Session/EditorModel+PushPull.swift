@@ -83,7 +83,7 @@ extension EditorModel {
         if let near = heights.filter({ abs($0) > 1e-9 }).min(by: { abs($0 - raw) < abs($1 - raw) }), abs(near - raw) < perPoint * 10 {
             return near
         }
-        return snap.grid ? (raw / pullStep).rounded() * pullStep : raw
+        return snapping.grid ? (raw / pullStep).rounded() * pullStep : raw
     }
 
     /// Shows the face slid for real, or (when it needs a boolean) leaves the prism to the overlay.

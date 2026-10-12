@@ -1,10 +1,11 @@
 import HmmDesign
 import LoweyCore
+import PhotosUI
 import SwiftUI
 import UniformTypeIdentifiers
 
-/// Actions: making and sharing. Export and the project file, the Monitor window, the Board, History; Learn and
-/// Settings. (The scenes are behind the scene's name; the assistant and scripts are in Settings ▸ Assistant; sound
+/// Actions: making and sharing. Export and the project file, the Monitor window, the Board, the Reference window,
+/// History; Learn and Settings. (The scenes are behind the scene's name; the assistant and scripts are in Settings ▸ Assistant; sound
 /// and the timeline's settings live in the timeline.)
 struct ActionsPanel: View {
     @Bindable var editor: EditorModel
@@ -12,6 +13,8 @@ struct ActionsPanel: View {
     @State private var sharing: URL?
     @AppStorage(AppSettings.boardEnabled) private var boardEnabled = true
     @Environment(\.openWindow) private var openWindow
+    @State private var choosingReference = false
+    @State private var reference: PhotosPickerItem?
 
     var body: some View {
         HmmPanel("Actions", width: 340, sizing: HmmPanelSizing(id: "actions"), movable: true, close: { editor.openPanel = nil }) {
@@ -31,6 +34,15 @@ struct ActionsPanel: View {
                         if boardEnabled {
                             TileButton(title: "Board", systemName: "scribble.variable", identifier: "open-board") { editor.openBoard() }
                         }
+                        TileButton(title: "Reference", systemName: "photo.on.rectangle.angled", identifier: "open-reference") {
+                            choosingReference = true
+                        }
+                        if UIPasteboard.general.hasImages {
+                            TileButton(title: "Paste a reference", systemName: "doc.on.clipboard", identifier: "paste-reference") {
+                                editor.openPanel = nil
+                                editor.pasteReference()
+                            }
+                        }
                         TileButton(title: "History", systemName: "clock.arrow.circlepath", identifier: "open-history") { editor.openHistory() }
                     }
                 }
@@ -43,6 +55,16 @@ struct ActionsPanel: View {
             }
         }
         .sheet(item: Binding(get: { sharing.map(IdentifiedURL.init) }, set: { sharing = $0?.url })) { ShareSheet(items: [$0.url]) }
+        .photosPicker(isPresented: $choosingReference, selection: $reference, matching: .images)
+        .onChange(of: reference) { _, item in
+            guard let item else { return }
+            reference = nil
+            Task {
+                guard let data = try? await item.loadTransferable(type: Data.self) else { return }
+                editor.openPanel = nil
+                editor.addReference(imageData: data)
+            }
+        }
     }
 
     private func open(_ sheet: EditorSheet) {

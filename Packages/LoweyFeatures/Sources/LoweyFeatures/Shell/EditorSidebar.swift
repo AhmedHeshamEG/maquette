@@ -106,12 +106,17 @@ struct ToolOptionsBar: View {
     var body: some View {
         switch editor.tool {
         case .ink: InkOptionsBar(editor: editor)
-        case .flipbook: FlipbookOptionsBar(editor: editor)
+        case .flipbook: FrameStrip(editor: editor)
         case .draw: DrawOptionsBar(editor: editor)
         case .shadowBrush: ShadowBrushOptionsBar(editor: editor)
         case .paint: PaintOptionsBar(editor: editor)
         case .scatter: ScatterOptionsBar(editor: editor)
-        case .model: ModelOptionsBar(editor: editor)
+        case .model:
+            if editor.isSketching {
+                SketchOptionsBar(editor: editor)
+            } else {
+                ModelOptionsBar(editor: editor)
+            }
         case .rig: RigOptionsBar(editor: editor)
         case .select: TriggerDeckBar(editor: editor)
         case .lasso: EmptyView()

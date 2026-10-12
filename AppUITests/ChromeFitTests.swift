@@ -109,8 +109,9 @@ final class ChromeFitTests: XCTestCase {
         assertApart(frames, in: orientation)
     }
 
-    /// The open panel's labels and buttons are whole on the screen. (Overlaps are the chrome's check: a panel covers
-    /// the sidebar and the bottom row on purpose, and what it covers still reports itself as hittable.)
+    /// The open panel's labels and buttons are whole across the screen. (Overlaps are the chrome's check: a panel covers
+    /// the sidebar and the bottom row on purpose, and what it covers still reports itself as hittable. Up and down a
+    /// panel scrolls: a tile half-scrolled past its bottom reports a frame beyond the screen without being cut.)
     private func assertPanelFits(after button: String, in orientation: String) {
         let window = app.windows.firstMatch.frame
         let controls = app.descendants(matching: .any).matching(NSPredicate(format: "elementType == %d OR elementType == %d",
@@ -121,7 +122,7 @@ final class ChromeFitTests: XCTestCase {
             guard control.exists, control.isHittable else { continue }
             let frame = control.frame
             guard frame.width > 2, frame.height > 2, window.intersects(frame) else { continue }
-            XCTAssertTrue(window.insetBy(dx: -1, dy: -1).contains(frame),
+            XCTAssertTrue(frame.minX >= window.minX - 1 && frame.maxX <= window.maxX + 1,
                           "\(button) › \(control.label) is cut by the screen's edge in \(orientation)")
         }
     }

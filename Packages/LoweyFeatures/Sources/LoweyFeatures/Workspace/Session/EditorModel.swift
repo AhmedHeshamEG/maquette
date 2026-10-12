@@ -63,9 +63,20 @@ final class EditorModel {
         didSet { if draw != oldValue { refreshGuide() } }
     }
 
+    /// The sheet under the Pencil (`EditorModel+Sheets`); once kept, the scene's copy is the one that counts.
+    var drawingSheet: DrawingSheet? {
+        didSet { if drawingSheet != oldValue { refreshGuide() } }
+    }
+
     var shadowBrush = ShadowBrushSettings()
-    var ink = InkSettings()
-    var flipbook = FlipbookSettings()
+    var ink = InkSettings() {
+        didSet { if ink.mode != oldValue.mode { refreshGuide() } }
+    }
+
+    var flipbook = FlipbookSettings() {
+        didSet { if flipbook.onCamera != oldValue.onCamera || flipbook.mode != oldValue.mode { refreshGuide() } }
+    }
+
     var colourPaint = ColourPaintSettings()
     /// Rig: drawing bones, painting weights, the person rig's dots.
     var rigging = RigSettings() {
@@ -83,6 +94,15 @@ final class EditorModel {
     var frameGuide: DrawingGuide?
     var planeGuide: DrawingGuide?
     @ObservationIgnored var strokesDrawn = 0
+    /// A finger is held down while the Pencil works: the Snap magnet is the other way for that move.
+    @ObservationIgnored var snapFlipped = false
+    /// How this hand presses (Settings ▸ Your Pencil), as the stroke being drawn read it: its stabilisation smooths ink
+    /// and flipbooks.
+    @ObservationIgnored var pencilFeel = HmmPencilFeel.default
+    /// The tool in the hand before this one (the Pencil's "last tool").
+    @ObservationIgnored var lastTool: StageTool = .ink
+    /// The squeeze menu, the edit bar, the colours a shortcut opened (`EditorModel+Hands`).
+    var hands = HandsState()
     var animationView = AnimationViewSettings()
     /// Strokes picked in the selected ink drawing (Ink ▸ Select strokes).
     var inkStrokes: Set<Int> = []
@@ -419,6 +439,7 @@ final class EditorModel {
             refreshModelOverlay()
         }
         if tool == .rig { refreshModelOverlay() }
+        if drawsOnSheet { refreshSheet() }
         refreshPrecisionOverlay()
         journalChanged()
         app.bridge.notify("scene", ["revision": String(session.revision)])

@@ -69,6 +69,7 @@
                 Button("Cancel", role: .cancel) {}
             }
             .hmmToast($toast)
+            .modifier(BoardPencilGestures(model: model, choosingColour: $choosingColour))
         }
 
         private var paperColour: Color {

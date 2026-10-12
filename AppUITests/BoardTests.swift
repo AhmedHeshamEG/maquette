@@ -58,7 +58,12 @@ final class BoardTests: XCTestCase {
         words.typeText("Lamp")
         // A simulator with the on-screen keyboard keeps it up over the board's bottom bar: put it away.
         let hide = app.keyboards.buttons["Hide keyboard"].firstMatch
-        if hide.waitForExistence(timeout: 1) { hide.tap() }
+        if hide.waitForExistence(timeout: 1), hide.isHittable {
+            hide.tap()
+        } else if app.keyboards.firstMatch.exists {
+            // Not reachable on this simulator's keyboard: a tap on empty board ends the note's editing.
+            point(canvas, 0.5, 0.15).tap()
+        }
         shot("A stroke and a note")
 
         // Picked, it can be pinned to the project.

@@ -88,11 +88,8 @@ public extension EditCommand {
         case let .setTracks(edits):
             return try Self.applySetTracks(edits, in: &document)
 
-        case let .setFlipbooks(edits):
-            return Self.applySetFlipbooks(edits, in: &document)
-
-        case let .setTakes(edits):
-            return Self.applySetTakes(edits, in: &document)
+        case .setFlipbooks, .setTakes, .setSheets:
+            return applyListEdits(to: &document)
 
         case let .replaceScene(scene):
             return Self.applyReplaceScene(scene, in: &document)
@@ -253,6 +250,16 @@ public extension EditCommand {
         return (.setTracks(inverse.reversed()), ChangeSet(objects: changed, scene: true))
     }
 
+    /// Flipbooks, takes and sheets: lists edited by id.
+    private func applyListEdits(to document: inout Document) -> Applied {
+        switch self {
+        case let .setFlipbooks(edits): Self.applySetFlipbooks(edits, in: &document)
+        case let .setTakes(edits): Self.applySetTakes(edits, in: &document)
+        case let .setSheets(edits): Self.applySetSheets(edits, in: &document)
+        default: (self, ChangeSet())
+        }
+    }
+
     private static func applySetFlipbooks(_ edits: [FlipbookEdit], in document: inout Document) -> Applied {
         var inverse: [FlipbookEdit] = []
         for edit in edits {
@@ -287,6 +294,24 @@ public extension EditCommand {
             document.scene.timeline.takes = takes
         }
         return (.setTakes(inverse.reversed()), ChangeSet(scene: true))
+    }
+
+    private static func applySetSheets(_ edits: [SheetEdit], in document: inout Document) -> Applied {
+        var inverse: [SheetEdit] = []
+        for edit in edits {
+            var sheets = document.scene.sheets
+            if let existing = sheets.firstIndex(where: { $0.id == edit.id }) {
+                inverse.append(SheetEdit(id: edit.id, sheet: sheets[existing], index: existing))
+                if let sheet = edit.sheet { sheets[existing] = sheet } else { sheets.remove(at: existing) }
+            } else if let sheet = edit.sheet {
+                sheets.insert(sheet, at: min(max(edit.index ?? sheets.count, 0), sheets.count))
+                inverse.append(SheetEdit(id: edit.id, sheet: nil))
+            } else {
+                continue
+            }
+            document.scene.sheets = sheets
+        }
+        return (.setSheets(inverse.reversed()), ChangeSet(scene: true))
     }
 
     // MARK: Hierarchy primitives

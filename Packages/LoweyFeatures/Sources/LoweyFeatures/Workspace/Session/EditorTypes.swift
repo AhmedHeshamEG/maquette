@@ -10,7 +10,7 @@ public enum StageTool: String, CaseIterable, Identifiable, Sendable {
     case lasso
     /// Ink strokes: pressure lines in 3D that always face the camera (draw, erase, select strokes).
     case ink
-    /// Solid shapes drawn in 3D (tube, ribbon, extrude, lathe) on a guide.
+    /// Solid shapes drawn in 3D (tube, ribbon, extrude, lathe) on the sheet.
     case draw
     /// Paint shadow shapes onto a surface (push the shadow in or pull it out).
     case shadowBrush
@@ -70,8 +70,9 @@ public enum StageTool: String, CaseIterable, Identifiable, Sendable {
     /// Brush isn't one: it moves the Look's own shadow.
     public var putsColourDown: Bool { self == .ink || self == .draw || self == .flipbook || self == .paint }
 
-    /// Tools that draw on a guide surface.
-    public var usesGuide: Bool { self == .ink || self == .draw }
+    /// Tools whose strokes land on the sheet (CONTEXT §10.10): ink and solid shapes (flipbooks too, unless they are
+    /// stuck to the camera; precise sketching through the Model tool's sketch mode).
+    public var usesSheet: Bool { self == .ink || self == .draw || self == .flipbook }
 }
 
 /// The floating panels the corner clusters open. One at a time; tapping its button again closes it. Animate, the
@@ -145,52 +146,8 @@ public enum EditorSheet: String, Identifiable, Sendable {
     public var id: String { rawValue }
 }
 
-/// What the solid-shape tool draws on.
-public enum GuideKind: String, CaseIterable, Identifiable, Sendable {
-    case plane, box, cylinder, sphere, object
-
-    public var id: String { rawValue }
-
-    public var title: String {
-        switch self {
-        case .plane: "Plane"
-        case .box: "Box"
-        case .cylinder: "Cylinder"
-        case .sphere: "Sphere"
-        case .object: "On object"
-        }
-    }
-
-    public var systemImage: String {
-        switch self {
-        case .plane: "square.grid.3x3"
-        case .box: "cube"
-        case .cylinder: "cylinder"
-        case .sphere: "circle"
-        case .object: "hand.draw"
-        }
-    }
-}
-
-/// Which way the drawing plane faces.
-public enum PlaneLock: String, CaseIterable, Identifiable, Sendable {
-    case view, ground, front, side
-
-    public var id: String { rawValue }
-
-    public var title: String {
-        switch self {
-        case .view: "Facing me"
-        case .ground: "Ground"
-        case .front: "Front"
-        case .side: "Side"
-        }
-    }
-}
-
+/// Solid shapes drawn on the sheet: what a stroke becomes, how wide, mirrored or not.
 public struct DrawSettings: Equatable, Sendable {
-    public var guide: GuideKind = .plane
-    public var planeLock: PlaneLock = .view
     public var style: DrawingRecipe.Style = .tube
     /// Stroke width in metres at full pressure.
     public var width: Double = 0.05
@@ -198,9 +155,6 @@ public struct DrawSettings: Equatable, Sendable {
     public var mirror = false
     public var extrudeDepth: Double = 0.3
     public var segments = 7
-    /// The guide moved along its normal.
-    public var planeOffset: Double = 0
-    public var guideSize: Double = 1.5
 
     public init() {}
 }
