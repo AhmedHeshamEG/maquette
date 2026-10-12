@@ -159,6 +159,25 @@ jobs:
           swift test -c release --filter MeshSimplifyTests 2>&1 | tee spike.txt
           grep SPIKE spike.txt >> "$GITHUB_STEP_SUMMARY"
 
+  godot:
+    name: A rigged, animated glTF plays in Godot 4.3
+    needs: core-tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: acceptance
+          path: acceptance
+      - name: Godot opens the rigged tail, finds its skeleton and skin, and its bones move when it plays
+        run: |
+          set -o pipefail
+          curl -sSL -o godot.zip https://github.com/godotengine/godot/releases/download/4.3-stable/Godot_v4.3-stable_linux.x86_64.zip
+          unzip -q godot.zip
+          ./Godot_v4.3-stable_linux.x86_64 --headless --path Tools/godot --script check_skin.gd -- "$GITHUB_WORKSPACE/acceptance/rigged/tail.glb" 2>&1 | tee godot.log
+          grep -q "MAQUETTE GODOT: .* bones" godot.log
+          grep "MAQUETTE GODOT" godot.log >> "$GITHUB_STEP_SUMMARY"
+
   interop:
     name: Print files (slicer check) + Blender package + painted glTF (Blender ${{ matrix.blender }})
     needs: core-tests
@@ -489,7 +508,7 @@ jobs:
 
   result:
     name: CI result
-    needs: [changes, lint, core-tests, interop, tools, engine, features, app, appstore]
+    needs: [changes, lint, core-tests, interop, godot, tools, engine, features, app, appstore]
     if: always()
     runs-on: ubuntu-latest
     steps:
