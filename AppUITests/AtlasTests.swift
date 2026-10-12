@@ -255,8 +255,11 @@ final class AtlasTests: XCTestCase {
             Page(name: "The chip", steps: ["fold-inspector"]),
             Page(name: "Model, Edit on an object", steps: ["Model", "model-shape"], scrolls: 2),
             Page(name: "Paint layers", steps: ["Paint", "tool-paint", "paint-layer-add"], scrolls: 1),
-            Page(name: "Rig, Bones", steps: ["Rig", "rig-step-bones"], scrolls: 1),
-            Page(name: "Rig as a person", steps: ["Rig", "rig-person"])
+            Page(name: "Rig, body shortcuts", steps: ["Rig"], scrolls: 1),
+            Page(name: "Rig, pins and dots", steps: ["Rig", "rig-marks"]),
+            Page(name: "Rig as a person, guessed", steps: ["Rig", "rig-body-person"]),
+            Page(name: "Library, Motion", steps: ["Library", "library-motion"]),
+            Page(name: "Library, Rigs", steps: ["Library", "library-rigs"])
         ], from: .cube)
         fresh(.blob)
         open(Page(name: "Rig with a character", steps: ["Rig"], scrolls: 2))
