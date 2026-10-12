@@ -12,7 +12,10 @@ extension EditorModel {
 
     /// Draw ▸ Sketch: a shape drawn on the sheet.
     func startSketching(_ kind: SketchKind) {
+        let wasSketching = isSketching
         startModeling(.sketch(kind))
+        // A sheet nobody drew on yet (Ink stood one up as Draw opened) gives way to the ground a sketch starts on.
+        if !wasSketching, !sheetIsKept { drawingSheet = nil }
         refreshGuide()
     }
 
