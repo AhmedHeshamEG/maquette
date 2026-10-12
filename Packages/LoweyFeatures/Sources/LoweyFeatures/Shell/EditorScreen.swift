@@ -101,8 +101,10 @@ struct EditorScreen: View {
                     }
                     return !items.isEmpty
                 }
-            // Overlays sit on 3D positions and frame coordinates: they never mirror.
+            // Overlays sit on 3D positions and frame coordinates: they never mirror, and they reach under the status bar
+            // as the stage does, so a joint's ring is drawn where a touch grabs it.
             StageOverlayView(editor: editor)
+                .ignoresSafeArea(edges: [.top, .horizontal])
                 .environment(\.layoutDirection, .leftToRight)
             // A picture being placed to project: in the stage's own points, like the stage.
             if editor.tool == .paint, editor.colourPaint.picture != nil {

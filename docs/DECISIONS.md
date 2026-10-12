@@ -2023,3 +2023,8 @@ clusters with Transform and TransformLink, a bind pose, rotation curves in Euler
 y up) opens and plays in Godot 4.3 (ufbx) and Blender 4.2 and 5.2, on CI. Export ▸ 3D model offers FBX when a rigged solid
 is in the export (one thing per file). *Rejected:* the fallback (the Blender package writing FBX on a computer): the
 writer passed, and needing a computer for Unity breaks idea → done.
+
+**D-278 — The stage's overlay reaches under the status bar, as the stage does.** Joint handles, the lasso, motion paths,
+selected overlays' frames and the onion skin were drawn in a view inside the top safe area while the stage they mark
+fills it, so on an iPad each was drawn about 24 points below where a touch grabs it (found by U4's timed tail test: a
+pull on the ring moved the object). Since 0.14 the overlay ignores the top safe area like the stage.

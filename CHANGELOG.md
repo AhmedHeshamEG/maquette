@@ -32,6 +32,7 @@ Rig anything, fast, and change it afterwards; a sculpt from another app arrives 
 - **Out to game engines.** glTF exports carry rigged things as skins with their bones and keys; **FBX** (our own writer)
   is in Export for a rigged thing. Checked in Godot and Blender on every build.
 - Settings ▸ Pencil and hands: placing pins and dots is the Pencil's by default.
+- Fixed: joint handles, the lasso and motion paths were drawn a little below where a touch grabs them.
 - Projects are schema 14; Maquette 0.13 can't open them.
 
 ## [0.13] — Maquette — draw (phase U3)
