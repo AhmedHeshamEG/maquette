@@ -42,6 +42,11 @@ public enum SculptImport {
         return result
     }
 
+    /// Whether a model is heavier than the budget and can be lightened (a sculpt: no picture wrapped on it).
+    public static func needsLightening(_ model: ImportedModel, budget: Int) -> Bool {
+        model.triangleCount > budget && !model.materials.contains { $0.baseColorTexture != nil }
+    }
+
     /// The lightened model as the file the library keeps: one GLB, its parts with their materials and colours.
     public static func glb(_ model: ImportedModel, name: String) -> Data {
         var scene = Scene(id: "sculpt", name: name)
@@ -55,5 +60,31 @@ public enum SculptImport {
                                        colors: part.hasColors ? part.colors : [])
         }
         return GLTFScene.glb(nil, in: scene, look: Look(), parts: { _ in parts })
+    }
+}
+
+public extension LibraryStore {
+    /// Keeps a lighter copy of an asset beside its original (which stays, for the Detail slider) and points the asset
+    /// at it; a lighter copy made before is replaced.
+    func storeLightened(_ model: ImportedModel, for asset: LibraryAsset, detail: Double) throws -> LibraryAsset {
+        let folder = assetFolder(asset.id)
+        let name = "light-\(Int((detail * 100).rounded())).glb"
+        try SculptImport.glb(model, name: asset.name).write(to: folder.appendingPathComponent(name), options: .atomic)
+        var result = asset
+        if let original = asset.original {
+            if asset.file != original, asset.file != name { try? FileManager.default.removeItem(at: folder.appendingPathComponent(asset.file)) }
+        } else {
+            result.original = asset.file
+        }
+        result.file = name
+        result.format = .glb
+        result.detail = detail
+        result.triangleCount = model.triangleCount
+        return result
+    }
+
+    /// The file a lightened asset came from.
+    func originalURL(of asset: LibraryAsset) -> URL? {
+        asset.original.map { assetFolder(asset.id).appendingPathComponent($0) }
     }
 }

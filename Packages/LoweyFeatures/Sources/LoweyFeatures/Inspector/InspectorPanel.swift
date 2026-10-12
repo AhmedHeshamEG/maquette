@@ -23,6 +23,11 @@ struct InspectorPanel: View {
                 .padding(.top, HmmSpacing.s)
             ScrollView {
                 VStack(alignment: .leading, spacing: HmmSpacing.m) {
+                    // A model that just came in is offered a rig, once (CONTEXT §10.8).
+                    if let object = editor.singleSelection, editor.rigItOffer == object.id {
+                        HmmPillButton("Rig it", systemName: "figure.stand", prominent: true) { editor.takeRigItOffer() }
+                            .accessibilityIdentifier("rig-it")
+                    }
                     GizmoModeRow(editor: editor)
                     SizeSection(editor: editor)
                     if let object = editor.singleSelection {
@@ -40,7 +45,10 @@ struct InspectorPanel: View {
         .hmmResizable(Self.sizing, size: $size, defaultWidth: Self.defaultSize.width, title: "Inspector", appliesFrame: false)
         .hmmPanelBackground()
         .onAppear { name = editor.singleSelection?.name ?? "" }
-        .onChange(of: editor.selection) { _, _ in name = editor.singleSelection?.name ?? "" }
+        .onChange(of: editor.selection) { _, _ in
+            name = editor.singleSelection?.name ?? ""
+            if editor.rigItOffer != editor.singleSelection?.id { editor.rigItOffer = nil }
+        }
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("inspector")
     }

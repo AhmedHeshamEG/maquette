@@ -14,7 +14,30 @@ struct KindSection: View {
         case let .text(recipe): TextSection(editor: editor, object: object, recipe: recipe)
         case let .overlay(recipe): OverlaySection(editor: editor, object: object, recipe: recipe)
         case let .particles(recipe): ParticleSection(editor: editor, object: object, recipe: recipe)
+        case let .asset(id): DetailSection(editor: editor, asset: id)
         default: EmptyView()
+        }
+    }
+}
+
+/// A sculpt lightened as it came in: one Detail slider asks for more or less (CONTEXT §10.8), from the original,
+/// off the main thread; the stage shows the new one when it lands.
+private struct DetailSection: View {
+    let editor: EditorModel
+    let asset: AssetID
+    @State private var detail: Double?
+
+    var body: some View {
+        if let stored = editor.library.manifest.asset(asset), stored.original != nil {
+            PanelSection("Detail") {
+                LabeledSlider(title: "Detail", value: detail ?? stored.detail ?? 1, range: SculptImport.detailRange,
+                              format: { "\(SculptImport.target(budget: LibraryModel.budget, detail: $0).formatted()) triangles" },
+                              set: { detail = $0 }, done: {
+                                  guard let detail else { return }
+                                  Task { await editor.library.setDetail(detail, of: asset) }
+                              })
+                Hint("Lightened to what this iPad keeps smooth as it came in. More detail is heavier to move around.")
+            }
         }
     }
 }

@@ -185,10 +185,22 @@ extension AppModel {
         case "json" where editor != nil:
             if let data = try? Data(contentsOf: url) { editor?.importScript(data, source: url.lastPathComponent) }
         default:
-            Task {
-                let imported = await library.importFiles([url])
-                if imported > 0 { show(imported == 1 ? "Added to your library" : "Added \(imported) models to your library") }
+            landModels([url])
+        }
+    }
+
+    /// Model files from elsewhere (Open in, the share sheet, a drop on Home, Home's import) land on the stage: in the
+    /// open project, or a new one made for them. More than one: the first lands, the rest wait in the Library.
+    func landModels(_ urls: [URL], at point: CGPoint? = nil) {
+        Task {
+            let assets = await library.importAssets(urls)
+            guard let first = assets.first else {
+                show("Nothing Maquette can open there (glTF, GLB, OBJ, USDZ, STL, 3MF)", kind: .error)
+                return
             }
+            if editor == nil { startProject() }
+            editor?.land(first, at: point)
+            if assets.count > 1 { show("The other \(assets.count - 1) are in your Library") }
         }
     }
 

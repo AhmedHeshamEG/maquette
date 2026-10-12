@@ -190,7 +190,8 @@ struct TheaterDialogs: ViewModifier {
             }
             .sheet(item: Binding(get: { state.sharing.map(IdentifiedURL.init) }, set: { state.sharing = $0?.url })) { ShareSheet(items: [$0.url]) }
             .fileImporter(isPresented: $state.importing, allowedContentTypes: [.item]) { result in
-                if case let .success(url) = result { app.importPackage(url) }
+                // A project comes in as a project; a model lands on the stage of a new one.
+                if case let .success(url) = result { app.handleOpenedFile(url) }
             }
             .sheet(isPresented: $state.showArchive) { ArchiveSheet().presentationDetents([.medium]) }
             .onChange(of: app.gallery.stacks.map(\.id)) { _, ids in

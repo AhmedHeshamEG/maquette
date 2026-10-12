@@ -149,7 +149,7 @@ public final class ModelLibrary: Sendable {
     }
 
     /// Reads a model file: glTF / GLB, OBJ, STL and 3MF in pure Swift (LoweyCore), USDZ through ModelIO.
-    static func read(url: URL, format: AssetFormat) throws -> (ImportedModel, RigAsset?) {
+    public static func read(url: URL, format: AssetFormat) throws -> (ImportedModel, RigAsset?) {
         let model: ImportedModel
         var rig: RigAsset?
         switch format {
