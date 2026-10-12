@@ -47,7 +47,9 @@ public enum LoweySchema {
     ///     `attachBone`, `liveHead` and `triggers` properties.
     /// 12: Maquette 0.12's `darkStudio` mood (a blank project's world).
     /// 13: Maquette 0.13's sheets: scenes' `sheets`, the `setSheets` command, flipbooks drawn on a sheet.
-    public static let currentVersion = 13
+    /// 14: Maquette 0.14's rigs: a rig's `marks` (pins and dots) and `person` dots, the `bendDetail` property, tracks'
+    ///     `cycle` (a motion played again), the library's `motions` and an asset's `original` and `detail`.
+    public static let currentVersion = 14
 
     public static let migrations: [Migration] = [
         Migration(kind: .scene, from: 0, transform: liftSceneV0),
@@ -97,7 +99,11 @@ public enum LoweySchema {
         // 12 → 13 adds optional sheets and a flipbook anchor; nothing older changes shape.
         Migration(kind: .scene, from: 12) { $0 },
         Migration(kind: .project, from: 12) { $0 },
-        Migration(kind: .library, from: 12) { $0 }
+        Migration(kind: .library, from: 12) { $0 },
+        // 13 → 14 adds optional rig marks, track cycles, a property and library motions; nothing older changes shape.
+        Migration(kind: .scene, from: 13) { $0 },
+        Migration(kind: .project, from: 13) { $0 },
+        Migration(kind: .library, from: 13) { $0 }
     ]
 
     /// The render style a 1.x look maps to.
