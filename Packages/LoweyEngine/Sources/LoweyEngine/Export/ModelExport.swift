@@ -7,6 +7,7 @@ public enum ModelExportFormat: String, CaseIterable, Sendable, Identifiable, Cod
     case glb, usdz, obj, stl
     case threeMF = "3mf"
     case blender
+    case fbx
 
     public var id: String { rawValue }
 
@@ -18,6 +19,7 @@ public enum ModelExportFormat: String, CaseIterable, Sendable, Identifiable, Cod
         case .stl: "STL"
         case .threeMF: "3MF"
         case .blender: "Blender"
+        case .fbx: "FBX"
         }
     }
 
@@ -30,6 +32,7 @@ public enum ModelExportFormat: String, CaseIterable, Sendable, Identifiable, Cod
         case .stl: "For 3D printing: every slicer reads it. Millimetres, standing on the bed."
         case .threeMF: "For 3D printing: millimetres, a colour per part, closed shapes slicers trust."
         case .blender: "Render on your computer: a folder Blender turns into the scene with its Look, lights and cameras."
+        case .fbx: "For Unity and other game engines: the rigged thing with its bones and their keys."
         }
     }
 
@@ -184,6 +187,13 @@ public enum ModelExport {
         switch format {
         case .glb:
             return [("\(name).glb", GLTFScene.glb(ids, in: scene, look: look, parts: parts, painted: paintOf, posed: posed, skinned: skinnedOf))]
+        case .fbx:
+            // One rigged thing: the first the export holds.
+            let candidates = (ids ?? scene.roots).flatMap { scene.subtree(of: $0) }
+            guard let object = candidates.compactMap({ scene.objects[$0] }).first(where: { skinnedOf($0) != nil }),
+                  let skin = skinnedOf(object) else { return [] }
+            let tracks = scene.timeline.tracks.filter { $0.target == object.id }
+            return [("\(name).fbx", FBXSkin.file(skin, name: object.name, tracks: tracks, fps: scene.timeline.fps))]
         case .blender:
             let selected = ids.map { scene.restricted(to: $0) } ?? scene
             return [("\(name) for Blender.zip", BlenderPackage.archive(selected, look: look, preset: preset, parts: parts, painted: paintOf,
@@ -202,7 +212,7 @@ public enum ModelExport {
         case .obj:
             let (obj, mtl) = OBJFile.text(meshes, materialFile: "\(name).mtl")
             return [("\(name).obj", Data(obj.utf8)), ("\(name).mtl", Data(mtl.utf8))] + OBJFile.textures(meshes)
-        case .glb, .blender: return []
+        case .glb, .blender, .fbx: return []
         }
     }
 }
