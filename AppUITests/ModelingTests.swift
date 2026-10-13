@@ -46,8 +46,11 @@ final class ModelingTests: XCTestCase {
         let number = element("dimension-\(dimension)")
         let reached = "\(number.frame), hittable \(number.isHittable)"
         number.tap()
-        XCTAssertTrue(element("number-pad-display").waitForExistence(timeout: 3),
-                      "the pad opened for \(dimension) (\(reached), \(app.popovers.count) pop-overs): \(element("debug-trail").label)")
+        guard element("number-pad-display").waitForExistence(timeout: 3) else {
+            XCTFail("the pad opened for \(dimension) (\(reached), \(app.popovers.count) pop-overs, over it: \(covering(number.frame))): "
+                + element("debug-trail").label)
+            return
+        }
         for character in text {
             let key = switch character {
             case "-": "minus"
@@ -57,6 +60,15 @@ final class ModelingTests: XCTestCase {
             element("number-pad-\(key)").tap()
         }
         element("number-pad-done").tap()
+    }
+
+    /// What lies over a number that can't be reached (identifiers, else labels, of the elements holding its middle).
+    private func covering(_ frame: CGRect) -> String {
+        let middle = CGPoint(x: frame.midX, y: frame.midY)
+        let all = app.descendants(matching: .any).allElementsBoundByIndex.prefix(600)
+        return all.filter { $0.frame.contains(middle) && $0.frame.width < 1300 }
+            .map { "\($0.elementType.rawValue):\($0.identifier.isEmpty ? $0.label : $0.identifier)" }
+            .joined(separator: ", ")
     }
 
     /// Double-tap: frame what's selected (or everything), then let the camera settle.

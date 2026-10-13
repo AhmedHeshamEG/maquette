@@ -23,6 +23,9 @@ extension StageGestures {
             editor.restClusters()
             editor.wakeSheet()
         case .ended, .cancelled, .failed:
+            if AppIdentity.isUITesting, recognizer.state != .ended, let touch = recognizer.samples.first?.location {
+                editor.trail("lost=\(Int(touch.x.rounded())),\(Int(touch.y.rounded())),\(editor.tool.rawValue)")
+            }
             editor.strokeInProgress = false
             editor.wakeSheet()
         default:
@@ -129,8 +132,12 @@ extension StageGestures {
 
     /// UI tests only (the Pencil-accuracy test): where the touch began and where its first point landed, on screen.
     private func noteLanding(_ recognizer: StrokeGestureRecognizer, editor: EditorModel, stage: StageView) {
-        guard let touch = recognizer.samples.first?.location, let first = strokePoints.first, let normal = strokeNormals.first,
-              let landed = stage.screenPoint(of: first - normal * (editor.tool == .draw ? 0 : 0.002)) else { return }
+        guard let touch = recognizer.samples.first?.location else { return }
+        guard let first = strokePoints.first, let normal = strokeNormals.first else {
+            editor.trail("unlanded=\(Int(touch.x.rounded())),\(Int(touch.y.rounded())),\(recognizer.samples.count)")
+            return
+        }
+        guard let landed = stage.screenPoint(of: first - normal * (editor.tool == .draw ? 0 : 0.002)) else { return }
         editor.trail("land=\(Int(touch.x.rounded())),\(Int(touch.y.rounded()))>\(Int(landed.x.rounded())),\(Int(landed.y.rounded()))"
             + (strokeOnSurface ? ",surface" : ",sheet"))
     }
