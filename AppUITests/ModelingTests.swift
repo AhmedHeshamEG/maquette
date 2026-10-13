@@ -44,6 +44,8 @@ final class ModelingTests: XCTestCase {
     /// is running.
     private func type(_ text: String, into dimension: String) {
         element("dimension-\(dimension)").tap()
+        XCTAssertTrue(element("number-pad-display").waitForExistence(timeout: 3),
+                      "the pad opened for \(dimension): \(element("debug-trail").label)")
         for character in text {
             let key = switch character {
             case "-": "minus"
