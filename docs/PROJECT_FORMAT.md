@@ -379,6 +379,16 @@ came in has `original` (the file it came from, kept beside it) and `detail` (1 i
 
 Schema 14 only adds optional keys; files from schema 13 open unchanged, and Maquette 0.13 refuses schema 14.
 
+## Drawings on sheets and stuck titles (0.15, still schema 14)
+
+Two optional properties:
+
+- `drawnOn` (string): the id of the kept sheet a drawing was drawn on; moving the sheet moves the drawing with it.
+- `sticksToCamera` (bool): the thing's transform is read in the shot camera's frame (its position and rotation relative
+  to the camera), so it stays put on the picture as the camera moves.
+
+Readers that don't know them ignore them; Maquette 0.14 opens 0.15's files.
+
 ## workspace.json
 
 How the project shows when it opens. It isn't the project (it's never undone and isn't in the journal); it's

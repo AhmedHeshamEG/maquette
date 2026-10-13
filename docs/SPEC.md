@@ -24,7 +24,9 @@ reference and stays.
 | The layout pass (U2): the Library and Rig, the scene as a door, the object panel on one screen and moved by hand, one menu per object, Perform and Keys, the dark studio, the resting sidebar, the held features | **0.12.** [LAYOUT.md](LAYOUT.md) is the map; D-226 … D-239. Live performance's entry points are held in App Store builds until 1.2 (D-228). |
 | Draw (U3): the sheet (four shapes, placed by hand, kept and named), Sketch in Draw and talking back, flipbooks on the sheet with the frame strip, the hand shortcuts and the squeeze menu, the Snap magnet, our number pad, Settings ▸ Pencil and hands (who does what, the Pencil page with its test pad and calibration), the Reference window, the timeline as Dreams has it, the brush library dropping down | **0.13.** D-240 … D-258. Hold-to-clean-shape and the squeeze menu on the board's own drawings come with the Board's finish (M14) as far as clean shapes go. |
 | Rig, and bring your sculpt: pins and dots, Person / Chain / Four legs / Wings guessed from the shape, rigs you change any time, solid parts hinged, shapes cut finer to bend; motion saved to the Library and dropped anywhere, repeats by a motion's end, four feels; sculpts in painted and lightened with Detail, landing with Rig it; skinned glTF and our own FBX for game engines | **0.14.** D-259 … D-278. The Nomad fixture joins when Hesham exports one (D-275); Unity is a computer check (D-276). |
-| Shape and paint (touch-and-drag modelling, deformations, the full colour picker, layers on the bottom bar, smudge) | U5 |
+| Draw again and one grammar (U5): one Draw where the brush decides (lines, paint, solids, shapes, shadow), zero setup (the surface, else the sheet facing you), the sheet as paper with a hold menu, strokes under the tip (a UI test), shapes in one drag pulled into solids, a tapped stroke's chip, flicked frames and onion skins on the timecode, every number a slider, two fingers on the view, press and carry, hover lighting, the lasso's three homes, the quick menu per tool, the eyedropper loupe, titles stuck to the camera, to the ground by the real shape | **0.15.** D-280 … D-300. Smudge on painted models comes with U7 Texture (D-283). |
+| Shape (touch-and-drag modelling, deformations, faces and edges lit under the Pencil) | U6 |
+| Texture (the full colour picker, layers, smudge on paint) | U7 |
 | Mechanisms + AR, web layer (held) | M12 |
 | Content and finish: the house kit, waiting designed, the Board's finish | M14 |
 | Tutorials in Hesham's voice, artist info, Content Credentials, Time-lapse, Report a problem | M16 |
@@ -34,6 +36,25 @@ reference and stays.
 Cast is gone (D-227): what said *Cast ▸ Voice & face*, *Triggers* and *Life* below is the selected character's
 button beside Record in the timeline's Perform; *Cast ▸ Rig* is Rig; *Make it part of* is in Rig. Everything below
 still works the same way.
+
+### Draw again, and one grammar (0.15)
+
+- **One Draw** (D-283): Model · Draw · Rig · Animate; Draw's bar is Brush · Smudge · Erase · Sheets · Colour and the brush
+  in the hand decides what the Pencil makes. Painting brushes paint models (Sheets becomes Layers over a thing); Solids,
+  Shapes and Shadow sit under the library's sets.
+- **Zero setup** (D-284, D-285): over a thing a stroke lies on its surface; in the air on the sheet, which faces you. The
+  sheet is paper while drawing, a trace between strokes; its hold menu places, shapes, guides, renames and deletes it.
+  Drawings move with their sheet (`drawnOn`).
+- **Accuracy** (D-286, D-287): one smoothing, the brush's; `DrawTests` fails past three points between a touch and its
+  stroke's first point.
+- **Shapes and strokes** (D-288, D-289): one drag per shape; a closed one pulls into a solid by its arrow; a tapped stroke
+  has a chip and reshapes under the Pencil.
+- **Frames** (D-290): flick right for the next drawing, left for the one before; onion skins on the timecode.
+- **The grammar** (D-291 … D-298): hover lights what a tap lands on; every number is a slider; two fingers move the view,
+  one finger carries the selection; the clusters rest while drawing; the lasso in the quick menu, the edit bar and the
+  empty stage's menu; the quick menu changes with the tool; the eyedropper loupe; one toast system; four Pencil Pro clicks.
+- **Titles and the ground** (D-295, D-299): 3D text sticks to the camera in place of + Overlay; to the ground by the real
+  lowest point.
 
 ### Rig, and bring your sculpt (0.14)
 

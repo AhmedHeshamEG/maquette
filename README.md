@@ -4,6 +4,12 @@ Shapr3D's ease, Procreate's feel, Dreams' animation and ToonSquid's rigging, in 
 or art degree. Build a set like Lego, drop in characters, direct them with a camera, sync them to your voice, and
 export the video. By **studio h.**; the continuation of 3D-lowey 2.0. All rights reserved (see [LICENSE](LICENSE)).
 
+**0.15** (phase U5): **draw again, and one grammar**. One Draw where the brush decides what the Pencil makes:
+lines, paint, solids, shapes or shadow. Strokes land on the surface under them or on a sheet of paper that faces you,
+and start right under the tip. Shapes come in one drag and pull into solids; frames are flicked; every number is a
+slider; two fingers always move the view; a selected thing is carried over the surfaces under it; the hovering Pencil
+lights what a tap would pick; and the lasso, the eyedropper and the quick menu are where the hand expects them.
+
 **0.14** (phase U4): **rig, and bring your sculpt**. Rig anything with pins and dots: tap dots on joints, pins where a
 soft thing bends, or start from Person, Chain, Four legs or Wings, guessed from the shape. Change the rig any time and
 the pose and keys stay; solid parts hinge at a dot. Poses, clips and loops are saved to the Library and dropped on

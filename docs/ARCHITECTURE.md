@@ -421,6 +421,26 @@ flowchart LR
   `Shell/GesturesPage`. The Snap magnet is `StageChrome`'s `SnapMagnet`; the brush library's drop-down is
   `Workspace/UI/BrushRow`'s `BrushDropDown`.
 
+## One Draw and the grammar (0.15)
+
+- **Core**: `StageColors` (the sheet's paper, edge and trace, checked against the dark studio); `SheetMesh.softEdge` and
+  `dots`; `SheetCarry` (drawings that name their kept sheet in `drawnOn` move with it in the same command);
+  `InkEditing.pushing` (Smudge on lines) and `restyling`; `GroundDrop` (`lowest(of:band:)`, `rise`: to the ground by the
+  real shape); `ModelOverlay.arrow` (a closed shape's pull arrow); `StickToCamera` (`sticksToCamera`, applied in
+  `Animator.evaluate` after the camera, so stage and export agree).
+- **Engine**: `StageView.showHover` (the accent tint on the thing under the hovering Pencil).
+- **Features**: `Draw/DrawTypes` (`DrawBrushKind`, `DrawVerb`) and `EditorModel+Draw` map Draw's bar and brush onto the
+  tools underneath (ink, draw, sketch, shadow brush, paint, flipbook); `Draw/DrawBar`, `DrawBrushLibrary`,
+  `SheetsPopover`, `LayersPopover`, `StrokeChip`, `FlipbookTimecode`; `EditorModel+Sheets` (paper, waking, the hold menu,
+  carrying), `EditorModel+Eyedropper` and `StageOverlayView`'s loupe; `HandsTypes` (`QuickAction`, `RigQuickAction`);
+  `HoldMenus` (`emptyStageMenu`, `sheetHoldMenu`). `StageGestures+Strokes` routes a stroke (a tap that picks, a line, a
+  shape, the surface under it or the sheet) and, under `-ui-testing`, writes each landing to the debug trail;
+  `StageGestures+Drag` and `+TwoFingers` hold the anchored pan, the pinch toward the fingers, the orbit by screen width,
+  the flick and press-and-carry.
+- **hmm-kit 0.9**: `HmmScrub` and `HmmNumberPill` (every number a slider), `HmmTouches` (touches counted without claiming
+  them; toasts and the guide line leave on any), `HmmCornerCluster` (clusters that rest as rails), `HmmColourLoupe`,
+  `HmmSidebar(showsUndo:)`.
+
 ## LoweyRender 2
 
 ```mermaid

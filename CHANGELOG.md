@@ -3,6 +3,46 @@
 All notable changes. 1.x grew in four phases (v0.1 → v1.4); 2.0 is the remaster, released as betas first. Maquette
 continues from 2.0 and numbers its phases again from 0.1 (each phase bumps the minor version until 1.0).
 
+## [0.15] — Maquette — draw again, and one grammar (phase U5)
+
+Drawing put right, and the whole app speaking one language of hands and Pencil.
+
+- **One Draw.** Top right is Model · Draw · Rig · Animate. Draw opens no panel: its bar is **Brush · Smudge · Erase ·
+  Sheets · Colour**, and the brush in the hand decides what the Pencil makes. The library's sets draw lines, the
+  Painting set paints models (Sheets turns into Layers over a thing), and under them are **Solids**, **Shapes** and
+  **Shadow**. Smudge pushes lines; on painted models it comes with U7.
+- **Zero setup.** A stroke begun over a thing lies on its surface; in the air it lands on the sheet, which turns to face
+  you first. The sheet is warm paper while you draw and a faint trace between strokes; a finger held on it opens its menu
+  (nearer, farther, face me, shape, guide, rename, delete). Drawings ride with the sheet they were drawn on.
+- **Strokes start under the tip.** Extra smoothing is gone, and a test on every build checks a stroke's first point lands
+  within three points of the touch. Settings ▸ Pencil's test pad shows a crosshair where the tip is read.
+- **Shapes in one drag**: a line point to point, a rectangle corner to corner, a circle from the middle out. A closed
+  shape shows one arrow: pull it into a solid. Hold-to-shape says the size it made.
+- **A tapped stroke** gets a chip (the brush and colour in the hand, thickness, smooth, delete); the Pencil dragged along
+  a picked stroke reshapes it.
+- **Flick for frames**, Dreams' way: with frames on, a finger's quick flick right adds the next drawing, left goes back.
+  The time at the bottom left opens the onion skins (up to eight each way, your colours). Hold a drawing on the strip to
+  duplicate it.
+- **Every number is a slider**: the stage's dimensions and the object panel's numbers are 44 pt pills; drag slowly for
+  fine steps, fast for big ones, or tap to type on our pad.
+- **Fingers move the view, always.** The point under two fingers stays under them, a pinch zooms toward them, a twist
+  turns; one finger turns half a turn per screen width. A selected thing dragged with a finger lifts, slides over what's
+  under it and sits down.
+- **The Pencil hovering** lights what a tap would land on and wakes the sheet; near the top it wakes the clusters,
+  which fold to faint rails while you draw.
+- **The lasso** is the quick menu's first slot, in the three-finger bar beside Select all, and on the empty stage's
+  hold menu. The quick menu has the eyedropper, the eraser, snap, hide the sheet and frame; with Rig it has the rig's own
+  six. The Select button is gone.
+- **The eyedropper** is Procreate's: hold a finger on a thing while drawing and a loupe shows the colour under it.
+- **The view corner** is Views · Camera · Joystick · Snap. Undo and redo buttons are a switch in Settings ▸ Gestures, off.
+- **Titles stick to the camera**: 3D text's *Stick to the camera* replaces the timeline's + Overlay; screen effects are
+  in Look ▸ Finish. Old overlays still play.
+- **To the ground** lands a thing by its real lowest point on whatever is under it.
+- Every message leaves after two seconds or at a touch. The Apple Pencil Pro clicks on a snap, a picked part, each
+  flipbook frame and a slider's end.
+- Fixed: dragging a rig's dot or pin lagged behind the finger.
+- Projects stay schema 14 (two new optional properties); 0.14 opens them.
+
 ## [0.14] — Maquette — rig, and bring your sculpt (phase U4)
 
 Rig anything, fast, and change it afterwards; a sculpt from another app arrives painted, gets rigged and moves.

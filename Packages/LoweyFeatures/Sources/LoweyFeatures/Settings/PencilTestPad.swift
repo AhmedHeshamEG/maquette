@@ -30,7 +30,8 @@ struct PencilTestPad: UIViewRepresentable {
     }
 }
 
-/// Draws what the Pencil does on the pad: each point as wide as its pressure through the curve.
+/// Draws what the Pencil does on the pad: each point as wide as its pressure through the curve, and a crosshair where
+/// the app thinks the tip is (U5: touching or hovering), so a line that leaves the tip shows at once.
 final class PencilPadView: UIView {
     var feel = HmmPencilFeel.default
     var onSample: ((Double, Double) -> Void)?
@@ -38,6 +39,23 @@ final class PencilPadView: UIView {
     var clearCount = 0
     private var strokes: [[(point: CGPoint, width: CGFloat)]] = []
     private var raw: [Double] = []
+    /// Where the app reads the tip: the last touch, or the hovering Pencil.
+    private var tip: CGPoint?
+
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        addGestureRecognizer(UIHoverGestureRecognizer(target: self, action: #selector(hovered(_:))))
+    }
+
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+        addGestureRecognizer(UIHoverGestureRecognizer(target: self, action: #selector(hovered(_:))))
+    }
+
+    @objc private func hovered(_ recognizer: UIHoverGestureRecognizer) {
+        tip = recognizer.state == .ended || recognizer.state == .cancelled ? nil : recognizer.location(in: self)
+        setNeedsDisplay()
+    }
 
     func clear() {
         strokes = []
@@ -72,6 +90,7 @@ final class PencilPadView: UIView {
             let width = CGFloat(1 + 13 * feel.pressure(pressure))
             if strokes.isEmpty { strokes.append([]) }
             strokes[strokes.count - 1].append((item.preciseLocation(in: self), width))
+            tip = item.preciseLocation(in: self)
             onSample?(feel.pressure(pressure), item.type == .pencil ? Double(item.altitudeAngle) * 180 / .pi : 90)
         }
         setNeedsDisplay()
@@ -89,6 +108,15 @@ final class PencilPadView: UIView {
                 context.strokePath()
             }
         }
+        guard let tip else { return }
+        context.setStrokeColor(UIColor(red: 1, green: 0.72, blue: 0.28, alpha: 1).cgColor)
+        context.setLineWidth(1)
+        for (from, to) in [(CGPoint(x: tip.x - 14, y: tip.y), CGPoint(x: tip.x + 14, y: tip.y)),
+                           (CGPoint(x: tip.x, y: tip.y - 14), CGPoint(x: tip.x, y: tip.y + 14))] {
+            context.move(to: from)
+            context.addLine(to: to)
+        }
+        context.strokePath()
     }
 }
 
