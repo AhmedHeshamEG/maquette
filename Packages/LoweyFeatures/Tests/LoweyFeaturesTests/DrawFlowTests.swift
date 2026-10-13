@@ -106,6 +106,23 @@ final class DrawFlowTests: XCTestCase {
         XCTAssertNil(Flick.read(dx: 100, dy: 0, duration: 0), "no time")
     }
 
+    /// D-288: a closed shape is picked as it lands, and stays picked when its size is typed, so its pull number is there.
+    func testAClosedShapeIsPickedAsItLandsAndStaysPickedWhenResized() throws {
+        let editor = try makeEditor()
+        editor.toggleDraw()
+        editor.chooseDrawBrush(.shape(.rectangle))
+        XCTAssertTrue(editor.isSketching)
+        editor.modeling.pending = PendingSketch(plane: EditorModel.groundPlane, target: nil, sketch: nil, points: [])
+        editor.addPoint(Vec2(0, 0), kind: .rectangle)
+        editor.addPoint(Vec2(0.3, 0.2), kind: .rectangle)
+        let region = try XCTUnwrap(editor.modeling.region, "picked as it lands")
+        XCTAssertNotNil(editor.pullAxis, "with its arrow")
+        editor.setDimension(.rectangleSide(horizontal: true), to: 0.4)
+        editor.setDimension(.rectangleSide(horizontal: false), to: 0.2)
+        XCTAssertEqual(editor.modeling.region?.sketch, region.sketch, "still picked at its new size")
+        XCTAssertNotNil(editor.pullAxis)
+    }
+
     func testTheEyedropperPutsWhatItReadInTheHand() throws {
         let editor = try makeEditor()
         editor.eyedropperLoupe = EyedropperLoupe(point: .zero, colour: RGBA(0.2, 0.4, 0.6))

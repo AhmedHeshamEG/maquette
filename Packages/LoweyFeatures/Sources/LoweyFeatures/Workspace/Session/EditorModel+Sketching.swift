@@ -221,11 +221,15 @@ extension EditorModel {
         pending.sketch = sketchID
         modeling.pending = keepGoing ? pending : nil
         // A closed shape is picked at once, with its one arrow: drag it to pull the shape into a solid (U5).
-        if curve.isClosed, let regions = sketch(sketchID)?.regions, !curve.points.isEmpty {
-            let points = curve.points
-            let middle = Vec2(points.map(\.x).reduce(0, +) / Double(points.count), points.map(\.y).reduce(0, +) / Double(points.count))
-            if let index = regions.firstIndex(where: { $0.contains(middle) }) { modeling.region = SketchRegionRef(sketch: sketchID, index: index) }
-        }
+        pickRegion(of: curve, in: sketchID)
+    }
+
+    /// Picks the region a closed curve makes (as it lands, and again when its size is typed or dragged).
+    private func pickRegion(of curve: SketchCurve, in sketchID: ObjectID) {
+        guard curve.isClosed, let drawn = sketch(sketchID), !curve.points.isEmpty else { return }
+        let points = curve.points
+        let middle = Vec2(points.map(\.x).reduce(0, +) / Double(points.count), points.map(\.y).reduce(0, +) / Double(points.count))
+        if let index = drawn.region(at: middle) { modeling.region = SketchRegionRef(sketch: sketchID, index: index) }
     }
 
     // MARK: Offset
@@ -323,7 +327,10 @@ extension EditorModel {
         }
         guard let resized else { return }
         sketch.curves[ref.index] = resized
-        if perform(.batch("Change size", [.setKind(ref.sketch, .sketch(sketch))]), coalesceKey: gesture), gesture == nil { HmmHaptics.play(.commit) }
+        guard perform(.batch("Change size", [.setKind(ref.sketch, .sketch(sketch))]), coalesceKey: gesture) else { return }
+        if gesture == nil { HmmHaptics.play(.commit) }
+        // Still picked at its new size, its arrow and pull number with it.
+        if modeling.region == nil || modeling.region?.sketch == ref.sketch { pickRegion(of: resized, in: ref.sketch) }
     }
 
     /// Typed into a floating number: a length, then whatever that number does.
