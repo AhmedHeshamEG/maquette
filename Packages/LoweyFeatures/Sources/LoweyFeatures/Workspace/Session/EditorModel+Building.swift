@@ -172,9 +172,39 @@ extension EditorModel {
         if perform(operations.ungroup(object.id, in: scene)) { setSelection(children) }
     }
 
+    /// To the ground by the real shape (U5): each thing's lowest corners land on the highest surface under them, or on
+    /// the ground; what the stage can't measure (a light, a camera) drops by its box as before.
     func dropSelectionToGround() {
         refreshOperationsLibrary()
-        perform(operations.dropToGround(selection, in: scene))
+        guard let stage else {
+            perform(operations.dropToGround(selection, in: scene))
+            return
+        }
+        let shown = scene
+        let targets = selection.filter { id in !selection.contains { shown.isAncestor($0, of: id) } }
+        let parts: (ObjectID) -> [ObjectID] = { id in [id] + shown.orderedIDs().filter { shown.isAncestor(id, of: $0) } }
+        let moving = Set(targets.flatMap(parts))
+        let surfaces = shown.orderedIDs().filter { !moving.contains($0) && shown.isEffectivelyVisible($0) }.compactMap(stage.worldMesh(of:))
+        var changes: [PropertyChange] = []
+        var boxed: [ObjectID] = []
+        for id in targets {
+            let meshes = parts(id).compactMap(stage.worldMesh(of:))
+            let points = meshes.flatMap { $0.positions }
+            guard let object = shown.objects[id], let top = points.map({ Double($0.y) }).max() else {
+                boxed.append(id)
+                continue
+            }
+            let rise = GroundDrop.rise(lowest: GroundDrop.lowest(of: MeshData(positions: points)), top: top, surfaces: surfaces)
+            guard abs(rise) > 1e-6 else { continue }
+            var world = shown.worldTransform(of: id)
+            world.position.y += rise
+            let parent = object.parent.map { shown.worldTransform(of: $0) } ?? .identity
+            changes.append(PropertyChange(object: id, key: .position, value: .vec3(CoreTransform.relative(world: world, toParent: parent).position)))
+        }
+        var commands: [EditCommand] = changes.isEmpty ? [] : [.setProperties(changes)]
+        if !boxed.isEmpty { commands.append(operations.dropToGround(boxed, in: shown)) }
+        guard !commands.isEmpty else { return }
+        perform(commands.count == 1 ? commands[0] : .batch("To the ground", commands))
     }
 
     func array(_ layout: ArrayLayout) {

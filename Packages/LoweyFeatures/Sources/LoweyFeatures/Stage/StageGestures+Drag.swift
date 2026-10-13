@@ -39,6 +39,44 @@ extension StageGestures {
         }
     }
 
+    // MARK: Press and carry
+
+    /// A thing carried by a finger (U5, CONTEXT §10.11): it lifts a little (its shadow shows the gap), slides over the
+    /// surface under it and sits on it when the finger lifts. The other things' surfaces are read once, as it starts.
+    private func beginCarry(editor: EditorModel, stage: StageView) {
+        let moving = Set(editor.selection.flatMap { id in [id] + editor.scene.orderedIDs().filter { editor.scene.isAncestor(id, of: $0) } })
+        guard let bounds = stage.visualBounds(of: editor.selection) else {
+            carry = nil
+            return
+        }
+        let surfaces = editor.scene.orderedIDs().filter { !moving.contains($0) && editor.scene.isEffectivelyVisible($0) }.compactMap(stage.worldMesh(of:))
+        let lift = max(bounds.size.y * 0.06, 0.01)
+        carry = Carry(surfaces: surfaces, bottom: bounds.min.y, lift: lift, centre: Vec2(bounds.center.x, bounds.center.z), reach: max(bounds.size.y, 0.5))
+        editor.translateSelection(by: Vec3(0, lift, 0), gesture: gestureKey)
+        carry?.bottom += lift
+        HmmHaptics.play(.selection)
+    }
+
+    /// How far up or down the carried thing goes as it moves by `delta` across: onto the highest surface under its
+    /// middle (or the ground), lifted.
+    private func carryRise(movedBy delta: Vec3, editor: EditorModel) -> Double {
+        guard var state = carry else { return 0 }
+        state.centre = Vec2(state.centre.x + delta.x, state.centre.y + delta.z)
+        // It climbs onto anything up to its own height under its middle, else it stays on what it was on.
+        let landing = GroundDrop.rise(lowest: [Vec3(state.centre.x, 0, state.centre.y)], top: state.bottom + state.reach, surfaces: state.surfaces)
+        let target = landing + state.lift
+        let rise = target - state.bottom
+        if abs(rise) > state.lift, let stage { HmmPencilHaptics.snapped(at: stage.center, in: stage) }
+        state.bottom += rise
+        carry = state
+        return rise
+    }
+
+    /// Degrees the view turns per point of a one-finger drag: 180 across the stage's width.
+    static func orbitDegrees(perPoint width: Double) -> Double {
+        180 / max(width, 320)
+    }
+
     /// While frames are drawn, a finger's flick turns the frame instead of the view (the turn it began is put back).
     private func flickedFrame(_ recognizer: UIPanGestureRecognizer, editor: EditorModel, stage: StageView) -> Bool {
         guard editor.tool == .flipbook, !panTouchIsPencil, let start = panStart else { return false }
@@ -105,6 +143,7 @@ extension StageGestures {
         if let (id, hit) = stage.pickObject(at: point), editor.selection.contains(where: { $0 == id || editor.scene.isAncestor($0, of: id) }),
            !editor.selection.contains(where: { editor.scene.isEffectivelyLocked($0) }) {
             let planeY = editor.selectionPivot?.y ?? hit.point.y
+            beginCarry(editor: editor, stage: stage)
             return .moveObjects(planeY: planeY, last: groundHit(at: point, planeY: planeY, stage: stage) ?? hit.point)
         }
         return .orbit
@@ -114,7 +153,8 @@ extension StageGestures {
         switch drag {
         case .orbit:
             var viewpoint = stage.viewpoint
-            let degreesPerPoint = 0.3 * navigationSpeed
+            // A fixed turn per screen width (U5: one feel): half a turn across the stage, on any iPad.
+            let degreesPerPoint = Self.orbitDegrees(perPoint: Double(stage.bounds.width)) * navigationSpeed
             viewpoint.yaw -= Double(translation.x) * degreesPerPoint
             viewpoint.pitch += Double(translation.y) * degreesPerPoint
             stage.setViewpoint(viewpoint)
@@ -124,6 +164,7 @@ extension StageGestures {
             delta.y = 0
             // Rays near the horizon jump huge distances: ignore them.
             guard delta.length <= 20 else { return }
+            delta.y = carryRise(movedBy: delta, editor: editor)
             editor.translateSelection(by: delta, gesture: gestureKey)
             drag = .moveObjects(planeY: planeY, last: hit)
         case let .gizmo(handle, pivot, lastPoint, accumulated):
@@ -228,11 +269,18 @@ extension StageGestures {
 
     private func endDrag(editor: EditorModel, stage: StageView, cancelled: Bool) {
         switch drag {
-        case .moveObjects, .gizmo:
+        case .moveObjects:
+            // It sits down where it was carried (the lift goes), then snaps.
+            if let lift = carry?.lift, lift > 0 { editor.translateSelection(by: Vec3(0, -lift, 0), gesture: gestureKey) }
+            carry = nil
+            editor.finishTransform(gesture: gestureKey)
+        case .gizmo:
             editor.finishTransform(gesture: gestureKey)
         case .lasso:
             if !cancelled { selectInLasso(editor: editor, stage: stage) }
             editor.lassoPoints = []
+            // One loop, then back to what was in the hand (U5: the lasso is a quick action, not a mode).
+            editor.tool = editor.lastTool == .lasso ? .select : editor.lastTool
         case let .scatter(center):
             editor.scatterPreview = nil
             if !cancelled, scatterRadius > 0.2 { editor.scatterSelection(center: center, radius: scatterRadius) }

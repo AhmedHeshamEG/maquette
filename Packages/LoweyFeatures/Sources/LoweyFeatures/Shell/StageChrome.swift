@@ -18,6 +18,7 @@ struct StageChrome: View {
     var body: some View {
         ZStack {
             if editor.tool == .model || editor.precision.showsDimensions { ModelDimensions(editor: editor) }
+            if editor.tool == .ink, !editor.inkStrokes.isEmpty { StrokeChip(editor: editor) }
             HStack {
                 if !sidebarOnRight { EditorSidebar(editor: editor) }
                 Spacer()

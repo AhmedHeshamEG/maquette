@@ -63,7 +63,7 @@ extension EditorModel {
     }
 
     func setTransform(_ id: ObjectID, _ transform: CoreTransform) {
-        perform(operations.setTransform(id, transform))
+        perform(operations.setTransform(id, transform), coalesceKey: numberScrub)
     }
 
     // MARK: Rotation numbers

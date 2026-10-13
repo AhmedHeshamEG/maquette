@@ -220,6 +220,12 @@ extension EditorModel {
         modeling.lastCurve = SketchCurveRef(sketch: sketchID, index: count - 1)
         pending.sketch = sketchID
         modeling.pending = keepGoing ? pending : nil
+        // A closed shape is picked at once, with its one arrow: drag it to pull the shape into a solid (U5).
+        if curve.isClosed, let regions = sketch(sketchID)?.regions, !curve.points.isEmpty {
+            let points = curve.points
+            let middle = Vec2(points.map(\.x).reduce(0, +) / Double(points.count), points.map(\.y).reduce(0, +) / Double(points.count))
+            if let index = regions.firstIndex(where: { $0.contains(middle) }) { modeling.region = SketchRegionRef(sketch: sketchID, index: index) }
+        }
     }
 
     // MARK: Offset
@@ -288,8 +294,25 @@ extension EditorModel {
         }
     }
 
+    /// The sizes a drag can change (the shape just drawn, the walls).
+    func canScrub(_ field: DimensionField) -> Bool {
+        switch field {
+        case .rectangleSide, .diameter, .lineLength, .wallHeight, .wallThickness: true
+        default: false
+        }
+    }
+
+    /// A size dragged like a slider (one undo step per drag).
+    func scrubDimension(_ field: DimensionField, to metres: Double, gesture: String) {
+        switch field {
+        case .wallHeight: precision.wallHeight = max(metres, 0.01)
+        case .wallThickness: precision.wallThickness = max(metres, 0.001)
+        default: setDimension(field, to: metres, gesture: gesture)
+        }
+    }
+
     /// Sets a size of the shape just drawn (its first corner, centre or start stays put).
-    func setDimension(_ field: DimensionField, to metres: Double) {
+    func setDimension(_ field: DimensionField, to metres: Double, gesture: String? = nil) {
         guard metres > 1e-9, let ref = modeling.lastCurve, var sketch = sketch(ref.sketch), let curve = sketch.curves[safe: ref.index] else { return }
         let resized: SketchCurve? = switch (field, curve) {
         case let (.rectangleSide(true), .rectangle(a, b)): .rectangle(a, Vec2(a.x + (b.x >= a.x ? metres : -metres), b.y))
@@ -300,7 +323,7 @@ extension EditorModel {
         }
         guard let resized else { return }
         sketch.curves[ref.index] = resized
-        if perform(.batch("Change size", [.setKind(ref.sketch, .sketch(sketch))])) { HmmHaptics.play(.commit) }
+        if perform(.batch("Change size", [.setKind(ref.sketch, .sketch(sketch))]), coalesceKey: gesture), gesture == nil { HmmHaptics.play(.commit) }
     }
 
     /// Typed into a floating number: a length, then whatever that number does.

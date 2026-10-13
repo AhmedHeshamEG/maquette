@@ -17,6 +17,7 @@
         }
       }
     },
+    "%@ %@. Keep holding and drag to adjust": {},
     "%@ goes off at %@": {
       "localizations": {
         "it": {
@@ -657,6 +658,7 @@
         }
       }
     },
+    "A finger's tap puts the sheet there: on a surface, or in the air facing you. Hold it for its shape and guide.": {},
     "a hip": {
       "localizations": {
         "it": {
@@ -817,6 +819,7 @@
         }
       }
     },
+    "A title: it stays put on the picture while the camera moves.": {},
     "A touch performs…": {
       "localizations": {
         "it": {
@@ -1357,6 +1360,7 @@
         }
       }
     },
+    "After: %lld": {},
     "AI & laptop": {
       "localizations": {
         "it": {
@@ -2425,6 +2429,7 @@
         }
       }
     },
+    "Before: %lld": {},
     "Benchmark": {
       "localizations": {
         "it": {
@@ -3749,6 +3754,7 @@
         }
       }
     },
+    "Clear the shadow painting": {},
     "Click": {
       "localizations": {
         "it": {
@@ -6029,6 +6035,7 @@
         }
       }
     },
+    "Drag from corner to corner, from the middle out, or from point to point. Hold at the end of any line for a clean one.": {},
     "Drag it in the frame, pinch to size it, twist to turn it.": {
       "localizations": {
         "it": {
@@ -6109,6 +6116,7 @@
         }
       }
     },
+    "Drag to change it, tap to type it": {},
     "Drag to move it; touch and hold to take it away": {
       "localizations": {
         "it": {
@@ -6301,6 +6309,7 @@
         }
       }
     },
+    "Draw frame by frame": {},
     "Draw half a profile: it spins into a vase, a trunk or a tower.": {
       "localizations": {
         "it": {
@@ -6493,6 +6502,7 @@
         }
       }
     },
+    "Drawing %lld": {},
     "Drawing %lld, held %lld frames": {
       "localizations": {
         "it": {
@@ -7261,6 +7271,7 @@
         }
       }
     },
+    "Eraser or the last brush": {},
     "Eraser size": {
       "localizations": {
         "it": {
@@ -7769,6 +7780,7 @@
         }
       }
     },
+    "Face me": {},
     "Face · %@": {
       "localizations": {
         "it": {
@@ -7897,6 +7909,7 @@
         }
       }
     },
+    "Farther": {},
     "Favorites": {
       "localizations": {
         "it": {
@@ -8305,6 +8318,7 @@
         }
       }
     },
+    "Flick right with a finger for a new frame, left for the one before. The time at the bottom left shows the frames around this one.": {},
     "Flip across at random": {
       "localizations": {
         "it": {
@@ -9069,6 +9083,7 @@
         }
       }
     },
+    "Frames": {},
     "Framing": {
       "localizations": {
         "it": {
@@ -9657,6 +9672,7 @@
         }
       }
     },
+    "Guide": {},
     "Guide size": {
       "localizations": {
         "it": {
@@ -9881,6 +9897,7 @@
         }
       }
     },
+    "Hide the sheet and guides": {},
     "Hide the timeline": {
       "localizations": {
         "it": {
@@ -10841,6 +10858,7 @@
         }
       }
     },
+    "Joystick": {},
     "Joystick speed": {
       "localizations": {
         "it": {
@@ -12809,6 +12827,7 @@
         }
       }
     },
+    "Mirror the pose": {},
     "Model": {
       "localizations": {
         "it": {
@@ -13585,6 +13604,7 @@
         }
       }
     },
+    "Nearer": {},
     "New": {
       "localizations": {
         "it": {
@@ -13905,6 +13925,7 @@
         }
       }
     },
+    "No guide": {},
     "No key": {
       "localizations": {
         "it": {
@@ -14817,6 +14838,8 @@
         }
       }
     },
+    "Onion skins": {},
+    "Only something at the top of the scene can stick to the camera": {},
     "Only the loop": {
       "localizations": {
         "it": {
@@ -16277,6 +16300,7 @@
         }
       }
     },
+    "Place": {},
     "Place every dot first": {
       "localizations": {
         "it": {
@@ -16689,6 +16713,7 @@
         }
       }
     },
+    "Presets on the selection": {},
     "Pressure": {
       "localizations": {
         "it": {
@@ -18865,6 +18890,7 @@
         }
       }
     },
+    "Save the pose": {},
     "Save the world to your library": {
       "localizations": {
         "it": {
@@ -19953,6 +19979,7 @@
         }
       }
     },
+    "Shadow": {},
     "Shadow Brush": {
       "localizations": {
         "it": {
@@ -20433,6 +20460,9 @@
         }
       }
     },
+    "Show the bones": {},
+    "Show the buttons": {},
+    "Show the drawings around this one": {},
     "Show the joystick under a selection": {
       "localizations": {
         "it": {
@@ -20513,6 +20543,7 @@
         }
       }
     },
+    "Show undo buttons": {},
     "Shows the arc the selection travels; drag a dot to move its key": {
       "localizations": {
         "it": {
@@ -20941,6 +20972,7 @@
         }
       }
     },
+    "Smudge": {},
     "Snap": {
       "localizations": {
         "it": {
@@ -21261,6 +21293,7 @@
         }
       }
     },
+    "Solids": {},
     "Some edges are shared by more than two faces (%lld).": {
       "localizations": {
         "it": {
@@ -22029,6 +22062,7 @@
         }
       }
     },
+    "Stick to the camera": {},
     "Stop": {
       "localizations": {
         "it": {
@@ -23657,6 +23691,7 @@
         }
       }
     },
+    "The brush in the hand": {},
     "the chin": {
       "localizations": {
         "it": {
@@ -23673,6 +23708,7 @@
         }
       }
     },
+    "The colour in the hand": {},
     "The Director view looks through the shot camera. It's flying over the island now.": {
       "localizations": {
         "it": {
@@ -24441,6 +24477,7 @@
         }
       }
     },
+    "These put colour on a model. Started in the air, they draw a line.": {},
     "They become one thing: each part rides the bone nearest it, and a dot between two parts hinges them.": {
       "localizations": {
         "it": {
@@ -25925,6 +25962,7 @@
         }
       }
     },
+    "Two fingers tap to undo, three to redo, everywhere. The buttons are for those who like to see them.": {},
     "Two sliders, and undo": {
       "localizations": {
         "it": {

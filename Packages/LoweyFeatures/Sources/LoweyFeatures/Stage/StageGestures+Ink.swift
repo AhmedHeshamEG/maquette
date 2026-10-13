@@ -22,7 +22,11 @@ extension StageGestures {
         case .changed:
             inkEditContinue(Array(samples.suffix(from: min(consumedSamples, samples.count))), editor: editor, stage: stage)
         case .ended:
-            if editor.ink.mode == .select, inkDragLast == nil { editor.selectInkStrokes(path: inkPath) }
+            if editor.ink.mode == .select, inkDragLast == nil {
+                editor.selectInkStrokes(path: inkPath)
+                // The lasso is one loop (U5): the picked strokes keep their chip and the Pencil draws again.
+                if !editor.inkStrokes.isEmpty { editor.ink.mode = .draw }
+            }
             inkEditFinish(editor: editor)
         default:
             inkEditFinish(editor: editor)

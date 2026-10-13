@@ -78,10 +78,6 @@ final class StageGestures: NSObject, UIGestureRecognizerDelegate {
     var pinchKey = UUID().uuidString
     var panKey = UUID().uuidString
     var scatterRadius: Double = 0
-    /// Two fingers that landed on the selection hold it (twist turns, pinch sizes) instead of moving the camera.
-    var twoFingerOnSelection: Bool?
-    var twoFingerActive = Set<ObjectIdentifier>()
-    var twoFingerRotation: (pivot: Vec3, total: Double, applied: Double)?
     /// The sheet the stroke lands on, fixed when it starts (and the world mesh of the object an "on the object" sheet
     /// lies on).
     var strokeSheet: DrawingSheet?
@@ -90,6 +86,8 @@ final class StageGestures: NSObject, UIGestureRecognizerDelegate {
     var strokeOnSurface = false
     /// A paint brush's stroke started on a thing it paints (else it draws a line).
     var paintsThisStroke = false
+    /// The Pencil started on a picked stroke: it reshapes it instead of drawing.
+    var reshapingPicked = false
     var strokePoints: [Vec3] = []
     var strokePressures: [Double] = []
     var strokeNormals: [Vec3] = []
@@ -121,6 +119,21 @@ final class StageGestures: NSObject, UIGestureRecognizerDelegate {
     var longPressIsPencil = false
     /// Where the view was and when a one-finger drag began, and how far it has gone (a flick turns a frame instead).
     var panStart: (viewpoint: Viewpoint, time: CFTimeInterval)?
+    /// A thing being carried: the surfaces it can sit on, its bottom now, its lift, its middle across (x, z), and how
+    /// high a surface it climbs onto.
+    var carry: Carry?
+
+    struct Carry {
+        var surfaces: [MeshData]
+        var bottom: Double
+        var lift: Double
+        var centre: Vec2
+        var reach: Double
+    }
+
+    /// What two fingers grabbed when they landed (it stays under them), and the point a pinch zooms toward.
+    var panAnchor: (point: Vec3, normal: Vec3)?
+    var pinchAnchor: Vec3?
     var panTravel = CGPoint.zero
 
     /// How far orbit, pan and zoom go per finger movement (Settings ▸ Speed).
@@ -317,6 +330,8 @@ final class StageGestures: NSObject, UIGestureRecognizerDelegate {
             return
         }
         editor.select(picked?.0)
+        // Picking a part clicks in the Pencil Pro (U5).
+        if picked != nil, let stage = self.stage { HmmPencilHaptics.snapped(at: point, in: stage) }
         editor.refreshGuide()
     }
 

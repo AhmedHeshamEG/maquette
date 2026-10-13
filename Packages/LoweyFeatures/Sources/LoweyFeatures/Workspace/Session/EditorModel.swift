@@ -300,6 +300,8 @@ final class EditorModel {
     @ObservationIgnored var sheetPlaced = false
     /// A Pencil stroke is on the stage now (the sheet stays awake, the clusters rest).
     @ObservationIgnored var strokeInProgress = false
+    /// A number in the object panel being dragged like a slider: its changes are one undo step.
+    @ObservationIgnored var numberScrub: String?
     /// The thing lit under the hovering Pencil (`EditorModel+Pointer`).
     @ObservationIgnored var hoverLit: ObjectID?
     /// A joint being dragged: the changes shown as live values until the finger lifts (`EditorModel+Poses`).

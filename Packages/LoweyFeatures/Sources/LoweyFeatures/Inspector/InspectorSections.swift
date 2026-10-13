@@ -12,16 +12,22 @@ struct TransformSection: View {
         fields
     }
 
+    /// A number dragged like a slider is one undo step (U5).
+    private func scrubbing(_ on: Bool) {
+        editor.numberScrub = on ? UUID().uuidString : nil
+        if !on { editor.endGesture() }
+    }
+
     private var fields: some View {
         let transform = object.transform
         return VStack(alignment: .leading, spacing: HmmSpacing.xs) {
-            VectorRow(label: "Position", value: transform.position) { value in
+            VectorRow(label: "Position", value: transform.position, fine: 0.005, scrubbing: scrubbing) { value in
                 var updated = transform
                 updated.position = value
                 editor.setTransform(object.id, updated)
             }
-            VectorRow(label: "Rotation", value: editor.eulerDegrees(of: object)) { editor.setEulerDegrees($0, of: object.id) }
-            VectorRow(label: "Size", value: transform.scale) { value in
+            VectorRow(label: "Rotation", value: editor.eulerDegrees(of: object), fine: 0.5, scrubbing: scrubbing) { editor.setEulerDegrees($0, of: object.id) }
+            VectorRow(label: "Size", value: transform.scale, fine: 0.005, scrubbing: scrubbing) { value in
                 var updated = transform
                 if uniformScale {
                     // Whichever number changed drives all three.
@@ -41,6 +47,9 @@ struct TransformSection: View {
 struct VectorRow: View {
     let label: String
     let value: Vec3
+    /// What a point of a slow drag changes (every number is a slider, U5).
+    var fine = 0.01
+    var scrubbing: (Bool) -> Void = { _ in }
     let commit: (Vec3) -> Void
     @Environment(\.hmmTheme) private var theme
 
@@ -48,7 +57,7 @@ struct VectorRow: View {
         HStack(spacing: HmmSpacing.xxs) {
             Text(LocalizedStringKey(label)).font(.hmm(.footnote, weight: .semibold)).foregroundStyle(theme.text2).frame(width: 60, alignment: .leading)
             ForEach(CoreAxis.allCases, id: \.self) { axis in
-                NumberField(axis: axis, value: value[axis]) { newValue in
+                NumberField(axis: axis, value: value[axis], fine: fine, scrubbing: scrubbing) { newValue in
                     var copy = value
                     copy[axis] = newValue
                     commit(copy)
@@ -58,12 +67,33 @@ struct VectorRow: View {
     }
 }
 
-/// One number of a vector: tap it and our number pad opens beside it (plain arithmetic: `90`, `-45`, `2*12`).
+/// One number of a vector, a slider too (U5): drag it (slowly for fine, fast for coarse) or tap it and our number pad
+/// opens beside it (plain arithmetic: `90`, `-45`, `2*12`).
 struct NumberField: View {
     let axis: CoreAxis
     let value: Double
+    var fine = 0.01
+    var scrubbing: (Bool) -> Void = { _ in }
     let commit: (Double) -> Void
     @State private var typing = false
+    @State private var last: CGSize?
+
+    private var drag: some Gesture {
+        DragGesture(minimumDistance: 6)
+            .onChanged { drag in
+                if last == nil { scrubbing(true) }
+                let previous = last ?? .zero
+                last = drag.translation
+                let delta = HmmScrub.delta(dx: drag.translation.width - previous.width, dy: drag.translation.height - previous.height)
+                let speed = HmmScrub.delta(dx: drag.velocity.width, dy: drag.velocity.height)
+                commit(HmmScrub(fine: fine).value(from: value, delta: delta, speed: speed))
+            }
+            .onEnded { _ in
+                last = nil
+                scrubbing(false)
+            }
+    }
+
     @Environment(\.hmmTheme) private var theme
 
     var body: some View {
@@ -74,7 +104,7 @@ struct NumberField: View {
             Text(verbatim: NumberFormat.short(value))
                 .font(.hmmNumbers(.footnote))
                 .foregroundStyle(theme.text)
-                .frame(minWidth: 54, minHeight: 36)
+                .frame(minWidth: 54, minHeight: HmmTarget.minimum)
                 .background(RoundedRectangle(cornerRadius: HmmRadius.control).fill(theme.surface2))
                 .overlay(alignment: .leading) {
                     Capsule().fill(color).frame(width: 3).padding(.vertical, 8)
@@ -82,6 +112,7 @@ struct NumberField: View {
                 .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
+        .simultaneousGesture(drag)
         .hmmNumberPad(isPresented: $typing, title: axis.rawValue.uppercased(), placeholder: NumberFormat.short(value)) { text in
             if let number = HmmArithmetic.evaluate(text) { commit(number) }
         }

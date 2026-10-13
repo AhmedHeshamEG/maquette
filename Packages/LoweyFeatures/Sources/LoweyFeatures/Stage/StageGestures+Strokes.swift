@@ -48,10 +48,40 @@ extension StageGestures {
             rigStroke(recognizer, editor: editor, stage: stage)
         case .ink where editor.ink.mode != .draw:
             inkEditStroke(recognizer, editor: editor, stage: stage)
+        case .ink where reshapesPickedStroke(recognizer, editor: editor):
+            // The Pencil dragged along a picked stroke reshapes it (U5: strokes stay editable).
+            reshapeStroke(recognizer, editor: editor)
         default:
             return false
         }
         return true
+    }
+
+    /// Whether this stroke reshapes the picked strokes: it started on one of them (decided as it begins).
+    private func reshapesPickedStroke(_ recognizer: StrokeGestureRecognizer, editor: EditorModel) -> Bool {
+        if recognizer.state == .began {
+            reshapingPicked = !editor.inkStrokes.isEmpty && recognizer.samples.first.map { editor.isOnPickedStroke($0.location) } ?? false
+        }
+        return reshapingPicked
+    }
+
+    private func reshapeStroke(_ recognizer: StrokeGestureRecognizer, editor: EditorModel) {
+        let samples = recognizer.samples
+        switch recognizer.state {
+        case .began:
+            gestureKey = UUID().uuidString
+            inkDragLast = samples.first?.location
+            consumedSamples = samples.count
+        case .changed:
+            if let last = inkDragLast, let current = samples.last?.location {
+                editor.smudgeInk(from: last, to: current, gesture: gestureKey)
+                inkDragLast = current
+            }
+        default:
+            editor.endGesture()
+            inkDragLast = nil
+            reshapingPicked = false
+        }
     }
 
     /// Lines (ink) and solids.
@@ -127,7 +157,11 @@ extension StageGestures {
         snapped = (shape, anchor, pressure)
         redrawStroke(shape.points, pressure: pressure, editor: editor, stage: stage)
         HmmHaptics.play(.selection)
-        editor.app.show("\(shape.kind.title). Keep holding and drag to adjust")
+        HmmPencilHaptics.completed(at: anchor, in: stage)
+        // Its size shows (U5): the two longest sides of what it became, in the project's units.
+        let extents = Bounds(points: strokePoints).map { [$0.size.x, $0.size.y, $0.size.z].sorted(by: >) } ?? []
+        let size = extents.count >= 2 ? "\(editor.units.format(extents[0])) × \(editor.units.format(extents[1]))" : ""
+        editor.app.show("\(shape.kind.title) \(size). Keep holding and drag to adjust")
     }
 
     /// Still holding after the snap: a line's end follows the tip; other shapes turn and scale.

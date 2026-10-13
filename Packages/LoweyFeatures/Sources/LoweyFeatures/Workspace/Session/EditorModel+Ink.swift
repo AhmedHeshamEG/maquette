@@ -212,8 +212,15 @@ extension EditorModel {
         editInkStrokes { recipe, _ in InkEditing.smoothing(inkStrokes, by: 0.6, in: recipe) }
     }
 
-    func scaleInkStrokes(by factor: Double) {
-        editInkStrokes { recipe, _ in InkEditing.scalingWidths(inkStrokes, by: factor, in: recipe) }
+    func scaleInkStrokes(by factor: Double, gesture: String? = nil) {
+        editInkStrokes(gesture: gesture) { recipe, _ in InkEditing.scalingWidths(inkStrokes, by: factor, in: recipe) }
+    }
+
+    /// Where the picked strokes are on screen (their chip sits above it).
+    var pickedStrokesRect: CGRect? {
+        let points = selectedStrokePaths().flatMap { $0 }
+        guard let first = points.first else { return nil }
+        return points.reduce(CGRect(origin: first, size: .zero)) { $0.union(CGRect(origin: $1, size: .zero)) }
     }
 
     func deleteInkStrokes() {
