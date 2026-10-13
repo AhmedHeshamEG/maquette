@@ -57,6 +57,7 @@ struct DrawBrushLibrary: View {
             .buttonStyle(.plain)
             .accessibilityIdentifier("brush-library-open")
         }
+        .accessibilityElement(children: .contain)
         .accessibilityIdentifier("brush-dropdown")
     }
 
