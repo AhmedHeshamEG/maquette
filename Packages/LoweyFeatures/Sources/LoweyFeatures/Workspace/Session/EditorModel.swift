@@ -275,6 +275,8 @@ final class EditorModel {
     @ObservationIgnored var takes: [PerformChannel: PerformTake] = [:]
     @ObservationIgnored var performOverride: [ObjectID: CoreTransform] = [:]
     @ObservationIgnored var propertyOverride: [ObjectID: [PropertyKey: PropertyValue]] = [:]
+    /// A joint being dragged: the changes shown as live values until the finger lifts (`EditorModel+Poses`).
+    @ObservationIgnored var ikDrag: [PerformChannel: PropertyChange] = [:]
     /// Shapes shown instead of the document's while a push/pull is dragged (committed as one command on release).
     @ObservationIgnored var kindOverride: [ObjectID: ObjectKind] = [:]
     @ObservationIgnored var performChannels = Set<PerformChannel>()

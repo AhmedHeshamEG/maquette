@@ -78,7 +78,9 @@ extension EditorModel {
             .min { hypot($0.point.x - point.x, $0.point.y - point.y) < hypot($1.point.x - point.x, $1.point.y - point.y) }?.handle
     }
 
-    /// Drags a joint under the finger (on the plane facing the camera through it). One undo step per drag.
+    /// Drags a joint under the finger (on the plane facing the camera through it). While the finger moves the pose is a
+    /// live value (the skin bends on the GPU with the weights already there; nothing is written); the drag lands as one
+    /// undo step when it lifts (`finishIKDrag`).
     func dragIK(_ handle: IKHandle, to point: CGPoint, gesture: String) {
         let rigs = libraryRigs()
         let pose = displayed.poses[handle.character]
@@ -86,12 +88,48 @@ extension EditorModel {
               let end = IKHandles.position(of: handle, in: displayed.scene, pose: pose, rigs: rigs) else { return }
         let normal = (Vec3(stage.camera.position) - end).normalized
         guard let target = GuideSurface.plane(origin: end, normal: normal).intersect(ray)?.point, target.distance(to: end) < 20 else { return }
+        dragIK(handle, toWorld: target)
+    }
+
+    /// Drags a joint to a point in the world (the finger's, or a test's).
+    func dragIK(_ handle: IKHandle, toWorld target: Vec3) {
+        let rigs = libraryRigs()
+        let pose = displayed.poses[handle.character]
         let changes = IKHandles.solve(handle, to: target, in: displayed.scene, pose: pose, rest: baseScene, rigs: rigs)
         guard !changes.isEmpty else { return }
         if performPhase == .recording {
             performIK(changes)
         } else {
-            perform(.setProperties(changes), coalesceKey: gesture)
+            previewIK(changes)
+        }
+    }
+
+    /// The pose the drag has made so far, shown without a command: one frame per move, whatever the scene holds.
+    private func previewIK(_ changes: [PropertyChange]) {
+        for change in changes {
+            ikDrag[PerformChannel(object: change.object, property: change.key)] = change
+            if let value = change.value {
+                propertyOverride[change.object, default: [:]][change.key] = value
+            } else {
+                propertyOverride[change.object]?[change.key] = nil
+            }
+        }
+        refreshDisplay()
+    }
+
+    /// The finger lifted: the pose lands as one step (keys add themselves as for any change).
+    func finishIKDrag(commit: Bool = true) {
+        guard !ikDrag.isEmpty else { return }
+        let changes = Array(ikDrag.values)
+        ikDrag = [:]
+        for change in changes {
+            propertyOverride[change.object]?[change.key] = nil
+            if propertyOverride[change.object]?.isEmpty == true { propertyOverride[change.object] = nil }
+        }
+        if commit {
+            perform(.setProperties(changes.sorted { ($0.object, $0.key) < ($1.object, $1.key) }))
+        } else {
+            refreshDisplay()
         }
     }
 }

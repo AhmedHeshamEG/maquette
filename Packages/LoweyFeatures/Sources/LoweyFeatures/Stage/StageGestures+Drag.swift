@@ -221,7 +221,7 @@ extension StageGestures {
         case .perform:
             editor.performTouchEnded()
         case .ik:
-            if editor.performPhase == .recording { editor.performTouchEnded() }
+            if editor.performPhase == .recording { editor.performTouchEnded() } else { editor.finishIKDrag(commit: !cancelled) }
         case .pushPull:
             editor.endPull(commit: !cancelled)
         case .modelLasso:
