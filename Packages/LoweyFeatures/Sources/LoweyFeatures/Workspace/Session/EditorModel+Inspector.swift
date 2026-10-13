@@ -12,7 +12,7 @@ extension EditorModel {
     /// One big thing open at a time (CONTEXT §10.10): while a panel, the whole timeline, a sheet or the board is open,
     /// or after the fold button, the object panel is a chip (its name and Move · Turn · Size).
     var inspectorAsChip: Bool {
-        inspectorFolded || (openPanel != nil && openPanel != .select) || timelinePresence == .full || sheet != nil
+        inspectorFolded || openPanel != nil || timelinePresence == .full || sheet != nil
     }
 
     /// One line at the bottom while a guided step runs (CONTEXT §10.10), gone the moment the step ends.
@@ -46,7 +46,7 @@ extension EditorModel {
     func foldInspector(_ fold: Bool) {
         inspectorFolded = fold
         guard !fold else { return }
-        if openPanel != nil, openPanel != .select { openPanel = nil }
+        if openPanel != nil { openPanel = nil }
         if timelinePresence == .full { timelinePresence = .transport }
     }
 

@@ -3,35 +3,59 @@ import LoweyCore
 import LoweyEngine
 import UIKit
 
-/// The Pencil: solid shapes drawn on a guide (draw, then hold to snap to a clean shape), and the Shadow Brush painting
-/// shadow shapes onto a surface.
+/// The Pencil's strokes on the stage: lines and solids landing on the surface under them or on the sheet (draw, then
+/// hold to snap to a clean shape), and the tools that have strokes of their own.
 extension StageGestures {
     @objc func handleStroke(_ recognizer: StrokeGestureRecognizer) {
         guard let editor, let stage else { return }
-        // While the Pencil draws, the panel is closed (CONTEXT §10.10): the first stroke folds Draw's or Paint's panel
-        // away and the tool's bar under the stage stays. Tapping the tool again opens it.
-        if recognizer.state == .began, editor.openPanel == .draw || editor.openPanel == .paint { editor.openPanel = nil }
-        if recognizer.state == .began { editor.pencilFeel = recognizer.feel }
-        if editor.tool == .shadowBrush {
+        noteStroke(recognizer, editor: editor)
+        if routedStroke(recognizer, editor: editor, stage: stage) { return }
+        lineStroke(recognizer, editor: editor, stage: stage)
+    }
+
+    /// The panel closes on the first stroke (CONTEXT §10.10), the sheet wakes as paper, the clusters rest (U5).
+    private func noteStroke(_ recognizer: StrokeGestureRecognizer, editor: EditorModel) {
+        switch recognizer.state {
+        case .began:
+            if editor.openPanel != nil, !(editor.openPanel?.isLeading ?? true) { editor.openPanel = nil }
+            editor.pencilFeel = recognizer.feel
+            editor.strokeInProgress = true
+            editor.restClusters()
+            editor.wakeSheet()
+        case .ended, .cancelled, .failed:
+            editor.strokeInProgress = false
+            editor.wakeSheet()
+        default:
+            break
+        }
+    }
+
+    /// Tools with strokes of their own; true when one took it. A paint brush that starts in the air draws a line
+    /// instead (zero setup: it lands on the sheet).
+    private func routedStroke(_ recognizer: StrokeGestureRecognizer, editor: EditorModel, stage: StageView) -> Bool {
+        switch editor.tool {
+        case .shadowBrush:
             brushStroke(recognizer, editor: editor, stage: stage)
-            return
-        }
-        if editor.tool == .flipbook {
+        case .flipbook:
             flipbookStroke(recognizer, editor: editor)
-            return
-        }
-        if editor.tool == .paint {
+        case .paint:
+            if recognizer.state == .began {
+                paintsThisStroke = editor.colourPaint.mode != .paint || recognizer.samples.first.map { editor.paintsSurface(at: $0.location) } ?? false
+            }
+            guard paintsThisStroke else { return false }
             colourStroke(recognizer, editor: editor, stage: stage)
-            return
-        }
-        if editor.tool == .rig {
+        case .rig:
             rigStroke(recognizer, editor: editor, stage: stage)
-            return
-        }
-        if editor.tool == .ink, editor.ink.mode != .draw {
+        case .ink where editor.ink.mode != .draw:
             inkEditStroke(recognizer, editor: editor, stage: stage)
-            return
+        default:
+            return false
         }
+        return true
+    }
+
+    /// Lines (ink) and solids.
+    private func lineStroke(_ recognizer: StrokeGestureRecognizer, editor: EditorModel, stage: StageView) {
         switch recognizer.state {
         case .began:
             snapped = nil
@@ -42,9 +66,7 @@ extension StageGestures {
             strokeTimes = []
             strokeSeed = EditorModel.strokeSeed()
             consumedSamples = 0
-            editor.ensureSheet()
-            strokeSheet = editor.currentSheet
-            strokeTargetMesh = editor.sheetObjectMesh(strokeSheet)
+            beginLanding(at: recognizer.samples.first?.location, editor: editor, stage: stage)
             consume(Array(recognizer.samples), editor: editor, stage: stage)
         case .changed:
             continueStroke(recognizer, editor: editor, stage: stage)
@@ -52,12 +74,7 @@ extension StageGestures {
             continueStroke(recognizer, editor: editor, stage: stage)
             stage.showStrokePreview(nil, color: .white)
             stage.showLiveStroke(nil)
-            if editor.tool == .ink {
-                editor.commitInkStrokes(inkCopies(inkSamples(stage: stage), editor: editor), seed: strokeSeed)
-                editor.strokeEnded()
-            } else {
-                editor.commitStroke(points: strokePoints, pressures: strokePressures, normals: strokeNormals, sheet: strokeSheet)
-            }
+            finishLine(recognizer, editor: editor, stage: stage)
             consumedSamples = 0
             snapped = nil
         default:
@@ -66,6 +83,24 @@ extension StageGestures {
             consumedSamples = 0
             snapped = nil
         }
+    }
+
+    /// A tap on a line picks it (its chip opens: U5); anything else is kept.
+    private func finishLine(_ recognizer: StrokeGestureRecognizer, editor: EditorModel, stage: StageView) {
+        if Self.isTap(recognizer.samples), editor.drawsLines, let point = recognizer.samples.first?.location, editor.tapLine(at: point) { return }
+        if editor.drawsLines {
+            editor.commitInkStrokes(inkCopies(inkSamples(stage: stage), editor: editor), seed: strokeSeed, onSheet: !strokeOnSurface)
+            editor.strokeEnded()
+        } else {
+            editor.commitStroke(points: strokePoints, pressures: strokePressures, normals: strokeNormals, sheet: strokeSheet, onSheet: !strokeOnSurface)
+        }
+    }
+
+    /// A touch that barely moved and lifted quickly.
+    static func isTap(_ samples: [StrokeGestureRecognizer.Sample]) -> Bool {
+        guard let first = samples.first, let last = samples.last else { return false }
+        let still = samples.allSatisfy { hypot($0.location.x - first.location.x, $0.location.y - first.location.y) < 6 }
+        return still && last.time - first.time < 0.3
     }
 
     private func continueStroke(_ recognizer: StrokeGestureRecognizer, editor: EditorModel, stage: StageView) {
@@ -119,11 +154,38 @@ extension StageGestures {
         updatePreview(editor: editor, stage: stage)
     }
 
-    /// Screen samples → points on the stroke's guide (or the object it started on).
+    /// Where the stroke lands (U5, zero setup): begun over a surface, on that surface (the sheet is left alone); in the
+    /// air, on the sheet, facing you unless a finger placed it.
+    private func beginLanding(at point: CGPoint?, editor: EditorModel, stage: StageView) {
+        if let point, let surface = surfaceUnder(point, editor: editor, stage: stage) {
+            strokeSheet = DrawingSheet.lying(on: surface.hit, object: surface.id, eye: Vec3(stage.camera.position), in: editor.displayed.scene,
+                                             id: "surface", name: "", size: 1).with(shape: .onObject)
+            strokeTargetMesh = surface.mesh
+            strokeOnSurface = true
+            return
+        }
+        editor.prepareSheetForStroke()
+        strokeSheet = editor.currentSheet
+        strokeTargetMesh = editor.sheetObjectMesh(strokeSheet)
+        strokeOnSurface = false
+    }
+
+    /// The surface under a point a line or a solid can land on: a thing's (not an ink drawing's: lines drawn over lines
+    /// go on the sheet), while drawing lines or solids.
+    private func surfaceUnder(_ point: CGPoint, editor: EditorModel, stage: StageView) -> (id: ObjectID, hit: SurfaceHit, mesh: MeshData)? {
+        guard editor.tool == .ink || editor.tool == .draw || editor.tool == .paint, let ray = stage.worldRay(at: point),
+              let (id, _) = stage.pickObject(at: point),
+              let object = editor.displayed.scene.objects[id], !object.isInk, let mesh = stage.worldMesh(of: id),
+              let hit = MeshRaycast.intersect(ray, mesh: mesh) else { return nil }
+        return (id, hit, mesh)
+    }
+
+    /// Screen samples → points on the stroke's guide (or the object it started on). Off the edge of a surface the line
+    /// carries on in the plane where it left it.
     private func project(_ samples: [StrokeGestureRecognizer.Sample], editor: EditorModel, stage: StageView) {
         for sample in samples {
             guard let ray = stage.worldRay(at: sample.location), let sheet = strokeSheet,
-                  let hit = editor.land(ray, on: sheet, objectMesh: strokeTargetMesh) else { continue }
+                  let hit = editor.land(ray, on: sheet, objectMesh: strokeTargetMesh) ?? carriedOn(ray) else { continue }
             // Tubes sit on the surface instead of half buried in it.
             let lift = editor.tool == .draw && editor.draw.style == .tube ? editor.draw.width * 0.5 : 0.002
             strokePoints.append(hit.point + hit.normal * lift)
@@ -134,9 +196,15 @@ extension StageGestures {
         }
     }
 
+    /// A ray that misses the surface the stroke is on: the plane where the stroke left it.
+    func carriedOn(_ ray: Ray) -> SurfaceHit? {
+        guard strokeTargetMesh != nil, let last = strokePoints.last, let normal = strokeNormals.last else { return nil }
+        return GuideSurface.plane(origin: last, normal: normal).intersect(ray)
+    }
+
     private func updatePreview(editor: EditorModel, stage: StageView) {
         guard strokePoints.count >= 2 else { return }
-        if editor.tool == .ink {
+        if editor.drawsLines {
             showInkPreview(stroke, editor: editor, stage: stage)
             return
         }

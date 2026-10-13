@@ -264,6 +264,7 @@ extension EditorModel {
     func rigOverlays(_ stage: StageView) -> [EditorOverlay] {
         guard rigging.person == nil, let object = rigTarget else { return [] }
         let drawing = bonePreviewOverlays(stage)
+        if rigging.hidesBones, rigging.mode != .weights { return drawing }
         let frame = rigFrame(object.id)
         var lines = MeshData()
         var picked = MeshData()

@@ -4,6 +4,10 @@ import Foundation
 public enum AppSettings {
     /// Show where the Apple Pencil will land while it hovers (off: it would follow the Pencil everywhere).
     public static let pencilHoverPreview = "pencilHoverPreview"
+    /// The Pencil, hovering, lights what a tap would land on (U5: on by default, "it adds much to the feel").
+    public static let pencilHoverLights = "pencilHoverLights"
+    /// Settings ▸ Gestures: undo and redo buttons in the sidebar (off: the two- and three-finger taps, U5).
+    public static let showsUndoButtons = "showsUndoButtons"
     /// Draw the stage at the screen's full pixel density and never lower the render scale (off: dynamic scale).
     public static let fullResolutionStage = "fullResolutionStage"
     /// Off: the inspector floats beside the selection (the default). On: it stays docked at the side.

@@ -50,6 +50,8 @@ public final class StageView: MTKView {
     private var precisionOverlay: [EditorOverlay] = []
     /// The see-through sheet under the Pencil while a drawing tool is in the hand.
     private var sheetOverlay: [EditorOverlay] = []
+    /// What the hovering Pencil is over, lit (U5); drawn above the sheet, under the model's marks.
+    private var hoverOverlay: [EditorOverlay] = []
     /// The section view's cut (stage only).
     public var section: SectionPlane? {
         didSet { if section != oldValue { redraw() } }
@@ -305,6 +307,13 @@ public final class StageView: MTKView {
         redraw()
     }
 
+    /// What a tap would land on, lit while the Pencil hovers over it; empty: nothing lit.
+    public func showHover(_ overlays: [EditorOverlay]) {
+        guard overlays != hoverOverlay else { return }
+        hoverOverlay = overlays
+        redraw()
+    }
+
     /// World units per screen point at a point (for marks that should look the same size anywhere).
     public func worldPerPoint(at point: Vec3) -> Double {
         let pose = camera
@@ -330,7 +339,7 @@ public final class StageView: MTKView {
         if let pivot = gizmoPivot { scene.gizmo = (gizmoMode, pivot, gizmoScale) }
         scene.guide = guide
         scene.strokePreview = strokePreview
-        scene.modelOverlay = sheetOverlay + precisionOverlay + modelOverlay
+        scene.modelOverlay = sheetOverlay + hoverOverlay + precisionOverlay + modelOverlay
         scene.section = section
         scene.pointer = pointer
         scene.pixelsPerPoint = Double(contentScaleFactor)

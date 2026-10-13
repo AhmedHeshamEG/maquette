@@ -48,6 +48,26 @@ extension EditorModel {
                                size: sheetSize(at: target))
     }
 
+    /// The sheet a stroke in the air lands on (U5, zero setup): the one in use, unless nobody placed it and nothing is
+    /// drawn on it (it turns to face you where you look), or it is a flat one seen edge-on (a new one faces you). A
+    /// flipbook keeps its sheet whatever the view: its frames live there.
+    func prepareSheetForStroke() {
+        guard drawsOnSheet, let stage else { return }
+        if isSketching || tool == .flipbook {
+            ensureSheet()
+            return
+        }
+        if let sheet = currentSheet, let frame = sheet.worldFrame(in: displayed.scene) {
+            let toEye = (stage.viewpoint.eye - frame.origin).normalized
+            let edgeOn = sheet.shape == .flat && abs(toEye.dot(frame.rotation.act(.unitZ))) < 0.26
+            if sheetIsKept || sheetPlaced, !edgeOn { return }
+            if sheet.shape == .onObject { return }
+        }
+        drawingSheet = nil
+        sheetPlaced = false
+        ensureSheet()
+    }
+
     /// The sheet comes to lie on a surface the Pencil started a sketch on (unless it lies there already).
     func laySheet(on hit: SurfaceHit, object: ObjectID?) {
         if let sheet = currentSheet, sheet.object == object, let plane = sheetPlane(sheet), plane.normal.dot(hit.normal) > 1 - 1e-6,
@@ -93,6 +113,8 @@ extension EditorModel {
     /// drawings and the new place is a new working sheet.
     private func moveSheet(to sheet: DrawingSheet) {
         drawingSheet = sheet
+        sheetPlaced = true
+        wakeSheet()
         HmmHaptics.play(.selection)
     }
 
@@ -108,7 +130,26 @@ extension EditorModel {
         pushSheet(by: points * stage.worldPerPoint(at: origin) * 2, gesture: gesture)
     }
 
-    /// One of the four shapes (from the control on the sheet's edge).
+    /// The sheet's menu: a step nearer or farther (a seventh of the way to the eye).
+    func nudgeSheet(nearer: Bool) {
+        guard let stage, let origin = currentSheet?.worldFrame(in: displayed.scene)?.origin else { return }
+        let step = (stage.viewpoint.eye - origin).length / 7
+        pushSheet(by: nearer ? step : -step, gesture: UUID().uuidString)
+        endGesture()
+        HmmHaptics.play(.selection)
+    }
+
+    /// The sheet's menu: it turns to face you where it stands (what's drawn on it turns with it).
+    func faceSheet() {
+        guard let stage, let sheet = currentSheet, sheet.object == nil, let origin = sheet.worldFrame(in: displayed.scene)?.origin else { return }
+        var facing = DrawingSheet.facing(eye: stage.viewpoint.eye, at: origin, id: sheet.id, name: sheet.name, size: max(sheet.width, sheet.height))
+        facing.width = sheet.width
+        facing.height = sheet.height
+        updateSheet(facing.with(shape: sheet.shape), gesture: nil)
+        HmmHaptics.play(.selection)
+    }
+
+    /// One of the four shapes (from the sheet's menu).
     func setSheetShape(_ shape: DrawingSheet.Shape) {
         ensureSheet()
         guard let sheet = currentSheet, sheet.shape != shape else { return }
@@ -123,11 +164,16 @@ extension EditorModel {
         updateSheet(sheet, gesture: gesture)
     }
 
+    /// A kept sheet moves with what is drawn on it, in one step (U5).
     private func updateSheet(_ sheet: DrawingSheet, gesture: String?) {
-        if sheetIsKept {
-            perform(.setSheets([SheetEdit(sheet)]), coalesceKey: gesture)
+        if sheetIsKept, let old = baseScene.sheet(sheet.id) {
+            let carried = SheetCarry.carrying(from: old, to: sheet, in: baseScene)
+            let move: EditCommand = carried.isEmpty ? .setSheets([SheetEdit(sheet)])
+                : .batch("Move sheet", [.setSheets([SheetEdit(sheet)]), .setProperties(carried)])
+            perform(move, coalesceKey: gesture)
         }
         drawingSheet = sheet
+        wakeSheet()
     }
 
     // MARK: Kept sheets
@@ -199,30 +245,48 @@ extension EditorModel {
 
     // MARK: On the stage
 
-    /// Draws the sheet while a tool that draws on it is in the hand.
+    /// Draws the sheet while a tool that draws on it is in the hand (U5): paper, with a soft edge and faint dots, while
+    /// the Pencil works; a trace between strokes. Hidden with the guides (the quick menu).
     func refreshSheet() {
         guard let stage else { return }
-        guard drawsOnSheet, !chromeHidden, let sheet = currentSheet else {
+        guard drawsOnSheet, !chromeHidden, !sheetHidden, let sheet = currentSheet, let origin = sheet.worldFrame(in: displayed.scene)?.origin else {
             stage.showSheet([])
             return
         }
         let scene = displayed.scene
-        let colour = StageColors.sheet
-        let fillAlpha = sheet.shape == .onObject ? 0.7 : StageColors.sheetFillAlpha
-        var overlays = [EditorOverlay(mesh: SheetMesh.fill(sheet, in: scene), color: colour, opacity: Float(fillAlpha))]
-        if let origin = sheet.worldFrame(in: scene)?.origin {
-            let border = SheetMesh.border(sheet, in: scene, thickness: stage.worldPerPoint(at: origin) * 1.5)
-            if !border.isEmpty { overlays.append(EditorOverlay(mesh: border, color: colour, opacity: Float(StageColors.sheetBorderAlpha))) }
+        let paper = StageColors.sheet
+        let point = stage.worldPerPoint(at: origin)
+        let strength = sheetAwake ? 1.0 : StageColors.sheetRestingAlpha / StageColors.sheetFillAlpha
+        let fillAlpha = sheet.shape == .onObject ? 0.7 : StageColors.sheetFillAlpha * strength
+        var overlays = [EditorOverlay(mesh: SheetMesh.fill(sheet, in: scene), color: paper, opacity: Float(fillAlpha))]
+        let border = SheetMesh.border(sheet, in: scene, thickness: point * 1.2)
+        if !border.isEmpty { overlays.append(EditorOverlay(mesh: border, color: paper, opacity: Float(StageColors.sheetBorderAlpha * strength))) }
+        guard sheetAwake else {
+            stage.showSheet(overlays)
+            return
         }
+        let edges = SheetMesh.softEdge(sheet, in: scene, width: point * 18, steps: StageColors.sheetEdgeAlphas.count)
+        for (mesh, alpha) in zip(edges, StageColors.sheetEdgeAlphas) {
+            overlays.append(EditorOverlay(mesh: mesh, color: paper, opacity: Float(alpha * StageColors.sheetFillAlpha * 2)))
+        }
+        let dots = SheetMesh.dots(sheet, in: scene, spacing: point * 28, size: point * 2.2)
+        if !dots.isEmpty { overlays.append(EditorOverlay(mesh: dots, color: paper, opacity: Float(StageColors.sheetDotAlpha))) }
         stage.showSheet(overlays)
     }
 
-    /// Where the sheet's edge control sits on screen: under the middle of its bottom edge (nil off screen).
-    var sheetEdgePoint: CGPoint? {
-        _ = viewRevision
-        guard let stage, let sheet = currentSheet, let frame = sheet.worldFrame(in: displayed.scene) else { return nil }
-        let down = sheet.shape == .dome ? sheet.radius : sheet.height / 2
-        let bottom = sheet.shape == .onObject ? frame.origin : frame.origin - frame.rotation.act(.unitY) * down
-        return stage.screenPoint(of: bottom)
+    /// The sheet shows as paper now (a stroke starts, it was placed, the Pencil hovers) and fades a moment after.
+    func wakeSheet(for seconds: Double = 1.6) {
+        guard drawsOnSheet else { return }
+        sheetFadeTask?.cancel()
+        if !sheetAwake {
+            sheetAwake = true
+            refreshSheet()
+        }
+        sheetFadeTask = Task { [weak self] in
+            try? await Task.sleep(for: .seconds(seconds))
+            guard let self, !Task.isCancelled, !strokeInProgress else { return }
+            sheetAwake = false
+            refreshSheet()
+        }
     }
 }

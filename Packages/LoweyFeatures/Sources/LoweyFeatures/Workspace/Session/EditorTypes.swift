@@ -75,19 +75,19 @@ public enum StageTool: String, CaseIterable, Identifiable, Sendable {
     public var usesSheet: Bool { self == .ink || self == .draw || self == .flipbook }
 }
 
-/// The floating panels the corner clusters open. One at a time; tapping its button again closes it. Animate, the
-/// last making tool, has no panel: it calls the timeline (docs/LAYOUT.md).
+/// The floating panels the corner clusters open. One at a time; tapping its button again closes it. Draw opens no panel
+/// (its bar is under the stage, U5) and Animate calls the timeline (docs/LAYOUT.md).
 public enum ClusterPanel: String, Identifiable, Sendable {
     // Top-left: document and app (the scene opens from its name, under the cluster).
-    case actions, look, select, library, scene
+    case actions, look, library, scene
     // Top-right: making.
-    case model, draw, paint, rig
+    case model, rig
 
     public var id: String { rawValue }
 
     public var isLeading: Bool {
         switch self {
-        case .actions, .look, .select, .library, .scene: true
+        case .actions, .look, .library, .scene: true
         default: false
         }
     }
@@ -163,9 +163,10 @@ public struct DrawSettings: Equatable, Sendable {
     public init() {}
 }
 
-/// What the Pencil does with ink: draw strokes, erase them, or pick strokes to edit.
+/// What the Pencil does with ink: draw strokes, erase them, push them into a new shape (Draw's Smudge, U5), or pick
+/// strokes with a loop (the quick menu's lasso while drawing).
 public enum InkMode: String, CaseIterable, Identifiable, Sendable {
-    case draw, erase, select
+    case draw, erase, reshape, select
 
     public var id: String { rawValue }
 
@@ -173,6 +174,7 @@ public enum InkMode: String, CaseIterable, Identifiable, Sendable {
         switch self {
         case .draw: "Draw"
         case .erase: "Erase"
+        case .reshape: "Smudge"
         case .select: "Select strokes"
         }
     }
@@ -181,18 +183,19 @@ public enum InkMode: String, CaseIterable, Identifiable, Sendable {
         switch self {
         case .draw: "pencil.tip"
         case .erase: "eraser"
+        case .reshape: "hand.point.up.left.and.text"
         case .select: "lasso"
         }
     }
 }
 
-/// Ink strokes: width at full pressure, opacity and smoothing of new strokes, the eraser's size.
+/// Ink strokes: width at full pressure and opacity of new strokes, the eraser's size. (Smoothing is the brush's own and
+/// the Pencil page's stabilisation, nothing more: U5.)
 public struct InkSettings: Equatable, Sendable {
     public var mode: InkMode = .draw
     /// Half-width in metres at full pressure.
     public var width: Double = 0.006
     public var opacity: Double = 1
-    public var smoothing: Double = 0.35
     /// Eraser radius in points.
     public var eraserRadius: Double = 14
 

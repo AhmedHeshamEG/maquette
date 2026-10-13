@@ -28,8 +28,9 @@ extension EditorModel {
     /// a tool that holds for something else). The held object becomes the selection unless it's already part of it;
     /// when other things were selected, the first extra adds it to them instead.
     func stageHoldMenu(at point: CGPoint) -> HmmHoldMenu? {
+        if drawsOnSheet, !pickActive, let stage, stage.pickObject(at: point) == nil { return sheetHoldMenu() }
         guard tool == .select, !pickActive, performPhase == .idle, !flying, historyScrub == nil, let stage else { return nil }
-        guard let id = overlayHit(at: point) ?? stage.pickObject(at: point)?.0 else { return nil }
+        guard let id = overlayHit(at: point) ?? stage.pickObject(at: point)?.0 else { return emptyStageMenu() }
         HmmHaptics.play(.selection)
         if selection.contains(id) { return holdMenu(for: selection) }
         let before = selection
@@ -40,6 +41,39 @@ extension EditorModel {
             menu.extras = [add] + menu.extras.prefix(HmmHoldMenu.maximumExtras - 1)
         }
         return menu
+    }
+
+    /// The empty stage (U5: where the Select button's lasso and Select all went): paste, the lasso, everything.
+    func emptyStageMenu() -> HmmHoldMenu {
+        HmmHoldMenu(paste: holdAction(if: canPaste) { [weak self] in self?.paste() }, extras: [
+            HmmHoldMenu.Item("Lasso", systemName: "lasso") { [weak self] in self?.startLasso() },
+            HmmHoldMenu.Item("Select all", systemName: "checkmark.circle") { [weak self] in self?.selectAll() }
+        ])
+    }
+
+    /// The sheet's own menu (U5: its place, shape and guide live here; the floating bar went): nearer, farther, facing
+    /// you; its shape; its guide. Rename and delete when it's kept.
+    func sheetHoldMenu() -> HmmHoldMenu? {
+        guard let sheet = currentSheet else { return nil }
+        HmmHaptics.play(.selection)
+        let place = HmmHoldMenu.Item("Place", systemName: "arrow.up.and.down", children: [
+            HmmHoldMenu.Item("Nearer", systemName: "arrow.down") { [weak self] in self?.nudgeSheet(nearer: true) },
+            HmmHoldMenu.Item("Farther", systemName: "arrow.up") { [weak self] in self?.nudgeSheet(nearer: false) },
+            HmmHoldMenu.Item("Face me", systemName: "person.crop.square") { [weak self] in self?.faceSheet() }
+        ])
+        let shapes = DrawingSheet.Shape.allCases.filter { $0 != .onObject || sheet.object != nil }.map { shape in
+            HmmHoldMenu.Item(shape.title, systemName: shape.systemImage) { [weak self] in self?.setSheetShape(shape) }
+        }
+        var guides = [HmmHoldMenu.Item("No guide", systemName: "square") { [weak self] in self?.setPlaneGuide(nil) }]
+        if sheet.shape == .flat {
+            guides += [DrawingGuide.Kind.grid, .isometric, .symmetry].map { kind in
+                HmmHoldMenu.Item(kind.title, systemName: kind.systemImage) { [weak self] in self?.setPlaneGuide(DrawingGuide(kind: kind)) }
+            }
+        }
+        return HmmHoldMenu(rename: holdAction(if: sheetIsKept) { [weak self] in self?.renamingSheet = sheet.id },
+                           extras: [place, HmmHoldMenu.Item("Shape", systemName: sheet.shape.systemImage, children: shapes),
+                                    HmmHoldMenu.Item("Guide", systemName: "grid", children: guides)],
+                           delete: holdAction(if: sheetIsKept) { [weak self] in self?.deleteSheet(sheet.id) })
     }
 
     /// A key on the timeline (with the other picked keys, when it is one of them).

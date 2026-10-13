@@ -86,6 +86,10 @@ final class StageGestures: NSObject, UIGestureRecognizerDelegate {
     /// lies on).
     var strokeSheet: DrawingSheet?
     var strokeTargetMesh: MeshData?
+    /// The stroke began over a surface and lands on it (no sheet is kept for it).
+    var strokeOnSurface = false
+    /// A paint brush's stroke started on a thing it paints (else it draws a line).
+    var paintsThisStroke = false
     var strokePoints: [Vec3] = []
     var strokePressures: [Double] = []
     var strokeNormals: [Vec3] = []
@@ -113,6 +117,8 @@ final class StageGestures: NSObject, UIGestureRecognizerDelegate {
     var loupe: UITextLoupeSession?
     /// The last tap came from the Pencil (a finger's tap places the sheet; the Pencil's draws, picks or sketches).
     var tapTouchIsPencil = false
+    /// The touch being held is the Pencil's (a held Pencil draws; a held finger is the eyedropper).
+    var longPressIsPencil = false
 
     /// How far orbit, pan and zoom go per finger movement (Settings ▸ Speed).
     var navigationSpeed: Double { AppSettings.navigationFactor }
@@ -182,6 +188,7 @@ final class StageGestures: NSObject, UIGestureRecognizerDelegate {
         if recognizer === oneFingerPan { panTouchIsPencil = touch.type == .pencil }
         if recognizer === pencilPan { panTouchIsPencil = true }
         if recognizer === tap { tapTouchIsPencil = touch.type == .pencil }
+        if recognizer === longPress { longPressIsPencil = touch.type == .pencil }
         guard let editor, editor.tool.paints, touch.type == .direct, recognizer === stroke || recognizer === oneFingerPan else { return true }
         // A finger with a making tool: it makes, or it orbits. Never both.
         let makes = fingerMakes(at: touch.location(in: stage))
@@ -215,10 +222,9 @@ final class StageGestures: NSObject, UIGestureRecognizerDelegate {
             // Erasing and picking strokes: they can be anywhere.
             return true
         case .ink, .draw, .flipbook:
-            // Stuck to the camera, the flipbook's page is the whole frame; otherwise only where the sheet is.
-            if editor.tool == .flipbook, editor.flipbook.onCamera { return true }
-            guard let sheet = editor.currentSheet, let ray = stage.worldRay(at: point) else { return false }
-            return editor.land(ray, on: sheet, objectMesh: editor.sheetObjectMesh(sheet)) != nil
+            // Zero setup (U5): a line lands on the surface under it or on the sheet, which faces you wherever you
+            // draw; with fingers making, one finger draws anywhere and two move the view.
+            return true
         default:
             return true
         }
@@ -246,17 +252,22 @@ final class StageGestures: NSObject, UIGestureRecognizerDelegate {
 
     // MARK: Pencil hover
 
-    /// The setting rules every tool: off, there is no mark at all; on, a point under the tip (Pencil only: a trackpad
-    /// pointer has no height and gets the system's own pointer).
+    /// The hovering Pencil (U5): it lights the thing under the tip, wakes the sheet while drawing and the clusters when it
+    /// comes near them. The point under the tip is its own setting (off: there is no mark at all; on, a point for every
+    /// tool; a trackpad pointer has no height and gets the system's own pointer).
     @objc private func handleHover(_ recognizer: UIHoverGestureRecognizer) {
         guard let editor else { return }
-        guard UserDefaults.standard.bool(forKey: AppSettings.pencilHoverPreview) else {
-            if editor.hoverPoint != nil { editor.setHover(nil) }
-            return
-        }
         let hovering = (recognizer.state == .began || recognizer.state == .changed) && recognizer.zOffset > 0
-        if hovering { notePencil() }
-        editor.setHover(hovering ? recognizer.location(in: stage) : nil)
+        let point = recognizer.location(in: stage)
+        if hovering {
+            notePencil()
+            editor.wakeSheet()
+            if point.y < 110 { editor.wakeClusters() }
+        }
+        editor.hoverLight(at: hovering ? point : nil)
+        let showsPoint = UserDefaults.standard.bool(forKey: AppSettings.pencilHoverPreview)
+        let shown = showsPoint && hovering ? point : nil
+        if shown != editor.hoverPoint { editor.setHover(shown) }
     }
 
     // MARK: Taps
@@ -265,6 +276,12 @@ final class StageGestures: NSObject, UIGestureRecognizerDelegate {
         guard let editor, let stage else { return }
         let point = recognizer.location(in: stage)
         editor.showChrome()
+        editor.wakeClusters()
+        if editor.eyedropping {
+            editor.eyedrop(at: point)
+            editor.finishEyedrop(commit: editor.eyedropperLoupe != nil)
+            return
+        }
         if !editor.pickActive, !editor.tool.paints, let overlay = editor.overlayHit(at: point) {
             editor.select(overlay)
             return
@@ -300,9 +317,15 @@ final class StageGestures: NSObject, UIGestureRecognizerDelegate {
         editor.refreshGuide()
     }
 
-    /// Touch and hold with a tool other than Select: add to (or take out of) the selection, or the Model tool's pick.
+    /// Touch and hold with a tool other than Select: while drawing, a finger on a thing is the eyedropper (U5);
+    /// otherwise add to (or take out of) the selection, or the Model tool's pick.
     @objc private func handleLongPress(_ recognizer: UILongPressGestureRecognizer) {
-        guard recognizer.state == .began, let editor, let stage else { return }
+        guard let editor, let stage else { return }
+        if editor.isDrawing, !longPressIsPencil {
+            eyedropperPress(recognizer, editor: editor, stage: stage)
+            return
+        }
+        guard recognizer.state == .began else { return }
         if editor.tool == .model, editor.modeling.mode.pickMode != nil {
             editor.pickElement(at: recognizer.location(in: stage), additive: true)
             return

@@ -2,37 +2,6 @@ import HmmDesign
 import LoweyCore
 import SwiftUI
 
-/// Paint ▸ Colour's quick options under the stage: what the Pencil does, the layer it paints on, and the picture being
-/// placed (project it or put it away).
-struct PaintOptionsBar: View {
-    @Bindable var editor: EditorModel
-    @Environment(\.hmmTheme) private var theme
-
-    var body: some View {
-        HStack(spacing: HmmSpacing.xs) {
-            if editor.colourPaint.picture != nil {
-                HmmPillButton("Project", systemName: "light.beacon.max") { editor.projectPicture() }
-                    .shown(editor.paintTarget?.paint != nil)
-                    .accessibilityIdentifier("paint-project")
-                HmmButton("xmark", label: "Put the picture away", size: 36) { editor.colourPaint.picture = nil }
-            } else {
-                ForEach(ColourPaintSettings.Mode.allCases) { mode in
-                    ChoiceChip(title: mode.title, systemName: mode.systemImage, isOn: editor.colourPaint.mode == mode) {
-                        editor.colourPaint.mode = mode
-                    }
-                }
-                if let object = editor.paintTarget, let layer = editor.paintLayer(of: object) {
-                    Text(layer.name).font(.hmm(.footnote, weight: .semibold)).foregroundStyle(theme.text2).lineLimit(1)
-                        .padding(.horizontal, HmmSpacing.xs)
-                }
-                HmmButton("xmark", label: "Done painting", size: 36) { editor.tool = .select }
-            }
-        }
-        .padding(HmmSpacing.xs)
-        .hmmPanelBackground()
-    }
-}
-
 /// The picture being placed over the stage: drag to move, pinch to size; see-through so the model shows under it.
 struct PaintPictureOverlay: View {
     @Bindable var editor: EditorModel

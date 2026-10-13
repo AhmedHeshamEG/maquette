@@ -37,6 +37,10 @@ struct StageOverlayView: View {
             IKHandleMarks(editor: editor)
             PickedStrokes(editor: editor)
             FlipbookOnionSkin(editor: editor)
+            if let loupe = editor.eyedropperLoupe {
+                HmmColourLoupe(current: editor.paintColor.color, picked: loupe.colour.color)
+                    .position(x: loupe.point.x, y: loupe.point.y - HmmColourLoupe.lift)
+            }
         }
         .allowsHitTesting(false)
     }

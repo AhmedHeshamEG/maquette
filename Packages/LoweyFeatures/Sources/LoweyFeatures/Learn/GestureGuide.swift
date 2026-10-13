@@ -43,8 +43,8 @@ struct GestureGuide: View {
         ("Keyboard", [
             Item(symbol: "space", gesture: "Space · J K L", result: "Play / pause · shuttle"),
             Item(symbol: "option", gesture: "⌥← ⌥→", result: "Back / forward 10 seconds"),
-            Item(symbol: "command", gesture: "⌘1 – ⌘5", result: "Model, Draw, Paint, Rig, Animate"),
-            Item(symbol: "command", gesture: "⌘6 – ⌘8 · ⌘L", result: "Actions, Look, Select · the Library"),
+            Item(symbol: "command", gesture: "⌘1 – ⌘4", result: "Model, Draw, Rig, Animate"),
+            Item(symbol: "command", gesture: "⌘6 – ⌘8 · ⌘L", result: "Actions, Look, the lasso · the Library"),
             Item(symbol: "command", gesture: "⌘Z ⇧⌘Z ⌘D ⌘G ⌘K", result: "Undo, redo, duplicate, group, key"),
             Item(symbol: "questionmark", gesture: "?", result: "This page")
         ])

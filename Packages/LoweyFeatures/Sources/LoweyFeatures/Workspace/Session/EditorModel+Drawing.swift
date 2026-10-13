@@ -5,7 +5,7 @@ import LoweyCore
 /// Solid shapes drawn in 3D on the sheet (tube, ribbon, extrude, lathe), and the Shadow Brush.
 extension EditorModel {
     /// A finished stroke becomes a drawn object (one undo step).
-    func commitStroke(points rawPoints: [Vec3], pressures: [Double], normals: [Vec3], sheet: DrawingSheet?) {
+    func commitStroke(points rawPoints: [Vec3], pressures: [Double], normals: [Vec3], sheet: DrawingSheet?, onSheet: Bool = true) {
         guard rawPoints.count >= 2 || draw.style == .tube else { return }
         let widths = pressures.map { draw.width * (0.35 + 0.65 * min(max($0, 0), 1)) }
         let filtered = StrokeFilter.process(points: rawPoints, widths: widths, smoothing: draw.smoothing)
@@ -26,7 +26,8 @@ extension EditorModel {
         }
         var object = factory.drawing(recipe, transform: CoreTransform(position: origin), color: currentColor)
         object.name = ObjectFactory.uniqueName(object.name, in: scene)
-        perform(keepingSheet(operations.add(object)))
+        if onSheet, let sheet { object[.drawnOn] = .string(sheet.id) }
+        perform(onSheet ? keepingSheet(operations.add(object)) : operations.add(object))
     }
 
     /// Ribbons and extrusions face a flat sheet's normal, else the average surface normal.

@@ -3,7 +3,8 @@ import LoweyCore
 import LoweyEngine
 import UIKit
 
-/// The Pencil on ink strokes: the eraser, and picking strokes (tap or loop) then dragging them.
+/// The Pencil on ink strokes: the eraser, Smudge (pushing lines into a new shape), and picking strokes (tap or loop)
+/// then dragging them.
 extension StageGestures {
     func inkEditStroke(_ recognizer: StrokeGestureRecognizer, editor: EditorModel, stage: StageView) {
         let samples = recognizer.samples
@@ -16,6 +17,7 @@ extension StageGestures {
             if editor.ink.mode == .select, let first = samples.first?.location, editor.isOnPickedStroke(first) {
                 inkDragLast = first
             }
+            if editor.ink.mode == .reshape { inkDragLast = samples.first?.location }
             inkEditContinue(Array(samples), editor: editor, stage: stage)
         case .changed:
             inkEditContinue(Array(samples.suffix(from: min(consumedSamples, samples.count))), editor: editor, stage: stage)
@@ -34,6 +36,9 @@ extension StageGestures {
         switch editor.ink.mode {
         case .erase:
             editor.eraseInk(at: points, gesture: gestureKey)
+        case .reshape:
+            if let last = inkDragLast, let current = points.last { editor.smudgeInk(from: last, to: current, gesture: gestureKey) }
+            inkDragLast = points.last ?? inkDragLast
         case .select:
             if let last = inkDragLast, let current = points.last {
                 dragInkStrokes(from: last, to: current, editor: editor, stage: stage)

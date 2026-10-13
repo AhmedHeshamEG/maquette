@@ -49,6 +49,8 @@ public struct RigSettings: Equatable {
     public var joint: Int?
     /// The weight brush takes weight away instead.
     public var erase = false
+    /// The quick menu's "Show the bones" switched them off (the marks stay).
+    public var hidesBones = false
     /// The weight brush's size in points and how much one pass gives.
     public var size: Double = 40
     public var strength: Double = 0.5
