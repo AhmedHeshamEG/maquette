@@ -44,6 +44,11 @@ final class ModelingTests: XCTestCase {
     /// is running.
     private func type(_ text: String, into dimension: String) {
         let number = element("dimension-\(dimension)")
+        guard number.waitForExistence(timeout: 3) else {
+            let shown = app.descendants(matching: .any).matching(NSPredicate(format: "identifier BEGINSWITH 'dimension-'")).allElementsBoundByIndex
+            XCTFail("no \(dimension) number (shown: \(shown.map(\.identifier))): " + element("debug-trail").label)
+            return
+        }
         let reached = "\(number.frame), hittable \(number.isHittable)"
         number.tap()
         guard element("number-pad-display").waitForExistence(timeout: 3) else {
