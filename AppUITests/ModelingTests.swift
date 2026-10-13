@@ -44,16 +44,18 @@ final class ModelingTests: XCTestCase {
     /// is running.
     private func type(_ text: String, into dimension: String) {
         let number = element("dimension-\(dimension)")
-        guard number.waitForExistence(timeout: 3) else {
-            let shown = app.descendants(matching: .any).matching(NSPredicate(format: "identifier BEGINSWITH 'dimension-'")).allElementsBoundByIndex
-            XCTFail("no \(dimension) number (shown: \(shown.map(\.identifier))): " + element("debug-trail").label)
-            return
+        // The number can be redrawn as the stage settles after the last one was typed: tap it again until its pad opens.
+        var opened = false
+        for _ in 0 ..< 6 where !opened {
+            // A snapshot fails quietly if it went between finding it and tapping; then the next round finds it again.
+            if number.waitForExistence(timeout: 2), let frame = try? number.snapshot().frame {
+                app.coordinate(withNormalizedOffset: .zero).withOffset(CGVector(dx: frame.midX, dy: frame.midY)).tap()
+            }
+            opened = element("number-pad-display").waitForExistence(timeout: 1.5)
         }
-        let reached = "\(number.frame), hittable \(number.isHittable)"
-        number.tap()
-        guard element("number-pad-display").waitForExistence(timeout: 3) else {
-            XCTFail("the pad opened for \(dimension) (\(reached), \(app.popovers.count) pop-overs, over it: \(covering(number.frame))): "
-                + element("debug-trail").label)
+        guard opened else {
+            let shown = app.descendants(matching: .any).matching(NSPredicate(format: "identifier BEGINSWITH 'dimension-'")).allElementsBoundByIndex
+            XCTFail("no pad for \(dimension) (shown: \(shown.map(\.identifier))): " + element("debug-trail").label)
             return
         }
         for character in text {
@@ -65,15 +67,6 @@ final class ModelingTests: XCTestCase {
             element("number-pad-\(key)").tap()
         }
         element("number-pad-done").tap()
-    }
-
-    /// What lies over a number that can't be reached (identifiers, else labels, of the elements holding its middle).
-    private func covering(_ frame: CGRect) -> String {
-        let middle = CGPoint(x: frame.midX, y: frame.midY)
-        let all = app.descendants(matching: .any).allElementsBoundByIndex.prefix(600)
-        return all.filter { $0.frame.contains(middle) && $0.frame.width < 1300 }
-            .map { "\($0.elementType.rawValue):\($0.identifier.isEmpty ? $0.label : $0.identifier)" }
-            .joined(separator: ", ")
     }
 
     /// Double-tap: frame what's selected (or everything), then let the camera settle.
