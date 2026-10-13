@@ -100,7 +100,7 @@ private struct FlipbookOnionSkin: View {
                     path.closeSubpath()
                 }
             }
-            .fill(skin.before ? Color(red: 1, green: 0.32, blue: 0.3) : Color(red: 0.3, green: 0.85, blue: 0.45))
+            .fill(skin.before ? editor.flipbook.onionBeforeColour.color : editor.flipbook.onionAfterColour.color)
             .opacity(0.45 * skin.fade)
         }
     }

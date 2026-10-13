@@ -117,6 +117,8 @@ struct StageChrome: View {
         HStack(alignment: .bottom, spacing: HmmSpacing.s) {
             if editor.flying {
                 FlyPad(editor: editor).transition(.scale.combined(with: .opacity))
+            } else if editor.tool == .flipbook {
+                FlipbookTimecode(editor: editor)
             } else if showsJoystick, !editor.selection.isEmpty, editor.tool == .select, editor.performPhase == .idle, !editor.directorView {
                 JoystickPad(editor: editor)
                     .transition(.scale.combined(with: .opacity))

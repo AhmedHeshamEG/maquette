@@ -12,6 +12,7 @@ extension StageGestures {
         switch recognizer.state {
         case .began:
             gestureKey = UUID().uuidString
+            panStart = (stage.viewpoint, CACurrentMediaTime())
             editor.showChrome()
             let translation = recognizer.translation(in: stage)
             lastFramed = nil
@@ -19,16 +20,34 @@ extension StageGestures {
             // Moving the view is always the fingers' (CONTEXT §10.10): a Pencil drag that does nothing else does nothing.
             if panTouchIsPencil, case .orbit = drag { drag = .none }
             continueDrag(to: point, translation: translation, editor: editor, stage: stage)
+            panTravel = translation
             recognizer.setTranslation(.zero, in: stage)
         case .changed:
-            continueDrag(to: point, translation: recognizer.translation(in: stage), editor: editor, stage: stage)
+            let translation = recognizer.translation(in: stage)
+            continueDrag(to: point, translation: translation, editor: editor, stage: stage)
+            panTravel = CGPoint(x: panTravel.x + translation.x, y: panTravel.y + translation.y)
             recognizer.setTranslation(.zero, in: stage)
         case .ended, .cancelled, .failed:
+            if recognizer.state == .ended, case .orbit = drag, flickedFrame(recognizer, editor: editor, stage: stage) {
+                drag = .none
+                return
+            }
             endDrag(editor: editor, stage: stage, cancelled: recognizer.state != .ended)
             drag = .none
         default:
             break
         }
+    }
+
+    /// While frames are drawn, a finger's flick turns the frame instead of the view (the turn it began is put back).
+    private func flickedFrame(_ recognizer: UIPanGestureRecognizer, editor: EditorModel, stage: StageView) -> Bool {
+        guard editor.tool == .flipbook, !panTouchIsPencil, let start = panStart else { return false }
+        let travel = recognizer.translation(in: stage)
+        let total = CGPoint(x: travel.x + panTravel.x, y: travel.y + panTravel.y)
+        guard let flick = Flick.read(dx: Double(total.x), dy: Double(total.y), duration: CACurrentMediaTime() - start.time) else { return false }
+        stage.setViewpoint(start.viewpoint)
+        editor.flickFlipbook(flick)
+        return true
     }
 
     private func groundHit(at point: CGPoint, planeY: Double, stage: StageView) -> Vec3? {

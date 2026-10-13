@@ -22,8 +22,11 @@ public struct FlipbookSettings: Equatable, Sendable {
     /// Frames a new drawing holds (2 = on twos).
     public var hold: Int = 2
     public var onionSkin = true
+    /// How many drawings before and after this one show (U5: 1 … 8, set from the timecode), and in which colours.
     public var onionBefore = 1
     public var onionAfter = 1
+    public var onionBeforeColour = RGBA(1, 0.32, 0.3)
+    public var onionAfterColour = RGBA(0.3, 0.85, 0.45)
     /// Eraser radius in points.
     public var eraserRadius: Double = 14
     /// New flipbooks are stuck to the camera (screen effects) instead of drawn on the sheet in the space.
@@ -44,4 +47,16 @@ public struct AnimationViewSettings: Equatable, Sendable {
     public var onionAfter = 1
 
     public init() {}
+}
+
+/// A finger's flick on the stage while frames are drawn (Dreams' way, U5): quick, short and sideways. Anything slower,
+/// longer or steeper is a stroke or a turn of the view.
+enum Flick: Equatable, Sendable {
+    case left, right
+
+    /// The flick a finger made, if it was one: `dx`, `dy` its travel in points, `duration` in seconds.
+    static func read(dx: Double, dy: Double, duration: Double) -> Flick? {
+        guard duration > 0, duration < 0.3, abs(dx) > 50, abs(dx) > abs(dy) * 2, abs(dx) / duration > 700 else { return nil }
+        return dx > 0 ? .right : .left
+    }
 }

@@ -119,6 +119,9 @@ final class StageGestures: NSObject, UIGestureRecognizerDelegate {
     var tapTouchIsPencil = false
     /// The touch being held is the Pencil's (a held Pencil draws; a held finger is the eyedropper).
     var longPressIsPencil = false
+    /// Where the view was and when a one-finger drag began, and how far it has gone (a flick turns a frame instead).
+    var panStart: (viewpoint: Viewpoint, time: CFTimeInterval)?
+    var panTravel = CGPoint.zero
 
     /// How far orbit, pan and zoom go per finger movement (Settings ▸ Speed).
     var navigationSpeed: Double { AppSettings.navigationFactor }
