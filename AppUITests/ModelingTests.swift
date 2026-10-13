@@ -43,9 +43,11 @@ final class ModelingTests: XCTestCase {
     /// Taps a floating number and types a length on the number pad that opens beside it. One query per key: the clock
     /// is running.
     private func type(_ text: String, into dimension: String) {
-        element("dimension-\(dimension)").tap()
+        let number = element("dimension-\(dimension)")
+        let reached = "\(number.frame), hittable \(number.isHittable)"
+        number.tap()
         XCTAssertTrue(element("number-pad-display").waitForExistence(timeout: 3),
-                      "the pad opened for \(dimension): \(element("debug-trail").label)")
+                      "the pad opened for \(dimension) (\(reached), \(app.popovers.count) pop-overs): \(element("debug-trail").label)")
         for character in text {
             let key = switch character {
             case "-": "minus"

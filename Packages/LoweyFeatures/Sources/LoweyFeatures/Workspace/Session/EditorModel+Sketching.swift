@@ -70,9 +70,9 @@ extension EditorModel {
             return
         }
         if modeling.pending == nil {
-            // A tap on a region picks it (to pull; a closed shape is picked as it's drawn, U5), and leaves it picked.
+            // A tap on a region picks it (to pull; a closed shape is picked as it's drawn, U5), afresh if it was.
             if let region = sketchRegion(at: point) {
-                if region != modeling.region { selectRegion(region) }
+                selectRegion(region)
                 return
             }
             guard let start = startShape(at: point) else { return }

@@ -34,6 +34,10 @@ final class DrawTests: XCTestCase {
 
     private var stage: XCUIElement { app.otherElements["stage"] }
 
+    private func settle() {
+        _ = XCTWaiter.wait(for: [XCTestExpectation(description: "settle")], timeout: 0.6)
+    }
+
     private func point(_ x: Double, _ y: Double) -> XCUICoordinate {
         stage.coordinate(withNormalizedOffset: CGVector(dx: x, dy: y))
     }
@@ -122,9 +126,12 @@ final class DrawTests: XCTestCase {
         XCTAssertTrue(element("inspector").waitForExistence(timeout: 5))
         tap("Draw")
         // In the air, at three places clear of the object panel on the left; then starting on the cube in the middle.
+        // At a person's pace: the object panel follows each new selection between strokes.
         for (x, y) in [(0.42, 0.22), (0.7, 0.25), (0.62, 0.78)] {
+            settle()
             point(x, y).press(forDuration: 0.05, thenDragTo: point(x + 0.06, y + 0.04))
         }
+        settle()
         point(0.5, 0.52).press(forDuration: 0.05, thenDragTo: point(0.53, 0.5))
         let landed = landings()
         XCTAssertEqual(landed.count, 4, "four strokes landed: \(element("debug-trail").label)")
