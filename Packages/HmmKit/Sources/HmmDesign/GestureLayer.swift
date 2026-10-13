@@ -102,6 +102,11 @@ public enum HmmUniversalGesture: String, Sendable, CaseIterable, Identifiable {
                     recognizer.delegate = self
                     window.addGestureRecognizer(recognizer)
                 }
+                // Every touch, fingers and the Pencil, is noted (messages leave on any touch); it claims nothing.
+                let watcher = HmmTouchWatcher(target: nil, action: nil)
+                watcher.configure()
+                window.addGestureRecognizer(watcher)
+                recognizers.append(watcher)
                 installedOn = window
             }
 

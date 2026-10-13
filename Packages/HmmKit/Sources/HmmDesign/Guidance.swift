@@ -74,15 +74,20 @@
         }
     }
 
-    /// One line at the bottom while a guided step runs; it leaves the moment the step ends (`text` back to nil).
+    /// One line at the bottom when a guided step starts or changes what it asks; like every message it leaves after a
+    /// moment or on any touch (Maquette U5), and the moment the step ends (`text` back to nil). A new line shows again.
     private struct HmmGuideLinePresenter: ViewModifier {
         let text: String?
+        let duration: Duration
+        /// The line already read (its time ran out, or a touch came after it showed).
+        @State private var read: String?
+        @State private var shownAt = 0
         @Environment(\.accessibilityReduceMotion) private var reduceMotion
         @Environment(\.hmmTheme) private var theme
 
         func body(content: Content) -> some View {
             content.overlay(alignment: .bottom) {
-                if let text {
+                if let text, text != read {
                     Text(LocalizedStringKey(text))
                         .font(.hmm(.body, weight: .semibold))
                         .foregroundStyle(theme.text)
@@ -96,9 +101,22 @@
                         .allowsHitTesting(false)
                         .transition(.opacity)
                         .accessibilityIdentifier("guide-line")
+                        .task(id: text) {
+                            shownAt = HmmTouchCount.now
+                            try? await Task.sleep(for: duration)
+                            guard !Task.isCancelled else { return }
+                            read = text
+                        }
                 }
             }
+            .onChange(of: HmmTouchCount.now) { _, touches in
+                if let text, touches > shownAt { read = text }
+            }
+            .onChange(of: text) { _, new in
+                if new != read { read = nil }
+            }
             .animation(HmmMotion.standard.animation(reduceMotion: reduceMotion), value: text)
+            .animation(HmmMotion.standard.animation(reduceMotion: reduceMotion), value: read)
         }
     }
 
@@ -108,9 +126,9 @@
             modifier(HmmUndoLinePresenter(message: message, duration: duration))
         }
 
-        /// The guide line: one line at the bottom while `text` isn't nil.
-        func hmmGuideLine(_ text: String?) -> some View {
-            modifier(HmmGuideLinePresenter(text: text))
+        /// The guide line: one line at the bottom when `text` starts or changes, for `duration` or until any touch.
+        func hmmGuideLine(_ text: String?, duration: Duration = .seconds(2.5)) -> some View {
+            modifier(HmmGuideLinePresenter(text: text, duration: duration))
         }
     }
 #endif

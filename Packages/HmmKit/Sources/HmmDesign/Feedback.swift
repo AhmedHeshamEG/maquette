@@ -63,10 +63,13 @@
         }
     }
 
+    /// The one way a message is shown (Maquette U5): it leaves after its time or on any touch, whichever comes first. A
+    /// toast that offers an action stays twice as long and only a touch on the action (or its time) takes it away.
     private struct HmmToastPresenter: ViewModifier {
         @Binding var message: HmmToastMessage?
         let duration: Duration
         let action: ((HmmToastMessage) -> Void)?
+        @State private var shownAt: (id: UUID, touches: Int)?
         @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
         func body(content: Content) -> some View {
@@ -76,19 +79,27 @@
                         .padding(.top, HmmSpacing.l)
                         .transition(.move(edge: .top).combined(with: .opacity))
                         .task(id: current.id) {
+                            shownAt = (current.id, HmmTouchCount.now)
                             try? await Task.sleep(for: current.actionTitle == nil ? duration : duration * 2)
                             guard !Task.isCancelled, message?.id == current.id else { return }
                             withAnimation(HmmMotion.standard.animation(reduceMotion: reduceMotion)) { message = nil }
                         }
                 }
             }
+            .onChange(of: HmmTouchCount.now) { _, touches in
+                guard let current = message, current.actionTitle == nil, let shownAt, shownAt.id == current.id, touches > shownAt.touches else {
+                    return
+                }
+                withAnimation(HmmMotion.standard.animation(reduceMotion: reduceMotion)) { message = nil }
+            }
             .animation(HmmMotion.standard.animation(reduceMotion: reduceMotion), value: message)
         }
     }
 
     public extension View {
-        /// Shows `message` as a toast at the top for `duration` (twice as long when it offers an action).
-        func hmmToast(_ message: Binding<HmmToastMessage?>, duration: Duration = .seconds(2.5),
+        /// Shows `message` as a toast at the top for `duration` (twice as long when it offers an action), or until any
+        /// touch.
+        func hmmToast(_ message: Binding<HmmToastMessage?>, duration: Duration = .seconds(2),
                       action: ((HmmToastMessage) -> Void)? = nil) -> some View {
             modifier(HmmToastPresenter(message: message, duration: duration, action: action))
         }
