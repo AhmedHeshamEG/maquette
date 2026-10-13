@@ -2,22 +2,26 @@
 
 Where everything in Maquette lives. This is the map of CONTEXT §4.1 and §10.1: the layout that freezes at 1.0
 (after that, it changes only through a converge session with Hesham). New features go into homes that already exist.
-U2 (Maquette 0.12) drew this map; "What moved in 0.12" at the end says what came from where.
+U2 (Maquette 0.12) drew this map; U5 (0.15) made Draw one tool and gave every making tool one bar. "What moved" at the
+end says what came from where.
 
 ```
 ┌──────────────────────────────────────────────────────────────────────────────────────┐
-│ ⌂ Home  … Actions  ◐ Look  ☝ Select  ▤ Library        Model  Draw  Paint  Rig  Animate │  corner clusters
+│ ⌂ Home  … Actions  ◐ Look  ▤ Library                    Model  Draw  Rig  Animate    │  corner clusters (rest
+│                                                                                      │  to faint rails while
+│                                                                                      │  the hand draws)
 │ Scene 1 ▾  (the scene's name is a door)                                              │
 │ ┃ slider                                                                             │
 │ ┃                         the stage (≥ 85 % of the screen at rest)          ┌──────┐ │
 │ ◉ Pick                                                                      │object│ │  the object panel floats
 │ ┃ slider       (rests as a thin rail when no tool uses it)                  │panel │ │  beside the selection
 │ ● colour                                                                    └──────┘ │  (a chip while something
-│ ↶ ↷                                                                                  │   bigger is open)
+│                                                                                      │   bigger is open)
 │                                                                                      │
-│ (joystick)                    (tool options)         ⏱ Timeline · Views · ⌖ · 🎥     │  bottom row
+│ (joystick)        (the tool's bar: Draw's is Brush Smudge Erase Sheets Colour)       │  bottom row
+│                                                      Views · 🎥 · Joystick · Snap    │  the view corner
 ├──────────────────────────────────────────────────────────────────────────────────────┤
-│ ▶ 0:01.12  Perform | Keys  ● Record  + Overlay  + Sound          …  ⌄                │  time on call: hidden,
+│ ▶ 0:01.12  Perform | Keys  ● Record  + Sound                     …  ⌄                │  time on call: hidden,
 │ the ruler · the tracks (the whole timeline's height remembered per project)          │  the slim transport, or
 └──────────────────────────────────────────────────────────────────────────────────────┘  the whole timeline
 ```
@@ -27,9 +31,11 @@ U2 (Maquette 0.12) drew this map; "What moved in 0.12" at the end says what came
 1. **One home per control.** A function has one place on screen. The menu bar, the keyboard and the gestures are
    other ways to reach it, not other homes. The outliner's eye and lock on each row are the list's own grammar (they
    act on that row), so the object's menu keeps Hide and Lock too.
-2. **Top left is the document and the app** (Home, Actions, Look, Select, Library), **the scene's name under it is
-   the scene** (its set-up, its scenes, its objects). **Top right is making** (Model, Draw, Paint, Rig, Animate), in
-   the order a thing gets made. A tool with nothing in it yet isn't shown (no stubs).
+2. **Top left is the document and the app** (Home, Actions, Look, Library), **the scene's name under it is the scene**
+   (its set-up, its scenes, its objects). **Top right is making** (Model, Draw, Rig, Animate), in the order a thing
+   gets made; **each opens one bar of at most six verbs** under the stage, deeper things behind them (U5). A tool with
+   nothing in it yet isn't shown (no stubs). Both clusters rest to a faint rail while the hand draws and come back when
+   a finger or the hovering Pencil comes near.
 3. **Time lives in the timeline**, and the timeline comes when called: the corner control (⏱) or Animate. Performing
    live, overlays on the video, sound and words are there.
 4. **Actions holds making and sharing**: export, the project file, the Monitor, the Board, History, Learn, Settings.
@@ -106,16 +112,7 @@ Three short pages; the page is remembered.
 | World: save the world to the library | `Look › look-world › Save this world to the library` |
 | Finish: clean, cinematic, dreamy, retro, ink outlines, collage, old film; grain, bloom | `Look › look-finish › Cinematic` |
 | Finish: Motion (smooth, on twos, on threes) for the whole scene | `Look › look-finish › finish-motion` |
-
-### Select
-
-A small bar.
-
-| Control | Walk |
-|---|---|
-| Tap to select | `Select › Tap` |
-| Lasso | `Select › tool-lasso` |
-| All (with a selection, also None and Similar) | `Select › select-all` |
+| Finish: screen effects at the playhead (a flash, a shake…) | `Look › look-finish › finish-screen-effects` |
 
 ### Library
 
@@ -167,50 +164,36 @@ A small bar.
 
 ### Draw
 
-Everything the Pencil draws, all on **the sheet** (0.13): one see-through sheet under the Pencil. A finger-tap places it
-(on a surface it lies there; in empty space it stands facing you), its grip pushes it nearer or farther, and the control
-on its edge gives it one of four shapes. The panel closes on the first stroke; the tool's bar under the stage stays. Tap
-Draw again for the panel.
+**One Draw** (U5): Procreate's five under the stage, Brush · Smudge · Erase · Sheets · Colour. No panel opens. What the
+Brush holds decides what the Pencil makes: a library brush draws **lines** (one from a painting set puts **colour on a
+model**, and then Sheets becomes **Layers**), and under the library's sets are the making sets **Solids**, **Shapes**
+and **Shadow**. Zero setup: a stroke begun over a surface lands on it; in the air it lands on **the sheet**, which faces
+you until a finger's tap places it, and reads as paper while you draw. Tap Draw again to put it down.
 
 | Control | Walk |
 |---|---|
-| Ink: draw, erase, select strokes | `Draw › tool-ink › ink-erase` |
-| The brush ink draws with (opens the brush library) | `Draw › tool-ink › brush-ink` |
-| Ink's drawing guide on a flat sheet: grid, isometric, symmetry; Drawing assist | `Draw › tool-ink › drawing-guide` |
-| The sheet's edge: the grip (drag down: nearer, up: farther) | `Draw › tool-ink › sheet-grip` |
-| The sheet's edge: four shapes (flat, around, dome; on the object when it lies on one) | `Draw › tool-ink › sheet-dome` |
-| The sheet's edge: kept sheets, a new one, rename, curve, delete (with its drawings) | `Draw › tool-ink › sheet-menu` |
-| Solid shape: tube, ribbon, extrude, lathe; mirror | `Draw › tool-draw › Tube` |
-| Sketch on the sheet: line, rectangle, circle, arc, spline, offset; length, angle and snaps beside the tip | `Draw › tool-sketch › sketch-rectangle` |
-| | `Draw › tool-sketch › sketch-offset` |
-| The sketch's bar: the shapes, Done, ✕ | shown at the bottom while sketching |
-| Flipbook: draw, erase, tracks; on the sheet, or stuck to the camera | `Draw › tool-flipbook › flipbook-on-camera` |
-| | `Draw › tool-flipbook › flipbook-tracks` |
-| The brush flipbooks draw with (opens the brush library) | `Draw › tool-flipbook › brush-flipbook` |
-| The frame strip: the drawings; step, add, reorder, hold longer, onion skin, loop, erase | `Draw › tool-flipbook › frame-strip` |
-| The frame's drawing guide (stuck to the camera): 2D grid, isometric, 1-, 2- and 3-point perspective, symmetry; Drawing assist | in Flipbook while it's stuck to the camera |
-| The brush library drops down from the brush row: sets on the left, the set's brushes on the right | `Draw › tool-ink › brush-ink › brush-dropdown` |
-| The whole library: sets, choose a brush, new set, share a set, import Procreate (.brushset, .brush) and Photoshop (.abr) brushes | the drop-down's last row |
+| Draw's bar: Brush, Smudge, Erase, Sheets (or Layers), Colour | `Draw › draw-bar` |
+| Brush: tap it while it's in the hand and the library drops down: sets on the left, brushes on the right | `Draw › draw-brush › brush-dropdown` |
+| Solids: tube, ribbon, extrude, lathe; mirror, depth | `Draw › draw-brush › brush-set-solids` |
+| Shapes: line, rectangle, circle, arc, spline, offset, each in one drag; a closed one gets an arrow to pull | `Draw › draw-brush › brush-set-shapes` |
+| Shadow: shadow in, light out; presets on the selection | `Draw › draw-brush › brush-set-shadow` |
+| The whole library: sets, choose a brush, new set, share a set, import Procreate (.brushset, .brush) and Photoshop (.abr) brushes | `Draw › draw-brush › brush-library-open` |
+| Smudge: push lines into a new shape | `Draw › draw-smudge` |
+| Erase (what's in the hand: lines, frames, paint) | `Draw › draw-erase` |
+| Sheets: the sheets kept in the scene (draw on one again, rename, delete with its drawings), a new one | `Draw › draw-sheets › sheet-new` |
+| Frames: frame by frame on the sheet (or stuck to the camera), tracks, blend, opacity, loop, hold, drawn effects | `Draw › draw-sheets › draw-frames` |
+| Colour: the palette and any colour | `Draw › colour-well` |
+| Layers (in place of Sheets while a paint brush is over a thing): show or hide, the one painted on, opacity, blend, add, the layer's menu; project a picture | shown while a paint brush is over a thing |
+| The sheet's hold menu: place (nearer, farther, face me), shape (flat, around, dome, on the object), guide (grid, isometric, symmetry), rename, delete | touch and hold the sheet |
+| The frame strip: the drawings; step, add, reorder, hold longer; hold one and let go for a copy; loop | over the bar while frames are drawn |
+| Flick right with a finger for a new frame, left for the one before | on the stage while frames are drawn |
+| Onion skins: up to eight each way, their colours | the time at the bottom left while frames are drawn |
+| A stroke's chip: the brush and colour in the hand, thickness (drag or type), smooth, delete; drag along it with the Pencil to reshape it | tap a stroke with the Pencil |
+| The eyedropper: a ring shows the colour under the finger and the one in the hand | a finger held on a thing while drawing |
+| The frame's drawing guide (stuck to the camera): 2D grid, isometric, 1-, 2- and 3-point perspective, symmetry | Sheets ▸ Frames while stuck to the camera |
 | A brush's menu (the hold menu): duplicate, rename; Brush Studio, reset, move to a set; delete | touch and hold a brush in the library |
 | Brush Studio: stroke, shape, grain, dynamics, Pencil, rendering, about; the pad to try it | a brush's menu ▸ Edit in Brush Studio |
-
-### Paint
-
-The panel closes on the first stroke; the tool's bar under the stage stays. Tap Paint again for the panel.
-
-| Control | Walk |
-|---|---|
-| Colour: paint, erase, fill and the eyedropper on models | `Paint › tool-paint › paint-pick` |
-| The brush painting uses (opens the brush library) | `Paint › tool-paint › brush-paint` |
-| The chosen object is made ready to paint the moment Paint is in the hand (laid flat, or its paint carried onto a changed shape): no button, no message; *Paint it* appears only if that didn't work | shown when Paint opens with an object chosen |
-| Layers: show or hide, the one the Pencil paints on, its opacity and blend, add a layer | `[cube] Paint › tool-paint › paint-layer-add` |
-| A layer's menu: duplicate, merge down, move up or down, clear, rename, delete; remove all paint | `[cube] Paint › tool-paint › paint-layer-menu` |
-| A layer's hold menu: duplicate, rename; merge down, clear; delete | touch and hold a layer |
-| Project a picture: from Photos or Files, placed with the fingers, Project from the options bar | Paint ▸ Colour on a painted object |
-| Paint, erase, fill, eyedropper, the layer painted on, done (options bar) | shown under the stage while Colour is on |
-| Size and opacity of the paint brush | the sidebar's two sliders while Colour is on |
-| Shadow Brush: push shadow in, pull light out | `Paint › tool-shadow-brush › Push shadow in` |
-| Shadow presets | `Paint › tool-shadow-brush › section-Presets` |
+| Size and opacity of the brush | the sidebar's two sliders while drawing |
 | Scatter's options (how many, size variety, spacing) | under the stage while Scatter (from the object panel) is on |
 
 ### Rig
@@ -268,41 +251,41 @@ The panel closes on the first stroke; the tool's bar under the stage stays. Tap 
 | Align and distribute (several selected) | in the panel when more than one thing is selected |
 | Camera: shot, framing, lens, focus, moves, transitions | in the panel when a camera is selected |
 | Fold to a chip (its name and Move · Turn · Size); tap the name to unfold | `[cube] fold-inspector` |
+| 3D text: Stick to the camera (a title that stays put on the picture) | in the panel of 3D text |
+| Every number is a slider: drag it (slowly for fine, fast for coarse) or tap it to type | the numbers in the panel and on the stage |
 
 ## The sidebar
 
 | Control | Walk |
 |---|---|
 | Resting: a thin rail where the sliders sit (touch it for size and opacity) | `sidebar-rail` |
-| Two sliders that follow the tool (size and opacity) | Draw, Paint, the weight brush, Perform |
-| Pick a colour from the stage | `Draw › tool-ink › Pick` |
-| The colour in the hand (the palette, any colour), for every tool that makes something, Model ▸ Add included | `Draw › tool-ink › colour-well` |
-| Undo, redo (they never rest) | `Undo` |
+| Two sliders that follow the tool (size and opacity) | Draw, the weight brush, Perform |
+| Pick a colour from the stage | `Draw › Pick` |
+| The colour in the hand (the palette, any colour) while Model ▸ Add is open (Draw has its own) | the sidebar while Model ▸ Add is open |
+| Undo, redo: only when Settings ▸ Gestures shows them (two fingers tap undo, three redo) | Settings ▸ Gestures ▸ Show undo buttons |
 
 ## The bottom row
 
 | Control | Walk |
 |---|---|
-| The timeline on call | `timeline-toggle` |
-| Views (top, front, side; perspective or orthographic) | `views-menu` |
+| Views (top, front, side; perspective or orthographic): the view cube's place | `views-menu` |
 | The Snap magnet: everything that snaps, on or off (a finger held down while the Pencil works flips it for that move) | `snap-magnet` |
 | The magnet's details: the grid and its size, corners and middles, edges, faces, objects, the ground, turning in steps, how near | touch and hold the magnet |
-| Frame the selection | `Frame the selection` |
 | The camera button: tap to look through (again: the next, then back); hold for a new camera from this view | `camera-button` |
-| Joystick (on by default; its × hides it, Settings ▸ Stage brings it back) | `[cube] hide-joystick` |
-| Tool options (ink, solid shape, sketch, the flipbook's frame strip, Shadow Brush, scatter, Model, Rig) | below the stage while that tool is on |
+| The joystick, on or off (on by default) | `joystick-toggle` |
+| The tool's bar (Draw, Model, Rig, scatter) | below the stage while that tool is on |
 | The trigger deck: the selected character's triggers under the fingers *(held: 1.2)* | below the stage with Select in the hand while the timeline is in Perform |
 
 ## The timeline
 
-Eight controls: play, the time, Perform | Keys, the mode's one button, + Overlay, + Sound, the menu, collapse.
+Seven controls: play, the time, Perform | Keys, the mode's one button, + Sound, the menu, collapse (U5: + Overlay went;
+titles are 3D text that sticks to the camera, screen effects are in Look ▸ Finish).
 
 | Control | Walk |
 |---|---|
 | Keys | `[timeline] timeline-mode-keyframe` |
 | Perform: Record arms it (Ready); touching the stage starts time, lifting the hand stops it | `[timeline] timeline-mode-perform › perform-record` |
 | Key the selection at the playhead (Keys' one button, with something selected); after the first key, changes key themselves | the timeline in Keys, with a selection |
-| + Overlay: a title, a label, marks (arrow, circle, star…), screen effects at the playhead | `[timeline] add-overlay` |
 | + Sound: voiceover, music, effects, transcript | `[timeline] Sound and words` |
 | The menu: a marker, the loop; the mode's extras (keys, easing, the graph; what a touch performs); fit, settings | `[timeline] timeline-menu` |
 | Collapse to the slim transport | `[timeline] Collapse the timeline` |
@@ -362,8 +345,8 @@ In this order. From Home (the gear) and from Actions.
 
 | Control | Where |
 |---|---|
-| Pencil or hand: draw with a finger too (automatic otherwise: a finger makes until an Apple Pencil has touched); the Pencil's hover point | Settings ▸ Pencil and hands |
-| Every gesture and shortcut | Settings ▸ Gestures |
+| Pencil or hand: draw with a finger too (automatic otherwise: a finger makes until an Apple Pencil has touched); the Pencil's hover point; the quick menu's six slots | Settings ▸ Pencil and hands |
+| Every gesture and shortcut; show undo buttons | Settings ▸ Gestures |
 | Always show the sidebar, always full resolution, moving-around speed, dock the object panel, the joystick and its speed, the Board on or off | Settings ▸ Stage |
 | Theme, sidebar on the right, haptics | Settings ▸ Appearance |
 | The assistant on this network (the laptop bridge for MCP), pairing and proposals, Scripts, paste a script; with Hesham's note | Settings ▸ Assistant |
@@ -378,15 +361,37 @@ explanations in panels; on by default).
 ## Elsewhere, on purpose
 
 - **Gestures** (CONTEXT §4.1): two-finger tap undo, three-finger tap redo, two-finger hold rapid undo, four-finger
-  tap hides everything but the stage, pinch, double-tap to frame, touch and hold for the hold menu.
+  tap hides everything but the stage, pinch, double-tap to frame, touch and hold for the hold menu. Two fingers on the
+  stage always move the view (U5); one finger dragging a selected thing carries it over the surfaces under it.
+- **The lasso** (U5: the Select button went): the quick menu's first slot, the three-finger swipe's bar (with Select
+  all), and the empty stage's hold menu (with Select all). One loop, then back to what was in the hand.
+- **The quick menu** (squeeze, or the Pencil's double-tap when Settings says): Lasso · Eyedropper · Eraser ↔ the last
+  brush · Snap · Hide the sheet and guides · Frame; with Rig: Pins · Dots · Mirror the pose · Reset the pose · Save the
+  pose · Show the bones.
+- **Pencil hover** lights what a tap would land on (on by default).
 - **The undo line**: what an undo or a redo changed, for a second at the top centre.
-- **The guide line**: one line at the bottom while a guided step runs (picking a colour, scattering, building walls),
-  gone the moment it ends.
+- **Messages** (U5: one toast system): every message, the guide line at the bottom included, leaves after two seconds
+  or on any touch.
 - **Under load nothing is said on the stage** (CONTEXT §6): the preview lightens by itself and comes back.
-- **The menu bar and keyboard** reach the same controls: ⌘1–⌘5 Model, Draw, Paint, Rig, Animate; ⌘6–⌘8 Actions, Look,
-  Select; ⌘L the Library; ⌥⌘1–3 move, turn, size; ⌘T the timeline; Space/J/K/L and ⌥←→ the transport. Holding ⌘ lists
+- **The menu bar and keyboard** reach the same controls: ⌘1–⌘4 Model, Draw, Rig, Animate; ⌘6–⌘8 Actions, Look, the
+  lasso; ⌘L the Library; ⌥⌘1–3 move, turn, size; ⌘T the timeline; Space/J/K/L and ⌥←→ the transport. Holding ⌘ lists
   them. The Perform menu (the microphone, the trigger keys) is *(held: 1.2)*.
 - **Proposals** from the AI bridge appear at the bottom of the stage while one is waiting.
+
+## What moved in 0.15 (U5)
+
+| 0.14 | Now | Why |
+|---|---|---|
+| Draw and Paint (two buttons, two panels) | one Draw, no panel: Brush · Smudge · Erase · Sheets/Layers · Colour under the stage | Procreate's five; "basically everything" got worse in U3 |
+| Draw ▸ Ink, Solid shape, Sketch, Flipbook | the brush library's sets (lines, Solids, Shapes) and Sheets ▸ Frames | Brushes are sets in one library |
+| Paint ▸ Colour, Shadow Brush | a painting set's brushes; the Shadow set | Same |
+| The sheet's floating bar (grip, shapes, menu) | the sheet's hold menu; Sheets in the bar | The floating bar sat on the drawing |
+| Select (top left) | the lasso in the quick menu, the three-finger bar and the empty stage's hold menu | Fewer buttons |
+| Undo and redo in the sidebar | Settings ▸ Gestures ▸ Show undo buttons (off) | The finger taps are universal |
+| The timeline on call (bottom right), Frame the selection | Animate; a finger's double-tap and the quick menu's Frame | The view corner is four |
+| The joystick's × | the view corner's Joystick | One place to switch it |
+| The timeline's + Overlay | 3D text that sticks to the camera; screen effects in Look ▸ Finish | "A video editor's job" |
+| Two fingers on the selection turned and sized it | two fingers always move the view | One grammar for the hands |
 
 ## What moved in 0.12 (U2)
 

@@ -58,8 +58,10 @@ final class SmokeTests: XCTestCase {
         tap("add-sphere")
         tap("gizmo-rotate")
         shot("Turn gizmo")
-        tap("Undo")
-        tap("Redo")
+        // Two fingers tap undo, three redo (U5: the buttons are a Settings switch).
+        let stage = app.otherElements["stage"]
+        stage.twoFingerTap()
+        stage.tap(withNumberOfTaps: 1, numberOfTouches: 3)
         tap("Home")
         let card = app.descendants(matching: .any)["project-Untitled"].firstMatch
         XCTAssertTrue(card.waitForExistence(timeout: 10))
@@ -172,9 +174,9 @@ final class SmokeTests: XCTestCase {
     func testItalianLabels() {
         launch(["-AppleLanguages", "(it)", "-AppleLocale", "it_IT"])
         newProject()
-        let undo = app.descendants(matching: .any)["Undo"].firstMatch
-        XCTAssertTrue(undo.waitForExistence(timeout: 10))
-        XCTAssertEqual(undo.label, "Annulla")
+        let draw = app.descendants(matching: .any)["Draw"].firstMatch
+        XCTAssertTrue(draw.waitForExistence(timeout: 10))
+        XCTAssertEqual(draw.label, "Disegna")
         shot("Stage (it)")
     }
 }

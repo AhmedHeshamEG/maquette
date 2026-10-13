@@ -118,12 +118,21 @@ extension StageGestures {
     /// A tap on a line picks it (its chip opens: U5); anything else is kept.
     private func finishLine(_ recognizer: StrokeGestureRecognizer, editor: EditorModel, stage: StageView) {
         if Self.isTap(recognizer.samples), editor.drawsLines, let point = recognizer.samples.first?.location, editor.tapLine(at: point) { return }
+        if AppIdentity.isUITesting { noteLanding(recognizer, editor: editor, stage: stage) }
         if editor.drawsLines {
             editor.commitInkStrokes(inkCopies(inkSamples(stage: stage), editor: editor), seed: strokeSeed, onSheet: !strokeOnSurface)
             editor.strokeEnded()
         } else {
             editor.commitStroke(points: strokePoints, pressures: strokePressures, normals: strokeNormals, sheet: strokeSheet, onSheet: !strokeOnSurface)
         }
+    }
+
+    /// UI tests only (the Pencil-accuracy test): where the touch began and where its first point landed, on screen.
+    private func noteLanding(_ recognizer: StrokeGestureRecognizer, editor: EditorModel, stage: StageView) {
+        guard let touch = recognizer.samples.first?.location, let first = strokePoints.first, let normal = strokeNormals.first,
+              let landed = stage.screenPoint(of: first - normal * (editor.tool == .draw ? 0 : 0.002)) else { return }
+        editor.trail("land=\(Int(touch.x.rounded())),\(Int(touch.y.rounded()))>\(Int(landed.x.rounded())),\(Int(landed.y.rounded()))"
+            + (strokeOnSurface ? ",surface" : ",sheet"))
     }
 
     /// A touch that barely moved and lifted quickly.

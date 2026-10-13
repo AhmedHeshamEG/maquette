@@ -71,8 +71,9 @@ final class ModelingTests: XCTestCase {
         // The timed part is only what a person does: taps and typed numbers. Checks and pictures come after.
         let start = Date()
         element("Draw").tap()
-        element("tool-sketch").tap()
-        element("sketch-rectangle").tap()
+        element("draw-brush").tap()
+        element("brush-set-shapes").tap()
+        element("draw-kind-rectangle").tap()
         let size = stage.frame.size
         let middle = CGPoint(x: size.width / 2, y: size.height * 0.55)
         tapStage(CGPoint(x: middle.x - 70, y: middle.y - 30))
@@ -86,7 +87,8 @@ final class ModelingTests: XCTestCase {
         type("10", into: "pull")
         // A circle on the block's top (framed, the top face lies above the middle), 6 across, cut through.
         frameAll()
-        element("Circle").tap()
+        element("draw-brush").tap()
+        element("draw-kind-circle").tap()
         let top = CGPoint(x: centre.x, y: centre.y - size.height * 0.06)
         tapStage(top)
         tapStage(CGPoint(x: top.x + 60, y: top.y))
