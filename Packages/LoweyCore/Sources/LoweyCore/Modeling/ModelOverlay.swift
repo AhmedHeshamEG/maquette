@@ -26,6 +26,27 @@ public enum ModelOverlay {
         }
     }
 
+    /// An arrow from `start` along `direction`, `length` long (U5: a closed shape's one arrow to pull it into a solid).
+    public static func arrow(from start: Vec3, direction: Vec3, length: Double, width: Double, into mesh: inout MeshData) {
+        let along = direction.normalized
+        guard along.lengthSquared > 0.5, length > 0 else { return }
+        let tip = start + along * length
+        line(start, tip, width: width, into: &mesh)
+        let helper = abs(along.y) < 0.9 ? Vec3.unitY : Vec3.unitX
+        let side = along.cross(helper).normalized
+        let back = tip - along * (length * 0.3)
+        for wing in [side, -side, along.cross(side), -along.cross(side)] {
+            line(tip, back + wing * (length * 0.18), width: width, into: &mesh)
+        }
+    }
+
+    /// The middle of a region's outline (its corners' average), on the sketch's plane.
+    public static func middle(of region: SketchRegion) -> Vec2 {
+        guard !region.outline.isEmpty else { return Vec2(0, 0) }
+        let sum = region.outline.reduce(Vec2(0, 0)) { Vec2($0.x + $1.x, $0.y + $1.y) }
+        return Vec2(sum.x / Double(region.outline.count), sum.y / Double(region.outline.count))
+    }
+
     /// A small diamond around a point.
     public static func dot(_ center: Vec3, radius: Double, into mesh: inout MeshData) {
         let axes = [Vec3.unitX, -Vec3.unitX, Vec3.unitY, -Vec3.unitY, Vec3.unitZ, -Vec3.unitZ].map { $0 * radius }

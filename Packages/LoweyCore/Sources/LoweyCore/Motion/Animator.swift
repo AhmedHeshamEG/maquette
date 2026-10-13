@@ -55,6 +55,7 @@ public enum Animator {
         RubberHose.apply(to: &scene, animated: &animated)
         let camera = timeline.cutCamera(at: time).flatMap { scene.objects[$0] != nil ? $0 : nil }
             ?? scene.activeCamera.flatMap { scene.objects[$0] != nil ? $0 : nil }
+        StickToCamera.apply(to: &scene, camera: camera, animated: &animated)
         return AnimatedScene(time: time, scene: scene, animated: animated, camera: camera, poses: state.poses)
     }
 
