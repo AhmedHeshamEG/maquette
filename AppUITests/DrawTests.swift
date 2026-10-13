@@ -124,9 +124,10 @@ final class DrawTests: XCTestCase {
         tap("model-add")
         tap("add-cube")
         XCTAssertTrue(element("inspector").waitForExistence(timeout: 5))
+        // The object panel folds to its chip, so nothing floats where the strokes start (it follows the selection).
+        tap("fold-inspector")
         tap("Draw")
-        // In the air, at three places clear of the object panel on the left; then starting on the cube in the middle.
-        // At a person's pace: the object panel follows each new selection between strokes.
+        // In the air, at three places; then starting on the cube in the middle.
         for (x, y) in [(0.42, 0.22), (0.7, 0.25), (0.62, 0.78)] {
             settle()
             point(x, y).press(forDuration: 0.05, thenDragTo: point(x + 0.06, y + 0.04))

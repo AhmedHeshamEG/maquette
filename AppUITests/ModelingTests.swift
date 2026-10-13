@@ -96,11 +96,9 @@ final class ModelingTests: XCTestCase {
         tapStage(CGPoint(x: middle.x + 70, y: middle.y + 40))
         type("40", into: "width")
         type("20", into: "depth")
-        // Double-tap frames the work, so the rectangle's middle is the stage's middle; pull it up 10.
-        frameAll()
-        let centre = CGPoint(x: size.width / 2, y: size.height / 2)
-        tapStage(centre)
+        // A closed shape is picked as it lands (U5): pull it up 10.
         type("10", into: "pull")
+        let centre = CGPoint(x: size.width / 2, y: size.height / 2)
         // A circle on the block's top (framed, the top face lies above the middle), 6 across, cut through.
         frameAll()
         element("draw-brush").tap()
@@ -109,7 +107,6 @@ final class ModelingTests: XCTestCase {
         tapStage(top)
         tapStage(CGPoint(x: top.x + 60, y: top.y))
         type("6", into: "diameter")
-        tapStage(top)
         type("-10", into: "pull")
         let elapsed = Date().timeIntervalSince(start)
         shot("A 6 mm hole through a 40 × 20 × 10 mm block")

@@ -7,6 +7,8 @@ phase plan (the pass U1 … U5, M12, M14, M16, then 1.0) lives in studio-h's `PH
 
 - [ ] The device checklist in the "Maquette 0.15 — U5" PR (the Pencil's feel and where strokes start, hover lighting,
       the Pencil Pro's clicks, flicks, carrying, the eyedropper's loupe, a rig dragged, the sheet seen in light and dark).
+- [ ] On the simulator, the pull number's pad didn't open when tapped after a double-tap framed the work and the
+      shape was tapped again; the block-with-a-hole test now types the pull as the shape lands. Check it on the iPad.
 - [ ] Smudge on painted models waits for U7 Texture's per-pixel tools (D-283).
 - [ ] Hover lights whole things; faces and edges light with U6's picking (D-291).
 - [ ] A thing stuck to the camera is moved by its gizmo in the world; the gizmo doesn't follow the camera's frame yet
