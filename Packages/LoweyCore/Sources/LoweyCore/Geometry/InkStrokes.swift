@@ -198,6 +198,40 @@ public enum InkEditing {
         }
     }
 
+    /// Pushes points along `offset` (Draw's Smudge on lines, U5): `pull` says how much of the offset each point takes,
+    /// 0 … 1 (the brush's falloff around the Pencil); a point that takes nothing stays where it was.
+    public static func pushing(_ recipe: DrawingRecipe, by offset: Vec3, pull: (_ stroke: Int, _ point: Int) -> Double) -> DrawingRecipe {
+        var result = recipe
+        for (strokeIndex, stroke) in recipe.strokes.enumerated() {
+            var moved = false
+            let points = stroke.points.enumerated().map { pointIndex, point -> Vec3 in
+                let amount = min(max(pull(strokeIndex, pointIndex), 0), 1)
+                guard amount > 0 else { return point }
+                moved = true
+                return point + offset * amount
+            }
+            if moved { result.strokes[strokeIndex] = stroke.with(points: points, widths: stroke.widths, alphas: stroke.alphas) }
+        }
+        return result
+    }
+
+    /// How much a point `distance` from the Pencil is pushed by a smudge of `radius`: all of it at the centre, nothing
+    /// at the edge, smoothly between.
+    public static func falloff(distance: Double, radius: Double) -> Double {
+        guard radius > 0, distance < radius else { return 0 }
+        let t = 1 - distance / radius
+        return t * t * (3 - 2 * t)
+    }
+
+    /// The chosen strokes drawn with another brush (the stroke's chip: "the brush in the hand").
+    public static func restyling(_ strokes: Set<Int>, brush: String?, in recipe: DrawingRecipe) -> DrawingRecipe {
+        updating(strokes, in: recipe) { stroke in
+            var restyled = stroke
+            restyled.brush = brush
+            return restyled
+        }
+    }
+
     static func updating(_ strokes: Set<Int>, in recipe: DrawingRecipe,
                          _ change: (DrawingRecipe.Stroke) -> DrawingRecipe.Stroke) -> DrawingRecipe {
         var result = recipe

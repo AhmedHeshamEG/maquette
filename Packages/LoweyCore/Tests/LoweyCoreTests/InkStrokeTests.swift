@@ -128,3 +128,34 @@ final class InkStrokeTests: XCTestCase {
         XCTAssertEqual(keys[0].2.last?.value, .float(1))
     }
 }
+
+/// U5: Draw's Smudge pushes lines into a new shape; a stroke's chip restyles it.
+final class InkSmudgeTests: XCTestCase {
+    private let recipe = DrawingRecipe(style: .ink, strokes: [
+        DrawingRecipe.Stroke(points: [Vec3(0, 0, 0), Vec3(1, 0, 0), Vec3(2, 0, 0)], widths: [0.01, 0.01, 0.01], brush: "a", seed: 7),
+        DrawingRecipe.Stroke(points: [Vec3(0, 5, 0), Vec3(1, 5, 0)], widths: [0.01, 0.01])
+    ], normal: .unitZ)
+
+    func testOnlyThePointsInReachAreMovedAndByTheirShare() {
+        let pushed = InkEditing.pushing(recipe, by: Vec3(0, 1, 0)) { stroke, point in stroke == 0 && point == 1 ? 1 : stroke == 0 && point == 2 ? 0.5 : 0 }
+        XCTAssertEqual(pushed.strokes[0].points, [Vec3(0, 0, 0), Vec3(1, 1, 0), Vec3(2, 0.5, 0)])
+        XCTAssertEqual(pushed.strokes[1], recipe.strokes[1], "out of reach, untouched")
+        XCTAssertEqual(pushed.strokes[0].brush, "a", "the stroke keeps its brush and seed")
+        XCTAssertEqual(pushed.strokes[0].seed, 7)
+    }
+
+    func testTheFalloffIsSmoothFromCentreToEdge() {
+        XCTAssertEqual(InkEditing.falloff(distance: 0, radius: 10), 1)
+        XCTAssertEqual(InkEditing.falloff(distance: 10, radius: 10), 0)
+        XCTAssertEqual(InkEditing.falloff(distance: 5, radius: 10), 0.5, accuracy: 1e-12)
+        XCTAssertEqual(InkEditing.falloff(distance: 1, radius: 0), 0)
+        XCTAssertGreaterThan(InkEditing.falloff(distance: 2, radius: 10), InkEditing.falloff(distance: 3, radius: 10))
+    }
+
+    func testRestylingChangesOnlyTheBrushOfTheChosenStrokes() {
+        let restyled = InkEditing.restyling([1], brush: "b", in: recipe)
+        XCTAssertEqual(restyled.strokes[1].brush, "b")
+        XCTAssertEqual(restyled.strokes[1].points, recipe.strokes[1].points)
+        XCTAssertEqual(restyled.strokes[0], recipe.strokes[0])
+    }
+}

@@ -36,6 +36,79 @@ public enum SheetMesh {
         return placed(mesh, origin: frame.origin, rotation: frame.rotation)
     }
 
+    /// The soft edge (U5): bands just inside the border, outermost first, each to be drawn fainter than the last
+    /// (`StageColors.sheetEdgeAlphas`). Flat and wrapped-around sheets have edges; a dome and an object don't.
+    public static func softEdge(_ sheet: DrawingSheet, in scene: Scene, width: Double, steps: Int) -> [MeshData] {
+        guard steps > 0, let frame = sheet.worldFrame(in: scene) else { return [] }
+        let band = width / Double(steps)
+        return (0 ..< steps).compactMap { step -> MeshData? in
+            let inset = band * (Double(step) + 0.5)
+            var mesh = MeshData()
+            switch sheet.shape {
+            case .flat:
+                let halfWidth = sheet.width / 2 - inset, halfHeight = sheet.height / 2 - inset
+                guard halfWidth > 0, halfHeight > 0 else { return nil }
+                let corners = [Vec3(-halfWidth, -halfHeight, 0), Vec3(halfWidth, -halfHeight, 0), Vec3(halfWidth, halfHeight, 0),
+                               Vec3(-halfWidth, halfHeight, 0)]
+                for index in corners.indices {
+                    mesh.append(strip(from: corners[index], to: corners[(index + 1) % 4], thickness: band))
+                }
+            case .around:
+                guard sheet.height / 2 > inset else { return nil }
+                for y in [-sheet.height / 2 + inset, sheet.height / 2 - inset] {
+                    mesh.append(SheetMesh.band(radius: sheet.radius, height: band, segments: 48, centreY: y))
+                }
+            case .dome, .onObject:
+                return nil
+            }
+            return placed(mesh, origin: frame.origin, rotation: frame.rotation)
+        }
+    }
+
+    /// Faint dots across the sheet, `spacing` apart, each a small square `size` across; never more than `limit` (the
+    /// spacing grows to fit). A dome and an object get none.
+    public static func dots(_ sheet: DrawingSheet, in scene: Scene, spacing: Double, size: Double, limit: Int = 1600) -> MeshData {
+        guard spacing > 0, let frame = sheet.worldFrame(in: scene) else { return MeshData() }
+        let across: Double, up: Double
+        switch sheet.shape {
+        case .flat: (across, up) = (sheet.width, sheet.height)
+        case .around: (across, up) = (2 * Double.pi * sheet.radius, sheet.height)
+        case .dome, .onObject: return MeshData()
+        }
+        var step = spacing
+        while (across / step).rounded(.down) * (up / step).rounded(.down) > Double(limit) {
+            step *= 1.5
+        }
+        let columns = max(Int(across / step), 1), rows = max(Int(up / step), 1)
+        var mesh = MeshData()
+        let half = size / 2
+        for row in 0 ..< rows {
+            let y = (Double(row) + 0.5 - Double(rows) / 2) * step
+            for column in 0 ..< columns {
+                let x = (Double(column) + 0.5 - Double(columns) / 2) * step
+                let (centre, normal, right) = dotFrame(sheet, x: x, y: y)
+                let upward = Vec3(0, 1, 0)
+                let start = UInt32(mesh.positions.count)
+                let lift = normal * 0.0005
+                for corner in [(-1.0, -1.0), (1, -1), (1, 1), (-1, 1)] {
+                    mesh.positions.append((centre + lift + right * (corner.0 * half) + upward * (corner.1 * half)).float3)
+                    mesh.normals.append(normal.float3)
+                    mesh.uvs.append(.zero)
+                }
+                mesh.indices += [start, start + 1, start + 2, start, start + 2, start + 3]
+            }
+        }
+        return placed(mesh, origin: frame.origin, rotation: frame.rotation)
+    }
+
+    /// Where a dot sits in the sheet's frame, its normal and the way across the sheet there.
+    private static func dotFrame(_ sheet: DrawingSheet, x: Double, y: Double) -> (Vec3, Vec3, Vec3) {
+        guard sheet.shape == .around else { return (Vec3(x, y, 0), Vec3(0, 0, 1), Vec3(1, 0, 0)) }
+        let angle = x / max(sheet.radius, 1e-6)
+        let normal = Vec3(sin(angle), 0, cos(angle))
+        return (Vec3(sheet.radius * normal.x, y, sheet.radius * normal.z - sheet.radius), normal, Vec3(cos(angle), 0, -sin(angle)))
+    }
+
     // MARK: Pieces, in the sheet's frame (+z faces the person who placed it)
 
     static func rectangle(width: Double, height: Double) -> MeshData {
