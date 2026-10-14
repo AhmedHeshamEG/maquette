@@ -37,6 +37,20 @@ Cast is gone (D-227): what said *Cast ▸ Voice & face*, *Triggers* and *Life* b
 button beside Record in the timeline's Perform; *Cast ▸ Rig* is Rig; *Make it part of* is in Rig. Everything below
 still works the same way.
 
+### Editable history (0.17)
+
+- **The steps list** (D-327 … D-334): Actions ▸ History (⌘Y) shows, over the scrubber, the selected modelled thing's
+  steps in plain words ("Hole, 6 mm", "Round, 2 mm"). Tap a step: its numbers as pills (a push/pull's distance, an inset's,
+  a bevel's size, a round's radius, a shell's thickness; a sketch's depth unless it went through, a circle's diameter, a
+  rectangle's sides). Changing one replays the steps after it off the main thread and lands as one undo step,
+  "Change Hole". A replay that can't continue says which step and why in one line, and changes nothing.
+- **Steps** are push/pull, inset, bevel, round, shell, a sketch area pulled out of or cut into a thing, and a boolean (one
+  step per solid combined). Each finds its faces and edges by tag after earlier steps change (D-327).
+- **Fixed**: a change by hand (corners, knife, loop cut, merge, fill, bridge, subdivide, clean up, a scale baked in)
+  starts the steps again from the shape as it is; the old ones are listed with a lock (D-329). Painting or rigging fixes
+  them too (D-330). While the scrubber shows an earlier moment, steps don't change ("Come back to now").
+- **The bridge** (D-335): `model` with `op: steps` and `op: step`.
+
 ### Shape (0.16)
 
 - **Touch and drag** (D-302 … D-305): select a shape; the Pencil lights the face, edge or corner under its tip (a corner

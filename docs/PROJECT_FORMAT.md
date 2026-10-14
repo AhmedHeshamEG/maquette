@@ -5,7 +5,7 @@ surface of that package: power users, scripts and MCP clients may **read** any o
 (the laptop bridge), so undo and the history journal stay true; a file changed behind the app's back is overwritten at
 the next checkpoint.
 
-Format version: package **2**, document schema **12** (`LoweySchema.currentVersion`), journal **1**.
+Format version: package **2**, document schema **16** (`LoweySchema.currentVersion`), journal **1**.
 
 ```
 My film.maquette/                 (3D-lowey's .lowey packages open too, and are upgraded in place)
@@ -421,6 +421,42 @@ A sketch may keep rules: `"constraints": [{"parallel": {"_0": 0, "_1": 2}}, {"le
 {curve, degrees}, `ratio` {curve, curve, factor}); curves are named by their place in `curves`.
 
 Schema 15 only adds optional keys; files from schema 14 open unchanged, and Maquette 0.15 refuses schema 15.
+
+## Editable history (schema 16)
+
+A modelled object may keep the steps that made its shape (`ModelHistory`), in its own space, metres:
+
+```json
+"modelHistory": {
+  "base": {"v": [...], "f": [...]},
+  "steps": [
+    {"tag": 4211, "keepsPositive": true,
+     "action": {"sketch": {"_0": {"plane": {...}, "curves": [{"circle": {"center": [0, 0], "radius": 0.003}}], "region": 0,
+                                   "distance": -0.01, "through": true, "onFace": {"tag": 77, "at": [0, 0.01, 0]}}}}},
+    {"tag": 9031, "keepsPositive": true,
+     "action": {"bevel": {"edges": [{"faces": [12, 40], "at": [0.02, 0.005, 0.01]}], "size": 0.002, "style": "round"}}}
+  ],
+  "earlier": [],
+  "tags": [77, 12, ...],
+  "shape": 5512903311
+}
+```
+
+- `base`: the shape the steps start from (an editable mesh, as `kind.mesh`).
+- `steps`: in order; `action` is one of `pushPull` {faces, distance}, `inset` {faces, distance}, `bevel` {edges, size,
+  style}, `shell` {thickness, open}, `sketch` {plane, curves, region, distance, through, onFace} or `combine` {tool, operation}
+  (Swift's enum coding). `symmetry` (x, y, z) and `keepsPositive` say how live symmetry was kept. `tag` names the faces
+  the step makes.
+- A face is `{"tag", "at"}` (its tag and its middle when the step was made); an edge `{"faces": [tag, tag], "at"}`.
+- `tags`: one per face of the shape the steps make, in face order; `shape`: that shape's key (FNV-1a over its corners as
+  the file rounds them, under 2^53). When the object's shape doesn't match it, the steps are fixed.
+- `earlier`: steps before a change the history can't replay, listed but fixed.
+- One journal command changes it: `setModelHistory` (`{"op": "setModelHistory", "id", "modelHistory"}`, the whole history
+  or none). Writers change it through the app (that command, or the bridge's `model` `step`), never by
+  hand: a history that doesn't make the shape is simply read as fixed.
+
+Schema 16 only adds the optional key and the command; files from schema 15 open unchanged, and Maquette 0.16 refuses
+schema 16.
 
 ## workspace.json
 

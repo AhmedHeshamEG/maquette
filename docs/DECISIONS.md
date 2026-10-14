@@ -2265,3 +2265,61 @@ shared simulator got 40–70 % slower, U6's code or not (the Home benchmark 60 �
 block's taps went from under 45 s to 62–83 s with them. The claim stays under 30 s for a person on an iPad (device
 checklist). *Rejected:* dropping the timing (it caught U3's slow pad) and blaming the part chip without measuring (it was
 docked anyway, since it covered the pick's numbers).
+
+## Maquette 0.17 — H1, editable history
+
+**D-327 — SPIKE passed: stable parts are face tags handed on by plane.** Every face of a modelled shape carries a tag. A
+step hands them on by where its result's faces lie: a face lying in the plane of a face before the step, and inside it, is
+(a piece of) that face and keeps its tag; one lying on a face of the step's tool (the prism a hole is cut with, the solid
+it was combined with, a shell's cavity) takes that tool face's tag; a face a push/pull moved names the plane it moved to;
+anything else is named by the step and its order among the new faces. Booleans, bevels and shells only trim faces inside
+their own planes, so this holds through them without asking Manifold for its own ids. A face is referred to by its tag and
+its middle (to choose between the pieces of a split face), an edge by its two faces' tags and its middle. On M3's block a
+6 mm hole through it and its four upright edges rounded 2 mm, the hole changed to 8 mm in the history finds the four rounds
+again and matches the block made with 8 mm from the start (`ModelHistoryTests`); the replay takes 0.2 s in a debug build on
+the PC's Docker CPU. The fallback (a replay stops at the first step it can't place and says which) is kept as the failure
+path. *Rejected:* Manifold's face ids (they don't reach our faces, which `MeshBuilder` rebuilds from triangles); ids by
+index (every boolean renumbers).
+
+**D-328 — The steps live on the object, and the tools run as their step.** `SceneObject.modelHistory`: the shape the steps
+start from, the steps, the current faces' tags and a key of the shape they make. Each recorded tool builds its step and
+runs it, so the shape and its history can't disagree; when they do anyway (something else changed the shape) the history
+is fixed. *Rejected:* rebuilding the steps from the journal (it records results, a mesh per step, not picks and numbers).
+
+**D-329 — What a step is.** Push/pull, inset, bevel, round, shell, a sketch area pulled out of or cut into a thing, and a
+boolean (one step per solid combined into the one that stays). Changes by hand (corners, knife, loop cut, merge, fill,
+bridge, subdivide, clean up, a scale baked in) aren't steps: the next step starts again from the shape as it is and the
+steps before become `earlier`, listed with a lock. *Rejected:* keeping a hand-made change as a stored mesh (a whole mesh per
+step in project.json, and a replay still couldn't move it).
+
+**D-330 — Paint and rigs fix the steps at that point.** A painted or rigged thing lists its steps but they don't change,
+and later modelling isn't recorded (paint and rigs aren't parametric; the brief says the list stops there).
+
+**D-331 — A sketch step keeps only what made its area.** The curves of the region, in the thing's own space. A cut that
+went right through goes through again however thick the shape becomes; the drawing follows the face it was drawn on when
+that face moves. Its numbers: the depth (unless it went through), each circle's diameter, each rectangle's sides (changed
+about its middle). Its title names the drawn size: "Hole, 6 mm". A pull into a thing whose own scale isn't one isn't
+recorded (its steps become fixed). *Rejected:* baking the scale for a sketch pull (it would change 0.16's results).
+
+**D-332 — A recorded step runs on exactly what was picked.** References are for replays; when the step is made, the
+picked faces and edges are used as they are, so 0.16's results don't change.
+
+**D-333 — The steps list sits over the scrubber, for the selected thing.** Chips in plain words; tap one for its numbers
+as pills; a number is applied when the drag ends or when it's typed (a replay is a boolean per step: per frame it would
+stutter on a Tier B iPad); the replay runs off the main thread and lands as one undo step ("Change Hole"); a result whose
+thing changed meanwhile is dropped. While the scrubber shows an earlier moment, steps don't change. ⌘Y opens History.
+*Rejected:* a separate Steps button (History is where "what happened" lives); live replay while scrubbing.
+
+**D-334 — A replay that can't continue changes nothing.** "Step 2, Round, 3 mm, can't follow the change: That's wider than
+the faces beside the edge." in one line; the shape, the steps and undo stay as they were.
+
+**D-335 — The bridge reaches the steps through `model`.** `op: "steps"` lists them in the reply (name, numbers, fixed);
+`op: "step"` with `step` (1 is the first listed), `number` (a name or 1-based) and `value` (metres) changes one. The lowey
+skill learns both.
+
+**D-336 — Schema 16.** Objects' optional `modelHistory` and the `setModelHistory` command; linked copies share it with
+their shape. Tags and the shape key stay under 2^53 so any JSON reader keeps them exact. 0.16 refuses a schema-16 file
+with its usual message.
+
+**D-337 — Translations still ride along.** The 8 new strings were translated into Italian and Arabic for the catalog check
+(D-300, D-325).

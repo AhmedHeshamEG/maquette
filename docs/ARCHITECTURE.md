@@ -479,6 +479,31 @@ flowchart LR
   `CageControls`, `BendControls`), `Model/PartChip`, `Model/ShapeHandles` (cage points and the bend handle, in the stage's
   points), `Inspector/ShapeSection`, `Stage/ViewCube` (in `StageChrome`'s view corner), `Stage/StageGestures+Shape`.
 
+## Editable history (0.17)
+
+```mermaid
+flowchart LR
+    Tool[push/pull · inset · bevel · shell<br/>sketch pull/cut · boolean] --> Rec[ModelingOperations+History.record<br/>picks → FaceRef / EdgeRef]
+    Rec --> Step[ModelStep.apply<br/>the tool, then live symmetry]
+    Step --> Tags[PartTags.carry<br/>faces named by plane + inside]
+    Step --> Cmd[setKind + setModelHistory<br/>one labelled batch]
+    Panel[History/ModelStepsPanel<br/>a number changed] --> Change[ModelingOperations.changeStep<br/>off the main thread]
+    Change --> Replay[ModelHistory.replaying<br/>base → every step, refs resolved by tag]
+    Replay --> Cmd
+```
+
+- **Core `Modeling/`**: `PartTags` (a tag per face; `carry` hands tags on through a step: a face lying in the plane of a
+  face before the step and inside it keeps its tag, one on the step's tool takes the tool face's, a moved face names its new
+  plane, the rest are named by the step and their order; `shapeKey`; `FaceRef`, `EdgeRef` and their `resolve`),
+  `ModelStep` (the action and its refs, `numbers`, `setting`, `title`) and `ModelStep+Apply` (each action run on a
+  `Shape`, picks as picked when recorded, refs resolved when replayed), `ModelHistory` (`base`, `steps`, `earlier`, `tags`,
+  `shape`; `describes`, `replaying` and `ReplayFailure`), `ModelingOperations+History` (`record`, `continuing`,
+  `recordedSketch`, `recordedBoolean`, `historyLock`, `changeStep`). The recorded tools run *as* their step, so the history
+  can't drift from the shape. `SceneObject.modelHistory`, the `setModelHistory` command (linked copies share it).
+  `AI/ScriptCompiler+History`: the `model` verb's `steps` and `step`.
+- **Features**: `EditorModel+ModelSteps` (`stepsObject`, `changeStep` replays in a detached task and drops a result whose
+  object changed meanwhile), `History/ModelStepsPanel` (over `HistoryScrubberBar` in `EditorScreen`). ⌘Y opens History.
+
 ## LoweyRender 2
 
 ```mermaid

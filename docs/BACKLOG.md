@@ -3,6 +3,17 @@
 What's known and not done yet, so nothing lives only in someone's head. What Maquette is: [SPEC.md](SPEC.md). The
 phase plan (the pass U1 … U5, M12, M14, M16, then 1.0) lives in studio-h's `PHASES.md`; ideas go to its `IDEAS.md`.
 
+## Left from H1 (Maquette 0.17)
+
+- [ ] The device checklist in the "Maquette 0.17 — H1" PR (the steps list over the scrubber, a hole changed on M3's block,
+      a replay's time on a heavier model, a Tier B iPad).
+- [ ] Changes by hand aren't steps (D-329): corner drags could be named by their faces' tags, the knife by its plane.
+- [ ] A step can't be removed, switched off or moved (Shapr3D can); the list only changes numbers.
+- [ ] Sketch steps have numbers for circles and rectangles; lines, arcs and splines in a cut don't (D-331).
+- [ ] Sketch pulls into a thing with its own scale aren't recorded (D-331).
+- [ ] A history keeps its base shape and every boolean's tool in project.json; a thing with many booleans makes a larger
+      file. Measure it on a real project; compress or move to `assets/` if it matters.
+
 ## Left from U6 (Maquette 0.16)
 
 - [ ] The device checklist in the "Maquette 0.16 — U6" PR (parts lit and dragged with the Pencil, the chip, the brushes'
@@ -18,7 +29,8 @@ phase plan (the pass U1 … U5, M12, M14, M16, then 1.0) lives in studio-h's `PH
       nearest point, as paint is carried, is to do.
 - [ ] Clean topology in a debug build is slow (Eigen unoptimised, D-320); the app's builds are release.
 - [ ] Sketch rules apply to lines, rectangles, circles and arcs; splines and polylines hold still (D-315).
-- [ ] Typing one edge's length waits for the editable history (H1, D-314).
+- [ ] Typing one edge's length: H1 made steps' numbers editable, but an edge's length isn't a step's number (D-314);
+      a CAD story after launch.
 - [ ] Hover lights whole things; faces and edges light with U6's picking (D-291). **Done in U6** for the selected shape.
 
 ## Left from U5 (Maquette 0.15)
