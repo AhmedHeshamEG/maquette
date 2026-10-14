@@ -47,6 +47,8 @@ extension ScriptState {
             try state.run(command, label: "Linked copy")
         },
         "unlink": { state, id, _ in try state.run(LinkedCopies.unlink(id), label: "Unlink") },
+        "steps": { try $0.modelSteps($1, $2) },
+        "step": { try $0.modelStep($1, $2) },
         "pivot": { try $0.modelPivot($1, $2) },
         "size": { state, id, action in
             guard let axis = state.string(action, "axis").flatMap(Axis.init(rawValue:)), let length = state.number(action, "length") else {

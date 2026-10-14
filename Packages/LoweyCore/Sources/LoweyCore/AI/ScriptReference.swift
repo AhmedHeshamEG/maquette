@@ -41,6 +41,7 @@ public enum ScriptReference {
     {"do":"model","target":"Rock","op":"brush","brush":"grab|smooth|inflate","at":[0,1,0],"radius":0.3,"by":[0,0.2,0]}
     {"do":"model","target":"Sculpt","op":"cleanUp","faces":2000}   (even quads)   {"op":"knife","point":[0,0.5,0],"normal":[0,1,0]}
     {"do":"model","target":"Chair","op":"linkedCopy","offset":[1,0,0]}   {"op":"pivot","to":"base"}   {"op":"size","axis":"y","length":0.04}
+    {"do":"model","target":"Block","op":"steps"}   (lists its modelling steps)   {"op":"step","step":1,"number":"diameter","value":0.008}   (H1: later steps replay)
     {"do":"profile","target":"Sketch","region":0,"op":"revolve","axis":{"point":[0,0,0],"direction":[0,1,0]}}   ("sweep" with "path", "loft" with "through")
 
     Shoot and light
