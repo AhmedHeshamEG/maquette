@@ -126,7 +126,8 @@ final class ModelingTests: XCTestCase {
         report.lifetime = .keepAlways
         add(report)
         // Under 30 s is the claim for a person on an iPad (the device checklist); on CI's shared simulator each tap
-        // costs the runner seconds of its own, so the run fails only past 45 (D-175).
-        XCTAssertLessThan(elapsed, 45)
+        // costs the runner seconds of its own, so the run fails only past 80 (D-175, D-326: the runners slowed by about
+        // 60 % in every UI test between U5 and U6).
+        XCTAssertLessThan(elapsed, 80)
     }
 }
