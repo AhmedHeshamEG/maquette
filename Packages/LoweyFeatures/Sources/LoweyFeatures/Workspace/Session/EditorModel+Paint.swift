@@ -80,7 +80,7 @@ extension EditorModel {
             }
             return await Task.detached(priority: .userInitiated) { Self.paintableModel(model, merged: merged) }.value
         }
-        guard let mesh = PaintSource.mesh(of: object) else { return nil }
+        guard let mesh = PaintSource.unshaped(of: object) else { return nil }
         let stretch = PaintSource.stretch(of: object)
         let result = await Task.detached(priority: .userInitiated) { () -> (ObjectPaint, PaintOperations.Files)? in
             guard let prepared = try? PaintOperations.prepare(mesh: mesh, stretch: stretch, keepOwnUVs: false) else { return nil }
@@ -120,9 +120,9 @@ extension EditorModel {
 
     // MARK: A changed shape
 
-    /// The mesh an object's paint lies on now (a placed model's parts as one).
+    /// The mesh an object's paint lies on now (a placed model's parts as one), before strokes, a cage or a bend move it.
     func paintSource(of object: SceneObject) -> MeshData? {
-        if let mesh = PaintSource.mesh(of: object) { return mesh }
+        if let mesh = PaintSource.unshaped(of: object) { return mesh }
         guard let id = object.kind.assetID, let asset = library.catalog.manifest.asset(id),
               let model = library.models.model(asset, catalog: library.catalog) else { return nil }
         return AssetPaint.mergedMesh(model)

@@ -33,7 +33,8 @@ struct EditorSidebar: View {
     /// No tool in the hand wants the sliders.
     private var idle: Bool {
         !editor.flying && !(editor.timelineMode == .perform && (editor.performPhase != .idle || editor.tool == .select))
-            && ([StageTool.select, .lasso, .model, .scatter].contains(editor.tool) || (editor.tool == .rig && editor.rigging.mode != .weights))
+            && ([StageTool.select, .lasso, .scatter].contains(editor.tool) || (editor.tool == .model && editor.modeling.verb != .brush)
+                || (editor.tool == .rig && editor.rigging.mode != .weights))
     }
 
     private var resting: Bool { idle && !alwaysShows && !woken && !makingFromModel }
@@ -74,6 +75,10 @@ struct EditorSidebar: View {
             return (HmmSidebarSlider("Size", value: $editor.colourPaint.size, in: 1 ... 120, format: { "\(Int($0.rounded())) pt" },
                                      onEditingChanged: editor.setBrushResizing),
                     HmmSidebarSlider("Opacity", value: $editor.colourPaint.opacity, in: 0.05 ... 1, format: { "\(Int(($0 * 100).rounded())) %" }))
+        case .model where editor.modeling.verb == .brush:
+            return (HmmSidebarSlider("Size", value: $editor.modeling.sculpt.size, in: 8 ... 200, format: { "\(Int($0.rounded())) pt" },
+                                     onEditingChanged: editor.setBrushResizing),
+                    HmmSidebarSlider("Strength", value: $editor.modeling.sculpt.strength, in: 0.05 ... 1, format: { "\(Int(($0 * 100).rounded())) %" }))
         case .rig where editor.rigging.mode == .weights:
             return (HmmSidebarSlider("Size", value: $editor.rigging.size, in: 4 ... 160, format: { "\(Int($0.rounded())) pt" },
                                      onEditingChanged: editor.setBrushResizing),

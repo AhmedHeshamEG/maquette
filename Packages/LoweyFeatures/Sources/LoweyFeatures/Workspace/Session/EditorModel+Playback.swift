@@ -53,6 +53,9 @@ extension EditorModel {
         for (id, kind) in kindOverride where animated.scene.objects[id] != nil {
             animated.scene.objects[id]?.kind = kind
         }
+        for (id, shaping) in sculpting.shown where animated.scene.objects[id] != nil {
+            animated.scene.objects[id]?.shaping = shaping
+        }
         displayed = animated
         previousAnimated = animated.animated
         if changes != nil { overlayCache = StageOverlayCache() }
