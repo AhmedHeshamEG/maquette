@@ -71,6 +71,34 @@ private struct DimensionChip: View {
         .background(Capsule().fill(editing ? theme.surface : theme.accent))
         .foregroundStyle(editing ? theme.text : theme.onAccent)
         .contentShape(Capsule())
+        .overlay(alignment: .trailing) {
+            if Self.locks(label.field) { lock.offset(x: 40) }
+        }
+    }
+
+    /// A size of the shape just drawn can be locked (U6): its sketch keeps it while another changes.
+    private var lock: some View {
+        let locked = editor.isLocked(label.field)
+        return Button {
+            HmmHaptics.play(.selection)
+            editor.toggleLock(label.field)
+        } label: {
+            Image(systemName: locked ? "lock.fill" : "lock.open")
+                .font(.system(size: 13, weight: .semibold))
+                .foregroundStyle(locked ? theme.accent : theme.text2)
+                .frame(width: 36, height: 44)
+                .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel(locked ? Text("Unlock this size") : Text("Lock this size"))
+        .accessibilityIdentifier("lock-\(Self.identifier(label.field))")
+    }
+
+    static func locks(_ field: DimensionField) -> Bool {
+        switch field {
+        case .rectangleSide, .diameter, .lineLength: true
+        default: false
+        }
     }
 
     static func identifier(_ field: DimensionField) -> String {

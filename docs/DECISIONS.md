@@ -2161,7 +2161,8 @@ so it keeps one deliberate button, renamed *Model it*. *Rejected:* converting pl
 
 **D-305 — The part's chip holds the rest.** A face: inset, shell, bridge (two faces), knife. An edge: bevel, round, loop
 cut, knife. Corners: merge (two or more), fill the hole. Behind ⋯: grow, shrink, similar, the pivot here. A held Pencil
-adds a part to the pick. The chip floats above the pick like the stroke chip (U5).
+adds a part to the pick. The chip is docked above the tool's bar, never over the work: the pick's floating numbers (a pull,
+a size) stay free to tap (first it floated above the pick and covered them).
 
 **D-306 — Subdivision is Catmull–Clark on whole faces; the Smooth switch is a property.** `subdivision` (0–3) smooths the
 shape as it's built, everywhere it's shown; *Make the smoothing real* bakes it. Faces with holes become triangles first;
@@ -2258,3 +2259,9 @@ older changes shape; 0.15 refuses a schema-15 file with its usual message.
 
 **D-325 — Translations still ride along.** The 72 new strings were translated into Italian and Arabic for the catalog
 check (D-300); the languages phase decides.
+
+**D-326 — CI's allowance for the block with a hole is 80 s.** Between U5's main run and U6's, every UI test on CI's
+shared simulator got 40–70 % slower, U6's code or not (the Home benchmark 60 → 100 s, the rigged tail 32 → 50 s); the
+block's taps went from under 45 s to 62–83 s with them. The claim stays under 30 s for a person on an iPad (device
+checklist). *Rejected:* dropping the timing (it caught U3's slow pad) and blaming the part chip without measuring (it was
+docked anyway, since it covered the pick's numbers).
