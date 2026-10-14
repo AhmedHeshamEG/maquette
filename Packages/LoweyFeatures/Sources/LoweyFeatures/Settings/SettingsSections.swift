@@ -54,6 +54,7 @@ struct StageSettingsSection: View {
     @AppStorage(AppSettings.showsJoystick) private var showsJoystick = true
     @AppStorage(AppSettings.joystickSpeed) private var joystickSpeed = 1.0
     @AppStorage(AppSettings.boardEnabled) private var boardEnabled = true
+    @AppStorage(AppSettings.showsViewCube) private var showsViewCube = true
 
     var body: some View {
         Section {
@@ -70,6 +71,8 @@ struct StageSettingsSection: View {
                 LabeledSlider(title: "Joystick speed", value: joystickSpeed, range: AppSettings.joystickSpeedRange,
                               format: { String(format: "%.2g×", $0) }) { joystickSpeed = $0 }
             }
+            Toggle("The view cube", isOn: $showsViewCube)
+                .accessibilityIdentifier("settings-view-cube")
             Toggle("The Board", isOn: $boardEnabled)
                 .accessibilityIdentifier("settings-board")
         } header: {
@@ -150,6 +153,11 @@ struct AcknowledgementsView: View {
                 Text("Lays models flat so they can be painted. Copyright (c) 2018-2020 Jonathan Young; thekla_atlas copyright (c) 2013 Thekla, Inc "
                     + "and NVIDIA Corporation. MIT License: permission is granted, free of charge, to use, copy, modify and distribute it, provided "
                     + "the copyright and permission notices are kept. It is provided \"as is\", without warranty of any kind.")
+                    .font(.hmm(.footnote))
+                Text("Instant Meshes").font(.hmm(.headline, weight: .semibold))
+                Text("Turns a sculpt into clean quads. Copyright (c) 2015 Wenzel Jakob, Daniele Panozzo, Marco Tarini and Olga "
+                    + "Sorkine-Hornung. BSD 3-clause licence. With Eigen (Mozilla Public License 2.0, source at eigen.tuxfamily.org), "
+                    + "pcg32 (Apache License 2.0, Melissa O'Neill and Wenzel Jakob) and dset (Copyright (c) 2015 Wenzel Jakob, zlib licence).")
                     .font(.hmm(.footnote))
                 Text("The Kit").font(.hmm(.headline, weight: .semibold))
                 Text("The models in the Library's Sets come from Kenney (kenney.nl: Furniture, Food, Nature, City, Car, Space, Survival and "

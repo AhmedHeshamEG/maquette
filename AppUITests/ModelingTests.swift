@@ -1,8 +1,9 @@
 import XCTest
 
-/// M3's acceptance on the iPad simulator: a 40 × 20 × 10 mm block with a 6 mm hole through it, built with taps only
-/// (sketch a rectangle, type its sides, pull it up 10 mm, sketch a circle on its top, type 6, cut it through) in
-/// under 30 seconds. Since 0.13 the sketch is Draw ▸ Sketch and the numbers are typed on our number pad.
+/// M3's acceptance on the iPad simulator, U6's by touch: a 40 × 20 × 10 mm block with a 6 mm hole through it, built
+/// with taps only and no mode button (sketch a rectangle, type its sides, pull it up 10 mm, sketch a circle on its top,
+/// type 6, cut it through) in under 30 seconds. Since 0.13 the sketch is Draw's Shapes and the numbers are typed on our
+/// number pad; since 0.16 there are no Faces, Edges or Corners buttons at all.
 @MainActor
 final class ModelingTests: XCTestCase {
     private var app: XCUIApplication!
@@ -112,10 +113,14 @@ final class ModelingTests: XCTestCase {
         let trail = element("debug-trail").label
         XCTAssertTrue(trail.contains("cmd=Pull"), "the rectangle became a solid: \(trail)")
         XCTAssertTrue(trail.contains("cmd=Cut"), "the circle cut through the block: \(trail)")
-        XCTAssertTrue(tap("Model"))
-        XCTAssertTrue(tap("model-shape"))
-        XCTAssertTrue(tap("pick-face"))
-        XCTAssertTrue(element("selection-size").waitForExistence(timeout: 3))
+        XCTAssertFalse(element("pick-face").exists, "no mode buttons (U6)")
+        // A finger's tap on the block (beside the hole) selects it; its panel says its size.
+        // Put Draw down (its shapes are still in the hand), so the panel beside the selection shows.
+        if element("draw-brush").exists { tap("Draw") }
+        if element("model-done").exists { tap("model-done") }
+        frameAll()
+        tapStage(CGPoint(x: centre.x + size.width * 0.04, y: centre.y))
+        XCTAssertTrue(element("selection-size").waitForExistence(timeout: 5), element("debug-trail").label)
         XCTAssertEqual(element("selection-size").label, "40 × 10 × 20 mm", "the block keeps its size")
         let report = XCTAttachment(string: String(format: "Built in %.1f s of taps", elapsed))
         report.lifetime = .keepAlways

@@ -789,10 +789,12 @@
             "lipSync",
             "look",
             "marker",
+            "model",
             "overlay",
             "particles",
             "place",
             "preset",
+            "profile",
             "recolor",
             "remove",
             "rename",
@@ -1767,6 +1769,160 @@
           "if": {
             "properties": {
               "do": {
+                "const": "model"
+              }
+            }
+          },
+          "then": {
+            "description": "U6's modelling set on one thing: smooth, subdivide, smoothAngle, flat, bend, cage, brush, pull, loopCut, knife, fillHoles, mergeByDistance, cleanUp, linkedCopy, unlink, pivot, size.",
+            "properties": {
+              "target": {
+                "$ref": "#/$defs/target"
+              },
+              "op": {
+                "enum": [
+                  "smooth",
+                  "subdivide",
+                  "smoothAngle",
+                  "flat",
+                  "bend",
+                  "cage",
+                  "brush",
+                  "pull",
+                  "loopCut",
+                  "knife",
+                  "fillHoles",
+                  "mergeByDistance",
+                  "cleanUp",
+                  "linkedCopy",
+                  "unlink",
+                  "pivot",
+                  "size"
+                ]
+              },
+              "levels": {
+                "type": "number"
+              },
+              "degrees": {
+                "type": "number"
+              },
+              "on": {
+                "type": "boolean"
+              },
+              "kind": {
+                "enum": [
+                  "bend",
+                  "twist",
+                  "taper",
+                  "bulge"
+                ]
+              },
+              "amount": {
+                "type": "number"
+              },
+              "axis": {
+                "enum": [
+                  "x",
+                  "y",
+                  "z"
+                ]
+              },
+              "counts": {
+                "type": "array",
+                "items": {
+                  "type": "number"
+                }
+              },
+              "point": {
+                "anyOf": [
+                  {
+                    "$ref": "#/$defs/vec3"
+                  },
+                  {
+                    "type": "array"
+                  }
+                ]
+              },
+              "offset": {
+                "$ref": "#/$defs/vec3"
+              },
+              "remove": {
+                "type": "boolean"
+              },
+              "brush": {
+                "enum": [
+                  "grab",
+                  "smooth",
+                  "inflate"
+                ]
+              },
+              "at": {
+                "$ref": "#/$defs/point"
+              },
+              "radius": {
+                "type": "number"
+              },
+              "strength": {
+                "type": "number"
+              },
+              "by": {
+                "$ref": "#/$defs/vec3"
+              },
+              "mirror": {
+                "type": "boolean"
+              },
+              "face": {
+                "enum": [
+                  "top",
+                  "bottom",
+                  "front",
+                  "back",
+                  "left",
+                  "right"
+                ]
+              },
+              "distance": {
+                "type": "number"
+              },
+              "along": {
+                "enum": [
+                  "x",
+                  "y",
+                  "z"
+                ]
+              },
+              "cuts": {
+                "type": "number"
+              },
+              "normal": {
+                "$ref": "#/$defs/vec3"
+              },
+              "faces": {
+                "type": "number"
+              },
+              "quadsOnly": {
+                "type": "boolean"
+              },
+              "to": {
+                "enum": [
+                  "middle",
+                  "base"
+                ]
+              },
+              "length": {
+                "type": "number"
+              }
+            },
+            "required": [
+              "target",
+              "op"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "do": {
                 "const": "overlay"
               }
             }
@@ -1953,6 +2109,63 @@
             "required": [
               "target",
               "preset"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "do": {
+                "const": "profile"
+              }
+            }
+          },
+          "then": {
+            "description": "A sketch region made into a solid: swept along a path, revolved around an axis or lofted through others.",
+            "properties": {
+              "target": {
+                "$ref": "#/$defs/target"
+              },
+              "region": {
+                "type": "number"
+              },
+              "op": {
+                "enum": [
+                  "sweep",
+                  "revolve",
+                  "loft"
+                ]
+              },
+              "path": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/$defs/vec3"
+                }
+              },
+              "closed": {
+                "type": "boolean"
+              },
+              "axis": {
+                "type": "object",
+                "properties": {
+                  "point": {
+                    "$ref": "#/$defs/vec3"
+                  },
+                  "direction": {
+                    "$ref": "#/$defs/vec3"
+                  }
+                }
+              },
+              "degrees": {
+                "type": "number"
+              },
+              "through": {
+                "$ref": "#/$defs/target"
+              }
+            },
+            "required": [
+              "target",
+              "op"
             ]
           }
         },

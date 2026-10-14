@@ -27,10 +27,23 @@ extension SceneCompiler {
         }
         let world = state.world.matrix
         let device = device
+        // A cage or a bend moves every part, measured over the whole model (skinned parts move with their skeleton).
+        let shape = model.parts.contains(where: \.isSkinned) ? nil : ShapeStack.key(of: object)
+        let modelBounds = shape == nil ? nil : model.bounds
         for (index, part) in model.parts.enumerated() {
-            guard let mesh = meshes.mesh(.asset(id, part: index), make: {
-                GPUMesh(device: device, mesh: part.mesh, joints: part.joints, weights: part.weights, label: part.name)
-            }) else { continue }
+            let made: GPUMesh? = if let shape, let modelBounds {
+                meshes.mesh(.shapedPart(id, part: index, shape)) {
+                    var moved = part.mesh
+                    moved.positions = ShapeStack.movedPositions(part.mesh.positions, for: object, bounds: modelBounds, strokes: false)
+                    moved.computeSmoothNormals()
+                    return GPUMesh(device: device, mesh: moved, label: part.name)
+                }
+            } else {
+                meshes.mesh(.asset(id, part: index)) {
+                    GPUMesh(device: device, mesh: part.mesh, joints: part.joints, weights: part.weights, label: part.name)
+                }
+            }
+            guard let mesh = made else { continue }
             var uniforms = base
             let material = model.materials.indices.contains(part.material) ? model.materials[part.material] : ImportedMaterial()
             var texture: MTLTexture?

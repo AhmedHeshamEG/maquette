@@ -43,7 +43,9 @@ public enum ProjectHistory {
         // 12 → 13 only adds the optional sheets, the `setSheets` command and a flipbook anchor.
         12: { $0 },
         // 13 → 14 only adds a rig's optional marks and person dots and tracks' optional cycle.
-        13: { $0 }
+        13: { $0 },
+        // 14 → 15 only adds the optional shaping field, the `setShaping` command and sketches' optional constraints.
+        14: { $0 }
     ]
     /// The first schema journals were written with (Maquette 0.1).
     public static let firstJournalSchema = 4

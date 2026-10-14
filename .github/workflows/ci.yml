@@ -51,6 +51,7 @@ jobs:
               - 'Packages/LoweyCore/**'
               - 'Packages/HmmKit/**'
               - 'Packages/XAtlas/**'
+              - 'Packages/InstantMeshes/**'
               - '.swiftlint.yml'
               - '.swiftformat'
               - '.github/workflows/ci.yml'
@@ -58,6 +59,7 @@ jobs:
               - 'Packages/LoweyEngine/**'
               - 'Packages/LoweyCore/Sources/**'
               - 'Packages/XAtlas/Sources/**'
+              - 'Packages/InstantMeshes/Sources/**'
               - 'Packages/HmmKit/Sources/**'
               - '.github/workflows/ci.yml'
             features:
@@ -65,6 +67,7 @@ jobs:
               - 'Packages/LoweyEngine/Sources/**'
               - 'Packages/LoweyCore/Sources/**'
               - 'Packages/XAtlas/Sources/**'
+              - 'Packages/InstantMeshes/Sources/**'
               - 'Packages/HmmKit/Sources/**'
               - 'App/**'
               - 'AppUITests/**'
@@ -127,8 +130,8 @@ jobs:
       - uses: actions/cache@v4
         with:
           path: Packages/LoweyCore/.build
-          key: core-build-${{ hashFiles('Packages/LoweyCore/Package.swift', 'Packages/HmmKit/Package.swift', 'Packages/XAtlas/Package.swift') }}-${{ github.sha }}
-          restore-keys: core-build-${{ hashFiles('Packages/LoweyCore/Package.swift', 'Packages/HmmKit/Package.swift', 'Packages/XAtlas/Package.swift') }}-
+          key: core-build-${{ hashFiles('Packages/LoweyCore/Package.swift', 'Packages/HmmKit/Package.swift', 'Packages/XAtlas/Package.swift', 'Packages/InstantMeshes/Package.swift') }}-${{ github.sha }}
+          restore-keys: core-build-${{ hashFiles('Packages/LoweyCore/Package.swift', 'Packages/HmmKit/Package.swift', 'Packages/XAtlas/Package.swift', 'Packages/InstantMeshes/Package.swift') }}-
       - name: Test (journal, save → load round trips, package upgrades, Look system, geometry)
         working-directory: Packages/LoweyCore
         # Serial: parallel runs corrupt the coverage profile.
@@ -146,7 +149,7 @@ jobs:
         run: |
           PROFILE=$(dirname "$(swift test --show-codecov-path)")/default.profdata
           BINARY=$(find .build -name 'LoweyCorePackageTests.xctest' -type f | head -1)
-          llvm-cov report "$BINARY" -instr-profile="$PROFILE" -ignore-filename-regex='Tests|\.build|HmmKit|XAtlas' | tee coverage.txt
+          llvm-cov report "$BINARY" -instr-profile="$PROFILE" -ignore-filename-regex='Tests|\.build|HmmKit|XAtlas|InstantMeshes' | tee coverage.txt
           COVERAGE=$(grep TOTAL coverage.txt | awk '{print $10}' | tr -d '%')
           echo "Line coverage: $COVERAGE%"
           echo "### LoweyCore line coverage: ${COVERAGE}%" >> "$GITHUB_STEP_SUMMARY"
@@ -158,6 +161,13 @@ jobs:
           set -o pipefail
           swift test -c release --filter MeshSimplifyTests 2>&1 | tee spike.txt
           grep SPIKE spike.txt >> "$GITHUB_STEP_SUMMARY"
+      - name: SPIKE (U6) clean topology on a 500 000 triangle sculpt, and a cage on 50 000, in a release build
+        working-directory: Packages/LoweyCore
+        shell: bash
+        run: |
+          set -o pipefail
+          swift test -c release --filter QuadRemeshTests 2>&1 | tee spike-u6.txt
+          grep SPIKE spike-u6.txt >> "$GITHUB_STEP_SUMMARY"
 
   godot:
     name: A rigged, animated glTF plays in Godot 4.3

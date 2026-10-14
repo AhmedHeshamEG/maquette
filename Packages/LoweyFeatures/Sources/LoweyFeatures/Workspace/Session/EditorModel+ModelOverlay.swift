@@ -20,18 +20,14 @@ extension EditorModel {
     func refreshModelOverlay() {
         guard let stage else { return }
         guard tool == .model else {
-            stage.showModelOverlay(tool == .rig ? rigOverlays(stage) : [])
+            // With no tool, the Pencil still models the selected shape (U6): its lit and picked parts show.
+            stage.showModelOverlay((tool == .rig ? rigOverlays(stage) : []) + (tool == .select ? partOverlays(stage, wireframe: false) : []))
             return
         }
         var overlays = sketchOverlays(stage) + sketchGuessOverlays(stage) + measureOverlays(stage) + buildOverlays(stage)
-        if let id = modeling.target ?? singleSelection.flatMap({ ModelingOperations.canModel($0) ? $0.id : nil }), let (mesh, world) = modelMesh(of: id) {
-            let width = stage.worldPerPoint(at: world.position) * 1.2
-            overlays.append(EditorOverlay(mesh: ModelOverlay.wireframe(mesh, world: world, width: width), color: RGBA(0.08, 0.08, 0.1), opacity: 0.7))
-            if let elements = modeling.elements, modeling.target == id, !elements.isEmpty {
-                let picked = ModelOverlay.selection(elements, of: mesh, world: world, width: width)
-                overlays.append(EditorOverlay(mesh: picked, color: Self.modelAccent, opacity: elements.mode == .face ? 0.45 : 1,
-                                              onTop: elements.mode == .vertex))
-            }
+        overlays += partOverlays(stage, wireframe: true)
+        if let id = shapedSelection?.id, let cage = cageOverlay(width: stage.worldPerPoint(at: scene.worldTransform(of: id).position) * 1.2) {
+            overlays.append(EditorOverlay(mesh: cage, color: Self.modelAccent, opacity: 0.8, onTop: true))
         }
         if let preview = pullPreview() {
             overlays.append(EditorOverlay(mesh: preview.renderMesh(), color: Self.modelAccent, opacity: 0.3))
@@ -39,6 +35,26 @@ extension EditorModel {
             overlays.append(EditorOverlay(mesh: ModelOverlay.wireframe(preview, world: .identity, width: width), color: Self.modelAccent))
         }
         stage.showModelOverlay(overlays)
+    }
+
+    /// The shape being modelled: its edges (with the Model tool), the part lit under the Pencil, the picked parts.
+    private func partOverlays(_ stage: StageView, wireframe: Bool) -> [EditorOverlay] {
+        guard let id = modeling.target ?? touchModelTarget, let (mesh, world) = modelMesh(of: id) else { return [] }
+        var overlays: [EditorOverlay] = []
+        let width = stage.worldPerPoint(at: world.position) * 1.2
+        if wireframe {
+            overlays.append(EditorOverlay(mesh: ModelOverlay.wireframe(mesh, world: world, width: width), color: RGBA(0.08, 0.08, 0.1), opacity: 0.7))
+        }
+        if let lit = modeling.lit, lit.object == id, lit.part != modeling.elements {
+            overlays.append(EditorOverlay(mesh: ModelOverlay.selection(lit.part, of: mesh, world: world, width: width), color: Self.modelAccent,
+                                          opacity: lit.part.mode == .face ? 0.2 : 0.6, onTop: lit.part.mode != .face))
+        }
+        if let elements = modeling.elements, modeling.target == id, !elements.isEmpty {
+            let picked = ModelOverlay.selection(elements, of: mesh, world: world, width: width)
+            overlays.append(EditorOverlay(mesh: picked, color: Self.modelAccent, opacity: elements.mode == .face ? 0.45 : 1,
+                                          onTop: elements.mode == .vertex))
+        }
+        return overlays
     }
 
     private func sketchOverlays(_ stage: StageView) -> [EditorOverlay] {
@@ -57,6 +73,11 @@ extension EditorModel {
                                        width: width * 1.6, into: &arrow)
                     overlays.append(EditorOverlay(mesh: arrow, color: Self.modelAccent, onTop: true))
                 }
+            }
+            for ref in modeling.ruleCurves where ref.sketch == id {
+                guard let curve = sketch.curves[safe: ref.index] else { continue }
+                overlays.append(EditorOverlay(mesh: ModelOverlay.sketchLines(Sketch(plane: sketch.plane, curves: [curve]), width: width * 2.5),
+                                              color: Self.modelAccent, onTop: true))
             }
             if let source = modeling.offsetSource, source.sketch == id, let curve = sketch.curves[safe: source.index] {
                 let one = Sketch(plane: sketch.plane, curves: [curve])

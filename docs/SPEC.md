@@ -25,7 +25,7 @@ reference and stays.
 | Draw (U3): the sheet (four shapes, placed by hand, kept and named), Sketch in Draw and talking back, flipbooks on the sheet with the frame strip, the hand shortcuts and the squeeze menu, the Snap magnet, our number pad, Settings ▸ Pencil and hands (who does what, the Pencil page with its test pad and calibration), the Reference window, the timeline as Dreams has it, the brush library dropping down | **0.13.** D-240 … D-258. Hold-to-clean-shape and the squeeze menu on the board's own drawings come with the Board's finish (M14) as far as clean shapes go. |
 | Rig, and bring your sculpt: pins and dots, Person / Chain / Four legs / Wings guessed from the shape, rigs you change any time, solid parts hinged, shapes cut finer to bend; motion saved to the Library and dropped anywhere, repeats by a motion's end, four feels; sculpts in painted and lightened with Detail, landing with Rig it; skinned glTF and our own FBX for game engines | **0.14.** D-259 … D-278. The Nomad fixture joins when Hesham exports one (D-275); Unity is a computer check (D-276). |
 | Draw again and one grammar (U5): one Draw where the brush decides (lines, paint, solids, shapes, shadow), zero setup (the surface, else the sheet facing you), the sheet as paper with a hold menu, strokes under the tip (a UI test), shapes in one drag pulled into solids, a tapped stroke's chip, flicked frames and onion skins on the timecode, every number a slider, two fingers on the view, press and carry, hover lighting, the lasso's three homes, the quick menu per tool, the eyedropper loupe, titles stuck to the camera, to the ground by the real shape | **0.15.** D-280 … D-300. Smudge on painted models comes with U7 Texture (D-283). |
-| Shape (touch-and-drag modelling, deformations, faces and edges lit under the Pencil) | U6 |
+| Shape (U6): touch and drag with no modes (the Pencil lights the face, edge or corner of the selected shape; drag pulls, rounds, moves), the part's chip (inset, shell, bridge, knife, bevel, round, loop cut, merge, fill hole), Model's bar (Shape, Brush, Cage, Bend, Measure), Smooth and making it real, the smooth angle and flat shading, triangle count, clean topology (Instant Meshes), linked copies, the pivot, typed sides, sweep / revolve / loft, sketch rules with our own solver, the view cube, the bridge's `model` and `profile` | **0.16.** D-301 … D-325. Strokes on placed models need them painted first (D-318); the cage doesn't animate yet (D-317). |
 | Texture (the full colour picker, layers, smudge on paint) | U7 |
 | Mechanisms + AR, web layer (held) | M12 |
 | Content and finish: the house kit, waiting designed, the Board's finish | M14 |
@@ -36,6 +36,26 @@ reference and stays.
 Cast is gone (D-227): what said *Cast ▸ Voice & face*, *Triggers* and *Life* below is the selected character's
 button beside Record in the timeline's Perform; *Cast ▸ Rig* is Rig; *Make it part of* is in Rig. Everything below
 still works the same way.
+
+### Shape (0.16)
+
+- **Touch and drag** (D-302 … D-305): select a shape; the Pencil lights the face, edge or corner under its tip (a corner
+  within 16 points, an edge within 11, else the face). Drag: a face pulls, an edge rounds, a corner moves across the plane
+  facing you. Tap: the part is picked and its chip offers the rest; hold to add a part. Blockout shapes become modelled
+  quietly; a placed model has *Model it*. With no Pencil: Model ▸ Shape.
+- **Model's bar**: Shape · Brush · Cage · Bend · Measure. The brushes (grab, smooth, inflate, mirrored) take the sidebar's
+  size and strength (D-318); the cage puts a box of points on, back or off (D-317); the bend chooses bend, twist, taper
+  or bulge, its axis and amount, with a handle on the stage (D-316).
+- **Shape of this object** (the object panel, one step deeper): width, height and depth typed or scrubbed (D-314); Smooth
+  0–3 and *Make the smoothing real* (D-306); flat shading and the smooth angle (D-307); triangles; *Clean up the shape*
+  with a face count (D-320, D-321); close holes; join close corners (D-310); linked copy and unlink (D-312); the pivot to
+  the middle or the base (D-313).
+- **Profiles** (D-311): a picked sketch region's chip sweeps it along a tapped curve, revolves it around a tapped line or
+  its own side, or lofts it through more tapped regions.
+- **Sketch rules** (D-315): tap a line (lock its size, its angle, level) or two (parallel, square, same size, twice that;
+  a line and a circle: touching); a size on the stage has a lock; changing a size solves the rest.
+- **The view cube** (D-322) in the view corner; Settings ▸ Stage hides it.
+- **The bridge** (D-323): `model` and `profile` verbs.
 
 ### Draw again, and one grammar (0.15)
 

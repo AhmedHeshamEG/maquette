@@ -73,8 +73,11 @@ indirect enum MeshKey: Hashable {
     case primitive(PrimitiveShape, faceted: Bool)
     case bevelled(PrimitiveShape, size: SIMD3<Int32>, radius: Int32, segments: Int)
     case drawing(DrawingRecipe)
-    /// An editable mesh (keyed by its content fingerprint).
-    case editable(EditableMesh)
+    /// A modelled shape (keyed by its content fingerprint), smoothed `levels` times, shaded by its smooth angle (degrees;
+    /// −1 = every edge crisp) or flat.
+    case editable(EditableMesh, levels: Int, angle: Int32, flat: Bool)
+    /// A blockout shape smoothed `levels` times.
+    case subdivided(PrimitiveShape, levels: Int, flat: Bool)
     case blockText(TextRecipe)
     case systemText(TextRecipe)
     case card(width: Int32, height: Int32, depth: Int32)
@@ -83,6 +86,10 @@ indirect enum MeshKey: Hashable {
     case painted(MeshKey, dabs: [ShadowDab])
     /// A shape cut finer so its rig can bend it (`MeshDensify`).
     case dense(MeshKey, cuts: Int)
+    /// A shape's corners moved by brush strokes, a cage and a whole-shape bend (`ShapeStack`).
+    case shaped(MeshKey, ShapeStack.Key)
+    /// A placed model's part moved by its cage and bend, measured over the whole model.
+    case shapedPart(AssetID, part: Int, ShapeStack.Key)
     /// A painted surface: the unwrap (file or carried key) over the mesh with this fingerprint.
     case paintSurface(String, mesh: String, dabs: [ShadowDab])
     /// A placed model's parts as one mesh (painting).

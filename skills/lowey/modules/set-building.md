@@ -42,6 +42,26 @@ Big flat primitives in palette colours are fine for walls and floors (they're th
 A room of computers is one desk and one screen arrayed (`array`, `row`, `grid`), not twelve hand placements. Copies
 read as one pattern; they don't count as clutter.
 
+## Shaping a thing (Maquette 0.16)
+
+When no Kit model fits, shape one from a blockout with `model` (one thing, one op per action; the script stays one step).
+Faces are named by the way they face, edges by the axis they run along:
+
+- Taller, thicker: `{"do":"model","target":"Plinth","op":"pull","face":"top","distance":0.3}`; exact sides:
+  `{"op":"size","axis":"y","length":0.04}`.
+- Softer: `{"op":"smooth","levels":2}` (a pebble from a cube); crisp edges with `{"op":"smoothAngle","degrees":40}`.
+- More lines to bend or pull: `{"op":"loopCut","along":"x","cuts":2}`; a cut where you want it: `{"op":"knife","point":[…],"normal":[…]}`.
+- Character in a prop: `{"op":"bend","kind":"bend|twist|taper|bulge","amount":45,"axis":"y"}`. The amount keys like any
+  property, so a tower can twist on a word.
+- Bulges and dents: `{"op":"cage","counts":[3,3,3]}` then pull a point `{"op":"cage","point":[2,2,2],"offset":[0.2,0,0]}`,
+  or one brush dab `{"op":"brush","brush":"inflate","at":[x,y,z],"radius":0.2}`.
+- A row of the same thing that changes together: `{"op":"linkedCopy","offset":[1.2,0,0]}`.
+- A sculpt for a game: `{"op":"cleanUp","faces":2000}` (even quads; it bakes everything in).
+- From a sketch region: `{"do":"profile","target":"Sketch","op":"revolve","axis":{"point":[0,0,0],"direction":[0,1,0]}}`
+  (a vase), `"sweep"` with a `"path"` (a rail), `"loft"` `"through"` other sketches (a hull).
+
+Shape the hero prop only; the set itself is still Kit models placed by relation.
+
 ## Don't
 
 - Don't build greybox sets from cubes when a Kit model exists.

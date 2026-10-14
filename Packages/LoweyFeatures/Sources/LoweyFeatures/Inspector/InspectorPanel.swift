@@ -65,6 +65,11 @@ struct InspectorPanel: View {
                     ObjectLookSection(editor: editor, object: object)
                 }
             }
+            if object.kind.hasSurface {
+                DisclosureRow("Shape of this object", systemName: "cube.transparent", identifier: "object-shape") {
+                    ShapeSection(editor: editor, object: object)
+                }
+            }
             DisclosureRow("More ways to move", systemName: "figure.run", identifier: "more-motion") {
                 MoreWaysToMove(editor: editor)
             }

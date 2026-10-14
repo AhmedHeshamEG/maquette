@@ -119,6 +119,8 @@ public indirect enum EditCommand: Hashable, Sendable {
     case paintTiles(ObjectID, [PaintTileChange])
     /// Replace an object's drawn skeleton and its weights (nil removes it; the weights' file is written first).
     case setRig(ObjectID, ObjectRig?)
+    /// Replaces an object's cage and surface brush strokes (`ObjectShaping`).
+    case setShaping(ObjectID, ObjectShaping?)
     /// Replace the project's own Looks ("My Look").
     case setCustomLooks([LookPreset])
     /// The project's brushes (`ProjectInfo.brushes`): a stroke's first use of a brush adds its frozen copy.
@@ -163,6 +165,7 @@ public indirect enum EditCommand: Hashable, Sendable {
         case .setPaint: return "Paint layers"
         case .paintTiles: return "Paint"
         case .setRig: return "Rig"
+        case .setShaping: return "Shape"
         case .setCustomLooks: return "Edit looks"
         case .setBrushes: return "Draw"
         case let .setFlipbooks(edits): return edits.allSatisfy { $0.track == nil } ? "Delete flipbook" : "Draw"

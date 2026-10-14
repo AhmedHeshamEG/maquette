@@ -33,6 +33,7 @@ final class EditorModel {
         didSet {
             guard selection != oldValue else { return }
             if !inkStrokes.isEmpty { inkStrokes = [] }
+            if modeling.target.map({ !selection.contains($0) }) ?? false { clearModelPick() }
             if AppIdentity.isUITesting { trail("sel=[\(selection.compactMap { scene.objects[$0]?.name }.joined(separator: ","))]") }
             refreshSelectionOverlay()
             if tool == .paint { readyPaintTarget() }
@@ -194,6 +195,8 @@ final class EditorModel {
     var showsSafeAreas = false
     /// The heading of the work view in degrees (the joystick's compass).
     var viewYaw: Double = 0
+    /// The view's pitch, to the degree (the view cube turns with it).
+    var viewPitch: Double = 28
 
     // MARK: Time & animation
 
@@ -308,6 +311,8 @@ final class EditorModel {
     @ObservationIgnored var ikDrag: [PerformChannel: PropertyChange] = [:]
     /// Shapes shown instead of the document's while a push/pull is dragged (committed as one command on release).
     @ObservationIgnored var kindOverride: [ObjectID: ObjectKind] = [:]
+    /// The brush stroke in progress and the strokes it shows (`EditorModel+Sculpt`).
+    @ObservationIgnored var sculpting = Sculpting()
     @ObservationIgnored var performChannels = Set<PerformChannel>()
     /// Painted strokes commit one after another (`EditorModel+Paint`); each stroke gets a number.
     @ObservationIgnored var paintCommits: Task<Void, Never>?
@@ -411,7 +416,8 @@ final class EditorModel {
         guard let command else { return false }
         settleHistoryBeforeEditing()
         do {
-            let changes = try session.perform(keyed(command), coalesceKey: coalesceKey)
+            // Linked copies change together (U6).
+            let changes = try session.perform(keyed(LinkedCopies.propagate(command, in: baseScene)), coalesceKey: coalesceKey)
             if AppIdentity.isUITesting { trail("cmd=\(command.label)") }
             refreshDisplay(changes)
             afterChange()

@@ -24,7 +24,7 @@ struct SelectionActions: View {
             if !shapes.isEmpty || editor.modeling.target != nil { MirrorControls(editor: editor) }
             HStack(spacing: HmmSpacing.xs) {
                 if editor.convertibleSelection != nil {
-                    HmmPillButton("Make editable", systemName: "cube.transparent") { editor.makeSelectionEditable() }
+                    HmmPillButton("Model it", systemName: "cube.transparent") { editor.makeSelectionEditable() }
                         .accessibilityIdentifier("make-editable")
                 }
                 HmmPillButton("Scatter copies", systemName: "circle.hexagongrid") {

@@ -108,13 +108,13 @@ public enum SceneExport {
         case .flat: .flat
         }
         let mesh: MeshData? = switch object.kind {
-        case let .primitive(shape): PrimitiveMesh.make(shape, shading: shading)
+        case let .primitive(shape): ShapeStack.primitive(shape, for: object, shading: shading)
         case let .drawing(recipe): DrawingMesher.mesh(for: recipe).shaded(shading)
-        case let .mesh(mesh): mesh.renderMesh()
+        case let .mesh(mesh): ShapeStack.render(mesh, for: object)
         case let .text(recipe) where recipe.coreMeshable: BlockFont.mesh(for: recipe)
         default: nil
         }
-        return mesh.map { MeshDensify.apply($0, for: object) }
+        return mesh.map { ShapeStack.shaped($0, for: object) }
     }
 
     public static func material(of object: SceneObject, look: Look) -> ExportMaterial {

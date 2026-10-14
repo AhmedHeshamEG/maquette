@@ -49,7 +49,10 @@ public enum LoweySchema {
     /// 13: Maquette 0.13's sheets: scenes' `sheets`, the `setSheets` command, flipbooks drawn on a sheet.
     /// 14: Maquette 0.14's rigs: a rig's `marks` (pins and dots) and `person` dots, the `bendDetail` property, tracks'
     ///     `cycle` (a motion played again), the library's `motions` and an asset's `original` and `detail`.
-    public static let currentVersion = 14
+    /// 15: Maquette 0.16's shaping: objects' `shaping` (a cage, surface brush strokes), the `setShaping` command, the
+    ///     `subdivision`, `smoothAngle`, `deform`, `deformAmount`, `deformAxis` and `linked` properties, sketches'
+    ///     `constraints`.
+    public static let currentVersion = 15
 
     public static let migrations: [Migration] = [
         Migration(kind: .scene, from: 0, transform: liftSceneV0),
@@ -103,7 +106,11 @@ public enum LoweySchema {
         // 13 → 14 adds optional rig marks, track cycles, a property and library motions; nothing older changes shape.
         Migration(kind: .scene, from: 13) { $0 },
         Migration(kind: .project, from: 13) { $0 },
-        Migration(kind: .library, from: 13) { $0 }
+        Migration(kind: .library, from: 13) { $0 },
+        // 14 → 15 adds optional fields and properties; nothing older changes shape.
+        Migration(kind: .scene, from: 14) { $0 },
+        Migration(kind: .project, from: 14) { $0 },
+        Migration(kind: .library, from: 14) { $0 }
     ]
 
     /// The render style a 1.x look maps to.

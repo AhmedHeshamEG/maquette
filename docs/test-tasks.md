@@ -3,6 +3,16 @@
 One task per feature for the two test weeks (between M14 and M16), written for its person in `studio-h/USERS.md`. A
 task says what to make, never which buttons to press; the tester says where they got stuck.
 
+## 0.16 (U6): shape
+
+- **The maker:** a box with a lid that fits it, 60 × 40 × 30 mm, built by pulling faces and typing sizes, the lid's
+  edges rounded.
+- **The sculptor:** take a rock from the Kit, make one side bulge out and smooth the other, both sides alike.
+- **The game developer:** turn a lumpy sculpt into a clean model under 2 000 faces and check its triangle count.
+- **The engineering student:** a sketch of a bracket whose holes stay the same size and level when its length changes.
+- **Everyone:** a twisted tower beside the Keeper's Tower that untwists while the camera circles it, and a row of five
+  windows where changing one changes them all.
+
 ## 0.15 (U5): draw again & the grammar
 
 - **The Procreate person:** draw a tree beside the Keeper's Tower with lines in the air, then a vine climbing the

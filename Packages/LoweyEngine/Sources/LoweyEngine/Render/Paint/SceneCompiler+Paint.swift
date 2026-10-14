@@ -73,7 +73,15 @@ extension SceneCompiler {
         guard let source = meshes.mesh(.assetPaint(id), make: {
             AssetPaint.mergedMesh(model).flatMap { GPUMesh(device: device, mesh: $0, label: "\(object.name) parts") }
         }),
-            let painted = painted(object, source: source, state: state, input: input) else { return false }
+            let found = painted(object, source: source, state: state, input: input) else { return false }
+        // Strokes, a cage and a bend move the one surface's corners.
+        let shown = ShapeStack.key(of: object).flatMap { shape in
+            meshes.mesh(.shaped(.assetPaint(id), shape)) {
+                GPUMesh(device: device, mesh: ShapeStack.moved(source.data, for: object), label: "\(object.name) shaped")
+            }
+        } ?? source
+        let surface = SurfaceMeshes(base: source, shown: shown)
+        let painted = surface.isMoved ? movedPaint(found, over: surface, object: object) ?? found : found
         var uniforms = base
         if object.color == nil, state.tint == nil { uniforms.baseColor = SIMD4<Float>(1, 1, 1, base.baseColor.w) }
         addPainted(painted, object: object, world: state.world.matrix, base: uniforms, casts: casts, input: input, scene: &scene)

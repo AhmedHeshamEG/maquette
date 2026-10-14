@@ -246,7 +246,7 @@ public struct PropertyKey: RawRepresentable, Hashable, Sendable, Codable, Compar
 
     /// Type and animatability of well-known keys.
     public var spec: PropertySpec? {
-        if let spec = PropertySpec.known[self] { return spec }
+        if let spec = PropertySpec.known[self] ?? PropertySpec.shaping[self] { return spec }
         // A joint's turn (`bone.<joint>`): keyed like any rotation. How loosely it dangles (`dangle.<joint>`): a setting.
         if boneJoint != nil { return PropertySpec(type: .quat, animatable: true, label: "Bone turn") }
         return dangleJoint != nil ? PropertySpec(type: .float, animatable: false, label: "Dangle") : nil

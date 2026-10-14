@@ -2138,3 +2138,123 @@ The contact shading already darkens where a thing touches. *Rejected:* boxes (th
 
 **D-300 — Translations still ride along.** CONTEXT now says English only at 1.0, but the catalog check (Italian and Arabic)
 is CI's; new strings were translated rather than the check changed in a phase about drawing. The languages phase decides.
+
+## Maquette 0.16 — U6, shape
+
+**D-301 — U6 starts from main, after U5 was tagged.** U5 (PR #36) was merged from a cloud session that couldn't push
+tags; v0.15 and hmm-kit v0.9.0 were tagged from the PC first, and the release published the .ipa. U1 (PR #30) still waits
+for the first feel recording.
+
+**D-302 — No modes: the Pencil models the selected shape from any tool but Draw.** Over the one selected shape the Pencil
+lights the part under its tip; a drag pulls, rounds or moves it; a tap picks it. Fingers keep carrying the thing (D-293),
+so with no Pencil the same moves are in Model ▸ Shape, where one finger shapes. *Rejected:* a Model mode for Pencil users
+(the Faces, Edges and Corners buttons are what slowed him); fingers shaping in Select (carrying would break).
+
+**D-303 — What's lit is decided by distance on screen.** A corner within 16 points of the tip, else an edge within 11,
+else the face under it (`MeshPicking.nearestPart`). One obvious move each: a face pulls along its normal (push/pull as
+before), an edge rounds by half the drag's length on screen, a corner moves across the plane facing you through where it
+started (grid steps with snapping on). *Rejected:* a list of tools popping up (Shapr3D's, which slowed him).
+
+**D-304 — Every shape is always editable; placed models keep a button.** A blockout shape or a drawing becomes a modelled
+mesh quietly on the first touch (as push/pull already did). A placed library model would give up its parts and materials,
+so it keeps one deliberate button, renamed *Model it*. *Rejected:* converting placed models on touch.
+
+**D-305 — The part's chip holds the rest.** A face: inset, shell, bridge (two faces), knife. An edge: bevel, round, loop
+cut, knife. Corners: merge (two or more), fill the hole. Behind ⋯: grow, shrink, similar, the pivot here. A held Pencil
+adds a part to the pick. The chip floats above the pick like the stroke chip (U5).
+
+**D-306 — Subdivision is Catmull–Clark on whole faces; the Smooth switch is a property.** `subdivision` (0–3) smooths the
+shape as it's built, everywhere it's shown; *Make the smoothing real* bakes it. Faces with holes become triangles first;
+open borders keep their line and a border's corner stays put, so a half-built shape doesn't shrink from its edge.
+*Rejected:* Loop subdivision (triangles: quads are what modellers keep cutting).
+
+**D-307 — Modelled shapes are crisp by default; the smooth angle softens them.** `smoothAngle` (degrees) shades edges
+softer than it smooth and keeps the rest crisp; a smoothed shape is smooth all over unless it's set. Flat shading is the
+existing `shading` property.
+
+**D-308 — A loop cut runs through four-sided faces only.** The ring stops at a face that isn't a quad or at the open
+border, so it never tears a face; cuts are measured from one side of the ring so they line up all round. One cut sits in
+the middle; more are spaced evenly.
+
+**D-309 — The knife cuts along the plane its line sweeps from the eye.** Only faces whose cut's middle lies under the
+drawn line are cut, each into two whole faces; a neighbour the cut ends on gets the new corner in its side (no T-junction);
+a crossed face with a hole becomes triangles first. *Rejected:* loose edges inside a face (the mesh keeps whole faces).
+
+**D-310 — Fill hole, merge and bridge.** A hole is an open border walked into one new face. Merged corners meet at their
+middle and faces that collapse go; *Join close corners* welds within a tenth of the project's step. Bridging two faces
+removes both and joins their outlines with quads; the one with fewer corners gets more along its longest sides first (its
+neighbours too), and the loops start at the corners nearest each other.
+
+**D-311 — Sweep, revolve and loft are rings of the profile joined side to side.** Sweep turns the profile with the path,
+the turn that twists least; revolve welds the corners lying on the axis (a profile touching it makes a solid without a
+hole); loft walks every outline with the larger corner count, starting at the nearest corners. Open ends close with the
+profile. The region is used up, as a pull uses it; the path and the axis stay. Revolve without a line turns around the
+region's own left side, upright on its sketch.
+
+**D-312 — Linked copies share a shape, through `perform`.** Things with the same `linked` value change together: a shape
+(`setKind`), strokes and cage (`setShaping`), smoothing, the smooth angle, the bend and symmetry. Where each stands, its
+size and its look stay its own; a shape whose own scale was baked into it in the same step reaches the others at the size
+it had in its own space. *Unlink* lets one go. *Rejected:* a shared mesh asset (a second kind of shape in the format).
+
+**D-313 — Moving the pivot moves the corners the other way.** A modelled shape's corners shift, a group's children shift,
+and the thing moves by the same amount, so nothing moves on screen. Presets: the middle of its box, the middle of its base,
+or the picked part. A blockout shape becomes modelled first; a placed model can't (it has no corners of its own).
+
+**D-314 — Shapes keep their dimensions: width, height and depth are numbers to type or scrub.** A modelled shape stretches
+around its base (height) or its middle (width, depth); other things scale. *Rejected:* typing one edge's length (a CAD
+story for the editable history, H1).
+
+**D-315 — Sketch rules, our own solver.** `Sketch.constraints`: parallel, perpendicular, equal, tangent, a locked length
+(a line, a circle's diameter, a rectangle's side), a locked angle, a ratio ("twice that"). Lines, rectangles, circles and
+arcs are a few numbers each; Levenberg–Marquardt with a numeric Jacobian finds the nearest drawing that keeps every rule,
+first with a gentle pull toward the drawing, then exactly. Ends that met keep meeting, judged on the sketch before a curve
+changed. Rules that can't all hold are refused with a sentence. Splines and polylines hold still. Core, tested on Linux.
+
+**D-316 — One whole-shape bend per thing, as properties.** `deform` (bend, twist, taper, bulge), `deformAmount` (degrees,
+or the change in size; animatable, so keys add themselves) and `deformAxis`, measured over the thing's own box. One handle
+on the stage. *Rejected:* a stack of several bends (the brief is one handle each; a stack can come if it's asked for).
+
+**D-317 — The cage is a lattice of 2 to 4 points each way.** Bernstein weights over a box padded 5 % around the thing; a
+cage at rest changes nothing; points outside follow its nearest face. It lives in the object's `shaping` and isn't
+animated in 0.16 (the bend is). A 4 × 4 × 4 cage moves 50 000 triangles in 25 ms in a release build on the PC's Docker
+CPU (CI's number is in the SPIKE step); the iPad's drag is a device check.
+
+**D-318 — Brush strokes are offsets of the surface's corners, kept inline and sparse.** `SculptLayer`: only the moved
+corners, base64 in the object's `shaping`, with a fingerprint for caches; strokes made for another number of corners are
+left behind. Grab holds the patch it started on; smooth and inflate work on welded points so a surface never tears. A
+shape too coarse to brush is cut finer first (the cuts rigging uses); a placed model is brushed as one surface, the one
+painting uses, so it's made paintable first. *Rejected:* files under `assets/` (every reader would need a loader);
+turning sculpts into modelled meshes (hundreds of thousands of faces in project.json and in every journal line).
+
+**D-319 — One shape stack: built, cut, moved.** `ShapeStack`: a shape is built (smoothed), cut finer for bending, then
+moved by its strokes, cage and bend. Moving keeps every corner in order, so paint and rigs are found on the unmoved mesh
+(its fingerprint holds still while a bend animates) and drawn over the moved one; placed models' parts are bent over the
+whole model's box. The stage, painting, rigging, picking and every export share it.
+
+**D-320 — SPIKE passed: Instant Meshes, vendored.** `Packages/InstantMeshes`: upstream's mesh code (BSD-3-Clause), the
+164 Eigen 3.4.0 headers it includes (MPL-2.0, built scalar, so the same input gives the same quads everywhere), and a small
+stand-in for the Threading Building Blocks it calls (loops over up to eight threads). A 499 000 triangle sculpt becomes
+2 421 faces (73 % quads) in 4.1 s in a release build on the PC's Docker CPU; CI's number is in the run summary, the
+iPad's is a device check. Debug builds are slow (Eigen unoptimised), so the everyday tests use small meshes. Fallback (our
+own triangle pairing after simplifying) not needed.
+
+**D-321 — Clean up the shape bakes everything and runs off the main thread.** The shape as shown is remeshed; smoothing,
+the bend, the cage, strokes and the cuts for bending are switched off in the same step. The command remeshes again from
+the same surface (deterministic), so the app and the bridge share one path. *Rejected:* keeping the bend live on the new
+mesh (it would bend twice).
+
+**D-322 — The view cube sits in the view corner, above its row.** A small canvas turning with the view: a side tapped looks
+from there (top and bottom keep the heading), a drag turns, a double-tap swaps perspective and flat, a hold has the views
+and Frame all. Settings ▸ Stage ▸ The view cube hides it, and the views menu takes its place.
+
+**D-323 — The bridge reaches the modelling set through two verbs.** `model` (smooth, subdivide, smoothAngle, flat, bend,
+cage, brush, pull, loopCut, knife, fillHoles, mergeByDistance, cleanUp, linkedCopy, unlink, pivot, size) and `profile`
+(sweep, revolve, loft). Without pointing, faces are named by the way they face and edges by the axis they run along; a
+brush is one dab. The lowey skill learns them.
+
+**D-324 — Schema 15.** Objects' optional `shaping` (cage, strokes) and the `setShaping` command; the `subdivision`,
+`smoothAngle`, `deform`, `deformAmount`, `deformAxis` and `linked` properties; sketches' optional `constraints`. Nothing
+older changes shape; 0.15 refuses a schema-15 file with its usual message.
+
+**D-325 — Translations still ride along.** The 72 new strings were translated into Italian and Arabic for the catalog
+check (D-300); the languages phase decides.

@@ -140,6 +140,9 @@ extension StageGestures {
         if editor.gizmoMode != .rotate, let handle = stage.pickGizmo(at: point), let pivot = editor.selectionPivot {
             return .gizmo(handle, pivot: pivot, lastPoint: point, accumulated: 0)
         }
+        if panTouchIsPencil, InputJob.shape.allows(pencil: true, fingerMakes: false), let part = editor.beginPartDrag(at: point) {
+            return .part(part)
+        }
         if let (id, hit) = stage.pickObject(at: point), editor.selection.contains(where: { $0 == id || editor.scene.isAncestor($0, of: id) }),
            !editor.selection.contains(where: { editor.scene.isEffectivelyLocked($0) }) {
             let planeY = editor.selectionPivot?.y ?? hit.point.y
@@ -207,6 +210,8 @@ extension StageGestures {
         case .sketch:
             editor.sketchDragMoved(to: point)
             loupe?.move(to: point, withCaretRect: .zero, trackingCaret: false)
+        case .part, .sculpt, .knife:
+            continueShapeDrag(to: point, editor: editor)
         case .none:
             break
         }
@@ -216,6 +221,7 @@ extension StageGestures {
     /// fingers make) draws the shape's next point; a Pencil loops in a pick mode; else orbit.
     private func beginModelDrag(at point: CGPoint, editor: EditorModel) -> DragKind {
         let shapes = InputJob.shape.allows(pencil: panTouchIsPencil, fingerMakes: pencilOrHand.fingerMakes)
+        if let kind = beginShapeDrag(at: point, editor: editor, shapes: shapes) { return kind }
         if shapes, editor.canPull(at: point), editor.prepareFacePull(), let axis = editor.pullAxis {
             return .pushPull(axis, grab: editor.pullDistance(at: point, axis: axis) ?? 0)
         }
@@ -298,6 +304,8 @@ extension StageGestures {
         case .modelLasso:
             if !cancelled { editor.pickElements(inLoop: editor.lassoPoints) }
             editor.lassoPoints = []
+        case .part, .sculpt, .knife:
+            endShapeDrag(editor: editor, cancelled: cancelled)
         case .sketch:
             editor.sketchDragEnded(commit: !cancelled)
             loupe?.invalidate()

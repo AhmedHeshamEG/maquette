@@ -123,6 +123,12 @@ struct EditorScreen: View {
                     .ignoresSafeArea(edges: [.top, .horizontal])
                     .environment(\.layoutDirection, .leftToRight)
             }
+            // The cage's points and the bend's handle (U6), in the stage's own points.
+            if editor.tool == .model, editor.modeling.verb == .cage || editor.modeling.verb == .bend {
+                ShapeHandles(editor: editor)
+                    .ignoresSafeArea(edges: [.top, .horizontal])
+                    .environment(\.layoutDirection, .leftToRight)
+            }
             if editor.chromeHidden {
                 ChromeRestoreButton(editor: editor)
             } else {

@@ -1,5 +1,6 @@
 import CoreGraphics
 import Foundation
+import HmmDesign
 import HmmDiagnostics
 import LoweyCore
 import LoweyEngine
@@ -181,6 +182,7 @@ extension EditorModel {
     func cameraMoved(_ viewpoint: Viewpoint) {
         if projection != viewpoint.projection { projection = viewpoint.projection }
         if abs(viewYaw - viewpoint.yaw) > 1 { viewYaw = viewpoint.yaw }
+        if abs(viewPitch - viewpoint.pitch) > 1 { viewPitch = viewpoint.pitch }
         if drawsOnSheet { viewRevision &+= 1 }
         if tool == .model { modelCameraMoved() }
         if tool == .rig { refreshModelOverlay() }
@@ -205,6 +207,25 @@ extension EditorModel {
         let sketched = operations.bounds.worldBounds(of: sketches.map(\.id), in: scene)
         guard let drawn else { return sketched }
         return sketched.map { drawn.union($0) } ?? drawn
+    }
+
+    /// Looks at the scene from one side of the view cube (keeping what it looks at and how far).
+    func look(fromYaw yaw: Double, pitch: Double) {
+        guard let stage else { return }
+        var target = stage.viewpoint
+        target.yaw = yaw
+        target.pitch = pitch
+        stage.animate(to: target)
+        HmmHaptics.play(.selection)
+    }
+
+    /// Turns the view by a drag on the view cube.
+    func turnView(byYaw yaw: Double, pitch: Double) {
+        guard let stage else { return }
+        var viewpoint = stage.viewpoint
+        viewpoint.yaw += yaw
+        viewpoint.pitch = min(max(viewpoint.pitch + pitch, -89.9), 89.9)
+        stage.setViewpoint(viewpoint)
     }
 
     func toggleProjection() {
