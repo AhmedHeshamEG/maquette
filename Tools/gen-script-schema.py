@@ -101,6 +101,20 @@ verbs = {
     "array": ("Copies in a line or ring.", {"target": tgt, "count": n, "step": v3, "radius": n, "faceCenter": b, "name": s}, ["target"]),
     "scatter": ("Copies scattered.", {"target": tgt, "count": n, "radius": n, "at": point, "name": s}, ["target"]),
     "length": ("The timeline's length.", {"seconds": n, "fps": n}, []),
+    "model": ("U6's modelling set on one thing: smooth, subdivide, smoothAngle, flat, bend, cage, brush, pull, loopCut, knife, "
+              "fillHoles, mergeByDistance, cleanUp, linkedCopy, unlink, pivot, size.",
+              {"target": tgt, "op": {"enum": ["smooth", "subdivide", "smoothAngle", "flat", "bend", "cage", "brush", "pull", "loopCut",
+                                              "knife", "fillHoles", "mergeByDistance", "cleanUp", "linkedCopy", "unlink", "pivot", "size"]},
+               "levels": n, "degrees": n, "on": b, "kind": {"enum": ["bend", "twist", "taper", "bulge"]}, "amount": n,
+               "axis": {"enum": ["x", "y", "z"]}, "counts": {"type": "array", "items": n}, "point": {"anyOf": [v3, {"type": "array"}]},
+               "offset": v3, "remove": b, "brush": {"enum": ["grab", "smooth", "inflate"]}, "at": point, "radius": n,
+               "strength": n, "by": v3, "mirror": b, "face": {"enum": ["top", "bottom", "front", "back", "left", "right"]},
+               "distance": n, "along": {"enum": ["x", "y", "z"]}, "cuts": n, "normal": v3, "faces": n, "quadsOnly": b,
+               "to": {"enum": ["middle", "base"]}, "length": n}, ["target", "op"]),
+    "profile": ("A sketch region made into a solid: swept along a path, revolved around an axis or lofted through others.",
+                {"target": tgt, "region": n, "op": {"enum": ["sweep", "revolve", "loft"]}, "path": {"type": "array", "items": v3},
+                 "closed": b, "axis": {"type": "object", "properties": {"point": v3, "direction": v3}}, "degrees": n, "through": tgt},
+                ["target", "op"]),
     "command": ("A raw EditCommand.", {"command": ref("command")}, ["command"]),
 }
 

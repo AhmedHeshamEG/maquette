@@ -33,6 +33,16 @@ public enum ScriptReference {
     {"do":"group","target":["A","B"],"name":"Set"}  {"do":"rename","target":"Cube","name":"Box"}  {"do":"remove","target":"Box"}
     {"do":"transform","target":"Paper","position":[0,1,0],"rotation":[0,45,0],"scale":2}   (edge cases only)
 
+    Model (U6; faces by the way they face, edges by the axis they run along; one step each)
+    {"do":"model","target":"Box","op":"pull","face":"top","distance":0.2}   {"do":"model","target":"Box","op":"loopCut","along":"x","cuts":2}
+    {"do":"model","target":"Box","op":"smooth","levels":2}  ("subdivide" makes it real)   {"do":"model","target":"Box","op":"flat"}
+    {"do":"model","target":"Tower","op":"bend","kind":"bend|twist|taper|bulge","amount":45,"axis":"y"}   (amount animates with "keys")
+    {"do":"model","target":"Box","op":"cage","counts":[3,3,3]}  then  {"op":"cage","point":[2,2,2],"offset":[0.3,0,0]}
+    {"do":"model","target":"Rock","op":"brush","brush":"grab|smooth|inflate","at":[0,1,0],"radius":0.3,"by":[0,0.2,0]}
+    {"do":"model","target":"Sculpt","op":"cleanUp","faces":2000}   (even quads)   {"op":"knife","point":[0,0.5,0],"normal":[0,1,0]}
+    {"do":"model","target":"Chair","op":"linkedCopy","offset":[1,0,0]}   {"op":"pivot","to":"base"}   {"op":"size","axis":"y","length":0.04}
+    {"do":"profile","target":"Sketch","region":0,"op":"revolve","axis":{"point":[0,0,0],"direction":[0,1,0]}}   ("sweep" with "path", "loft" with "through")
+
     Shoot and light
     {"do":"frameShot","subject":"Hesham","shotType":"extremeWide|wide|full|medium|closeUp|extremeCloseUp|overTheShoulder|twoShot|insert",
      "composition":"center|leftThird|rightThird|lowAngle|highAngle","lens":85,"other":"Ada","side":"left|right","camera":"Shot 2","at":{"word":"Nobody"}}
