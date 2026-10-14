@@ -389,6 +389,39 @@ Two optional properties:
 
 Readers that don't know them ignore them; Maquette 0.14 opens 0.15's files.
 
+## Shaping (schema 15)
+
+What's done to a shape after it's built, in the order every reader applies it (`ShapeStack`): smoothed while built,
+cut finer (`bendDetail`), then moved by brush strokes, the cage and the bend. Moving keeps every corner in order.
+
+```json
+"properties": {"subdivision": {"int": 2}, "smoothAngle": {"float": 40},
+               "deform": {"enum": "twist"}, "deformAmount": {"float": 90}, "deformAxis": {"enum": "y"}, "linked": {"string": "link-box"}},
+"shaping": {
+  "cage": {"counts": [3, 3, 3], "bounds": {"min": [-0.55, -0.05, -0.55], "max": [0.55, 1.05, 0.55]}, "offsets": [[0, 0, 0], …]},
+  "sculpt": {"vertexCount": 1536, "moved": "<base64>"}
+}
+```
+
+- `subdivision` (0–3): Catmull–Clark levels a blockout or modelled shape is smoothed with; open borders keep their line.
+- `smoothAngle` (degrees): edges softer than this are shaded smooth (missing: a modelled shape is crisp everywhere, a
+  smoothed one smooth everywhere). Flat shading is `shading: "flat"`.
+- `deform`: `bend` (around a circle that turns the whole length by `deformAmount` degrees, toward the next axis), `twist`
+  (degrees at the far end), `taper` (the far end's size changes by the amount), `bulge` (the middle's); measured along
+  `deformAxis` (x, y or z; missing: y) over the shape's own box before it was moved. `deformAmount` animates.
+- `linked`: things with the same value share a shape; an edit to one is made to all in the same step.
+- `shaping.cage`: `counts` points along x, y and z (2–4), standing on `bounds` (the shape's own space) at rest, each moved
+  by its `offsets` entry (x fastest, then y, then z); every corner is the Bernstein blend of the moved points.
+- `shaping.sculpt`: brush strokes as offsets of the built-and-cut surface's corners; `moved` is base64 of little-endian
+  records (Int32 corner, Float32 x, y, z) for the corners that moved; ignored when the surface no longer has
+  `vertexCount` corners.
+
+A sketch may keep rules: `"constraints": [{"parallel": {"_0": 0, "_1": 2}}, {"length": {"_0": 1, "_1": 0.04, "side": 0}}]`
+(Swift's enum coding: `parallel`, `perpendicular`, `equal`, `tangent` {line, circle}, `length` {curve, metres, side}, `angle`
+{curve, degrees}, `ratio` {curve, curve, factor}); curves are named by their place in `curves`.
+
+Schema 15 only adds optional keys; files from schema 14 open unchanged, and Maquette 0.15 refuses schema 15.
+
 ## workspace.json
 
 How the project shows when it opens. It isn't the project (it's never undone and isn't in the journal); it's

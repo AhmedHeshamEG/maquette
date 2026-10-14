@@ -13769,6 +13769,22 @@
         }
       }
     },
+    "Model it": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rendilo modellabile"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "اجعله قابلًا للتشكيل"
+          }
+        }
+      }
+    },
     "Model to print": {
       "localizations": {
         "it": {

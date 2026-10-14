@@ -3,6 +3,24 @@
 What's known and not done yet, so nothing lives only in someone's head. What Maquette is: [SPEC.md](SPEC.md). The
 phase plan (the pass U1 … U5, M12, M14, M16, then 1.0) lives in studio-h's `PHASES.md`; ideas go to its `IDEAS.md`.
 
+## Left from U6 (Maquette 0.16)
+
+- [ ] The device checklist in the "Maquette 0.16 — U6" PR (parts lit and dragged with the Pencil, the chip, the brushes'
+      feel on a sculpt, a cage dragged on a 50 000 triangle model at U1's gates, clean up on a real sculpt and its time, the
+      view cube, typed sizes).
+- [ ] Faces, edges and corners light for a modelled shape, a blockout or a drawing; a placed model lights whole until
+      *Model it* (D-304).
+- [ ] The cage doesn't animate yet; the bend does (D-317).
+- [ ] One bend per thing (D-316).
+- [ ] Brush strokes on a placed model need it painted first (one surface, D-318); a stroke's pressure isn't read yet
+      (the strength slider sets it).
+- [ ] A shape changed after brushing leaves its strokes behind when its corner count changes (D-318); carrying them by
+      nearest point, as paint is carried, is to do.
+- [ ] Clean topology in a debug build is slow (Eigen unoptimised, D-320); the app's builds are release.
+- [ ] Sketch rules apply to lines, rectangles, circles and arcs; splines and polylines hold still (D-315).
+- [ ] Typing one edge's length waits for the editable history (H1, D-314).
+- [ ] Hover lights whole things; faces and edges light with U6's picking (D-291). **Done in U6** for the selected shape.
+
 ## Left from U5 (Maquette 0.15)
 
 - [ ] The device checklist in the "Maquette 0.15 — U5" PR (the Pencil's feel and where strokes start, hover lighting,
@@ -10,7 +28,7 @@ phase plan (the pass U1 … U5, M12, M14, M16, then 1.0) lives in studio-h's `PH
 - [ ] On the simulator the pull number is redrawn (gone for a moment) right after a size is typed, so a tap can miss
       it; the block-with-a-hole test taps it again until its pad opens. Find what redraws it; check it on the iPad.
 - [ ] Smudge on painted models waits for U7 Texture's per-pixel tools (D-283).
-- [ ] Hover lights whole things; faces and edges light with U6's picking (D-291).
+- [x] Hover lights whole things; faces and edges light with U6's picking (D-291): done in 0.16 for the selected shape.
 - [ ] A thing stuck to the camera is moved by its gizmo in the world; the gizmo doesn't follow the camera's frame yet
       (D-295).
 - [ ] Only a selected thing is carried by a finger (D-293); carrying several at once carries the selection's middle.

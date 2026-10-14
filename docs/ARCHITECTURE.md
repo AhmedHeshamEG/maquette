@@ -13,6 +13,7 @@ flowchart TD
     Engine["LoweyEngine<br/>LoweyRender 2 (Metal) · import · export · stage view · audio · face · scripting"]
     Core["LoweyCore<br/>pure Swift: model · commands · timeline · geometry · modelling · characters · samples"]
     Manifold["Manifold<br/>vendored C++ booleans behind a C face"]
+    InstantMeshes["InstantMeshes<br/>vendored C++ quad remeshing behind a C face"]
     subgraph HmmKit["hmm-kit (Packages/HmmKit, git subtree)"]
         Design[HmmDesign]
         Commands[HmmCommands]
@@ -31,6 +32,7 @@ flowchart TD
     Features --> Core
     Engine --> Core
     Core --> Manifold
+    Core --> InstantMeshes
     Features --> Design & Bridge & Diagnostics & Documents & Perception & Board & Held
     Engine --> Media & Diagnostics & Transcript & Perception & Brush
     Core --> Commands & Documents & Transcript & Brush
@@ -42,6 +44,7 @@ flowchart TD
 | **LoweyCore** | Foundation, hmm-kit's Commands / Documents / Transcript / Brush (re-exported), Manifold, XAtlas | The document model, commands with exact inverses, the session (undo, coalescing), timeline and easing, animator and behaviours, geometry and meshers, modelling (editable meshes, sketches, push/pull, booleans), the brush library and brush import (the engine's arithmetic is hmm-kit's `HmmBrush` since 0.9), paint (layers, tiles, unwraps, compositing, carrying paint to a new shape, painted exports), the glTF reader, rigs and retargeting, the one skeleton system (drawn
 rigs, bone heat, IK chains, the person rig), blob and puppet characters, Scene Script compiler, Looks as data, samples (Enigma, Welcome island, Night Market) | Linux (`swift:6.1`), coverage gate |
 | **Manifold** (`Packages/Manifold`) | the C++ standard library | Manifold 3.5.4 (Apache-2.0) as a C++17 target, single-threaded, and `ManifoldBridge.h`: boolean and validate in plain C, so Swift needs no C++ interop. `VENDORED.md` says how to update it | Linux and the iPad simulator (its own tests; LoweyCore's boolean tests) |
+| **InstantMeshes** (`Packages/InstantMeshes`) | the C++ standard library | Instant Meshes (BSD-3-Clause) with the Eigen 3.4.0 headers it includes (MPL-2.0, scalar) and a stand-in for the TBB it calls, and `InstantMeshesBridge.h`: remesh into quads in plain C (`VENDORED.md`) | Linux (its own tests; LoweyCore's `QuadRemeshTests`, the U6 SPIKE in a release build) |
 | **XAtlas** (`Packages/XAtlas`) | the C++ standard library | xatlas (MIT) as a single-threaded C++ target and `XAtlasBridge.h`: unwrap in plain C (`VENDORED.md`) | Linux (its own tests; LoweyCore's paint tests) |
 | **LoweyEngine** | Core, Metal, AVFoundation, Vision, ARKit, JavaScriptCore, hmm-kit's Media / Diagnostics / Perception / Transcript / BrushRender (re-exported) | LoweyRender 2 (with the brush engine's stamps, painted layers and drawn rigs skinned on the GPU), the shot builder, the stage view (`StageView`), model loading and caching, export sessions and presets, overlays and captions, the Night Market benchmark, face capture, the JavaScript runner | iPad simulator: golden images, export, picking, skinning |
 | **LoweyFeatures** | Core, Engine, SwiftUI, hmm-kit's Design / Bridge / Documents / Diagnostics / Board / BoardUI | The editor. `Workspace/` is shared by every feature (app and editor models, the session API, controls); each other folder is one feature's views; `Shell/` composes them | iPad simulator: bridge security, editor flows |
@@ -440,6 +443,41 @@ flowchart LR
 - **hmm-kit 0.9**: `HmmScrub` and `HmmNumberPill` (every number a slider), `HmmTouches` (touches counted without claiming
   them; toasts and the guide line leave on any), `HmmCornerCluster` (clusters that rest as rails), `HmmColourLoupe`,
   `HmmSidebar(showsUndo:)`.
+
+## Shape (0.16)
+
+```mermaid
+flowchart LR
+    Hover[Pencil hover / tap / drag<br/>StageGestures + Shape] --> Part[EditorModel+Touch<br/>MeshPicking.nearestPart]
+    Part --> Drag{face · edge · corner}
+    Drag --> PP[push/pull]
+    Drag --> Round[EdgeBevel round, live]
+    Drag --> Corner[moveCorners]
+    Chip[PartChip] --> Ops[ModelingOperations+Set<br/>loop cut · knife · bridge · merge · fill · subdivide · clean up]
+    Stack[ShapeStack<br/>built → cut → moved] --> Render[SceneCompiler.mesh → SurfaceMeshes]
+    Stack --> Paint[PaintSource · exports]
+```
+
+- **Core `Modeling/`**: `Subdivision` (Catmull–Clark), `LoopCut`, `Knife`, `MeshRepair` (holes, merging, bridging),
+  `ProfileSolids` (sweep, revolve, loft), `QuadRemesh` (Instant Meshes through `InstantMeshesCpp`), `Arrange` (the pivot,
+  typed lengths), `LinkedCopies` (`propagate`, called by `EditorModel.perform`), `SketchConstraints` (`SketchConstraint`,
+  `SketchSolver`, `Layout`; `Sketch.constraining` and `changing(curve:to:)`), `MeshPicking.nearestPart`,
+  `ModelingOperations+Set` (each tool as one labelled command). `AI/ScriptCompiler+Model`: the `model` and `profile` verbs.
+- **Core `Geometry/`**: `ShapeStack` (subdivision while built, `bendDetail` cuts, then strokes, cage and bend; `Key` for
+  caches), `Deform` (bend, twist, taper, bulge) and `CageDeform`, `Sculpt` (`SculptSurface`, `SculptStroke`: grab, smooth,
+  inflate, mirrored). `Model/ObjectShaping`: `ObjectShaping` (cage, strokes) on `SceneObject.shaping`, `DeformCage`,
+  `SculptLayer`, the shaping properties and the `setShaping` command.
+- **Engine**: `SceneCompiler.mesh(_:object:…)` returns `SurfaceMeshes` (built and cut, then moved): paint is found on the
+  first and drawn over the second (`movedPaint`), rigs and plain draws use the moved one; `MeshKey.editable` carries the
+  smoothing and shading, `.subdivided`, `.shaped`, `.shapedPart` (a placed model's part moved over the whole model).
+  `ModelExport` moves exported parts and painted sources the same way.
+- **Features**: `EditorModel+Touch` (the part under the tip, lit, picked, dragged; the knife), `+Shaping` (Smooth, clean
+  up, holes, merging, bridging, loop cut, linked copies, the pivot, lengths), `+Deform` (the bend and its handle, the
+  cage), `+Sculpt` (`Sculpting`: the stroke in progress shown through `sculpting.shown` in `refreshDisplay`), `+Profiles`
+  (sweep, revolve, loft waiting for a pick; sketch rules and locks); `ShapingTypes` (`ModelVerb`, `SculptSettings`,
+  `ProfileWait`); views `Model/ModelShapePage` (the Edit page's verbs and `ModelOptionsBar` with `BrushControls`,
+  `CageControls`, `BendControls`), `Model/PartChip`, `Model/ShapeHandles` (cage points and the bend handle, in the stage's
+  points), `Inspector/ShapeSection`, `Stage/ViewCube` (in `StageChrome`'s view corner), `Stage/StageGestures+Shape`.
 
 ## LoweyRender 2
 

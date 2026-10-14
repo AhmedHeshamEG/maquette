@@ -3,6 +3,37 @@
 All notable changes. 1.x grew in four phases (v0.1 → v1.4); 2.0 is the remaster, released as betas first. Maquette
 continues from 2.0 and numbers its phases again from 0.1 (each phase bumps the minor version until 1.0).
 
+## [0.16] — Maquette — shape (phase U6)
+
+Modelling by touch, with every tool a modeller reaches for, and shapes that keep their sizes.
+
+- **Touch and drag, no modes.** Select a shape and the Pencil lights the face, edge or corner under its tip. Drag a face
+  to pull it, an edge to round it, a corner to move it. Tap a part and its chip has the rest. The Faces, Edges and Corners
+  buttons are gone. Every shape can be edited: it becomes a modelled one quietly the first time you touch it. A placed
+  library model has *Model it*. With no Pencil, the same moves are on Model ▸ Shape.
+- **The part's chip**: a face can be inset, shelled, bridged to a second face (hold to add it) or cut with the **knife**.
+  An edge can be bevelled, rounded, **loop cut** or knifed. Corners can be **merged**, or a **hole filled**. ⋯ grows,
+  shrinks or picks the similar ones, and moves the pivot there.
+- **Model's bar**: Shape · Brush · Cage · Bend · Measure.
+  - **Brush**: grab, smooth and inflate on any surface, mirrored across the middle if you like. The sidebar sets size
+    and strength. A shape too coarse to brush is cut finer first; a placed model is made paintable first.
+  - **Cage**: a box of points around the thing. Drag a point and the shape follows smoothly.
+  - **Bend**: bend, twist, taper or bulge along x, y or z, with one handle on the stage. It animates like any move.
+- **Shape of this object**, in the object panel: width, height and depth typed or scrubbed; **Smooth** (subdivision,
+  0–3, with *make it real*); the **smooth angle** or **flat shading**; its **triangle count**; **clean up the shape**
+  (even quads for games and rigs, through Instant Meshes); close holes; join close corners; **linked copies** (change
+  one, all change; unlink); the **pivot** to the middle or the base.
+- **Profiles**: a closed sketch shape's chip **sweeps** it along a tapped path, **revolves** it around a tapped line (or
+  its own side), or **lofts** it through more shapes.
+- **Sketches keep rules.** Tap a line, then another: parallel, square, same size, twice that, touching, level. A size has
+  a lock. Change one number and the rest follows; our own 2D solver does it.
+- **The view cube**, on by default in the view corner. Tap a side to look from there, drag to turn, double-tap for
+  perspective or flat, hold for the views and Frame all. Settings ▸ Stage hides it.
+- **The bridge** gains `model` (all of the above on one thing; faces named by the way they face) and `profile` (sweep,
+  revolve, loft).
+- Projects move to **schema 15** (an object's cage and brush strokes, its smoothing and bend, sketches' rules); 0.15
+  refuses them with its usual message.
+
 ## [0.15] — Maquette — draw again, and one grammar (phase U5)
 
 Drawing put right, and the whole app speaking one language of hands and Pencil.

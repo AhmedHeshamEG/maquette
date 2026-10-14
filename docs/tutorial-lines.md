@@ -3,6 +3,20 @@
 One line per feature for the person it serves (`studio-h/USERS.md`), in Hesham's voice, for the YouTube lessons the
 Learn place links to (CONTEXT §8). A phase adds the lines of what it built; M16 records them.
 
+## 0.16 (U6): shape
+
+- **The maker:** "Pick the shape, then touch a face with the Pencil and drag it. An edge rounds, a corner moves. No
+  buttons to choose first."
+- **The maker:** "Tap a side's number in the panel and type 40: the shape keeps its sizes."
+- **The sculptor:** "Model, Brush: grab pulls the surface, smooth evens it, inflate puffs it up. Mirror is on, so both
+  cheeks change together."
+- **The game developer:** "Shape of this object, Clean up the shape: a messy sculpt becomes even quads a game engine
+  likes. Watch the triangle count."
+- **The engineering student:** "Tap two lines of a sketch and choose Square or Parallel; lock a size and change another,
+  and the drawing keeps its rules."
+- **Everyone:** "Bend, twist, taper, bulge: one handle. Drag it, and key it like any move to make it wobble."
+- **Everyone:** "The cube in the corner: tap Front to look from the front, double-tap for a flat drawing view."
+
 ## 0.15 (U5): draw again & the grammar
 
 - **The Procreate person:** "Tap Draw and draw. Over a thing, the line lies on it; in the air, it lands on the sheet in
