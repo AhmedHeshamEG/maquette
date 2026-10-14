@@ -333,7 +333,7 @@ extension EditorModel {
             do {
                 sketch = try sketch.changing(curve: ref.index, to: resized)
             } catch {
-                app.show(String.LocalizationValue(error.description), kind: .error)
+                app.show(String.LocalizationValue(String(describing: error)), kind: .error)
                 return
             }
         }

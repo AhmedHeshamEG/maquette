@@ -59,6 +59,20 @@ public struct LoweyMenuCommands: Commands {
             Button("Turn") { gizmo(.rotate) }.keyboardShortcut("2", modifiers: [.command, .option])
             Button("Size") { gizmo(.scale) }.keyboardShortcut("3", modifiers: [.command, .option])
         }
+        CommandMenu("Shape") {
+            Button("Shape by Touch") { stageEditor?.chooseModelVerb(.shape) }.keyboardShortcut("1", modifiers: [.command, .shift])
+            Button("Brush the Surface") { stageEditor?.chooseModelVerb(.brush) }.keyboardShortcut("2", modifiers: [.command, .shift])
+            Button("Cage") { stageEditor?.chooseModelVerb(.cage) }.keyboardShortcut("3", modifiers: [.command, .shift])
+            Button("Bend") { stageEditor?.chooseModelVerb(.bend) }.keyboardShortcut("4", modifiers: [.command, .shift])
+            Divider()
+            Button("Smooth More") { smooth(by: 1) }
+                .keyboardShortcut("]", modifiers: .command)
+            Button("Smooth Less") { smooth(by: -1) }
+                .keyboardShortcut("[", modifiers: .command)
+            Button("Loop Cut") { stageEditor?.loopCutPickedEdge() }.keyboardShortcut("r", modifiers: [.command, .control])
+            Button("Linked Copy") { stageEditor?.makeLinkedCopy() }.keyboardShortcut("d", modifiers: [.command, .shift])
+            Button("Pivot to the Middle") { stageEditor?.movePivot(to: .middle) }
+        }
         CommandMenu("Scene") {
             Button("Frame Selection") { editor?.frameSelection() }.keyboardShortcut("f", modifiers: .command)
             Button("Director View") { editor.map { $0.setDirectorView(!$0.directorView) } }.keyboardShortcut("d", modifiers: [.command, .option])
@@ -140,6 +154,11 @@ public struct LoweyMenuCommands: Commands {
 
     /// The stage under an open board, for the menus that only make sense on the stage.
     private var stageEditor: EditorModel? { editor?.boardShown == true ? nil : editor }
+
+    private func smooth(by step: Int) {
+        guard let editor = stageEditor, let object = editor.shapedSelection else { return }
+        editor.setSmooth(editor.smoothLevels(of: object) + step)
+    }
 
     private func panel(_ panel: ClusterPanel) {
         guard let editor = stageEditor else { return }

@@ -3081,6 +3081,22 @@
         }
       }
     },
+    "Brush the Surface": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Spennella la superficie"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "مرّر الفرشاة على السطح"
+          }
+        }
+      }
+    },
     "Brush the surface: grab pulls it, smooth evens it, inflate puffs it up": {
       "localizations": {
         "it": {
@@ -12669,6 +12685,22 @@
         }
       }
     },
+    "Linked Copy": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Copia collegata"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "نسخة مرتبطة"
+          }
+        }
+      }
+    },
     "Lip bite (F, V)": {
       "localizations": {
         "it": {
@@ -12926,6 +12958,22 @@
       }
     },
     "Loop cut": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Taglio ad anello"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "قطع حلقي"
+          }
+        }
+      }
+    },
+    "Loop Cut": {
       "localizations": {
         "it": {
           "stringUnit": {
@@ -17349,6 +17397,22 @@
         }
       }
     },
+    "Pivot to the Middle": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Perno al centro"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "المحور إلى المنتصف"
+          }
+        }
+      }
+    },
     "Place": {
       "localizations": {
         "it": {
@@ -21265,6 +21329,22 @@
         }
       }
     },
+    "Shape by Touch": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Modella col tocco"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "التشكيل باللمس"
+          }
+        }
+      }
+    },
     "Shape it": {
       "localizations": {
         "it": {
@@ -22217,6 +22297,38 @@
           "stringUnit": {
             "state": "translated",
             "value": "زاوية التنعيم"
+          }
+        }
+      }
+    },
+    "Smooth Less": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Leviga di meno"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تنعيم أقل"
+          }
+        }
+      }
+    },
+    "Smooth More": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Leviga di più"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تنعيم أكثر"
           }
         }
       }

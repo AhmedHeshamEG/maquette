@@ -149,7 +149,7 @@ extension EditorModel {
             HmmHaptics.play(.commit)
             modeling.ruleCurves = []
         } catch {
-            app.show(String.LocalizationValue(error.description), kind: .error)
+            app.show(String.LocalizationValue(String(describing: error)), kind: .error)
             HmmHaptics.play(.error)
         }
     }

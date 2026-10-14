@@ -166,7 +166,7 @@ extension EditorModel {
         do {
             try perform(Arrange.setLength(object.id, axis: axis, to: metres, in: baseScene), coalesceKey: gesture)
         } catch {
-            app.show(String.LocalizationValue(error.description), kind: .error)
+            app.show(String.LocalizationValue(String(describing: error)), kind: .error)
         }
     }
 }
