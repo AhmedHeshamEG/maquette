@@ -115,6 +115,8 @@ final class ModelingTests: XCTestCase {
         XCTAssertTrue(trail.contains("cmd=Cut"), "the circle cut through the block: \(trail)")
         XCTAssertFalse(element("pick-face").exists, "no mode buttons (U6)")
         // A finger's tap on the block (beside the hole) selects it; its panel says its size.
+        // Put Draw down (its shapes are still in the hand), so the panel beside the selection shows.
+        if element("draw-brush").exists { tap("Draw") }
         if element("model-done").exists { tap("model-done") }
         frameAll()
         tapStage(CGPoint(x: centre.x + size.width * 0.04, y: centre.y))
