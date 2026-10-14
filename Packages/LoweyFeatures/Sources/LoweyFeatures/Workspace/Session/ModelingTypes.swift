@@ -248,11 +248,30 @@ struct ModelingState: Sendable {
     var shapeOp: ShapeOpRecord?
     /// While a sketch's next point is drawn: where it would land and what it snapped to (`EditorModel+SketchAssist`).
     var guess: SketchAssist.Guess?
+    /// What Model's bar has in the hand (U6): shaping by touch, surface brushes, the cage, a bend, measuring.
+    var verb: ModelVerb = .shape
+    /// The part lit under the hovering Pencil (what a tap or a drag will take).
+    var lit: LitPart?
+    /// An edge being rounded by a drag: its size so far.
+    var dragSize: Double?
+    /// A corner being dragged: where it is now (world space).
+    var dragCorner: Vec3?
+    /// The next Pencil line across the shape cuts it.
+    var knifeArmed = false
+    /// A sketch region waiting for its path, its axis or its next profile (sweep, revolve, loft).
+    var awaiting: ProfileWait?
+    /// The surface brushes' settings.
+    var sculpt = SculptSettings()
+    /// The thing being cleaned up (clean topology runs off the main thread).
+    var cleaning: ObjectID?
+    /// A sketch curve picked for its rules, and a second one to pair it with.
+    var ruleCurves: [SketchCurveRef] = []
 
     /// What the stage's marks depend on (they're rebuilt when it changes).
     var overlayKey: [AnyHashable] {
         [AnyHashable(mode), AnyHashable(target), AnyHashable(elements), AnyHashable(region), AnyHashable(pending?.points),
-         AnyHashable(pull), AnyHashable(offsetSource), AnyHashable(measure), AnyHashable(build), AnyHashable(snapMark), AnyHashable(guess)]
+         AnyHashable(pull), AnyHashable(offsetSource), AnyHashable(measure), AnyHashable(build), AnyHashable(snapMark), AnyHashable(guess),
+         AnyHashable(lit), AnyHashable(verb), AnyHashable(ruleCurves)]
     }
 
     var hasPick: Bool { region != nil || (elements.map { !$0.isEmpty } ?? false) }
@@ -262,5 +281,7 @@ struct ModelingState: Sendable {
         region = nil
         pull = nil
         editing = nil
+        awaiting = nil
+        knifeArmed = false
     }
 }

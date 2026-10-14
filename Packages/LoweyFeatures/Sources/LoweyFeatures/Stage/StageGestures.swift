@@ -55,6 +55,12 @@ final class StageGestures: NSObject, UIGestureRecognizerDelegate {
         case modelLasso
         /// Drawing a sketch shape's next point (it lands where the tip lifts).
         case sketch
+        /// A face, edge or corner of the selected shape dragged by the Pencil (U6: no modes).
+        case part(PartDrag)
+        /// A surface brush stroke (Model ▸ Brush).
+        case sculpt
+        /// The knife's line across the shape, from where it began.
+        case knife(CGPoint)
         case none
     }
 
@@ -281,6 +287,7 @@ final class StageGestures: NSObject, UIGestureRecognizerDelegate {
             if point.y < 110 { editor.wakeClusters() }
         }
         editor.hoverLight(at: hovering ? point : nil)
+        if editor.tool == .model || editor.touchModelTarget != nil { editor.lightModelPart(at: hovering ? point : nil) }
         let showsPoint = UserDefaults.standard.bool(forKey: AppSettings.pencilHoverPreview)
         let shown = showsPoint && hovering ? point : nil
         if shown != editor.hoverPoint { editor.setHover(shown) }
@@ -309,6 +316,11 @@ final class StageGestures: NSObject, UIGestureRecognizerDelegate {
         }
         if editor.tool == .model, !editor.pickActive {
             editor.modelTap(at: point)
+            return
+        }
+        // The Pencil on the selected shape picks the face, edge or corner under it (U6); its chip has the rest.
+        if editor.tool == .select, !editor.pickActive, tapTouchIsPencil, editor.touchModelTarget != nil,
+           InputJob.shape.allows(pencil: true, fingerMakes: false), editor.pickModelPart(at: point) {
             return
         }
         if editor.tool == .select, !editor.pickActive, let handle = editor.ikHandle(at: point) {
@@ -346,6 +358,10 @@ final class StageGestures: NSObject, UIGestureRecognizerDelegate {
         guard recognizer.state == .began else { return }
         if editor.tool == .model, editor.modeling.mode.pickMode != nil {
             editor.pickElement(at: recognizer.location(in: stage), additive: true)
+            return
+        }
+        // Touch and hold on the selected shape adds the part under it to the pick (a second face to bridge…).
+        if longPressIsPencil, editor.modeling.elements != nil, editor.pickModelPart(at: recognizer.location(in: stage), additive: true) {
             return
         }
         if let (id, _) = stage.pickObject(at: recognizer.location(in: stage)) {

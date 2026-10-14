@@ -24,6 +24,15 @@ extension EditorModel {
         refreshModelOverlay()
     }
 
+    /// Puts one of Model's verbs in the hand (U6: Shape, Brush, Cage, Bend, Measure).
+    func chooseModelVerb(_ verb: ModelVerb) {
+        startModeling(verb == .measure ? .measure : .pick(.face))
+        modeling.verb = verb
+        modeling.knifeArmed = false
+        if verb != .measure { app.show(String.LocalizationValue(verb.hint)) }
+        refreshModelOverlay()
+    }
+
     /// Leaves the Model tool (the bar's ✕): back to selecting objects.
     func stopModeling() {
         tool = .select
@@ -33,7 +42,7 @@ extension EditorModel {
     func modelToolChanged() {
         guard tool != .model else { return }
         cancelPushPull()
-        modeling = ModelingState(mode: modeling.mode)
+        modeling = ModelingState(mode: modeling.mode, sculpt: modeling.sculpt)
         stage?.showModelOverlay([])
     }
 
@@ -42,11 +51,14 @@ extension EditorModel {
         if modeling.hasPick || modeling.lastCurve != nil || modeling.pending != nil { viewRevision &+= 1 }
     }
 
-    /// A tap with the Model tool: draw with a sketch shape, else pick a face, edge or corner.
+    /// A tap with the Model tool: draw with a sketch shape; else a waiting profile's pick, a sketch line for its
+    /// rules, a sketch region, or the face, edge or corner under it (U6: no modes).
     func modelTap(at point: CGPoint) {
         switch modeling.mode {
         case .sketch: sketchTap(at: point)
-        case .pick: pickElement(at: point, additive: false)
+        case .pick:
+            if profileTap(at: point) || pickRuleCurve(at: point) { return }
+            pickElement(at: point, additive: false)
         case .measure: measureTap(at: point)
         case .build: buildTap(at: point)
         }
@@ -129,42 +141,27 @@ extension EditorModel {
 
     // MARK: Picking faces, edges and corners
 
-    /// A tap in a pick mode: the face, edge or corner under it (added to the pick with `additive`).
+    /// A tap: the sketch region under it, else the face, edge or corner of the thing under it (added to the pick with
+    /// `additive`). A thing that isn't selected is selected first.
     func pickElement(at point: CGPoint, additive: Bool) {
-        guard let stage, let mode = modeling.mode.pickMode else { return }
         if let region = sketchRegion(at: point) {
             selectRegion(region)
             return
         }
-        guard let (id, _) = stage.pickObject(at: point), let (mesh, world) = modelMesh(of: id), let ray = stage.worldRay(at: point) else {
-            if !additive { clearModelPick() }
-            return
+        modeling.ruleCurves = []
+        if let stage, let (id, _) = stage.pickObject(at: point), selection != [id],
+           baseScene.objects[id].map(ModelingOperations.canModel) == true {
+            setSelection([id])
+            modeling.target = id
         }
-        let local = Ray(origin: world.inverseApply(to: ray.origin), direction: world.inverseApplyDirection(ray.direction))
-        let screen = Vec2(Double(point.x), Double(point.y))
-        guard let picked = MeshPicking.pick(local, screenPoint: screen, mode: mode, in: mesh, project: { [weak stage] in
-            stage?.screenPoint(of: world.apply(to: $0)).map { Vec2(Double($0.x), Double($0.y)) }
-        }) else { return }
-        if selection != [id] { setSelection([id]) }
-        var elements = picked
-        if additive, modeling.target == id, var current = modeling.elements, current.mode == mode {
-            // Touch and hold adds what's under the finger, or takes it out again.
-            current.vertices.formSymmetricDifference(picked.vertices)
-            current.edges.formSymmetricDifference(picked.edges)
-            current.faces.formSymmetricDifference(picked.faces)
-            elements = current
-        }
-        modeling.region = nil
-        modeling.pull = nil
-        modeling.target = id
-        modeling.elements = elements
-        HmmHaptics.play(.selection)
+        if !pickModelPart(at: point, additive: additive), !additive { clearModelPick() }
     }
 
     /// A Pencil loop in a pick mode: everything of the target (or the selected object) inside it that faces you.
     func pickElements(inLoop loop: [CGPoint]) {
-        guard let stage, let mode = modeling.mode.pickMode, let id = modeling.target ?? singleSelection?.id,
-              let (mesh, world) = modelMesh(of: id) else { return }
+        guard let stage, let id = modeling.target ?? singleSelection?.id, let (mesh, world) = modelMesh(of: id) else { return }
+        // A loop takes the kind of part already picked (faces when nothing is).
+        let mode = modeling.elements?.mode ?? .face
         let eye = Vec3(stage.camera.position)
         let caught = MeshSelection.lasso(loop.map { Vec2(Double($0.x), Double($0.y)) }, mode: mode, in: mesh, project: { [weak stage] in
             stage?.screenPoint(of: world.apply(to: $0)).map { Vec2(Double($0.x), Double($0.y)) }

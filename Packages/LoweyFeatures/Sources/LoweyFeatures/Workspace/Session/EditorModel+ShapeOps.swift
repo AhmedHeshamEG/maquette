@@ -80,7 +80,7 @@ extension EditorModel {
     }
 
     /// A shape becomes an editable mesh (with its scale baked in) before its first shape operation, as push/pull does.
-    private func prepareShapeObject(_ id: ObjectID) -> Bool {
+    func prepareShapeObject(_ id: ObjectID) -> Bool {
         guard let object = baseScene.objects[id] else { return false }
         if case .mesh = object.kind { return true }
         return runModeling { try ModelingOperations.makeEditable(id, in: baseScene) }
