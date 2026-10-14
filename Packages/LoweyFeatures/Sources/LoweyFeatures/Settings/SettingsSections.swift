@@ -151,6 +151,11 @@ struct AcknowledgementsView: View {
                     + "and NVIDIA Corporation. MIT License: permission is granted, free of charge, to use, copy, modify and distribute it, provided "
                     + "the copyright and permission notices are kept. It is provided \"as is\", without warranty of any kind.")
                     .font(.hmm(.footnote))
+                Text("Instant Meshes").font(.hmm(.headline, weight: .semibold))
+                Text("Turns a sculpt into clean quads. Copyright (c) 2015 Wenzel Jakob, Daniele Panozzo, Marco Tarini and Olga "
+                    + "Sorkine-Hornung. BSD 3-clause licence. With Eigen (Mozilla Public License 2.0, source at eigen.tuxfamily.org), "
+                    + "pcg32 (Apache License 2.0, Melissa O'Neill and Wenzel Jakob) and dset (Copyright (c) 2015 Wenzel Jakob, zlib licence).")
+                    .font(.hmm(.footnote))
                 Text("The Kit").font(.hmm(.headline, weight: .semibold))
                 Text("The models in the Library's Sets come from Kenney (kenney.nl: Furniture, Food, Nature, City, Car, Space, Survival and "
                     + "Mini Market kits) and Quaternius (quaternius.com: Sci-Fi Essentials, Universal Base Characters, Universal Animation "

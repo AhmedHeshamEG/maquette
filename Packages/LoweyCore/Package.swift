@@ -15,6 +15,7 @@ let package = Package(
     ],
     dependencies: [
         .package(path: "../HmmKit"),
+        .package(path: "../InstantMeshes"),
         .package(path: "../Manifold"),
         .package(path: "../XAtlas")
     ],
@@ -29,6 +30,8 @@ let package = Package(
                 .product(name: "HmmTranscript", package: "HmmKit"),
                 // Booleans (C++ behind a C face; see Packages/Manifold/VENDORED.md).
                 .product(name: "ManifoldCpp", package: "Manifold"),
+                // Clean quads from a sculpt (C++ behind a C face; see Packages/InstantMeshes/VENDORED.md).
+                .product(name: "InstantMeshesCpp", package: "InstantMeshes"),
                 // Unwrapping models for painting (C++ behind a C face; see Packages/XAtlas/VENDORED.md).
                 .product(name: "XAtlasCpp", package: "XAtlas")
             ],
