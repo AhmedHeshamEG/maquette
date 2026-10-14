@@ -114,7 +114,11 @@ final class ModelingTests: XCTestCase {
         XCTAssertTrue(trail.contains("cmd=Pull"), "the rectangle became a solid: \(trail)")
         XCTAssertTrue(trail.contains("cmd=Cut"), "the circle cut through the block: \(trail)")
         XCTAssertFalse(element("pick-face").exists, "no mode buttons (U6)")
-        XCTAssertTrue(element("selection-size").waitForExistence(timeout: 3))
+        // A finger's tap on the block (beside the hole) selects it; its panel says its size.
+        if element("model-done").exists { tap("model-done") }
+        frameAll()
+        tapStage(CGPoint(x: centre.x + size.width * 0.04, y: centre.y))
+        XCTAssertTrue(element("selection-size").waitForExistence(timeout: 5), element("debug-trail").label)
         XCTAssertEqual(element("selection-size").label, "40 × 10 × 20 mm", "the block keeps its size")
         let report = XCTAttachment(string: String(format: "Built in %.1f s of taps", elapsed))
         report.lifetime = .keepAlways
