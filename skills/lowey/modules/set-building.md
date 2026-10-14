@@ -59,6 +59,10 @@ Faces are named by the way they face, edges by the axis they run along:
 - A sculpt for a game: `{"op":"cleanUp","faces":2000}` (even quads; it bakes everything in).
 - From a sketch region: `{"do":"profile","target":"Sketch","op":"revolve","axis":{"point":[0,0,0],"direction":[0,1,0]}}`
   (a vase), `"sweep"` with a `"path"` (a rail), `"loft"` `"through"` other sketches (a hull).
+- Change your mind later (0.17): `{"do":"model","target":"Plinth","op":"steps"}` lists its modelling steps and their
+  numbers in the reply; `{"op":"step","step":1,"number":"distance","value":0.5}` changes one and the steps after it
+  follow. Prefer this to pulling again: the rounds and holes made after it stay where they belong. A step listed as
+  fixed (changed by hand, painted or rigged) can't change; say so to Hesham rather than rebuilding it.
 
 Shape the hero prop only; the set itself is still Kit models placed by relation.
 
