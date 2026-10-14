@@ -218,6 +218,8 @@ public struct SceneObject: Codable, Hashable, Sendable, Identifiable {
     public var paint: ObjectPaint?
     /// A skeleton drawn into the object and the weights that bend its surface (nil = none; `ObjectRig`).
     public var rig: ObjectRig?
+    /// A cage pulled into a new shape and surface brush strokes (nil = none; `ObjectShaping`).
+    public var shaping: ObjectShaping?
 
     public init(
         id: ObjectID,

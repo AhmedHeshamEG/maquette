@@ -4,10 +4,15 @@ import Foundation
 /// meshes come from the renderer's loaded copy, so they aren't here).
 public enum PaintSource {
     public static func mesh(of object: SceneObject) -> MeshData? {
-        base(of: object).map { MeshDensify.apply($0, for: object) }
+        base(of: object).map { ShapeStack.shaped($0, for: object) }
     }
 
-    /// The mesh before rigging cuts it finer (`MeshDensify`).
+    /// The mesh the brushes and the cage measure: built and cut, before the strokes, the cage and the bend.
+    public static func unshaped(of object: SceneObject) -> MeshData? {
+        base(of: object).map { ShapeStack.unshaped($0, for: object) }
+    }
+
+    /// The mesh before rigging cuts it finer (`MeshDensify`) and before it's shaped (`ShapeStack`).
     static func base(of object: SceneObject) -> MeshData? {
         switch object.kind {
         case let .primitive(shape):
@@ -17,11 +22,11 @@ public enum PaintSource {
                 let size = SIMD3<Float>(Float(abs(scale.x)), Float(abs(scale.y)), Float(abs(scale.z)))
                 return BevelMesh.make(shape, size: size, bevel: bevel) ?? PrimitiveMesh.make(shape, shading: .smooth)
             }
-            return PrimitiveMesh.make(shape, shading: .smooth)
+            return ShapeStack.primitive(shape, for: object, shading: .smooth)
         case let .drawing(recipe) where recipe.style != .ink:
             return DrawingMesher.mesh(for: recipe).shaded(.smooth)
         case let .mesh(editable):
-            return editable.renderMesh()
+            return ShapeStack.render(editable, for: object)
         default:
             return nil
         }

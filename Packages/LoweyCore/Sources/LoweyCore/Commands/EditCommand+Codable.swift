@@ -5,13 +5,13 @@ import Foundation
 extension EditCommand: Codable {
     private enum Key: String, CodingKey {
         case op, fragment, parent, index, ids, entries, changes, id, name, kind, look, scope, camera, timeline, label, commands, tracks
-        case dabs, looks, flipbooks, scene, brushes, paint, tiles, rig, takes, sheets
+        case dabs, looks, flipbooks, scene, brushes, paint, tiles, rig, takes, sheets, shaping
     }
 
     private enum Op: String, Codable {
         case insert, delete, restore, setProperties, rename, setKind, reparent, setLook, renameScene
         case setActiveCamera, setTimeline, setTracks, batch, setShadowPaint, setCustomLooks, setFlipbooks, replaceScene
-        case setBrushes, setPaint, paintTiles, setRig, setTakes, setSheets
+        case setBrushes, setPaint, paintTiles, setRig, setTakes, setSheets, setShaping
     }
 
     public init(from decoder: Decoder) throws {
@@ -56,6 +56,8 @@ extension EditCommand: Codable {
             self = try .paintTiles(c.decode(ObjectID.self, forKey: .id), c.decode([PaintTileChange].self, forKey: .tiles))
         case .setRig:
             self = try .setRig(c.decode(ObjectID.self, forKey: .id), c.decodeIfPresent(ObjectRig.self, forKey: .rig))
+        case .setShaping:
+            self = try .setShaping(c.decode(ObjectID.self, forKey: .id), c.decodeIfPresent(ObjectShaping.self, forKey: .shaping))
         case .setTakes:
             self = try .setTakes(c.decode([TakeEdit].self, forKey: .takes))
         case .setSheets:
@@ -127,7 +129,7 @@ extension EditCommand: Codable {
             try c.encode(Op.batch, forKey: .op)
             try c.encode(label, forKey: .label)
             try c.encode(commands, forKey: .commands)
-        case .setShadowPaint, .setCustomLooks, .setFlipbooks, .replaceScene, .setBrushes, .setRig, .setTakes, .setSheets:
+        case .setShadowPaint, .setCustomLooks, .setFlipbooks, .replaceScene, .setBrushes, .setRig, .setTakes, .setSheets, .setShaping:
             try encodeWholeValue(into: &c)
         case let .setPaint(id, paint):
             try c.encode(Op.setPaint, forKey: .op)
@@ -146,6 +148,10 @@ extension EditCommand: Codable {
             try c.encode(Op.setRig, forKey: .op)
             try c.encode(id, forKey: .id)
             try c.encodeIfPresent(rig, forKey: .rig)
+        case let .setShaping(id, shaping):
+            try c.encode(Op.setShaping, forKey: .op)
+            try c.encode(id, forKey: .id)
+            try c.encodeIfPresent(shaping, forKey: .shaping)
         case let .setShadowPaint(id, dabs):
             try c.encode(Op.setShadowPaint, forKey: .op)
             try c.encode(id, forKey: .id)

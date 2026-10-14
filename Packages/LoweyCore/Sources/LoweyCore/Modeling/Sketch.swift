@@ -9,11 +9,65 @@ public struct Sketch: Codable, Hashable, Sendable {
     public var curves: [SketchCurve]
     /// The object whose face it was drawn on (pulling a region in or out changes that object).
     public var target: ObjectID?
+    /// Rules the curves keep when one changes (`SketchSolver`).
+    public var constraints: [SketchConstraint]
 
-    public init(plane: PlaneFrame, curves: [SketchCurve] = [], target: ObjectID? = nil) {
+    public init(plane: PlaneFrame, curves: [SketchCurve] = [], target: ObjectID? = nil, constraints: [SketchConstraint] = []) {
         self.plane = plane
         self.curves = curves
         self.target = target
+        self.constraints = constraints
+    }
+
+    private enum CodingKeys: String, CodingKey { case plane, curves, target, constraints }
+
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        plane = try container.decode(PlaneFrame.self, forKey: .plane)
+        curves = try container.decode([SketchCurve].self, forKey: .curves)
+        target = try container.decodeIfPresent(ObjectID.self, forKey: .target)
+        constraints = try container.decodeIfPresent([SketchConstraint].self, forKey: .constraints) ?? []
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(plane, forKey: .plane)
+        try container.encode(curves, forKey: .curves)
+        try container.encodeIfPresent(target, forKey: .target)
+        if !constraints.isEmpty { try container.encode(constraints, forKey: .constraints) }
+    }
+
+    /// The sketch with a rule added and the curves solved to keep it.
+    public func constraining(_ constraint: SketchConstraint) throws(SketchSolver.Failure) -> Sketch {
+        var copy = self
+        copy.constraints.append(constraint)
+        copy.curves = try SketchSolver.solve(curves, constraints: copy.constraints)
+        return copy
+    }
+
+    /// The sketch with one curve changed (a typed length, a dragged end) and the rest solved to keep every rule.
+    /// A length or angle locked on that curve takes the new value.
+    public func changing(curve index: Int, to curve: SketchCurve) throws(SketchSolver.Failure) -> Sketch {
+        guard curves.indices.contains(index) else { return self }
+        var copy = self
+        copy.curves[index] = curve
+        copy.constraints = constraints.map { $0.retaking(index, from: copy.curves) }
+        copy.curves = try SketchSolver.solve(copy.curves, constraints: copy.constraints, joinedAs: curves)
+        return copy
+    }
+
+    /// Without some curves (and the rules that named them; the others renumbered).
+    public func removingCurves(_ removed: Set<Int>) -> Sketch {
+        var copy = self
+        var map: [Int: Int] = [:]
+        var kept: [SketchCurve] = []
+        for (index, curve) in curves.enumerated() where !removed.contains(index) {
+            map[index] = kept.count
+            kept.append(curve)
+        }
+        copy.curves = kept
+        copy.constraints = constraints.compactMap { $0.renumbered(map) }
+        return copy
     }
 
     /// Every curve as a polyline in plane coordinates, with whether it closes on itself.
@@ -71,14 +125,12 @@ public struct Sketch: Codable, Hashable, Sendable {
 
     /// The sketch without the curves that made a region (pulled regions are used up, like Shapr3D).
     public func removing(_ region: SketchRegion) -> Sketch {
-        var copy = self
-        copy.curves = curves.filter { curve in
-            let points = curve.points
-            return !points.allSatisfy { point in
+        let used = Set(curves.indices.filter { index in
+            curves[index].points.allSatisfy { point in
                 ([region.outline] + region.holes).contains { loop in SketchLoops.onLoop(point, loop, tolerance: tolerance * 10) }
             }
-        }
-        return copy
+        })
+        return removingCurves(used)
     }
 }
 
