@@ -56,7 +56,12 @@
                             dragStart = value
                             onEditingChanged(true)
                         }
+                        let before = value
                         value = mapping.value(start: dragStart ?? value, dy: drag.translation.height, dx: drag.translation.width)
+                        #if canImport(UIKit)
+                            // The Pencil Pro clicks once as the slider reaches an end.
+                            if value != before, value == range.lowerBound || value == range.upperBound { HmmPencilHaptics.buzz() }
+                        #endif
                     }
                     .onEnded { _ in
                         dragStart = nil

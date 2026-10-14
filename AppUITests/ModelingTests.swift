@@ -43,7 +43,21 @@ final class ModelingTests: XCTestCase {
     /// Taps a floating number and types a length on the number pad that opens beside it. One query per key: the clock
     /// is running.
     private func type(_ text: String, into dimension: String) {
-        element("dimension-\(dimension)").tap()
+        let number = element("dimension-\(dimension)")
+        // The number can be redrawn as the stage settles after the last one was typed: tap it again until its pad opens.
+        var opened = false
+        for _ in 0 ..< 6 where !opened {
+            // A snapshot fails quietly if it went between finding it and tapping; then the next round finds it again.
+            if number.waitForExistence(timeout: 2), let frame = try? number.snapshot().frame {
+                app.coordinate(withNormalizedOffset: .zero).withOffset(CGVector(dx: frame.midX, dy: frame.midY)).tap()
+            }
+            opened = element("number-pad-display").waitForExistence(timeout: 1.5)
+        }
+        guard opened else {
+            let shown = app.descendants(matching: .any).matching(NSPredicate(format: "identifier BEGINSWITH 'dimension-'")).allElementsBoundByIndex
+            XCTFail("no pad for \(dimension) (shown: \(shown.map(\.identifier))): " + element("debug-trail").label)
+            return
+        }
         for character in text {
             let key = switch character {
             case "-": "minus"
@@ -71,27 +85,26 @@ final class ModelingTests: XCTestCase {
         // The timed part is only what a person does: taps and typed numbers. Checks and pictures come after.
         let start = Date()
         element("Draw").tap()
-        element("tool-sketch").tap()
-        element("sketch-rectangle").tap()
+        element("draw-brush").tap()
+        element("brush-set-shapes").tap()
+        element("draw-kind-rectangle").tap()
         let size = stage.frame.size
         let middle = CGPoint(x: size.width / 2, y: size.height * 0.55)
         tapStage(CGPoint(x: middle.x - 70, y: middle.y - 30))
         tapStage(CGPoint(x: middle.x + 70, y: middle.y + 40))
         type("40", into: "width")
         type("20", into: "depth")
-        // Double-tap frames the work, so the rectangle's middle is the stage's middle; pull it up 10.
-        frameAll()
-        let centre = CGPoint(x: size.width / 2, y: size.height / 2)
-        tapStage(centre)
+        // A closed shape is picked as it lands (U5): pull it up 10.
         type("10", into: "pull")
+        let centre = CGPoint(x: size.width / 2, y: size.height / 2)
         // A circle on the block's top (framed, the top face lies above the middle), 6 across, cut through.
         frameAll()
-        element("Circle").tap()
+        element("draw-brush").tap()
+        element("draw-kind-circle").tap()
         let top = CGPoint(x: centre.x, y: centre.y - size.height * 0.06)
         tapStage(top)
         tapStage(CGPoint(x: top.x + 60, y: top.y))
         type("6", into: "diameter")
-        tapStage(top)
         type("-10", into: "pull")
         let elapsed = Date().timeIntervalSince(start)
         shot("A 6 mm hole through a 40 × 20 × 10 mm block")

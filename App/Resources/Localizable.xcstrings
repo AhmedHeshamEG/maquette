@@ -17,6 +17,22 @@
         }
       }
     },
+    "%@ %@. Keep holding and drag to adjust": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ %@. Tieni premuto e trascina per regolare"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ %@. استمر في الضغط واسحب للضبط"
+          }
+        }
+      }
+    },
     "%@ goes off at %@": {
       "localizations": {
         "it": {
@@ -657,6 +673,22 @@
         }
       }
     },
+    "A finger's tap puts the sheet there: on a surface, or in the air facing you. Hold it for its shape and guide.": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Un tocco con il dito mette lì il foglio: su una superficie, o in aria rivolto verso di te. Tienilo premuto per la forma e la guida."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "نقرة بالإصبع تضع الورقة هناك: على سطح، أو في الهواء مواجهة لك. اضغط عليها مطولًا لشكلها ودليلها."
+          }
+        }
+      }
+    },
     "a hip": {
       "localizations": {
         "it": {
@@ -813,6 +845,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "التبديل يحتاج شيئين على الأقل يتناوبان"
+          }
+        }
+      }
+    },
+    "A title: it stays put on the picture while the camera moves.": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Un titolo: resta fermo sull'immagine mentre la camera si muove."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "عنوان: يبقى ثابتًا على الصورة بينما تتحرك الكاميرا."
           }
         }
       }
@@ -1353,6 +1401,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "أُضيف “%@” إلى فُرَشك"
+          }
+        }
+      }
+    },
+    "After: %lld": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dopo: %lld"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "بعد: %lld"
           }
         }
       }
@@ -2421,6 +2485,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "قبل استعادة “%@”"
+          }
+        }
+      }
+    },
+    "Before: %lld": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Prima: %lld"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "قبل: %lld"
           }
         }
       }
@@ -3745,6 +3825,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "مسح الظلال المرسومة للتحديد"
+          }
+        }
+      }
+    },
+    "Clear the shadow painting": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cancella le ombre dipinte"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "امسح الظلال المرسومة"
           }
         }
       }
@@ -6029,6 +6125,22 @@
         }
       }
     },
+    "Drag from corner to corner, from the middle out, or from point to point. Hold at the end of any line for a clean one.": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Trascina da angolo ad angolo, dal centro verso l'esterno o da punto a punto. Tieni premuto alla fine di una linea per renderla pulita."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "اسحب من زاوية إلى زاوية، أو من المنتصف إلى الخارج، أو من نقطة إلى نقطة. اضغط مطولًا في نهاية أي خط ليصبح نظيفًا."
+          }
+        }
+      }
+    },
     "Drag it in the frame, pinch to size it, twist to turn it.": {
       "localizations": {
         "it": {
@@ -6105,6 +6217,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "اسحب على الأرض: نسخ من التحديد تملأ المساحة. العدد وتنوّع الحجم والتباعد أسفل المسرح."
+          }
+        }
+      }
+    },
+    "Drag to change it, tap to type it": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Trascina per cambiarlo, tocca per scriverlo"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "اسحب لتغييره، انقر لكتابته"
           }
         }
       }
@@ -6301,6 +6429,22 @@
         }
       }
     },
+    "Draw frame by frame": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Disegna fotogramma per fotogramma"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ارسم إطارًا بإطار"
+          }
+        }
+      }
+    },
     "Draw half a profile: it spins into a vase, a trunk or a tower.": {
       "localizations": {
         "it": {
@@ -6489,6 +6633,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "ارسم، أو أفلت صورة، أو أضف ملاحظة."
+          }
+        }
+      }
+    },
+    "Drawing %lld": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Disegno %lld"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الرسمة %lld"
           }
         }
       }
@@ -7261,6 +7421,22 @@
         }
       }
     },
+    "Eraser or the last brush": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gomma o l'ultimo pennello"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الممحاة أو آخر فرشاة"
+          }
+        }
+      }
+    },
     "Eraser size": {
       "localizations": {
         "it": {
@@ -7769,6 +7945,22 @@
         }
       }
     },
+    "Face me": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Verso di me"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "مواجهة لي"
+          }
+        }
+      }
+    },
     "Face · %@": {
       "localizations": {
         "it": {
@@ -7893,6 +8085,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "التلاشي"
+          }
+        }
+      }
+    },
+    "Farther": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Più lontano"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "أبعد"
           }
         }
       }
@@ -8301,6 +8509,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "شرائط مسطحة على السطح."
+          }
+        }
+      }
+    },
+    "Flick right with a finger for a new frame, left for the one before. The time at the bottom left shows the frames around this one.": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Scorri veloce a destra con un dito per un nuovo fotogramma, a sinistra per quello prima. Il tempo in basso a sinistra mostra i fotogrammi intorno a questo."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "اسحب بسرعة إلى اليمين بإصبع لإطار جديد، وإلى اليسار للإطار السابق. الوقت في أسفل اليسار يُظهر الإطارات حول هذا الإطار."
           }
         }
       }
@@ -9069,6 +9293,22 @@
         }
       }
     },
+    "Frames": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fotogrammi"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الإطارات"
+          }
+        }
+      }
+    },
     "Framing": {
       "localizations": {
         "it": {
@@ -9657,6 +9897,22 @@
         }
       }
     },
+    "Guide": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Guida"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الدليل"
+          }
+        }
+      }
+    },
     "Guide size": {
       "localizations": {
         "it": {
@@ -9877,6 +10133,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "إخفاء عصا التحكم"
+          }
+        }
+      }
+    },
+    "Hide the sheet and guides": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nascondi il foglio e le guide"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "أخفِ الورقة والأدلة"
           }
         }
       }
@@ -10837,6 +11109,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "مفصل في المنتصف"
+          }
+        }
+      }
+    },
+    "Joystick": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Joystick"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "عصا التحكم"
           }
         }
       }
@@ -12809,6 +13097,22 @@
         }
       }
     },
+    "Mirror the pose": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Specchia la posa"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "اعكس الوضعية"
+          }
+        }
+      }
+    },
     "Model": {
       "localizations": {
         "it": {
@@ -13585,6 +13889,22 @@
         }
       }
     },
+    "Nearer": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Più vicino"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "أقرب"
+          }
+        }
+      }
+    },
     "New": {
       "localizations": {
         "it": {
@@ -13901,6 +14221,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "بلا خفض"
+          }
+        }
+      }
+    },
+    "No guide": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nessuna guida"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "بلا دليل"
           }
         }
       }
@@ -14813,6 +15149,38 @@
           "stringUnit": {
             "state": "translated",
             "value": "شفافية الإطارات"
+          }
+        }
+      }
+    },
+    "Onion skins": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Onion skin"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "طبقات البصل"
+          }
+        }
+      }
+    },
+    "Only something at the top of the scene can stick to the camera": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Solo ciò che è al primo livello della scena può restare attaccato alla camera"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "وحده ما في أعلى المشهد يمكن أن يلتصق بالكاميرا"
           }
         }
       }
@@ -16277,6 +16645,22 @@
         }
       }
     },
+    "Place": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Posizione"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "المكان"
+          }
+        }
+      }
+    },
     "Place every dot first": {
       "localizations": {
         "it": {
@@ -16685,6 +17069,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "إعدادات جاهزة"
+          }
+        }
+      }
+    },
+    "Presets on the selection": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Preimpostazioni sulla selezione"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "إعدادات جاهزة على التحديد"
           }
         }
       }
@@ -18865,6 +19265,22 @@
         }
       }
     },
+    "Save the pose": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Salva la posa"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "احفظ الوضعية"
+          }
+        }
+      }
+    },
     "Save the world to your library": {
       "localizations": {
         "it": {
@@ -19953,6 +20369,22 @@
         }
       }
     },
+    "Shadow": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ombra"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الظل"
+          }
+        }
+      }
+    },
     "Shadow Brush": {
       "localizations": {
         "it": {
@@ -20433,6 +20865,54 @@
         }
       }
     },
+    "Show the bones": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mostra le ossa"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "أظهر العظام"
+          }
+        }
+      }
+    },
+    "Show the buttons": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mostra i pulsanti"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "أظهر الأزرار"
+          }
+        }
+      }
+    },
+    "Show the drawings around this one": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mostra i disegni intorno a questo"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "أظهر الرسومات حول هذه"
+          }
+        }
+      }
+    },
     "Show the joystick under a selection": {
       "localizations": {
         "it": {
@@ -20509,6 +20989,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "إظهار الخط الزمني"
+          }
+        }
+      }
+    },
+    "Show undo buttons": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mostra i pulsanti annulla"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "أظهر أزرار التراجع"
           }
         }
       }
@@ -20941,6 +21437,22 @@
         }
       }
     },
+    "Smudge": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sfumino"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تلطيخ"
+          }
+        }
+      }
+    },
     "Snap": {
       "localizations": {
         "it": {
@@ -21257,6 +21769,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "شكل مُجسَّم"
+          }
+        }
+      }
+    },
+    "Solids": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Solidi"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "المجسمات"
           }
         }
       }
@@ -22025,6 +22553,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "التدرّج (المشروع كله)"
+          }
+        }
+      }
+    },
+    "Stick to the camera": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Attacca alla camera"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الصق بالكاميرا"
           }
         }
       }
@@ -23657,6 +24201,22 @@
         }
       }
     },
+    "The brush in the hand": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Il pennello in mano"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الفرشاة في اليد"
+          }
+        }
+      }
+    },
     "the chin": {
       "localizations": {
         "it": {
@@ -23669,6 +24229,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "الذقن"
+          }
+        }
+      }
+    },
+    "The colour in the hand": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Il colore in mano"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "اللون في اليد"
           }
         }
       }
@@ -24437,6 +25013,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "لا يوجد مجسم لفحصه بعد"
+          }
+        }
+      }
+    },
+    "These put colour on a model. Started in the air, they draw a line.": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Questi mettono colore su un modello. Iniziati in aria, disegnano una linea."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "هذه تضع لونًا على نموذج. إذا بدأت في الهواء ترسم خطًا."
           }
         }
       }
@@ -25921,6 +26513,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "أبطأ بمرتين"
+          }
+        }
+      }
+    },
+    "Two fingers tap to undo, three to redo, everywhere. The buttons are for those who like to see them.": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Due dita toccano per annullare, tre per ripetere, ovunque. I pulsanti sono per chi ama vederli."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "نقرة بإصبعين للتراجع وبثلاثة للإعادة، في كل مكان. الأزرار لمن يحب أن يراها."
           }
         }
       }

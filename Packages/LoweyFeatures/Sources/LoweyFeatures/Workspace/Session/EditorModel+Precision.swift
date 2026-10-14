@@ -157,7 +157,9 @@ extension EditorModel {
 
     /// The guide plane's drawing guide (grid, isometric, symmetry) on the plane while drawing on it.
     private func planeGuideMesh(stage: StageView) -> MeshData? {
-        guard tool == .ink, ink.mode == .draw, let guide = planeGuide, let sheet = currentSheet, let basis = planeBasis(sheet) else { return nil }
+        guard tool == .ink, ink.mode == .draw, !sheetHidden, let guide = planeGuide, let sheet = currentSheet, let basis = planeBasis(sheet) else {
+            return nil
+        }
         let reach = max(sheet.width, sheet.height)
         let width = stage.worldPerPoint(at: basis.origin) * 0.8
         var mesh = MeshData()

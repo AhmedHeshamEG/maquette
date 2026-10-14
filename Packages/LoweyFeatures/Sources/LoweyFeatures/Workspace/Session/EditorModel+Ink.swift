@@ -32,7 +32,9 @@ extension EditorModel {
     /// The path the current ink brush makes of Pencil samples (world points on the guide): the same function draws
     /// the live stroke and the one that's kept.
     func inkPath(_ samples: [BrushInput<Vec3>]) -> BrushPath<Vec3> {
-        BrushStroker.path(samples, brush: currentBrush(for: .ink), size: ink.width, streamline: min((ink.smoothing + pencilFeel.stabilisation) * 0.6, 0.95),
+        // The brush's own streamline, and only the Pencil page's stabilisation on top (0 unless set): smoothing twice
+        // pulled the line behind the tip (U5).
+        BrushStroker.path(samples, brush: currentBrush(for: .ink), size: ink.width, streamline: min(pencilFeel.stabilisation * 0.6, 0.95),
                           minimumSpacing: ink.width * 0.25)
     }
 
@@ -43,7 +45,9 @@ extension EditorModel {
     }
 
     /// A stroke and its symmetry copies (the guide plane's guide), as one undo step; each copy keeps its own seed.
-    func commitInkStrokes(_ copies: [[BrushInput<Vec3>]], seed: UInt64) {
+    /// `onSheet`: drawn in the air, on the sheet (kept with the stroke; a new drawing remembers it, so moving the sheet
+    /// moves it); else on a surface.
+    func commitInkStrokes(_ copies: [[BrushInput<Vec3>]], seed: UInt64, onSheet: Bool = true) {
         let paths = copies.map(inkPath).filter { !$0.points.isEmpty }
         guard let first = paths.first else { return }
         let (key, brushCommand) = projectBrush(currentBrush(for: .ink))
@@ -57,7 +61,7 @@ extension EditorModel {
             for (index, path) in paths.enumerated() {
                 recipe = InkEditing.appending(stroke(path, index: index, map: { world.inverseApply(to: $0) }, scale: scale), to: recipe)
             }
-            performStroke(keepingSheet(.setKind(target.id, .drawing(recipe))), brush: brushCommand)
+            performStroke(onSheet ? keepingSheet(.setKind(target.id, .drawing(recipe))) : .setKind(target.id, .drawing(recipe)), brush: brushCommand)
             return
         }
         let origin = first.points[0]
@@ -67,8 +71,9 @@ extension EditorModel {
         var object = factory.drawing(DrawingRecipe(style: .ink, strokes: strokes, normal: normal), transform: CoreTransform(position: origin),
                                      color: currentColor)
         if ink.opacity < 0.999 { object[.opacity] = .float(ink.opacity) }
+        if onSheet, let sheet = currentSheet { object[.drawnOn] = .string(sheet.id) }
         object.name = ObjectFactory.uniqueName(object.name, in: scene)
-        if performStroke(keepingSheet(operations.add(object)), brush: brushCommand) { selection = [object.id] }
+        if performStroke(onSheet ? keepingSheet(operations.add(object)) : operations.add(object), brush: brushCommand) { selection = [object.id] }
     }
 
     // MARK: Erasing
@@ -93,6 +98,43 @@ extension EditorModel {
             }
         }
         inkStrokes = []
+    }
+
+    // MARK: Smudge
+
+    /// Draw's Smudge on lines (U5): the points near the Pencil move with it, on the plane facing you through each
+    /// drawing, taking less the farther they are (the eraser's reach, a little wider). One undo step per gesture.
+    func smudgeInk(from start: CGPoint, to end: CGPoint, gesture: String) {
+        guard let stage, let from = stage.worldRay(at: start), let to = stage.worldRay(at: end) else { return }
+        let reach = ink.eraserRadius * 1.6
+        let eye = Vec3(stage.camera.position)
+        for object in inkTargets() {
+            guard let recipe = inkRecipe(object), let bounds = stage.visualBounds(of: [object.id]) else { continue }
+            let plane = GuideSurface.plane(origin: bounds.center, normal: (eye - bounds.center).normalized)
+            guard let a = plane.intersect(from)?.point, let b = plane.intersect(to)?.point else { continue }
+            let world = displayed.scene.worldTransform(of: object.id)
+            let local = world.inverseApply(to: b) - world.inverseApply(to: a)
+            let pushed = InkEditing.pushing(recipe, by: local) { strokeIndex, pointIndex in
+                guard let screen = stage.screenPoint(of: world.apply(to: recipe.strokes[strokeIndex].points[pointIndex])) else { return 0 }
+                return InkEditing.falloff(distance: Double(hypot(screen.x - start.x, screen.y - start.y)), radius: reach)
+            }
+            if pushed != recipe { perform(.setKind(object.id, .drawing(pushed)), coalesceKey: gesture) }
+        }
+    }
+
+    /// The picked strokes take the brush in the hand (their chip).
+    func restyleInkStrokes() {
+        let (key, brushCommand) = projectBrush(currentBrush(for: .ink))
+        guard let object = activeInk, let recipe = inkRecipe(object), !inkStrokes.isEmpty else { return }
+        let restyled = InkEditing.restyling(inkStrokes, brush: key, in: recipe)
+        guard restyled != recipe else { return }
+        performStroke(.setKind(object.id, .drawing(restyled)), brush: brushCommand, label: "Brush")
+    }
+
+    /// The picked strokes' drawing takes the colour in the hand (their chip; a drawing has one colour).
+    func recolourInk() {
+        guard let object = activeInk else { return }
+        perform(.setProperties([PropertyChange(object: object.id, key: .color, value: .color(currentColor))]))
     }
 
     private func inkTargets() -> [SceneObject] {
@@ -170,8 +212,15 @@ extension EditorModel {
         editInkStrokes { recipe, _ in InkEditing.smoothing(inkStrokes, by: 0.6, in: recipe) }
     }
 
-    func scaleInkStrokes(by factor: Double) {
-        editInkStrokes { recipe, _ in InkEditing.scalingWidths(inkStrokes, by: factor, in: recipe) }
+    func scaleInkStrokes(by factor: Double, gesture: String? = nil) {
+        editInkStrokes(gesture: gesture) { recipe, _ in InkEditing.scalingWidths(inkStrokes, by: factor, in: recipe) }
+    }
+
+    /// Where the picked strokes are on screen (their chip sits above it).
+    var pickedStrokesRect: CGRect? {
+        let points = selectedStrokePaths().flatMap { $0 }
+        guard let first = points.first else { return nil }
+        return points.reduce(CGRect(origin: first, size: .zero)) { $0.union(CGRect(origin: $1, size: .zero)) }
     }
 
     func deleteInkStrokes() {

@@ -12,10 +12,16 @@ public enum StageColors {
     /// `lw_gridFragment` draws them so).
     public static let gridMinorAlpha = 0.16
     public static let gridMajorAlpha = 0.32
-    /// The sheet under the Pencil: a faint see-through fill and a clearer border (the editor layer only).
-    public static let sheet = RGBA(0.45, 0.75, 1)
-    public static let sheetFillAlpha = 0.1
-    public static let sheetBorderAlpha = 0.55
+    /// The sheet under the Pencil (U5: "the sheet is nearly invisible"): warm paper, clearly there while drawing, with
+    /// a soft edge and faint dots; it fades to a trace once the drawing stops (the editor layer only).
+    public static let sheet = RGBA(0.96, 0.93, 0.86)
+    public static let sheetFillAlpha = 0.15
+    /// The faded sheet, between strokes.
+    public static let sheetRestingAlpha = 0.04
+    /// The soft edge, from its outside in.
+    public static let sheetEdgeAlphas = [0.5, 0.3, 0.16]
+    public static let sheetBorderAlpha = 0.5
+    public static let sheetDotAlpha = 0.3
 
     /// WCAG relative luminance of an sRGB colour.
     public static func luminance(_ color: RGBA) -> Double {

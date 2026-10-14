@@ -2032,3 +2032,109 @@ pull on the ring moved the object). Since 0.14 the overlay ignores the top safe 
 **D-279 — The timed rig tests allow CI 20 s for the tail and pull slowly.** On main's first 0.14 run the tail took 16.7 s
 (11.5 s on the PR) and a fast synthetic drag sometimes missed the handle; the pull is now held a moment and drawn at
 250 points a second. The claim on the iPad stays 10 s and 30 s (device checklist).
+
+## Maquette 0.15 — U5, draw again & the grammar
+
+**D-280 — U5 starts from main, after U4, in a cloud session.** U1 (PR #30) still waits for the first feel recording;
+main carries U1's finished steps. The phase ran in claude.ai/code with no Mac: Core was built and tested on Linux in the
+session (Swift 6.1), everything else was proved on CI, the same as on the PC. *Rejected:* waiting for a PC session.
+
+**D-281 — A dragged joint is a live value until the finger lifts.** Each move of a dot or a pin was a command (journal,
+keys, every observing panel). While the finger moves, the IK result goes into the live values the renderer already skins
+with on the GPU with the weights it has; the drag lands as one `setProperties` step on release (`finishIKDrag`), and keys
+add themselves then. A Feature test fails if a move's median answer is over a sixtieth of a second. *Rejected:* rebuilding
+weights during the drag (a mark's rest moving at rest pose shows nothing; the lag was the posing).
+
+**D-282 — The cube at the stage's centre was the sheet.** Nothing in a blank project draws a cube; what stood at the
+middle of the stage with a drawing tool in the hand, and moved for no drag, was the unused sheet with its floating bar.
+It now shows as paper only while drawing (a trace between strokes) and has no bar (D-285). *Rejected:* guessing at the
+helpers (they are picked and moved like any object).
+
+**D-283 — Draw and Paint are one Draw, the brush decides.** Top right is Model · Draw · Rig · Animate; Draw opens no
+panel and its bar is Brush · Smudge · Erase · Sheets · Colour. One brush is in the hand for lines, frames and paint
+(`BrushTool.ink`'s choice); the library's sets draw lines, the built-in Painting set paints models (Sheets becomes
+Layers over a thing, and a paint stroke begun in the air draws a line), and under the library's sets are Solids, Shapes
+and Shadow (`DrawBrushKind`). Smudge pushes lines (`InkEditing.pushing`); on painted models Smudge waits for U7 Texture,
+where the paint engine gets per-pixel tools. *Rejected:* a tool per kind of mark (the U3 panel that showed Draw, Erase
+and Select strokes twice); a Paint button beside Draw.
+
+**D-284 — Zero setup: the surface, else the sheet.** A line or a solid begun over a thing (not an ink drawing) lands on
+its surface and keeps no sheet; past the surface's edge it carries on in the plane where it left. In the air it lands on
+the sheet, which turns to face you before the stroke unless a finger placed it or something is drawn on it; a flat sheet
+seen edge-on gives way to a new one facing you. Flipbooks keep their sheet. *Rejected:* every stroke on the sheet (U3:
+lines landed in the wrong place over a model).
+
+**D-285 — The sheet is paper, and its controls are its hold menu.** Warm paper at 15 %, a soft edge in three bands and
+faint dots while drawing; a 4 % trace a moment after (`StageColors`, checked against the dark studio). A finger held on the
+sheet's empty part opens its menu: place (nearer, farther, face me), shape, guide, rename, delete. The floating bar went.
+Drawings remember their kept sheet (`drawnOn`) and `SheetCarry` moves them with it in the same step. *Rejected:* a
+handle on the sheet (the floating bar sat on the drawing).
+
+**D-286 — Extra smoothing is gone.** A line's streamline is the brush's own, and the Pencil page's stabilisation on top
+(0 unless set). Smoothing twice pulled the line behind the tip. *Rejected:* keeping a per-tool slider.
+
+**D-287 — Accuracy is a UI test.** Under `-ui-testing` each stroke writes where its touch began and where its first point
+landed on screen; `DrawTests` draws in the air and on a cube and fails past three points, and checks a tap picks the
+stroke under it. The Pencil page's pad shows a crosshair where the app reads the tip (touching or hovering). The lasso's
+offset in U3 was the overlay sitting under the status bar (D-278, fixed in 0.14). *Rejected:* a device-only check.
+
+**D-288 — Shapes are a set, drawn in one drag.** Line point to point, rectangle corner to corner, circle from the middle
+out (U3's sketch already landed a drag as two points). A closed shape is picked as it lands and shows one arrow; a drag
+on it pulls it into a solid; a tap on it keeps it picked. Hold-to-shape says the size it made. *Rejected:* a Sketch tool
+beside Draw.
+
+**D-289 — A tapped stroke has a chip; dragging along it reshapes it.** A Pencil tap that barely moves on a line picks it
+(no dot is drawn there); the chip has the brush and the colour in the hand, thickness as a number pill, smooth, delete.
+The Pencil started on a picked stroke pushes it like Smudge. *Rejected:* a Select strokes mode.
+
+**D-290 — Frames are flicked, Dreams' way.** With frames on, a finger's flick (under 0.3 s, over 50 points, twice as
+wide as tall, over 700 points a second) turns the frame: right adds the next drawing, left goes back; a flick draws
+nothing and a turn of the view it began is put back. The time at the bottom left opens onion skins (0–8 each way, two
+colours). Holding a drawing on the strip and letting go duplicates it; dragging still moves it. *Rejected:* a frame
+button only (it was there; the flick is the gesture).
+
+**D-291 — Hover lights what a tap lands on, on by default.** The thing under the hovering Pencil is tinted in the accent
+(`StageView.showHover`); the sheet wakes; a Pencil near the top wakes the clusters. The point under the tip stays its own
+setting, off. Without hover a tap already picks the nearest thing within six points. *Rejected:* lighting faces and
+edges now (U6 rebuilds modelling's picking).
+
+**D-292 — Every number is a slider.** `HmmNumberPill` / `HmmScrub` (hmm-kit 0.9): a point of slow drag is a fine step, fast
+drags go up to twenty times as far, a tap types on our pad; the Pencil Pro clicks at a range's end. The stage's
+dimensions and the object panel's numbers are 44 pt and scrub as one undo step per drag.
+
+**D-293 — Fingers and the Pencil.** Two fingers always move the view (the point under them stays under them, a pinch
+zooms toward them, a twist turns); they no longer turn or size the selection. One finger turns half a turn per screen
+width on any iPad. A selected thing dragged by a finger lifts a little, slides over the surface under its middle (it
+climbs onto things up to its own height) and sits down on release. *Rejected:* carrying a thing that isn't selected (a
+drag from any object would leave nowhere to orbit from).
+
+**D-294 — One grammar: a bar per tool, clusters that rest.** Draw has its bar of five; Model and Rig keep theirs. Both
+clusters fold to faint rails when a stroke starts and come back on a touch, the Pencil hovering near the top, a panel or
+leaving Draw. The Select button went: the lasso is the quick menu's first slot, in the three-finger bar (with Select all)
+and on the empty stage's hold menu; one loop, then back. The view corner is Views · Camera · Joystick · Snap: the
+timeline comes with Animate, framing with a double-tap or the quick menu. Undo and redo buttons are a Gestures switch,
+off.
+
+**D-295 — + Overlay went; titles stick to the camera.** 3D text has *Stick to the camera* (`sticksToCamera`): its place is
+read in the shot camera's frame in every evaluated frame, so stage and export agree; switching it keeps it where it was
+(a camera is made from the view if there is none). Screen effects at the playhead are in Look ▸ Finish. Existing
+overlays still play and stay editable. *Rejected:* a line sending people to Cutaway.
+
+**D-296 — The quick menu changes with the tool.** Lasso · Eyedropper · Eraser ↔ the last brush · Snap · Hide the sheet and
+guides · Frame by default (slots refillable, saved under a new key so 0.13's six don't hide the lasso); with Rig: Pins ·
+Dots · Mirror the pose · Reset the pose · Save the pose · Show the bones.
+
+**D-297 — One toast system; the eyedropper is Procreate's.** Every message (toasts and the guide line) leaves after two
+seconds or on any touch: hmm-kit's `HmmTouches` counts touches from the gesture layer, claiming none. While drawing, a
+finger held on a thing shows `HmmColourLoupe` (the colour under it above, the one in the hand below), follows the finger
+and takes the colour on lift. *Rejected:* holding anywhere (the sheet's hold menu needs the empty part).
+
+**D-298 — The Pencil Pro clicks in four places.** A snap (sketching, carrying onto a surface), picking a part, each
+flipbook frame (flick, duplicate), a slider's end. Elsewhere the UI is silent.
+
+**D-299 — To the ground by the real shape.** The thing's lowest corners (from the stage's world mesh) land on the highest
+surface under them, or the ground (`GroundDrop`); a sunk thing comes up. Lights and cameras still drop by their box.
+The contact shading already darkens where a thing touches. *Rejected:* boxes (they left things hovering).
+
+**D-300 — Translations still ride along.** CONTEXT now says English only at 1.0, but the catalog check (Italian and Arabic)
+is CI's; new strings were translated rather than the check changed in a phase about drawing. The languages phase decides.

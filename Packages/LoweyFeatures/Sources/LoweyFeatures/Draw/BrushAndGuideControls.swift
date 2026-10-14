@@ -94,17 +94,6 @@ private struct PerspectiveOptions: View {
     }
 }
 
-extension DrawingGuide.Kind {
-    var title: String {
-        switch self {
-        case .grid: "2D grid"
-        case .isometric: "Isometric"
-        case .perspective: "Perspective"
-        case .symmetry: "Symmetry"
-        }
-    }
-}
-
 extension DrawingGuide.Symmetry {
     var title: String {
         switch self {

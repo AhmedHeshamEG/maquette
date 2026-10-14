@@ -145,6 +145,29 @@ final class DrawingSheetTests: XCTestCase {
         let flat = DrawingSheet.facing(eye: eye, at: .zero, id: "s", name: "S", size: 2)
         XCTAssertEqual(SheetMesh.border(flat, in: scene, thickness: 0.01).triangleCount, 8)
     }
+
+    /// U5: the sheet reads as paper: a soft edge in bands just inside its border, faint dots across its face.
+    func testThePaperHasASoftEdgeAndFaintDots() throws {
+        let scene = makeDocument().scene
+        let flat = DrawingSheet.facing(eye: eye, at: .zero, id: "s", name: "S", size: 2)
+        let edge = SheetMesh.softEdge(flat, in: scene, width: 0.12, steps: 3)
+        XCTAssertEqual(edge.count, 3)
+        XCTAssertTrue(edge.allSatisfy { $0.triangleCount == 8 })
+        let outer = try XCTUnwrap(edge[0].bounds), inner = try XCTUnwrap(edge[2].bounds)
+        XCTAssertGreaterThan(outer.max.y, inner.max.y, "outermost first")
+        let dots = SheetMesh.dots(flat, in: scene, spacing: 0.1, size: 0.01)
+        XCTAssertEqual(dots.triangleCount % 2, 0)
+        XCTAssertGreaterThan(dots.triangleCount, 100)
+        let bounds = try XCTUnwrap(dots.bounds), sheet = try XCTUnwrap(SheetMesh.fill(flat, in: scene).bounds)
+        XCTAssertLessThanOrEqual(bounds.max.y, sheet.max.y + 1e-6, "on the sheet")
+        let many = SheetMesh.dots(flat, in: scene, spacing: 0.001, size: 0.0005, limit: 400)
+        XCTAssertLessThanOrEqual(many.triangleCount / 2, 400, "never more than the limit")
+        XCTAssertTrue(SheetMesh.dots(flat.with(shape: .dome), in: scene, spacing: 0.1, size: 0.01).isEmpty)
+        XCTAssertTrue(SheetMesh.softEdge(flat.with(shape: .dome), in: scene, width: 0.1, steps: 3).isEmpty)
+        let around = flat.with(shape: .around)
+        XCTAssertFalse(SheetMesh.dots(around, in: scene, spacing: 0.1, size: 0.01).isEmpty)
+        XCTAssertEqual(SheetMesh.softEdge(around, in: scene, width: 0.1, steps: 2).count, 2)
+    }
 }
 
 final class ReferenceWindowTests: XCTestCase {
@@ -160,5 +183,30 @@ final class ReferenceWindowTests: XCTestCase {
         let read = try JSONDecoder().decode(ReferenceCard.self, from: Data(old.utf8))
         XCTAssertFalse(read.isFolded, "cards from 0.12 are open")
         XCTAssertFalse(read.isWindow, "and pinned from the Board")
+    }
+}
+
+/// U5: moving a sheet moves what is drawn on it, each drawing keeping its place on the sheet.
+final class SheetCarryTests: XCTestCase {
+    func testADrawingRidesItsSheetAndOthersStay() throws {
+        var scene = makeDocument().scene
+        let sheet = DrawingSheet.facing(eye: Vec3(0, 1, 6), at: Vec3(0, 1, 0), id: "s", name: "S", size: 2)
+        var drawn = SceneObject(id: "ink", name: "Ink", kind: .primitive(.cube), transform: Transform(position: Vec3(0.3, 1.2, 0)))
+        drawn[.drawnOn] = .string("s")
+        let other = SceneObject(id: "other", name: "Other", kind: .primitive(.cube), transform: Transform(position: Vec3(2, 0, 0)))
+        scene.objects[drawn.id] = drawn
+        scene.objects[other.id] = other
+        let pushed = sheet.pushed(by: -1)
+        let changes = SheetCarry.carrying(from: sheet, to: pushed, in: scene)
+        XCTAssertEqual(Set(changes.map(\.object)), ["ink"], "only what was drawn on it")
+        let position = try XCTUnwrap(changes.first { $0.key == .position }?.value?.vec3Value)
+        let normal = sheet.rotation.act(.unitZ)
+        XCTAssertEqual((position - (Vec3(0.3, 1.2, 0) - normal)).length, 0, accuracy: 1e-9, "pushed back with it")
+        var turned = sheet
+        turned.rotation = (Quat(angle: .pi / 2, axis: .unitY) * sheet.rotation).normalized
+        let turnedChanges = SheetCarry.carrying(from: sheet, to: turned, in: scene)
+        let turnedPosition = try XCTUnwrap(turnedChanges.first { $0.key == .position }?.value?.vec3Value)
+        XCTAssertEqual(turnedPosition.distance(to: Vec3(0, 1, 0)), Vec3(0.3, 0.2, 0).length, accuracy: 1e-9, "turned about the sheet")
+        XCTAssertTrue(SheetCarry.carrying(from: sheet, to: sheet, in: scene).isEmpty, "not moved, nothing to carry")
     }
 }

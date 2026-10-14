@@ -40,22 +40,20 @@ public struct LoweyMenuCommands: Commands {
         // The making tools in the order of the top-right cluster, then the document's panels.
         CommandMenu("Tools") {
             Button("Model") { panel(.model) }.keyboardShortcut("1", modifiers: .command)
-            Button("Draw") { tool(.ink, panel: .draw) }.keyboardShortcut("2", modifiers: .command)
-            Button("Paint") { tool(.shadowBrush, panel: .paint) }.keyboardShortcut("3", modifiers: .command)
-            Button("Rig") { panel(.rig) }.keyboardShortcut("4", modifiers: .command)
-            Button("Animate") { editor?.toggleAnimate() }.keyboardShortcut("5", modifiers: .command)
+            Button("Draw") { stageEditor?.toggleDraw() }.keyboardShortcut("2", modifiers: .command)
+            Button("Rig") { panel(.rig) }.keyboardShortcut("3", modifiers: .command)
+            Button("Animate") { editor?.toggleAnimate() }.keyboardShortcut("4", modifiers: .command)
             Divider()
             Button("Actions") { panel(.actions) }.keyboardShortcut("6", modifiers: .command)
             Button("Look") { panel(.look) }.keyboardShortcut("7", modifiers: .command)
-            Button("Select") { tool(.select, panel: .select) }.keyboardShortcut("8", modifiers: .command)
+            Button("Lasso") { tool(.lasso, panel: nil) }.keyboardShortcut("8", modifiers: .command)
             Button("Library") { panel(.library) }.keyboardShortcut("l", modifiers: .command)
             Divider()
             Button("Precision") { modelPage(.precision) }
-            Button("Solid Shape") { tool(.draw, panel: .draw) }
-            Button("Flipbook") { tool(.flipbook, panel: .draw) }
-            Button("Shadow Brush") { tool(.shadowBrush, panel: .paint) }
-            Button("Scatter") { tool(.scatter, panel: .paint) }
-            Button("Lasso") { tool(.lasso, panel: nil) }
+            Button("Solid Shape") { stageEditor?.chooseDrawBrush(.solid(.tube)) }
+            Button("Frames") { stageEditor?.setDrawFrames(true) }
+            Button("Shadow Brush") { stageEditor?.chooseDrawBrush(.shadow(pushes: true)) }
+            Button("Scatter") { tool(.scatter, panel: nil) }
             Divider()
             Button("Move") { gizmo(.move) }.keyboardShortcut("1", modifiers: [.command, .option])
             Button("Turn") { gizmo(.rotate) }.keyboardShortcut("2", modifiers: [.command, .option])

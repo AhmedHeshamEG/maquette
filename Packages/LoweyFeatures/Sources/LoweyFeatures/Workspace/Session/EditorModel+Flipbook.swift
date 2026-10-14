@@ -252,6 +252,20 @@ extension EditorModel {
         setTime(track.startTime(ofFrame: index, fps: timeline.fps))
     }
 
+    /// A finger's flick while frames are drawn (U5): right, a new drawing after this one (the first stroke makes the
+    /// first); left, the drawing before. The Pencil Pro clicks on each frame.
+    func flickFlipbook(_ flick: Flick) {
+        switch flick {
+        case .right:
+            guard activeFlipbook?.frames.isEmpty == false else { return }
+            addFlipbookDrawing()
+        case .left:
+            stepFlipbookDrawing(by: -1)
+        }
+        HmmHaptics.play(.selection)
+        HmmPencilHaptics.buzz()
+    }
+
     /// The frame strip's previous and next.
     func stepFlipbookDrawing(by step: Int) {
         guard let track = activeFlipbook, !track.frames.isEmpty else { return }

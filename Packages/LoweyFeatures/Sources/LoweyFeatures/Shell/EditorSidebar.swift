@@ -3,15 +3,17 @@ import LoweyCore
 import SwiftUI
 
 /// The left sidebar: two sliders that change with the context (drawing: width and opacity; Shadow Brush: size and
-/// strength; Perform: filtering and sensitivity), Pick, the colour well while anything that makes is in the hand
-/// (a drawing tool, or Model ▸ Add: a colour is always in the hand before making), undo and redo.
+/// strength; Perform: filtering and sensitivity), Pick, and the colour well while something is made outside Draw
+/// (Model ▸ Add: a colour is always in the hand before making; Draw has its own, U5). Undo and redo only when Settings ▸
+/// Gestures shows them (U5: the finger taps are universal).
 ///
 /// It rests rather than leaves: with no tool that uses the sliders, they and the well shrink to a faint rail in the
 /// same place, and a touch on it brings back the sliders, which then mean size and opacity (of ink, the drawing tool
-/// that comes first). Undo and redo never rest. Settings ▸ Stage ▸ Always show the sidebar keeps it awake.
+/// that comes first). Settings ▸ Stage ▸ Always show the sidebar keeps it awake.
 struct EditorSidebar: View {
     @Bindable var editor: EditorModel
     @AppStorage(AppSettings.alwaysShowsSidebar) private var alwaysShows = false
+    @AppStorage(AppSettings.showsUndoButtons) private var showsUndo = false
     @State private var woken = false
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
@@ -20,7 +22,7 @@ struct EditorSidebar: View {
         HmmSidebar(top: top, bottom: bottom, pickActive: editor.pickActive, pick: {
             editor.pickActive.toggle()
         }, accessory: showsWell ? AnyView(SidebarColourWell(editor: editor)) : nil, resting: resting, wake: { woken = true },
-        canUndo: editor.canUndo, canRedo: editor.canRedo, undo: editor.undo, redo: editor.redo)
+        showsUndo: showsUndo, canUndo: editor.canUndo, canRedo: editor.canRedo, undo: editor.undo, redo: editor.redo)
             .animation(HmmMotion.standard.animation(reduceMotion: reduceMotion), value: resting)
             .onChange(of: editor.tool) { _, _ in woken = false }
             .onChange(of: editor.selection) { _, _ in woken = false }
@@ -39,7 +41,8 @@ struct EditorSidebar: View {
     /// Model ▸ Add (or the Model tool) is open: what is made next takes the colour in the hand.
     private var makingFromModel: Bool { editor.openPanel == .model && editor.modelPage == .add }
 
-    private var showsWell: Bool { editor.tool.putsColourDown || makingFromModel || (idle && (woken || alwaysShows)) }
+    /// While drawing the colour is the Draw bar's (U5: no control twice).
+    private var showsWell: Bool { !editor.isDrawing && (makingFromModel || (idle && (woken || alwaysShows))) }
 
     private var sliders: (HmmSidebarSlider, HmmSidebarSlider) {
         if editor.flying {
@@ -99,27 +102,24 @@ extension EditorSidebar {
     }
 }
 
-/// Bottom centre of the stage: the options of the tool in use.
+/// Bottom centre of the stage: the bar of the top-right tool in the hand (U5: one bar of at most six verbs each).
 struct ToolOptionsBar: View {
     let editor: EditorModel
 
     var body: some View {
-        switch editor.tool {
-        case .ink: InkOptionsBar(editor: editor)
-        case .flipbook: FrameStrip(editor: editor)
-        case .draw: DrawOptionsBar(editor: editor)
-        case .shadowBrush: ShadowBrushOptionsBar(editor: editor)
-        case .paint: PaintOptionsBar(editor: editor)
-        case .scatter: ScatterOptionsBar(editor: editor)
-        case .model:
-            if editor.isSketching {
-                SketchOptionsBar(editor: editor)
-            } else {
-                ModelOptionsBar(editor: editor)
+        if editor.isDrawing {
+            VStack(spacing: HmmSpacing.xs) {
+                if editor.tool == .flipbook { FrameStrip(editor: editor) }
+                DrawBar(editor: editor)
             }
-        case .rig: RigOptionsBar(editor: editor)
-        case .select: TriggerDeckBar(editor: editor)
-        case .lasso: EmptyView()
+        } else {
+            switch editor.tool {
+            case .scatter: ScatterOptionsBar(editor: editor)
+            case .model: ModelOptionsBar(editor: editor)
+            case .rig: RigOptionsBar(editor: editor)
+            case .select: TriggerDeckBar(editor: editor)
+            case .lasso, .ink, .draw, .flipbook, .shadowBrush, .paint: EmptyView()
+            }
         }
     }
 }

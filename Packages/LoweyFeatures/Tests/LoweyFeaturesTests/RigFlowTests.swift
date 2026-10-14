@@ -99,6 +99,36 @@ final class RigFlowTests: XCTestCase {
         XCTAssertNil(editor.baseScene.objects[lower.id]?[.attachBone], "removing the rig lets the parts go")
     }
 
+    /// U5 step 0 (device note: "rigging lags"): while a dot is dragged nothing is written, the pose is a live value, so
+    /// each move answers within a frame; the drag lands as one undo step when it lifts.
+    func testADraggedDotAnswersWithinAFrameAndLandsAsOneStep() async throws {
+        let editor = try makeEditor()
+        editor.addPrimitive(.cube)
+        let cube = try XCTUnwrap(editor.singleSelection)
+        editor.storeMarks(dots(), on: cube, label: "Rig Cube")
+        _ = try await waitForRig(on: cube.id, in: editor)
+        editor.tool = .select
+        editor.setSelection([cube.id])
+        let handle = try XCTUnwrap(IKHandles.handles(of: cube.id, in: editor.displayed.scene).first { $0.name == "j3" })
+        let start = try XCTUnwrap(IKHandles.position(of: handle, in: editor.displayed.scene, pose: editor.displayed.poses[cube.id]))
+        let before = editor.baseScene
+        var answers: [Double] = []
+        for step in 1 ... 24 {
+            let began = CFAbsoluteTimeGetCurrent()
+            editor.dragIK(handle, toWorld: start + Vec3(0.02 * Double(step), -0.005 * Double(step), 0))
+            answers.append(CFAbsoluteTimeGetCurrent() - began)
+        }
+        XCTAssertEqual(editor.baseScene, before, "nothing is written while the finger moves")
+        XCTAssertTrue(editor.displayed.scene.objects[cube.id]?.properties.keys.contains { $0.boneJoint != nil } ?? false, "the stage shows the bend")
+        let median = answers.sorted()[answers.count / 2]
+        XCTAssertLessThan(median, 1.0 / 60, "a move answers within a frame (median \(median * 1000) ms)")
+        editor.finishIKDrag()
+        XCTAssertTrue(editor.baseScene.objects[cube.id]?.properties.keys.contains { $0.boneJoint != nil } ?? false, "the pose landed")
+        XCTAssertTrue(editor.propertyOverride.isEmpty, "no live value is left behind")
+        editor.undo()
+        XCTAssertEqual(editor.baseScene, before, "one undo step")
+    }
+
     func testJointsTurnedInKeysAreKeyedAndGoWithTheRig() async throws {
         let editor = try makeEditor()
         editor.addPrimitive(.cube)

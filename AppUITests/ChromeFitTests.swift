@@ -9,10 +9,10 @@ final class ChromeFitTests: XCTestCase {
     private var app: XCUIApplication!
 
     /// The corner clusters, the scene's name, the sidebar's undo and redo, the bottom row.
-    private static let chrome = ["Home", "Actions", "Look", "Select", "Library", "scene-name", "Model", "Draw", "Paint", "Rig", "Animate",
-                                 "Undo", "Redo", "timeline-toggle", "views-menu", "Frame the selection", "camera-button"]
+    private static let chrome = ["Home", "Actions", "Look", "Library", "scene-name", "Model", "Draw", "Rig", "Animate",
+                                 "views-menu", "camera-button", "joystick-toggle", "snap-magnet"]
     /// The panels each cluster button opens.
-    private static let panels = ["Actions", "Look", "Library", "Model", "Draw", "Paint", "Rig", "scene-name"]
+    private static let panels = ["Actions", "Look", "Library", "Model", "Rig", "scene-name"]
 
     override func setUp() async throws {
         continueAfterFailure = true
@@ -65,6 +65,12 @@ final class ChromeFitTests: XCTestCase {
                 if element(panel).exists, element(panel).isHittable { element(panel).tap() }
                 settle(0.5)
             }
+            // Draw's bar: five verbs, each whole and apart from the rest of the chrome (U5).
+            element("Draw").tap()
+            settle(1)
+            assertWholeAndApart(["draw-brush", "draw-smudge", "draw-erase", "draw-sheets", "colour-well", "views-menu", "camera-button"], in: name)
+            element("Draw").tap()
+            settle(0.5)
         }
     }
 
@@ -83,7 +89,7 @@ final class ChromeFitTests: XCTestCase {
         XCTAssertTrue(element("inspector-chip").waitForExistence(timeout: 5), "the object panel folds to its chip")
         XCTAssertFalse(element("inspector").exists)
         let stage = app.otherElements["stage"].frame
-        let covering = ["Home", "Actions", "Look", "Select", "Library", "Model", "Draw", "Paint", "Rig", "Animate", "inspector-chip",
+        let covering = ["Home", "Actions", "Look", "Library", "Model", "Draw", "Rig", "Animate", "inspector-chip",
                         "sidebar", "view-controls"].map { element($0) }.filter(\.exists).map { $0.frame.intersection(stage) }
         let covered = covering.filter { !$0.isNull }.reduce(0) { $0 + $1.width * $1.height }
         let share = 1 - covered / max(stage.width * stage.height, 1)

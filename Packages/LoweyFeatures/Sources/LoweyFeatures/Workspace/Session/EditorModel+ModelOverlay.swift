@@ -50,6 +50,13 @@ extension EditorModel {
                 let picked = modeling.region == SketchRegionRef(sketch: id, index: index)
                 overlays.append(EditorOverlay(mesh: ModelOverlay.region(region, of: sketch, lift: width * 0.3),
                                               color: picked ? Self.modelAccent : RGBA(0.98, 0.98, 1), opacity: picked ? 0.45 : 0.1))
+                if picked, modeling.pull == nil {
+                    // The one arrow that pulls it into a solid.
+                    var arrow = MeshData()
+                    ModelOverlay.arrow(from: sketch.plane.lift(ModelOverlay.middle(of: region)), direction: sketch.plane.normal, length: width * 40,
+                                       width: width * 1.6, into: &arrow)
+                    overlays.append(EditorOverlay(mesh: arrow, color: Self.modelAccent, onTop: true))
+                }
             }
             if let source = modeling.offsetSource, source.sketch == id, let curve = sketch.curves[safe: source.index] {
                 let one = Sketch(plane: sketch.plane, curves: [curve])

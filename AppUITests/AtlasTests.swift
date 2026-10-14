@@ -135,12 +135,8 @@ final class AtlasTests: XCTestCase {
         for page in pages {
             open(page)
             guard let first = page.steps.first else { continue }
+            // Tapping the home again closes its panel (or puts Draw down).
             tap(first)
-            if first == "Draw" || first == "Paint" {
-                tap("Select")
-                tap("Tap")
-                tap("Select")
-            }
         }
     }
 
@@ -177,19 +173,13 @@ final class AtlasTests: XCTestCase {
             Page(name: "Look, Style", steps: ["Look", "look-style"], scrolls: 1, side: .leading),
             Page(name: "Look, World", steps: ["Look", "look-world"], scrolls: 1, side: .leading),
             Page(name: "Look, Finish", steps: ["Look", "look-finish"], scrolls: 1, side: .leading),
-            Page(name: "Select", steps: ["Select"], side: .leading),
             Page(name: "Library, Things", steps: ["Library", "library-things"], scrolls: 2, side: .leading),
             Page(name: "Library, Yours", steps: ["Library", "library-yours"], side: .leading),
             Page(name: "The scene", steps: ["scene-name"], scrolls: 1, side: .leading),
             Page(name: "Model, Add", steps: ["Model", "model-add"], scrolls: 2),
             Page(name: "Model, Edit", steps: ["Model", "model-shape"], scrolls: 2),
             Page(name: "Model, Precision", steps: ["Model", "model-precision"], scrolls: 2),
-            Page(name: "Draw, Ink", steps: ["Draw", "tool-ink"], scrolls: 1),
-            Page(name: "Draw, Solid shape", steps: ["Draw", "tool-draw"], scrolls: 1),
-            Page(name: "Draw, Sketch", steps: ["Draw", "tool-sketch"], scrolls: 1),
-            Page(name: "Draw, Flipbook", steps: ["Draw", "tool-flipbook"], scrolls: 1),
-            Page(name: "Paint, Colour", steps: ["Paint", "tool-paint"], scrolls: 1),
-            Page(name: "Paint, Shadow Brush", steps: ["Paint", "tool-shadow-brush"], scrolls: 1),
+            Page(name: "Draw", steps: ["Draw"]),
             Page(name: "Rig, nothing selected", steps: ["Rig"])
         ], from: .blank)
     }
@@ -197,13 +187,13 @@ final class AtlasTests: XCTestCase {
     func test03Deeper() {
         area = "3 Deeper"
         each([
-            Page(name: "Brush library, dropped down", steps: ["Draw", "tool-ink", "brush-ink"]),
-            Page(name: "Brush library, whole", steps: ["Draw", "tool-ink", "brush-ink", "brush-library-open"], scrolls: 1, side: .centre),
-            Page(name: "Drawing guide", steps: ["Draw", "tool-ink", "drawing-guide"]),
-            Page(name: "Colour well", steps: ["Draw", "tool-ink", "colour-well"]),
-            Page(name: "Flipbook tracks", steps: ["Draw", "tool-flipbook", "flipbook-tracks"]),
-            Page(name: "The sheet's menu", steps: ["Draw", "tool-ink", "Draw", "sheet-menu"]),
-            Page(name: "The sheet as a dome", steps: ["Draw", "tool-ink", "Draw", "sheet-dome"]),
+            Page(name: "Brush library, dropped down", steps: ["Draw", "draw-brush"]),
+            Page(name: "Brush library, Solids", steps: ["Draw", "draw-brush", "brush-set-solids"]),
+            Page(name: "Brush library, Shapes", steps: ["Draw", "draw-brush", "brush-set-shapes"]),
+            Page(name: "Brush library, whole", steps: ["Draw", "draw-brush", "brush-library-open"], scrolls: 1, side: .centre),
+            Page(name: "Colour", steps: ["Draw", "colour-well"]),
+            Page(name: "Sheets", steps: ["Draw", "draw-sheets"]),
+            Page(name: "Frames", steps: ["Draw", "draw-sheets", "draw-frames"], scrolls: 1, side: .centre),
             Page(name: "My Look editor", steps: ["Look", "look-style", "look-clay", "duplicate-look"], scrolls: 1, side: .leading),
             Page(name: "Fine tune the world", steps: ["Look", "Fine tune the world"], scrolls: 1, side: .leading),
             Page(name: "Set up for a Room", steps: ["scene-name", "setup-room", "scene-name", "Model", "model-add"]),
@@ -254,7 +244,7 @@ final class AtlasTests: XCTestCase {
             Page(name: "Make it move, Bounce", steps: ["motion-bounce"]),
             Page(name: "The chip", steps: ["fold-inspector"]),
             Page(name: "Model, Edit on an object", steps: ["Model", "model-shape"], scrolls: 2),
-            Page(name: "Paint layers", steps: ["Paint", "tool-paint", "paint-layer-add"], scrolls: 1),
+            Page(name: "Draw over a thing", steps: ["Draw"]),
             Page(name: "Rig, body shortcuts", steps: ["Rig"], scrolls: 1),
             Page(name: "Rig, pins and dots", steps: ["Rig", "rig-marks"]),
             Page(name: "Rig as a person, guessed", steps: ["Rig", "rig-body-person"]),

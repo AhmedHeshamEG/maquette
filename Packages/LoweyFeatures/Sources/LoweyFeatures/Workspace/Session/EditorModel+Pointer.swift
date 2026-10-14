@@ -1,4 +1,5 @@
 import Foundation
+import LoweyCore
 import LoweyEngine
 import UIKit
 
@@ -10,6 +11,21 @@ extension EditorModel {
     func setHover(_ point: CGPoint?) {
         hoverPoint = point
         updatePencilPointer()
+    }
+
+    /// The Pencil hovering lights what a tap would land on (U5, on by default: "it adds much to the feel"): the thing
+    /// under the tip, faintly in the accent. Nothing is lit while a stroke is drawn or with the setting off.
+    func hoverLight(at point: CGPoint?) {
+        guard let stage else { return }
+        let lights = UserDefaults.standard.object(forKey: AppSettings.pencilHoverLights) as? Bool ?? true
+        let id = lights && !strokeInProgress ? point.flatMap { stage.pickObject(at: $0)?.0 } : nil
+        guard id != hoverLit else { return }
+        hoverLit = id
+        guard let id, let mesh = stage.worldMesh(of: id) else {
+            stage.showHover([])
+            return
+        }
+        stage.showHover([EditorOverlay(mesh: mesh, color: StageColors.selection, opacity: 0.18)])
     }
 
     /// A brush-size slider started or stopped moving.

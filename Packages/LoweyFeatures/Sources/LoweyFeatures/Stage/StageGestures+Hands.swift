@@ -26,6 +26,24 @@ extension StageGestures {
         lastFramed = id
     }
 
+    // MARK: The eyedropper
+
+    /// A finger held on a thing while drawing: the loupe shows, follows the finger, and lifting takes the colour.
+    func eyedropperPress(_ recognizer: UILongPressGestureRecognizer, editor: EditorModel, stage: StageView) {
+        let point = recognizer.location(in: stage)
+        switch recognizer.state {
+        case .began:
+            guard stage.pickObject(at: point) != nil else { return }
+            editor.eyedrop(at: point)
+        case .changed:
+            if editor.eyedropperLoupe != nil { editor.eyedrop(at: point) }
+        case .ended:
+            editor.finishEyedrop()
+        default:
+            editor.finishEyedrop(commit: false)
+        }
+    }
+
     // MARK: The magnifier
 
     func startLoupe(at point: CGPoint, in stage: StageView) {

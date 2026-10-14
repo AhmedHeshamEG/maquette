@@ -320,7 +320,9 @@ public struct PropertySpec: Sendable, Hashable {
         .bevel: PropertySpec(type: .float, animatable: false, label: "Bevel"),
         .bevelSegments: PropertySpec(type: .int, animatable: false, label: "Bevel segments"),
         .smear: PropertySpec(type: .float, animatable: true, label: "Smear"),
-        .symmetry: PropertySpec(type: .enumeration, animatable: false, label: "Symmetry")
+        .symmetry: PropertySpec(type: .enumeration, animatable: false, label: "Symmetry"),
+        .drawnOn: PropertySpec(type: .string, animatable: false, label: "Drawn on"),
+        .sticksToCamera: PropertySpec(type: .bool, animatable: false, label: "Stick to the camera")
     ]
 }
 

@@ -1,51 +1,6 @@
 #if canImport(SwiftUI)
     import SwiftUI
 
-    /// One button of a corner cluster.
-    public struct HmmClusterItem: Identifiable {
-        public var id: String
-        public var systemName: String
-        public var label: String
-        public var isOn: Bool
-        /// The one active thing (the tool in the hand): the only button that keeps the accent with chrome restraint.
-        public var accent: Bool
-        public var isEnabled: Bool
-        public var action: () -> Void
-
-        public init(id: String, systemName: String, label: String, isOn: Bool = false, accent: Bool = false, isEnabled: Bool = true,
-                    action: @escaping () -> Void) {
-            self.id = id
-            self.systemName = systemName
-            self.label = label
-            self.isOn = isOn
-            self.accent = accent
-            self.isEnabled = isEnabled
-            self.action = action
-        }
-    }
-
-    /// A row of icon buttons sharing one glass capsule, for a canvas corner. Top-left holds document and app-level
-    /// actions; top-right holds the app's making tools.
-    public struct HmmCornerCluster: View {
-        private let items: [HmmClusterItem]
-
-        public init(_ items: [HmmClusterItem]) {
-            self.items = items
-        }
-
-        public var body: some View {
-            HStack(spacing: HmmSpacing.xxs) {
-                ForEach(items) { item in
-                    HmmButton(item.systemName, label: item.label, isOn: item.isOn, accent: item.accent, action: item.action)
-                        .disabled(!item.isEnabled)
-                }
-            }
-            .padding(HmmSpacing.xxs)
-            .environment(\.hmmInsideGlass, true)
-            .hmmGlass(in: Capsule(), interactive: false)
-        }
-    }
-
     /// A vertical sidebar slider's configuration.
     public struct HmmSidebarSlider {
         public var title: String
@@ -115,10 +70,14 @@
         private let accessory: AnyView?
         private let resting: Bool
         private let wake: (() -> Void)?
+        private let showsUndo: Bool
 
+        /// `showsUndo`: the undo and redo buttons (Maquette U5: off by default there, the gestures being universal; a
+        /// Settings switch brings them back).
         public init(top: HmmSidebarSlider?, bottom: HmmSidebarSlider?, pickActive: Bool = false, pick: (() -> Void)? = nil,
-                    accessory: AnyView? = nil, resting: Bool = false, wake: (() -> Void)? = nil, canUndo: Bool, canRedo: Bool,
-                    undo: @escaping () -> Void, redo: @escaping () -> Void) {
+                    accessory: AnyView? = nil, resting: Bool = false, wake: (() -> Void)? = nil, showsUndo: Bool = true, canUndo: Bool,
+                    canRedo: Bool, undo: @escaping () -> Void, redo: @escaping () -> Void) {
+            self.showsUndo = showsUndo
             self.top = top
             self.bottom = bottom
             self.pickActive = pickActive
@@ -138,10 +97,12 @@
                 } else {
                     tools
                 }
-                HmmButton("arrow.uturn.backward", label: "Undo", action: undo)
-                    .disabled(!undoState.canUndo)
-                HmmButton("arrow.uturn.forward", label: "Redo", action: redo)
-                    .disabled(!undoState.canRedo)
+                if showsUndo {
+                    HmmButton("arrow.uturn.backward", label: "Undo", action: undo)
+                        .disabled(!undoState.canUndo)
+                    HmmButton("arrow.uturn.forward", label: "Redo", action: redo)
+                        .disabled(!undoState.canRedo)
+                }
             }
         }
 

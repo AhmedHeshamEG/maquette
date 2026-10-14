@@ -2,8 +2,9 @@ import HmmDesign
 import LoweyCore
 import SwiftUI
 
-/// The timeline's bar, eight controls (CONTEXT §10.10, Procreate Dreams' restraint): play, the time, Perform | Keys,
-/// the mode's one button (Record or Key), + Overlay, + Sound, the menu, collapse. Markers, the loop and what each mode
+/// The timeline's bar, seven controls (CONTEXT §10.10, Procreate Dreams' restraint; U5: + Overlay went, titles are 3D
+/// text that sticks to the camera and screen finishes live in Look): play, the time, Perform | Keys, the mode's one
+/// button (Record or Key), + Sound, the menu, collapse. Markers, the loop and what each mode
 /// does one step deeper are in the menu; going to the start is a flick on the ruler, a frame is a tap beside the
 /// playhead. A selected character adds its Perform button beside Record; a performed number, its slider.
 struct TimelineHeader: View {
@@ -23,7 +24,6 @@ struct TimelineHeader: View {
                     case .perform: PerformControls(editor: editor)
                     case .keyframe: KeyButton(editor: editor)
                     }
-                    OverlayMenu(editor: editor)
                     soundButton
                 }
             }

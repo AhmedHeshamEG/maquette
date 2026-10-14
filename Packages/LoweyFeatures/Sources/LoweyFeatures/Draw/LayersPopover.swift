@@ -3,31 +3,25 @@ import LoweyCore
 import PhotosUI
 import SwiftUI
 
-/// Paint ▸ Colour: the brush and colour, the object being painted (made ready on first use), its layers, and a picture
-/// to project from the camera.
-struct ColourPaintSection: View {
+/// Draw ▸ Layers (U5: Sheets becomes Layers while a paint brush is over a thing): the thing being painted (made ready
+/// the moment it's chosen), its layers, and a picture to project from the camera.
+struct LayersPopover: View {
     @Bindable var editor: EditorModel
     @State private var photo: PhotosPickerItem?
     @State private var choosingFile = false
     @Environment(\.hmmTheme) private var theme
 
     var body: some View {
-        VStack(alignment: .leading, spacing: HmmSpacing.m) {
-            HStack(spacing: HmmSpacing.xs) {
-                ForEach(ColourPaintSettings.Mode.allCases) { mode in
-                    ChoiceChip(title: mode.title, systemName: mode.systemImage, isOn: editor.colourPaint.mode == mode) {
-                        editor.colourPaint.mode = mode
-                    }
-                    .accessibilityIdentifier("paint-\(mode.rawValue)")
-                }
+        ScrollView {
+            VStack(alignment: .leading, spacing: HmmSpacing.m) {
+                target
             }
-            BrushRow(editor: editor, tool: .paint)
-            PanelSection("Colour") {
-                ColourChooser(editor: editor)
-            }
-            target
-            Hint("Size and opacity are the sidebar's sliders. Fingers move around; the Pencil paints.")
+            .padding(HmmSpacing.m)
         }
+        .frame(width: 340)
+        .frame(maxHeight: 520)
+        .font(.hmm(.body))
+        .accessibilityIdentifier("layers-popover")
         .onChange(of: photo) { _, item in load(item) }
         .fileImporter(isPresented: $choosingFile, allowedContentTypes: [.image]) { result in
             guard case let .success(url) = result else { return }

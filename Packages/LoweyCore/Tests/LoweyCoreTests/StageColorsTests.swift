@@ -24,13 +24,19 @@ final class StageColorsTests: XCTestCase {
         XCTAssertLessThan(StageColors.contrast(minor, ground), 7, "faint: it mustn't compete with what is made")
     }
 
-    func testTheSheetIsSeenButNeverHidesTheWork() {
+    /// U5: the sheet was "nearly invisible". While drawing it reads as paper; between strokes it is a trace.
+    func testTheSheetIsClearlyThereWhileDrawingButNeverHidesTheWork() {
         let fill = StageColors.over(StageColors.sheet, alpha: StageColors.sheetFillAlpha, on: ground)
-        let border = StageColors.over(StageColors.sheet, alpha: StageColors.sheetBorderAlpha, on: ground)
-        XCTAssertGreaterThanOrEqual(StageColors.contrast(border, ground), 3, "its edge is plain to see")
-        XCTAssertLessThan(StageColors.contrast(fill, ground), 2, "its face stays see-through, fainter than the grid")
+        let resting = StageColors.over(StageColors.sheet, alpha: StageColors.sheetRestingAlpha, on: ground)
+        let edge = StageColors.over(StageColors.sheet, alpha: StageColors.sheetEdgeAlphas[0], on: ground)
+        XCTAssertGreaterThanOrEqual(StageColors.contrast(fill, ground), 2.5, "its face is plain to see while drawing")
+        XCTAssertGreaterThanOrEqual(StageColors.contrast(edge, ground), 4, "its edge more so")
+        XCTAssertLessThan(StageColors.contrast(resting, ground), 1.6, "between strokes it fades to a trace")
+        XCTAssertEqual(StageColors.sheetEdgeAlphas, StageColors.sheetEdgeAlphas.sorted(by: >), "the edge softens inwards")
+        let dots = StageColors.over(StageColors.sheet, alpha: StageColors.sheetDotAlpha, on: fill)
+        XCTAssertGreaterThanOrEqual(StageColors.contrast(dots, fill), 1.5, "the dots show, faintly")
         let first = Look.default.palette.color(at: 0)
-        XCTAssertGreaterThanOrEqual(StageColors.contrast(first, fill), 7, "ink drawn on it stands out")
+        XCTAssertGreaterThanOrEqual(StageColors.contrast(first, fill), 4.5, "ink drawn on it stands out")
     }
 
     func testContrastIsTheWCAGRatio() {

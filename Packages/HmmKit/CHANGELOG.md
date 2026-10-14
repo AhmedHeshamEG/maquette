@@ -3,6 +3,23 @@
 All notable changes to hmm-kit. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the
 project uses [Semantic Versioning](https://semver.org/).
 
+## [0.9.0] - 2026-10-13
+
+Built with Maquette 0.15.
+
+### Added
+- **HmmDesign**: every number a slider (`HmmScrub`: a point of slow drag is a fine step, fast drags go up to twenty
+  times as far, clamped to a range; `HmmNumberPill`: a 44 pt pill dragged to scrub, tapped to type on our number pad,
+  the Pencil Pro clicking at the range's end). `HmmSidebarSlider` clicks at its ends too.
+- **HmmDesign**: touches counted without claiming them (`HmmTouches`, installed by the gesture layer); clusters that rest
+  as faint rails and wake on a touch (`HmmCornerCluster`); Procreate's colour loupe (`HmmColourLoupe`: the colour under
+  the finger above, the one in the hand below).
+- **HmmDesign**: `HmmSidebar(showsUndo:)` hides the undo and redo buttons; `HmmPencilHaptics.buzz(at:)`.
+
+### Changed
+- Toasts stay two seconds and leave on any touch; the guide line leaves after 2.5 seconds or a touch
+  (`hmmGuideLine(_:duration:)`).
+
 ## [0.8.0] - 2026-10-12
 
 Built with Maquette 0.13.

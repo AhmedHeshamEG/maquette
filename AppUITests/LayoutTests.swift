@@ -5,7 +5,7 @@ import XCTest
 @MainActor
 final class LayoutTests: XCTestCase {
     private var app: XCUIApplication!
-    private let panels: Set<String> = ["Model", "Draw", "Paint", "Rig", "Actions", "Look", "Select", "Library", "scene-name"]
+    private let panels: Set<String> = ["Model", "Draw", "Rig", "Actions", "Look", "Library", "scene-name"]
     /// The App Store configuration's walk: held rows must be absent there, everything else present (CONTEXT §5).
     private static let checkingHeld = ProcessInfo.processInfo.environment["MAQUETTE_HELD_CHECK"] == "1"
 
@@ -144,12 +144,12 @@ final class LayoutTests: XCTestCase {
         walkInAProject(["", "blob"]) { $0.home != "Model" && !Self.makingHomes.contains($0.home) }
     }
 
-    /// Draw, Paint and Rig.
+    /// Draw and Rig.
     func testMakingControlsAreReachable() {
         walkInAProject(["", "blob"]) { Self.makingHomes.contains($0.home) }
     }
 
-    private static let makingHomes: Set<String> = ["Draw", "Paint", "Rig"]
+    private static let makingHomes: Set<String> = ["Draw", "Rig"]
 
     /// Model's rows in two halves (the walk outgrew the per-test time on the simulator at M5).
     func testModelControlsAreReachable() {
@@ -198,8 +198,10 @@ final class LayoutTests: XCTestCase {
         case "timeline":
             if !element("timeline").exists { tap("Animate") }
         case "transport":
-            if element("timeline").exists { tap("Collapse the timeline") }
-            if !element("hide-timeline").waitForExistence(timeout: 2) { tap("timeline-toggle") }
+            if !element("hide-timeline").waitForExistence(timeout: 2) {
+                if !element("timeline").exists { tap("Animate") }
+                tap("Collapse the timeline")
+            }
         default:
             break
         }
@@ -211,8 +213,9 @@ final class LayoutTests: XCTestCase {
             walkHeld(row)
             return
         }
-        // A row that calls the timeline or reaches into a popover leaves it open: the next row starts afresh.
-        defer { if !row.held.isEmpty || row.steps.first == "Animate" { startAfresh(row.precondition) } }
+        // A row that calls the timeline or reaches into one of Draw's pop-overs leaves it open: the next row starts afresh.
+        let reachesIntoDraw = row.steps.first == "Draw" && row.steps.count > 2
+        defer { if !row.held.isEmpty || row.steps.first == "Animate" || reachesIntoDraw { startAfresh(row.precondition) } }
         for step in row.steps.dropLast() {
             XCTAssertTrue(tap(step), "\(row.home) › \(row.control): \(step) isn't there")
             if panels.contains(step) || step.hasPrefix("model-") { settle(step == "Look" ? 3 : 1) }
@@ -220,9 +223,9 @@ final class LayoutTests: XCTestCase {
         if let last = row.steps.last {
             XCTAssertTrue(element(last).waitForExistence(timeout: 5), "\(row.home) › \(row.control): \(last) isn't reachable")
         }
-        guard row.steps.count > 1, let first = row.steps.first, panels.contains(first) else { return }
+        guard row.steps.count > 1, !reachesIntoDraw, let first = row.steps.first, panels.contains(first) else { return }
+        // Tapping the home again closes its panel (or puts Draw down).
         tap(first)
-        if first == "Draw" || first == "Paint" { resetTool() }
     }
 
     /// A held row in the App Store build: the way there is open, the held control itself isn't.
@@ -245,11 +248,9 @@ final class LayoutTests: XCTestCase {
         prepare(precondition)
     }
 
-    /// Back to tapping (painting tools change the sidebar and hide the joystick).
+    /// Back to tapping (Draw changes the sidebar and hides the joystick): Draw is put down.
     private func resetTool() {
-        tap("Select")
-        tap("Tap")
-        tap("Select")
+        if element("draw-bar").exists { tap("Draw") }
     }
 
     // MARK: The canvas owns the screen
@@ -259,8 +260,8 @@ final class LayoutTests: XCTestCase {
         let window = app.windows.firstMatch.frame
         let stage = app.otherElements["stage"].frame
         XCTAssertGreaterThan(stage.height, window.height * 0.97, "no timeline under the stage until it's called")
-        let leading = ["Home", "Actions", "Look", "Select", "Library"].map { element($0).frame }
-        let trailing = ["Model", "Draw", "Paint", "Rig", "Animate"].map { element($0).frame }
+        let leading = ["Home", "Actions", "Look", "Library"].map { element($0).frame }
+        let trailing = ["Model", "Draw", "Rig", "Animate"].map { element($0).frame }
         var chrome = [union(leading), union(trailing), element("sidebar").frame, element("view-controls").frame]
         if element("scene-name").exists { chrome.append(element("scene-name").frame) }
         // The glass around each cluster reaches a little past its buttons.

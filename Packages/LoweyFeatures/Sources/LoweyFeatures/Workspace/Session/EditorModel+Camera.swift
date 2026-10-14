@@ -290,3 +290,25 @@ extension EditorModel {
         if !isPlaying { refreshDisplay() }
     }
 }
+
+extension EditorModel {
+    /// Stick to the camera (U5: titles are 3D text that stays put on the picture): its place becomes the shot camera's
+    /// own frame, where it is now, so nothing jumps; off, it stays where the camera had it. With no camera yet, one is
+    /// made from this view.
+    func setSticksToCamera(_ id: ObjectID, _ on: Bool) {
+        guard let object = baseScene.objects[id], object.parent == nil else {
+            app.show("Only something at the top of the scene can stick to the camera")
+            return
+        }
+        if on, displayed.camera == nil { addCamera() }
+        guard let camera = displayed.camera, camera != id else { return }
+        let carrier = displayed.scene.worldTransform(of: camera)
+        let world = displayed.scene.worldTransform(of: id)
+        let place = on ? StickToCamera.local(world, camera: carrier) : world
+        perform(.batch(on ? "Stick to the camera" : "Free from the camera", [.setProperties([
+            PropertyChange(object: id, key: .sticksToCamera, value: on ? .bool(true) : nil),
+            PropertyChange(object: id, key: .position, value: .vec3(place.position)),
+            PropertyChange(object: id, key: .rotation, value: .quat(place.rotation))
+        ])]))
+    }
+}

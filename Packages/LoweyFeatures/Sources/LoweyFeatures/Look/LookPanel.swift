@@ -35,6 +35,7 @@ struct LookPanel: View {
                 case .finish:
                     FinishSection(editor: editor)
                     MotionFinish(editor: editor)
+                    ScreenEffectsFinish(editor: editor)
                 }
                 Toggle("Only this scene", isOn: Binding(get: { editor.lookIsSceneOnly }, set: { editor.setLookSceneOnly($0) }))
                     .font(.hmm(.body, weight: .semibold))
@@ -157,6 +158,21 @@ struct MotionFinish: View {
             .pickerStyle(.segmented)
             .accessibilityIdentifier("finish-motion")
             Hint("On twos looks hand-animated. Cameras stay smooth; any one thing can choose its own in its panel.")
+        }
+    }
+}
+
+/// Finish ▸ Screen effects (U5: the timeline's + Overlay went; screen finishes live in Look): a flash, a shake… at the
+/// playhead.
+struct ScreenEffectsFinish: View {
+    let editor: EditorModel
+
+    var body: some View {
+        PanelSection("Screen effects at the playhead") {
+            FlowChips(items: ScreenEffect.Kind.allCases.map { ($0.rawValue, $0.title) }, isOn: { _ in false }) { key in
+                if let kind = ScreenEffect.Kind(rawValue: key) { editor.addScreenEffect(kind) }
+            }
+            .accessibilityIdentifier("finish-screen-effects")
         }
     }
 }

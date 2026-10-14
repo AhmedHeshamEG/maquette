@@ -96,6 +96,11 @@ private struct TextSection: View {
                 Image(systemName: "text.alignright").tag(TextRecipe.Alignment.right)
             }
             .pickerStyle(.segmented)
+            Toggle("Stick to the camera", isOn: Binding(get: { object[.sticksToCamera]?.boolValue == true },
+                                                        set: { editor.setSticksToCamera(object.id, $0) }))
+                .font(.hmm(.body))
+                .accessibilityIdentifier("text-sticks-to-camera")
+            Hint("A title: it stays put on the picture while the camera moves.")
         }
     }
 }

@@ -48,6 +48,18 @@ final class EditorModel {
         didSet { if tool != oldValue { toolChanged(from: oldValue) } }
     }
 
+    /// What Draw's Brush holds, the verb in use, and frames on the sheet (`EditorModel+Draw`).
+    var drawBrush: DrawBrushKind = .lines
+    var drawVerb: DrawVerb = .brush
+    var drawFrames = false
+    /// The corner clusters rest to faint rails while the hand draws (U5).
+    var clustersResting = false
+    /// The eyedropper (`EditorModel+Eyedropper`): its loupe under a held finger, or waiting for the next tap.
+    var eyedropperLoupe: EyedropperLoupe?
+    var eyedropping = false
+    /// The sheet whose name is being typed (its menu's Rename).
+    var renamingSheet: String?
+
     var gizmoMode: GizmoMode = .move {
         didSet {
             stage?.gizmoMode = gizmoMode
@@ -131,7 +143,8 @@ final class EditorModel {
     /// slim transport (and the object panel to its chip, `inspectorAsChip`).
     var openPanel: ClusterPanel? {
         didSet {
-            if let openPanel, openPanel != .select, timelinePresence == .full { timelinePresence = .transport }
+            if openPanel != nil, timelinePresence == .full { timelinePresence = .transport }
+            if openPanel != nil { wakeClusters() }
         }
     }
 
@@ -146,6 +159,11 @@ final class EditorModel {
     var chromeHidden = false
     /// Playback fades the chrome after two seconds (a touch brings it back).
     var chromeFaded = false
+    /// The quick menu's "Hide sheet and guides": the sheet and the drawing guides are out of sight (strokes still land).
+    var sheetHidden = false {
+        didSet { if sheetHidden != oldValue { refreshGuide() } }
+    }
+
     var showsGrid = true {
         didSet {
             stage?.showsGrid = showsGrid
@@ -275,6 +293,19 @@ final class EditorModel {
     @ObservationIgnored var takes: [PerformChannel: PerformTake] = [:]
     @ObservationIgnored var performOverride: [ObjectID: CoreTransform] = [:]
     @ObservationIgnored var propertyOverride: [ObjectID: [PropertyKey: PropertyValue]] = [:]
+    /// The sheet shows as paper while the Pencil works and fades a moment after (`EditorModel+Sheets`).
+    @ObservationIgnored var sheetAwake = false
+    @ObservationIgnored var sheetFadeTask: Task<Void, Never>?
+    /// A finger placed the current sheet: it stays where it was put (an unplaced, unused sheet turns to face you).
+    @ObservationIgnored var sheetPlaced = false
+    /// A Pencil stroke is on the stage now (the sheet stays awake, the clusters rest).
+    @ObservationIgnored var strokeInProgress = false
+    /// A number in the object panel being dragged like a slider: its changes are one undo step.
+    @ObservationIgnored var numberScrub: String?
+    /// The thing lit under the hovering Pencil (`EditorModel+Pointer`).
+    @ObservationIgnored var hoverLit: ObjectID?
+    /// A joint being dragged: the changes shown as live values until the finger lifts (`EditorModel+Poses`).
+    @ObservationIgnored var ikDrag: [PerformChannel: PropertyChange] = [:]
     /// Shapes shown instead of the document's while a push/pull is dragged (committed as one command on release).
     @ObservationIgnored var kindOverride: [ObjectID: ObjectKind] = [:]
     @ObservationIgnored var performChannels = Set<PerformChannel>()

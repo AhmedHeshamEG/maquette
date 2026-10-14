@@ -20,6 +20,13 @@
             feedback(for: view).pathCompleted(at: point)
         }
 
+        /// A small click in the hand where nothing on the canvas snapped: a slider reached its end, a part was picked, a
+        /// flipbook turned a frame. Played in the window last touched, at `point` (its centre when nil).
+        public static func buzz(at point: CGPoint? = nil) {
+            guard HmmHaptics.isEnabled, let window = HmmTouches.shared.window else { return }
+            feedback(for: window).alignmentOccurred(at: point ?? CGPoint(x: window.bounds.midX, y: window.bounds.midY))
+        }
+
         private static func feedback(for view: UIView) -> UICanvasFeedbackGenerator {
             if let generator, generator.view === view { return generator.feedback }
             let feedback = UICanvasFeedbackGenerator(view: view)

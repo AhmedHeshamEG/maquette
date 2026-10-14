@@ -20,16 +20,15 @@ extension EditorModel {
         }
     }
 
-    /// The eraser of the tool in the hand, and back (ink, flipbooks, paint); with anything else, ink's eraser.
+    /// The eraser of the tool in the hand, and back to the last brush (Draw's Erase ↔ Brush); with anything else, Draw
+    /// with its eraser.
     func toggleEraser() {
         HmmHaptics.play(.selection)
-        switch tool {
-        case .ink: ink.mode = ink.mode == .erase ? .draw : .erase
-        case .flipbook: flipbook.mode = flipbook.mode == .erase ? .draw : .erase
-        case .paint: colourPaint.mode = colourPaint.mode == .erase ? .paint : .erase
-        default:
-            tool = .ink
-            ink.mode = .erase
+        if isDrawing {
+            chooseDrawVerb(drawVerbInUse == .erase ? .brush : .erase)
+        } else {
+            drawVerb = .erase
+            applyDraw()
         }
     }
 
@@ -40,9 +39,16 @@ extension EditorModel {
         tool = previous
     }
 
-    /// The squeeze menu's buttons, as Settings filled its six slots.
+    /// The squeeze menu's buttons: Rig's own six while rigging, else the six slots Settings filled (U5).
     var quickMenuItems: [HmmQuickMenuItem] {
-        QuickAction.slots().map { action in
+        if tool == .rig {
+            return RigQuickAction.allCases.map { action in
+                HmmQuickMenuItem(id: action.rawValue, title: action.title, systemName: action.systemImage, isOn: isOn(action)) { [weak self] in
+                    self?.run(action)
+                }
+            }
+        }
+        return QuickAction.slots().map { action in
             HmmQuickMenuItem(id: action.rawValue, title: action.title, systemName: action.systemImage, isOn: isOn(action)) { [weak self] in
                 self?.run(action)
             }
@@ -51,26 +57,66 @@ extension EditorModel {
 
     private func isOn(_ action: QuickAction) -> Bool {
         switch action {
-        case .eraser: ink.mode == .erase && tool == .ink || flipbook.mode == .erase && tool == .flipbook || colourPaint.mode == .erase && tool == .paint
+        case .lasso: tool == .lasso || tool == .ink && ink.mode == .select
+        case .eyedropper: eyedropping
+        case .eraser: isDrawing && drawVerbInUse == .erase
         case .snap: snap.magnet
+        case .hideSheet: sheetHidden
         case .play: isPlaying
+        default: false
+        }
+    }
+
+    private func isOn(_ action: RigQuickAction) -> Bool {
+        switch action {
+        case .pins: rigging.markKind == .pin
+        case .dots: rigging.markKind == .dot
+        case .showBones: !rigging.hidesBones
         default: false
         }
     }
 
     func run(_ action: QuickAction) {
         switch action {
+        case .lasso: startLasso()
+        case .eyedropper: eyedropping = true
         case .eraser: toggleEraser()
+        case .snap: toggleSnapMagnet()
+        case .hideSheet: sheetHidden.toggle()
+        case .frame: frameSelection()
         case .lastTool: switchToLastTool()
         case .colour: hands.choosingColour = true
-        case .snap: toggleSnapMagnet()
         case .undo: undo()
         case .redo: redo()
         case .play: togglePlay()
         case .hideChrome: chromeHidden.toggle()
-        case .frame: frameSelection()
         case .newSheet: newSheet()
         }
+    }
+
+    func run(_ action: RigQuickAction) {
+        HmmHaptics.play(.selection)
+        switch action {
+        case .pins: rigging.markKind = .pin
+        case .dots: rigging.markKind = .dot
+        case .mirrorPose: if let character = poseCharacter ?? rigTarget?.id { mirrorPose(of: character) }
+        case .resetPose: if let id = rigTarget?.id ?? poseCharacter { resetPose(id) }
+        case .savePose: if let character = poseCharacter ?? rigTarget?.id { savePose(of: character) }
+        case .showBones:
+            rigging.hidesBones.toggle()
+            refreshModelOverlay()
+        }
+    }
+
+    /// The lasso (U5: the Select button left): while drawing it picks strokes, else things. One loop, then back.
+    func startLasso() {
+        if isDrawing, drawsLines {
+            ink.mode = .select
+            tool = .ink
+        } else {
+            tool = .lasso
+        }
+        HmmHaptics.play(.selection)
     }
 
     /// The Snap magnet: everything that snaps, on or off (the details are its hold).
@@ -82,13 +128,15 @@ extension EditorModel {
 
     // MARK: Cut, copy, paste
 
-    /// The three-finger swipe's bar.
+    /// The three-finger swipe's bar (U5: with the lasso and Select all, where the Select button was).
     var editBarItems: [HmmEditBarItem] {
         [
             HmmEditBarItem("Cut", systemName: "scissors") { [weak self] in self?.cutSelection() },
             HmmEditBarItem("Copy", systemName: "doc.on.doc") { [weak self] in self?.copySelection() },
             HmmEditBarItem("Paste", systemName: "doc.on.clipboard") { [weak self] in self?.paste() },
-            HmmEditBarItem("Duplicate", systemName: "plus.square.on.square") { [weak self] in self?.duplicateSelection() }
+            HmmEditBarItem("Duplicate", systemName: "plus.square.on.square") { [weak self] in self?.duplicateSelection() },
+            HmmEditBarItem("Lasso", systemName: "lasso") { [weak self] in self?.startLasso() },
+            HmmEditBarItem("Select all", systemName: "checkmark.circle") { [weak self] in self?.selectAll() }
         ]
     }
 

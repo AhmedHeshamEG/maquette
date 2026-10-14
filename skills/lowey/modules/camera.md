@@ -46,3 +46,10 @@ Match shapes across a cut when you can (paper → screen in the same frame posit
 
 `observe(framing="9:16")` when the video is vertical; keep the subject inside the vertical safe zone (the report's
 frame cut and tangent notes catch edges).
+
+## Titles that stay on the picture (0.15)
+
+The app has no timeline overlays any more for a person: a title is 3D text that sticks to the camera. Through the
+bridge: add the text, then `{"do":"set","target":"Title","property":"sticksToCamera","value":true}`; its position is
+then read in the shot camera's frame (`[0, 0, -2]` is two metres straight ahead). Things drawn on a kept sheet carry
+`drawnOn` (the sheet's id): moving that sheet in the app moves them with it.

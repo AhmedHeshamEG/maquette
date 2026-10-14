@@ -5,6 +5,7 @@ import SwiftUI
 struct GesturesPage: View {
     @AppStorage(AppSettings.timelineFingerSelects) private var fingerSelects = false
     @AppStorage(AppSettings.timelineHoverScrubs) private var hoverScrubs = true
+    @AppStorage(AppSettings.showsUndoButtons) private var showsUndo = false
 
     var body: some View {
         Form {
@@ -16,6 +17,12 @@ struct GesturesPage: View {
                 Text("Shortcuts")
             } footer: {
                 Text("Each one can be switched off. Nothing here pops up on the screen: they are felt in the hand.")
+            }
+            Section {
+                Toggle("Show undo buttons", isOn: $showsUndo)
+                    .accessibilityIdentifier("settings-undo-buttons")
+            } footer: {
+                Text("Two fingers tap to undo, three to redo, everywhere. The buttons are for those who like to see them.")
             }
             Section("Timeline") {
                 Toggle("Select with a finger (draw around keys and clips)", isOn: $fingerSelects)

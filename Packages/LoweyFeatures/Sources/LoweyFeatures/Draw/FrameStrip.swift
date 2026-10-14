@@ -2,10 +2,11 @@ import HmmDesign
 import LoweyCore
 import SwiftUI
 
-/// The frame strip (CONTEXT §10.10), along the bottom while a flipbook is drawn: its drawings as real pictures, each as
-/// wide as it is held. Tap one to draw on it; + adds the next and goes to it; the arrows step; hold a picture and drag
-/// it to reorder; drag a picture's right edge to hold it longer or shorter; the onion skin shows the neighbours, and
-/// the loop plays the drawings round while you draw. The timeline is only for timing them.
+/// The frame strip (CONTEXT §10.10), over Draw's bar while frames are drawn: the drawings as real pictures, each as wide
+/// as it is held. Tap one to draw on it; + adds the next and goes to it; the arrows step; hold a picture and let go for
+/// a copy, or drag it along to move it; drag a picture's right edge to hold it longer or shorter; the loop plays the
+/// drawings round while you draw. Erasing is Draw's Erase, the onion skins are on the timecode (U5). The timeline is
+/// only for timing them.
 struct FrameStrip: View {
     @Bindable var editor: EditorModel
     @State private var moving: (index: Int, offset: CGFloat)?
@@ -17,8 +18,6 @@ struct FrameStrip: View {
 
     var body: some View {
         HStack(spacing: HmmSpacing.xxs) {
-            HmmButton("eraser", label: "Erase", isOn: editor.flipbook.mode == .erase, size: 36) { editor.toggleEraser() }
-                .accessibilityIdentifier("flipbook-erase")
             if let track = editor.activeFlipbook, !track.frames.isEmpty {
                 HmmButton("chevron.left", label: "Previous drawing", size: 36) { editor.stepFlipbookDrawing(by: -1) }
                 ScrollView(.horizontal, showsIndicators: false) {
@@ -34,9 +33,6 @@ struct FrameStrip: View {
                 HmmButton("chevron.right", label: "Next drawing", size: 36) { editor.stepFlipbookDrawing(by: 1) }
                 HmmButton("plus", label: "New drawing", size: 36) { editor.addFlipbookDrawing() }
                     .accessibilityIdentifier("frame-add")
-                HmmButton("circle.dotted.circle", label: "Onion skin", isOn: editor.flipbook.onionSkin, size: 36) {
-                    editor.flipbook.onionSkin.toggle()
-                }
                 HmmButton(editor.flipbook.looping ? "pause" : "repeat", label: editor.flipbook.looping ? "Stop the loop" : "Loop the drawings",
                           isOn: editor.flipbook.looping, size: 36) { editor.toggleFlipbookLoop() }
                     .accessibilityIdentifier("frame-loop")
@@ -46,7 +42,6 @@ struct FrameStrip: View {
                     .foregroundStyle(theme.text2)
                     .padding(.horizontal, HmmSpacing.xs)
             }
-            HmmButton("xmark", label: "Done drawing", size: 36) { editor.tool = .select }
         }
         .padding(HmmSpacing.xs)
         .hmmPanelBackground()
@@ -68,15 +63,15 @@ struct FrameStrip: View {
             .zIndex(moving?.index == index ? 1 : 0)
             .contentShape(Rectangle())
             .onTapGesture { editor.showFlipbookDrawing(index, of: track.id) }
-            .gesture(reorder(index: index))
+            .gesture(holdOrReorder(index: index, of: track.id))
             .accessibilityElement()
             .accessibilityLabel(Text("Drawing \(index + 1), held \(frame.hold) frames"))
             .accessibilityAddTraits(.isButton)
             .accessibilityIdentifier("frame-\(index)")
     }
 
-    /// Hold a picture, then drag it along the strip.
-    private func reorder(index: Int) -> some Gesture {
+    /// Hold a picture: let go and it is duplicated (Dreams' way, U5); drag it along the strip to move it.
+    private func holdOrReorder(index: Int, of track: String) -> some Gesture {
         LongPressGesture(minimumDuration: 0.3)
             .sequenced(before: DragGesture(minimumDistance: 0))
             .onChanged { value in
@@ -86,8 +81,14 @@ struct FrameStrip: View {
             }
             .onEnded { _ in
                 guard let moving else { return }
-                let steps = Int((moving.offset / (Self.tile + 4)).rounded())
                 self.moving = nil
+                if abs(moving.offset) < 4 {
+                    editor.showFlipbookDrawing(index, of: track)
+                    editor.duplicateFlipbookDrawing()
+                    HmmPencilHaptics.buzz()
+                    return
+                }
+                let steps = Int((moving.offset / (Self.tile + 4)).rounded())
                 editor.moveFlipbookDrawing(index, to: index + steps)
             }
     }

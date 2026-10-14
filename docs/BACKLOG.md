@@ -3,6 +3,22 @@
 What's known and not done yet, so nothing lives only in someone's head. What Maquette is: [SPEC.md](SPEC.md). The
 phase plan (the pass U1 … U5, M12, M14, M16, then 1.0) lives in studio-h's `PHASES.md`; ideas go to its `IDEAS.md`.
 
+## Left from U5 (Maquette 0.15)
+
+- [ ] The device checklist in the "Maquette 0.15 — U5" PR (the Pencil's feel and where strokes start, hover lighting,
+      the Pencil Pro's clicks, flicks, carrying, the eyedropper's loupe, a rig dragged, the sheet seen in light and dark).
+- [ ] On the simulator the pull number is redrawn (gone for a moment) right after a size is typed, so a tap can miss
+      it; the block-with-a-hole test taps it again until its pad opens. Find what redraws it; check it on the iPad.
+- [ ] Smudge on painted models waits for U7 Texture's per-pixel tools (D-283).
+- [ ] Hover lights whole things; faces and edges light with U6's picking (D-291).
+- [ ] A thing stuck to the camera is moved by its gizmo in the world; the gizmo doesn't follow the camera's frame yet
+      (D-295).
+- [ ] Only a selected thing is carried by a finger (D-293); carrying several at once carries the selection's middle.
+- [ ] Overlays made before 0.15 still play and edit in the timeline, but no new ones are made; converting them to stuck
+      titles is by hand (D-295).
+- [ ] The UI language is English at 1.0 (CONTEXT); the Italian and Arabic catalog check stays until the languages phase
+      (D-300).
+
 ## Left from U4 (Maquette 0.14)
 
 - [ ] The device checklist in the "Maquette 0.14 — U4" PR (pins and dots with the Pencil, each body shortcut on real

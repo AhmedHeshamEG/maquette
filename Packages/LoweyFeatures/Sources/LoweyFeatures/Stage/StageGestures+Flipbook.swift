@@ -27,6 +27,12 @@ extension StageGestures {
                 flipbookContinue(Array(samples.suffix(from: min(consumedSamples, samples.count))), recognizer: recognizer, editor: editor)
             }
         case .ended:
+            if !recognizer.isPencil, snapped == nil, let flick = Self.flick(in: samples) {
+                // A finger's flick turns the frame (U5); it draws nothing.
+                flipbookFinish(editor: editor)
+                editor.flickFlipbook(flick)
+                return
+            }
             if snapped == nil {
                 flipbookContinue(Array(samples.suffix(from: min(consumedSamples, samples.count))), recognizer: recognizer, editor: editor)
             }
@@ -35,6 +41,13 @@ extension StageGestures {
         default:
             flipbookFinish(editor: editor)
         }
+    }
+
+    /// The flick a stroke's samples make, if they make one.
+    static func flick(in samples: [StrokeGestureRecognizer.Sample]) -> Flick? {
+        guard let first = samples.first, let last = samples.last else { return nil }
+        return Flick.read(dx: Double(last.location.x - first.location.x), dy: Double(last.location.y - first.location.y),
+                          duration: last.time - first.time)
     }
 
     private func flipbookContinue(_ samples: [StrokeGestureRecognizer.Sample], recognizer: StrokeGestureRecognizer, editor: EditorModel) {

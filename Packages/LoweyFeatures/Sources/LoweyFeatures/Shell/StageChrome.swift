@@ -18,8 +18,7 @@ struct StageChrome: View {
     var body: some View {
         ZStack {
             if editor.tool == .model || editor.precision.showsDimensions { ModelDimensions(editor: editor) }
-            // The sheet's edge: its grip, shapes and kept sheets, under it on the stage.
-            if editor.drawsOnSheet, editor.currentSheet != nil { SheetEdgeControl(editor: editor) }
+            if editor.tool == .ink, !editor.inkStrokes.isEmpty { StrokeChip(editor: editor) }
             HStack {
                 if !sidebarOnRight { EditorSidebar(editor: editor) }
                 Spacer()
@@ -65,6 +64,7 @@ struct StageChrome: View {
         .onGeometryChange(for: CGRect.self) { $0.frame(in: .global) } action: { bounds = $0 }
         .animation(HmmMotion.standard.animation(reduceMotion: reduceMotion), value: editor.openPanel)
         .animation(HmmMotion.standard.animation(reduceMotion: reduceMotion), value: showsInspector)
+        .animation(HmmMotion.gentle.animation(reduceMotion: reduceMotion), value: editor.clustersResting)
     }
 
     /// The object panel floats while something is selected (a chip while something bigger is open). While sketching it
@@ -75,37 +75,33 @@ struct StageChrome: View {
 
     // MARK: Clusters
 
+    /// The document and the app: Home, Actions, Look, the Library (U5: the Select button left; the lasso is in the
+    /// quick menu, the three-finger menu and the empty stage's hold menu).
     private var leadingCluster: some View {
         HmmCornerCluster([
             HmmClusterItem(id: "home", systemName: "square.grid.2x2", label: "Home") { app.closeEditor() },
             item(.actions, "ellipsis.circle", "Actions"),
             item(.look, "paintpalette", "Look"),
-            item(.select, editor.tool == .lasso ? "lasso" : "hand.point.up.left", "Select", on: editor.tool == .lasso),
             item(.library, "books.vertical", "Library")
-        ])
-        .overlay(alignment: .bottomLeading) { SceneNameDoor(editor: editor).offset(x: HmmSpacing.xs, y: 30) }
+        ], resting: editor.clustersResting) { editor.wakeClusters() }
+            .overlay(alignment: .bottomLeading) {
+                if !editor.clustersResting { SceneNameDoor(editor: editor).offset(x: HmmSpacing.xs, y: 30) }
+            }
     }
 
-    /// The making tools, in the order a thing gets made: Model, Draw, Paint, Rig, and Animate (it calls the timeline).
+    /// The making tools, in the order a thing gets made: Model, Draw (U5: Draw and Paint are one; its bar is under the
+    /// stage, no panel), Rig, and Animate (it calls the timeline).
     private var trailingCluster: some View {
         HmmCornerCluster([
             item(.model, "cube", "Model", on: editor.tool == .model && !editor.isSketching),
-            item(.draw, drawIcon, "Draw", on: editor.tool.draws || editor.isSketching),
-            item(.paint, editor.tool == .scatter ? "circle.hexagongrid" : "paintbrush.pointed", "Paint", on: editor.tool.paintsSurfaces),
+            HmmClusterItem(id: "draw", systemName: editor.drawBrush.systemImage, label: "Draw", isOn: editor.isDrawing, accent: editor.isDrawing) {
+                editor.toggleDraw()
+            },
             item(.rig, "figure.arms.open", "Rig", on: editor.tool == .rig),
             HmmClusterItem(id: "animate", systemName: "figure.walk.motion", label: "Animate", isOn: editor.timelinePresence == .full) {
                 editor.toggleAnimate()
             }
-        ])
-    }
-
-    private var drawIcon: String {
-        switch editor.tool {
-        case .draw: "scribble.variable"
-        case .flipbook: "book.pages"
-        case .model where editor.isSketching: "pencil.and.ruler"
-        default: "pencil.tip"
-        }
+        ], resting: editor.clustersResting) { editor.wakeClusters() }
     }
 
     /// A cluster button. `on` is the tool in the hand: with chrome restraint, the one thing that wears the accent.
@@ -122,9 +118,10 @@ struct StageChrome: View {
         HStack(alignment: .bottom, spacing: HmmSpacing.s) {
             if editor.flying {
                 FlyPad(editor: editor).transition(.scale.combined(with: .opacity))
+            } else if editor.tool == .flipbook {
+                FlipbookTimecode(editor: editor)
             } else if showsJoystick, !editor.selection.isEmpty, editor.tool == .select, editor.performPhase == .idle, !editor.directorView {
                 JoystickPad(editor: editor)
-                    .overlay(alignment: .topTrailing) { JoystickHideButton { showsJoystick = false } }
                     .transition(.scale.combined(with: .opacity))
             }
             Spacer()
@@ -148,12 +145,9 @@ private struct ClusterPanelView: View {
         switch panel {
         case .actions: ActionsPanel(editor: editor)
         case .look: LookPanel(editor: editor)
-        case .select: SelectBar(editor: editor)
         case .library: LibraryPanel(editor: editor)
         case .scene: ScenePanel(editor: editor)
         case .model: ModelPanel(editor: editor)
-        case .draw: DrawToolsPanel(editor: editor)
-        case .paint: PaintPanel(editor: editor)
         case .rig: RigPanel(editor: editor)
         }
     }
@@ -187,29 +181,14 @@ private struct SceneNameDoor: View {
     }
 }
 
-/// The joystick's own way out (Settings ▸ Stage brings it back).
-private struct JoystickHideButton: View {
-    let hide: () -> Void
-    @Environment(AppModel.self) private var app
-
-    var body: some View {
-        HmmButton("xmark", label: "Hide the joystick", size: 28) {
-            hide()
-            app.show("The joystick is in Settings ▸ Stage when you want it back")
-        }
-        .offset(x: HmmSpacing.xs, y: -HmmSpacing.xs)
-        .accessibilityIdentifier("hide-joystick")
-    }
-}
-
-/// Bottom-right of the stage: the timeline on call, the views, framing the selection, the camera button.
+/// The view corner (U5: four): the views (the view cube's place), the camera, the joystick, the Snap magnet. The
+/// timeline comes with Animate; framing is a finger's double-tap and the quick menu's.
 private struct ViewControls: View {
     let editor: EditorModel
+    @AppStorage(AppSettings.showsJoystick) private var showsJoystick = true
 
     var body: some View {
         HStack(spacing: HmmSpacing.xxs) {
-            HmmButton("timeline.selection", label: "Timeline", isOn: editor.timelinePresence != .hidden) { editor.toggleTimeline() }
-                .accessibilityIdentifier("timeline-toggle")
             Menu {
                 ForEach(ViewAxis.allCases, id: \.self) { axis in
                     Button(LocalizedStringKey(axis.displayName)) { editor.stage?.quickView(axis) }
@@ -221,9 +200,10 @@ private struct ViewControls: View {
             }
             .accessibilityLabel("Views")
             .accessibilityIdentifier("views-menu")
-            SnapMagnet(editor: editor)
-            HmmButton("viewfinder", label: "Frame the selection") { editor.frameSelection() }
             CameraButton(editor: editor)
+            HmmButton("gamecontroller", label: "Joystick", isOn: showsJoystick) { showsJoystick.toggle() }
+                .accessibilityIdentifier("joystick-toggle")
+            SnapMagnet(editor: editor)
         }
         .padding(HmmSpacing.xxs)
         .environment(\.hmmInsideGlass, true)

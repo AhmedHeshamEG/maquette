@@ -3,8 +3,9 @@ import LoweyCore
 import SwiftUI
 
 /// The numbers floating beside what the Model tool measures: the push/pull distance, the sides of the rectangle just
-/// drawn, a circle's diameter, a line's length. Tap one and our number pad opens beside it (never the system keyboard,
-/// CONTEXT §10.10) to type an exact length (`25`, `2×12`, `1.5 cm`).
+/// drawn, a circle's diameter, a line's length. Each is a 44 pt pill (U5): drag it to change it (slowly for fine, fast
+/// for coarse), tap it and our number pad opens beside it (never the system keyboard, CONTEXT §10.10) to type an exact
+/// length (`25`, `2×12`, `1.5 cm`).
 struct ModelDimensions: View {
     let editor: EditorModel
 
@@ -22,7 +23,27 @@ struct ModelDimensions: View {
 private struct DimensionChip: View {
     let editor: EditorModel
     let label: DimensionLabel
+    @State private var scrub: (start: Double, last: CGSize, gesture: String)?
     @Environment(\.hmmTheme) private var theme
+
+    /// Every number is a slider: dragged, the size changes with the hand (U5).
+    private var drag: some Gesture {
+        DragGesture(minimumDistance: 6)
+            .onChanged { value in
+                guard let current = editor.dimensionValue(label.field), editor.canScrub(label.field) else { return }
+                let state = scrub ?? (current, .zero, UUID().uuidString)
+                let delta = HmmScrub.delta(dx: value.translation.width - state.last.width, dy: value.translation.height - state.last.height)
+                let speed = HmmScrub.delta(dx: value.velocity.width, dy: value.velocity.height)
+                let next = HmmScrub(fine: max(current * 0.004, 0.0005), range: 0.0005 ... 10000).value(from: current, delta: delta, speed: speed)
+                scrub = (state.start, value.translation, state.gesture)
+                editor.scrubDimension(label.field, to: next, gesture: state.gesture)
+            }
+            .onEnded { _ in
+                scrub = nil
+                editor.endGesture()
+                HmmHaptics.play(.commit)
+            }
+    }
 
     private var editing: Bool { editor.modeling.editing == label.field }
 
@@ -43,9 +64,10 @@ private struct DimensionChip: View {
         }), placeholder: label.text, units: LengthUnit.allCases.map(\.symbol)) { text in
             editor.submitDimension(label.field, text: text)
         }
-        .font(.hmm(.footnote, weight: .semibold))
+        .simultaneousGesture(drag)
+        .font(.hmmNumbers(.body, weight: .semibold))
         .padding(.horizontal, HmmSpacing.s)
-        .frame(minHeight: 32)
+        .frame(minWidth: HmmTarget.minimum, minHeight: HmmTarget.minimum)
         .background(Capsule().fill(editing ? theme.surface : theme.accent))
         .foregroundStyle(editing ? theme.text : theme.onAccent)
         .contentShape(Capsule())
