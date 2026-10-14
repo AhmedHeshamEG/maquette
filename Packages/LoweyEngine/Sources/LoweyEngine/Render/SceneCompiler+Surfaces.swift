@@ -24,7 +24,9 @@ extension SceneCompiler {
                 addSurface(mesh, object: object, state: state, world: world, base: base, casts: casts, input: input, scene: &scene)
             }
         case let .mesh(editable):
-            if let mesh = mesh(.editable(editable), object: object, label: object.name, make: { editable.renderMesh() }) {
+            let key = MeshKey.editable(editable, levels: ShapeStack.subdivision(of: object),
+                                       angle: object[.smoothAngle]?.floatValue.map { Int32($0.rounded()) } ?? -1, flat: object.shading == .flat)
+            if let mesh = mesh(key, object: object, label: object.name, make: { ShapeStack.render(editable, for: object) }) {
                 addSurface(mesh, object: object, state: state, world: world, base: base, casts: casts, input: input, scene: &scene)
             }
         case let .text(recipe):
@@ -40,11 +42,14 @@ extension SceneCompiler {
         }
     }
 
-    /// A surface as drawn, or its paint mesh with the paint's composite when it's painted.
-    func addSurface(_ mesh: GPUMesh, object: SceneObject, state: Inherited, world: simd_float4x4, base: ObjectUniforms, casts: Bool,
+    /// A surface as drawn, or its paint mesh with the paint's composite when it's painted. Paint is found on the
+    /// unmoved mesh (so an animated bend doesn't send it looking again every frame) and drawn over the moved corners.
+    func addSurface(_ meshes: SurfaceMeshes, object: SceneObject, state: Inherited, world: simd_float4x4, base: ObjectUniforms, casts: Bool,
                     input: RenderInput, scene: inout RenderScene) {
+        let mesh = meshes.shown
         let weightView = state.ghost ? nil : weightUniforms(base, object: object, input: input)
-        if weightView == nil, let painted = painted(object, source: mesh, state: state, input: input) {
+        if weightView == nil, let found = painted(object, source: meshes.base, state: state, input: input) {
+            let painted = meshes.isMoved ? movedPaint(found, over: meshes, object: object) ?? found : found
             addPainted(painted, object: object, world: world, base: base, casts: casts, input: input, scene: &scene)
         } else if !state.ghost, let rig = rigWeights(object, input: input, vertexCount: mesh.data.positions.count)?.rig,
                   let skinned = riggedMesh(object, source: mesh, key: paints.fingerprint(of: mesh), input: input) {
@@ -56,15 +61,35 @@ extension SceneCompiler {
         }
     }
 
+    /// A painted surface's paint mesh rebuilt over the moved corners (same unwrap, same composite).
+    func movedPaint(_ painted: PaintedSurface, over surface: SurfaceMeshes, object: SceneObject) -> PaintedSurface? {
+        guard let shape = ShapeStack.key(of: object) else { return nil }
+        var hasher = Hasher()
+        hasher.combine(shape)
+        let key = "\(painted.key) moved \(hasher.finalize())"
+        let device = device
+        let dabs = object.shadowDabs
+        guard let mesh = meshes.mesh(.paintSurface(key, mesh: paints.fingerprint(of: surface.base), dabs: dabs), make: {
+            Self.paintMesh(painted.unwrap, over: surface.shown.data, dabs: dabs, device: device, label: object.name)
+        }) else { return nil }
+        return PaintedSurface(mesh: mesh, texture: painted.texture, unwrap: painted.unwrap, key: painted.key)
+    }
+
     /// The object's mesh from the cache: cut finer when its rig asked for it (`MeshDensify`), with its Shadow Brush
-    /// painting baked in.
-    func mesh(_ key: MeshKey, object: SceneObject, label: String, make: () -> MeshData) -> GPUMesh? {
-        guard let cuts = object[.bendDetail]?.floatValue, cuts >= 1 else {
-            return mesh(key, dabs: object.shadowDabs, label: label, make: make)
+    /// painting baked in; and that mesh moved by its strokes, cage and bend (`ShapeStack`) when it has any.
+    func mesh(_ key: MeshKey, object: SceneObject, label: String, make: () -> MeshData) -> SurfaceMeshes? {
+        let cuts = object[.bendDetail]?.floatValue.map { Int($0) } ?? 0
+        let baseKey: MeshKey = cuts >= 1 ? .dense(key, cuts: cuts) : key
+        let built: GPUMesh? = if cuts >= 1 {
+            mesh(baseKey, dabs: object.shadowDabs, label: label) { MeshDensify.densified(make(), cuts: cuts) }
+        } else {
+            mesh(key, dabs: object.shadowDabs, label: label, make: make)
         }
-        return mesh(.dense(key, cuts: Int(cuts)), dabs: object.shadowDabs, label: label) {
-            MeshDensify.densified(make(), cuts: Int(cuts))
-        }
+        guard let built else { return nil }
+        guard let shape = ShapeStack.key(of: object), let shown = mesh(.shaped(baseKey, shape), dabs: object.shadowDabs, label: label, make: {
+            ShapeStack.moved(built.data, for: object)
+        }) else { return SurfaceMeshes(base: built, shown: built) }
+        return SurfaceMeshes(base: built, shown: shown)
     }
 
     /// A mesh from the cache, with the object's Shadow Brush painting baked into its vertices.
@@ -99,8 +124,10 @@ extension SceneCompiler {
                        scene: &scene)
             return
         }
-        guard let mesh = mesh(.primitive(shape, faceted: false), object: object, label: shape.rawValue, make: {
-            PrimitiveMesh.make(shape, shading: .smooth)
+        let levels = ShapeStack.subdivision(of: object)
+        let key: MeshKey = levels > 0 ? .subdivided(shape, levels: levels, flat: object.shading == .flat) : .primitive(shape, faceted: false)
+        guard let mesh = mesh(key, object: object, label: shape.rawValue, make: {
+            ShapeStack.primitive(shape, for: object, shading: object.shading == .flat ? .flat : .smooth)
         }) else { return }
         addSurface(mesh, object: object, state: state, world: state.world.matrix, base: base, casts: casts && shape != .plane, input: input,
                    scene: &scene)

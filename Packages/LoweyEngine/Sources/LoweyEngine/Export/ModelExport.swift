@@ -124,18 +124,20 @@ public enum ModelExport {
     public static func painted(_ object: SceneObject, look: Look, catalog: AssetCatalog, models: ModelLibrary = .shared,
                                file: (String) -> Data?, pose: [LoweyCore.Transform]? = nil) -> PaintedExport? {
         guard object.paint != nil else { return nil }
-        var source = PaintSource.mesh(of: object)
+        // Paint is found on the unmoved surface; the strokes, cage and bend move its corners (as on the stage).
+        var source = PaintSource.unshaped(of: object)
         var base = object.color?.resolved(in: look.palette) ?? .blockout
         if source == nil, let id = object.kind.assetID, let asset = catalog.manifest.asset(id), let model = models.model(asset, catalog: catalog) {
             source = AssetPaint.mergedMesh(model)
             if object.color == nil { base = .white }
         }
-        var posed: MeshData?
-        if let source, let rig = object.rig, let name = rig.skin, let weights = file(name).flatMap({ try? SkinWeights(data: $0) }),
-           weights.count == source.positions.count {
+        let shown = source.map { ShapeStack.moved($0, for: object) }
+        var posed: MeshData? = ShapeStack.key(of: object) == nil ? nil : shown
+        if let shown, let rig = object.rig, let name = rig.skin, let weights = file(name).flatMap({ try? SkinWeights(data: $0) }),
+           weights.count == shown.positions.count {
             let skeleton = rig.skeleton
             let model = skeleton.modelSpace(RigPoses.posed(pose ?? skeleton.restPose, skeleton: skeleton, by: object))
-            posed = Skinning.deform(source, weights: weights, bind: skeleton.modelRest, pose: model)
+            posed = Skinning.deform(shown, weights: weights, bind: skeleton.modelRest, pose: model)
         }
         return PaintExport.painted(object, source: source, base: base, file: file, posed: posed, encode: PaintPixels.png)
     }
@@ -156,8 +158,11 @@ public enum ModelExport {
         guard let assetID = object.kind.assetID, let asset = catalog.manifest.asset(assetID),
               let model = models.model(asset, catalog: catalog) else { return [] }
         let tint = object.color?.resolved(in: look.palette)
+        // A cage or a bend moves every unskinned part, measured over the whole model (as the stage draws it).
+        let bounds = model.bounds
         return model.parts.map { part in
             var mesh = part.mesh
+            if !part.isSkinned { mesh.positions = ShapeStack.movedPositions(mesh.positions, for: object, bounds: bounds, strokes: false) }
             mesh.computeSmoothNormals()
             let material = model.materials.indices.contains(part.material) ? model.materials[part.material] : ImportedMaterial()
             return GLTFScene.LocalPart(name: part.name, mesh: mesh,
