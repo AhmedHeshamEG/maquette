@@ -10,6 +10,8 @@ public enum ModelingOperations {
         case pushPull(PushPull.Failure)
         case boolean(MeshBoolean.Failure)
         case shape(ShapeFailure)
+        /// Replaying a step, the face or edge it was made on isn't on the changed shape any more.
+        case partLost
 
         public var description: String {
             switch self {
@@ -19,6 +21,7 @@ public enum ModelingOperations {
             case let .pushPull(failure): failure.description
             case let .boolean(failure): failure.description
             case let .shape(failure): failure.description
+            case .partLost: "The face or edge it was made on isn't there on the changed shape."
             }
         }
     }
@@ -82,6 +85,9 @@ public enum ModelingOperations {
             return (id, mesh.transformed(by: scene.worldTransform(of: id)))
         }
         guard solids.count >= 2, let keeper = solids.first else { throw .needsTwoSolids }
+        if let recorded = try recordedBoolean(keeper.0, others: solids.dropFirst().map(\.1), operation, in: scene) {
+            return .batch(operation.label, recorded + [.delete(solids.dropFirst().map(\.0))])
+        }
         var result = keeper.1
         do {
             for other in solids.dropFirst() {
@@ -105,7 +111,9 @@ public enum ModelingOperations {
         guard regions.indices.contains(index), abs(distance) > 1e-9 else { throw .noSuchRegion }
         let region = regions[index]
         var commands: [EditCommand] = []
-        if let target = sketch.target, let targetObject = scene.objects[target], let mesh = editableMesh(of: targetObject) {
+        if let target = sketch.target, let recorded = try recordedSketch(sketch, region: region, distance: distance, into: target, in: scene) {
+            commands.append(recorded)
+        } else if let target = sketch.target, let targetObject = scene.objects[target], let mesh = editableMesh(of: targetObject) {
             let world = scene.worldTransform(of: target)
             let solid = mesh.transformed(by: world)
             let prism = distance > 0 ? sketch.prism(of: region, distance: distance) : cutPrism(sketch, region, depth: distance, into: solid)

@@ -52,7 +52,9 @@ public enum LoweySchema {
     /// 15: Maquette 0.16's shaping: objects' `shaping` (a cage, surface brush strokes), the `setShaping` command, the
     ///     `subdivision`, `smoothAngle`, `deform`, `deformAmount`, `deformAxis` and `linked` properties, sketches'
     ///     `constraints`.
-    public static let currentVersion = 15
+    /// 16: Maquette 0.17's editable history: objects' `modelHistory` (the shape the steps start from, the steps, the
+    ///     tags of the faces), the `setModelHistory` command.
+    public static let currentVersion = 16
 
     public static let migrations: [Migration] = [
         Migration(kind: .scene, from: 0, transform: liftSceneV0),
@@ -110,7 +112,11 @@ public enum LoweySchema {
         // 14 → 15 adds optional fields and properties; nothing older changes shape.
         Migration(kind: .scene, from: 14) { $0 },
         Migration(kind: .project, from: 14) { $0 },
-        Migration(kind: .library, from: 14) { $0 }
+        Migration(kind: .library, from: 14) { $0 },
+        // 15 → 16 adds the optional model history; nothing older changes shape.
+        Migration(kind: .scene, from: 15) { $0 },
+        Migration(kind: .project, from: 15) { $0 },
+        Migration(kind: .library, from: 15) { $0 }
     ]
 
     /// The render style a 1.x look maps to.

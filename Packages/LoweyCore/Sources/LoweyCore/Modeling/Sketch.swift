@@ -125,12 +125,16 @@ public struct Sketch: Codable, Hashable, Sendable {
 
     /// The sketch without the curves that made a region (pulled regions are used up, like Shapr3D).
     public func removing(_ region: SketchRegion) -> Sketch {
-        let used = Set(curves.indices.filter { index in
+        removingCurves(curves(making: region))
+    }
+
+    /// The curves a region is made of.
+    func curves(making region: SketchRegion) -> Set<Int> {
+        Set(curves.indices.filter { index in
             curves[index].points.allSatisfy { point in
                 ([region.outline] + region.holes).contains { loop in SketchLoops.onLoop(point, loop, tolerance: tolerance * 10) }
             }
         })
-        return removingCurves(used)
     }
 }
 

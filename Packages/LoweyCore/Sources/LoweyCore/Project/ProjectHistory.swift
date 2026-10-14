@@ -45,7 +45,9 @@ public enum ProjectHistory {
         // 13 → 14 only adds a rig's optional marks and person dots and tracks' optional cycle.
         13: { $0 },
         // 14 → 15 only adds the optional shaping field, the `setShaping` command and sketches' optional constraints.
-        14: { $0 }
+        14: { $0 },
+        // 15 → 16 only adds the optional model history field and the `setModelHistory` command.
+        15: { $0 }
     ]
     /// The first schema journals were written with (Maquette 0.1).
     public static let firstJournalSchema = 4

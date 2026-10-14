@@ -121,6 +121,8 @@ public indirect enum EditCommand: Hashable, Sendable {
     case setRig(ObjectID, ObjectRig?)
     /// Replaces an object's cage and surface brush strokes (`ObjectShaping`).
     case setShaping(ObjectID, ObjectShaping?)
+    /// Replaces an object's editable modelling history (`ModelHistory`; nil removes it).
+    case setModelHistory(ObjectID, ModelHistory?)
     /// Replace the project's own Looks ("My Look").
     case setCustomLooks([LookPreset])
     /// The project's brushes (`ProjectInfo.brushes`): a stroke's first use of a brush adds its frozen copy.
@@ -166,6 +168,7 @@ public indirect enum EditCommand: Hashable, Sendable {
         case .paintTiles: return "Paint"
         case .setRig: return "Rig"
         case .setShaping: return "Shape"
+        case .setModelHistory: return "Shape"
         case .setCustomLooks: return "Edit looks"
         case .setBrushes: return "Draw"
         case let .setFlipbooks(edits): return edits.allSatisfy { $0.track == nil } ? "Delete flipbook" : "Draw"

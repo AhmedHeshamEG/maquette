@@ -74,6 +74,8 @@ public enum LinkedCopies {
             return partners(of: id, in: scene).map { .setKind($0, shared) }
         case let .setShaping(id, shaping):
             return partners(of: id, in: scene).map { .setShaping($0, shaping) }
+        case let .setModelHistory(id, history):
+            return partners(of: id, in: scene).map { .setModelHistory($0, history) }
         case let .setProperties(changes):
             let shared = changes.filter { sharedKeys.contains($0.key) }
             let mirrored = shared.flatMap { change in
