@@ -45,7 +45,13 @@ struct EditorScreen: View {
             if let proposal = editor.proposal { ProposalBanner(editor: editor, proposal: proposal) }
         }
         .overlay(alignment: .bottom) {
-            if let state = editor.historyScrub { HistoryScrubberBar(editor: editor, state: state) }
+            if let state = editor.historyScrub {
+                VStack(spacing: 0) {
+                    // H1: the selected thing's modelling steps, over the scrubber.
+                    if let object = editor.stepsObject { ModelStepsPanel(editor: editor, object: object, isNow: state.isNow) }
+                    HistoryScrubberBar(editor: editor, state: state)
+                }
+            }
         }
         // What the board covers isn't there for VoiceOver either.
         .accessibilityHidden(editor.boardShown)

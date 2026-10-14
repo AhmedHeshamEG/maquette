@@ -3,6 +3,23 @@
 All notable changes. 1.x grew in four phases (v0.1 → v1.4); 2.0 is the remaster, released as betas first. Maquette
 continues from 2.0 and numbers its phases again from 0.1 (each phase bumps the minor version until 1.0).
 
+## [0.17] — Maquette — editable history (phase H1)
+
+Shapr3D's history: every modelling step listed, and changing an early one updates everything after it.
+
+- **The steps list.** Select a modelled thing and open Actions ▸ History (⌘Y): over the scrubber, its steps in plain
+  words, "Hole, 6 mm", "Round, 2 mm". Tap one and its numbers appear; change a number and the steps after it replay, as
+  one undo step. Push/pull, inset, bevel, round, shell, a sketch pulled out or cut in, and joining or cutting with
+  another solid are steps.
+- **The same face, after a change.** Each step remembers the faces and edges it was made on by name, not by number, so
+  making a hole wider still finds the edges that were rounded after it. A cut that went right through goes through
+  again; a drawing follows the face it was drawn on.
+- **When it can't follow**, it says which step and why, in one line, and nothing changes.
+- **Fixed steps.** A change by hand (a corner dragged, the knife, a loop cut, clean up) starts the list again from the
+  shape as it is; the steps before it stay listed with a lock. Painting or rigging a thing fixes its steps the same way.
+- **The bridge**: `model` gains `steps` (lists them) and `step` (changes one).
+- Projects move to **schema 16** (an object's steps); 0.16 refuses them with its usual message.
+
 ## [0.16] — Maquette — shape (phase U6)
 
 Modelling by touch, with every tool a modeller reaches for, and shapes that keep their sizes.

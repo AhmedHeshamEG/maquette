@@ -1774,7 +1774,7 @@
             }
           },
           "then": {
-            "description": "U6's modelling set on one thing: smooth, subdivide, smoothAngle, flat, bend, cage, brush, pull, loopCut, knife, fillHoles, mergeByDistance, cleanUp, linkedCopy, unlink, pivot, size.",
+            "description": "U6's modelling set on one thing: smooth, subdivide, smoothAngle, flat, bend, cage, brush, pull, loopCut, knife, fillHoles, mergeByDistance, cleanUp, linkedCopy, unlink, pivot, size; H1's steps (list) and step (change one).",
             "properties": {
               "target": {
                 "$ref": "#/$defs/target"
@@ -1797,7 +1797,9 @@
                   "linkedCopy",
                   "unlink",
                   "pivot",
-                  "size"
+                  "size",
+                  "steps",
+                  "step"
                 ]
               },
               "levels": {
@@ -1910,6 +1912,22 @@
                 ]
               },
               "length": {
+                "type": "number"
+              },
+              "step": {
+                "type": "number"
+              },
+              "number": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "number"
+                  }
+                ]
+              },
+              "value": {
                 "type": "number"
               }
             },

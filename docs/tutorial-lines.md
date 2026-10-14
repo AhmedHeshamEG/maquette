@@ -3,6 +3,11 @@
 One line per feature for the person it serves (`studio-h/USERS.md`), in Hesham's voice, for the YouTube lessons the
 Learn place links to (CONTEXT §8). A phase adds the lines of what it built; M16 records them.
 
+## 0.17 (H1): editable history
+
+- **The maker:** "Changed your mind about the hole? Open History: every step is there with its numbers. Make the hole
+  8 mm and everything you did after it follows."
+
 ## 0.16 (U6): shape
 
 - **The maker:** "Pick the shape, then touch a face with the Pencil and drag it. An edge rounds, a corner moves. No

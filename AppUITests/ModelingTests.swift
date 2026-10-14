@@ -129,5 +129,21 @@ final class ModelingTests: XCTestCase {
         // costs the runner seconds of its own, so the run fails only past 80 (D-175, D-326: the runners slowed by about
         // 60 % in every UI test between U5 and U6).
         XCTAssertLessThan(elapsed, 80)
+
+        // H1: the hole is a step in the block's history; made 8 mm there, the block follows.
+        tap("Actions")
+        tap("open-history")
+        XCTAssertTrue(element("steps-panel").waitForExistence(timeout: 5), element("debug-trail").label)
+        XCTAssertEqual(element("step-1").label, "Hole, 6 mm")
+        tap("step-1")
+        XCTAssertTrue(tap("step-number-1"))
+        XCTAssertTrue(element("number-pad-display").waitForExistence(timeout: 5))
+        element("number-pad-8").tap()
+        element("number-pad-done").tap()
+        let changed = NSPredicate(format: "label == %@", "Hole, 8 mm")
+        XCTAssertEqual(XCTWaiter.wait(for: [expectation(for: changed, evaluatedWith: element("step-1"))], timeout: 10), .completed,
+                       element("debug-trail").label)
+        XCTAssertTrue(element("debug-trail").label.contains("step=1"))
+        shot("The hole made 8 mm in the history")
     }
 }

@@ -220,6 +220,8 @@ public struct SceneObject: Codable, Hashable, Sendable, Identifiable {
     public var rig: ObjectRig?
     /// A cage pulled into a new shape and surface brush strokes (nil = none; `ObjectShaping`).
     public var shaping: ObjectShaping?
+    /// The modelling steps that made its shape, which can be changed and replayed (nil = none; `ModelHistory`).
+    public var modelHistory: ModelHistory?
 
     public init(
         id: ObjectID,

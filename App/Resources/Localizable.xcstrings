@@ -5873,6 +5873,22 @@
         }
       }
     },
+    "Diameter": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Diametro"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "القطر"
+          }
+        }
+      }
+    },
     "Dip to black": {
       "localizations": {
         "it": {
@@ -5917,6 +5933,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "منظور المخرج"
+          }
+        }
+      }
+    },
+    "Distance": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Distanza"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "المسافة"
           }
         }
       }
@@ -8753,6 +8785,22 @@
         }
       }
     },
+    "Fixed": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fisso"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ثابت"
+          }
+        }
+      }
+    },
     "Flash": {
       "localizations": {
         "it": {
@@ -10597,6 +10645,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "السجلّ"
+          }
+        }
+      }
+    },
+    "History and Steps": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cronologia e passaggi"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "السجل والخطوات"
           }
         }
       }
@@ -18457,6 +18521,22 @@
         }
       }
     },
+    "Radius": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Raggio"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "نصف القطر"
+          }
+        }
+      }
+    },
     "Rain": {
       "localizations": {
         "it": {
@@ -21905,6 +21985,22 @@
         }
       }
     },
+    "Shows its numbers": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mostra i suoi numeri"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "يعرض أرقامها"
+          }
+        }
+      }
+    },
     "Shows the arc the selection travels; drag a dot to move its key": {
       "localizations": {
         "it": {
@@ -23529,6 +23625,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "التدرّج (المشروع كله)"
+          }
+        }
+      }
+    },
+    "Steps": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Passaggi"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الخطوات"
           }
         }
       }
@@ -26181,6 +26293,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "أسمك"
+          }
+        }
+      }
+    },
+    "Thickness": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Spessore"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "السماكة"
           }
         }
       }

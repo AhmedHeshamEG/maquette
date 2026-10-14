@@ -93,7 +93,7 @@ when they disagree. In the App Store configuration the walk asserts every held r
 | Share the project file | `Actions › Project file` |
 | Monitor window (Stage Manager, external display) | `Actions › open-monitor` |
 | The Board: plan before building (below) | `Actions › open-board` |
-| History scrubber, versions | `Actions › open-history` |
+| History scrubber, versions; over it, the selected thing's modelling steps to change (H1) | `Actions › open-history` |
 | Learn: the tour, every gesture, the instructions switch | `Actions › open-learn` |
 | Settings | `Actions › Settings` |
 

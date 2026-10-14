@@ -4,6 +4,10 @@ Shapr3D's ease, Procreate's feel, Dreams' animation and ToonSquid's rigging, in 
 or art degree. Build a set like Lego, drop in characters, direct them with a camera, sync them to your voice, and
 export the video. By **studio h.**; the continuation of 3D-lowey 2.0. All rights reserved (see [LICENSE](LICENSE)).
 
+**0.17** (phase H1): **editable history**. Every modelling step of a thing is listed in plain words ("Hole, 6 mm",
+"Round, 2 mm") over the History scrubber. Change an early step's numbers and everything after it follows: the steps
+find the same faces and edges on the changed shape, and say in one line when one can't.
+
 **0.16** (phase U6): **shape**. Modelling by touch with no modes: select a shape and the Pencil lights the face, edge
 or corner under its tip; drag it to pull, round or move it, tap it for the rest (inset, shell, bridge, knife, loop cut,
 merge, fill the hole). Surface brushes, a cage of points and whole-shape bends; smoothing, clean quad topology, linked

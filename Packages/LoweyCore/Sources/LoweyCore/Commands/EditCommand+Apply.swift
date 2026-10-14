@@ -74,7 +74,7 @@ public extension EditCommand {
             document.scene.timeline = timeline
             return (.setTimeline(old), ChangeSet(objects: Set(timeline.tracks.map(\.target) + old.tracks.map(\.target)), scene: true))
 
-        case .setShadowPaint, .setPaint, .paintTiles, .setRig, .setShaping:
+        case .setShadowPaint, .setPaint, .paintTiles, .setRig, .setShaping, .setModelHistory:
             return try applyPaint(to: &document)
 
         case let .setCustomLooks(looks):
@@ -115,6 +115,9 @@ public extension EditCommand {
         case let .setShaping(id, shaping):
             let old = try Self.replaceField(\.shaping, of: id, to: shaping, in: &document)
             return (.setShaping(id, old), ChangeSet(objects: [id]))
+        case let .setModelHistory(id, history):
+            let old = try Self.replaceField(\.modelHistory, of: id, to: history, in: &document)
+            return (.setModelHistory(id, old), ChangeSet(objects: [id]))
         case let .setShadowPaint(id, dabs):
             let old = try Self.replaceField(\.shadowDabs, of: id, to: dabs, in: &document)
             return (.setShadowPaint(id, old), ChangeSet(objects: [id]))

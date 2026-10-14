@@ -32,48 +32,33 @@ public extension ModelingOperations {
 
     /// Moves faces along their normals together (several picks, and their mirror images under symmetry).
     static func pushPull(_ id: ObjectID, faces: [Int], distance: Double, in scene: Scene) throws(Failure) -> EditCommand {
-        guard let object = scene.objects[id], let (mesh, bakes) = bakedMesh(of: object) else { throw .notEditable }
-        let moved: EditableMesh
-        do {
-            moved = try PushPull.apply(mesh, faces: faces, distance: distance)
-        } catch {
-            throw .pushPull(error)
+        try record(id, label: "Push/pull", in: scene, picks: .faces(faces), near: { centroid(ofFaces: faces, in: $0) }) { mesh, tags in
+            .pushPull(faces: faceRefs(faces, in: mesh, tags: tags), distance: distance)
         }
-        let result = try keepingSymmetry(moved, of: object, near: centroid(ofFaces: faces, in: mesh), bakesScale: bakes)
-        return .batch("Push/pull", setMesh(id, result, bakesScale: bakes))
     }
 
     static func inset(_ id: ObjectID, faces: Set<Int>, distance: Double, in scene: Scene) throws(Failure) -> EditCommand {
-        try reshape(id, label: "Inset", in: scene, near: { centroid(ofFaces: Array(faces), in: $0) }) { mesh throws(Failure) in
-            do throws(Inset.Failure) {
-                return try Inset.apply(mesh, faces: faces, distance: distance)
-            } catch {
-                throw .shape(.inset(error))
-            }
+        let picked = faces.sorted()
+        return try record(id, label: "Inset", in: scene, picks: .faces(picked), near: { centroid(ofFaces: picked, in: $0) }) { mesh, tags in
+            .inset(faces: faceRefs(picked, in: mesh, tags: tags), distance: distance)
         }
     }
 
     static func bevel(_ id: ObjectID, edges: Set<MeshEdge>, size: Double, style: EdgeBevel.Style, in scene: Scene) throws(Failure) -> EditCommand {
-        try reshape(id, label: style.label, in: scene, near: { mesh in
+        try record(id, label: style.label, in: scene, picks: .edges(edges), near: { mesh in
             let ends = edges.flatMap { [$0.a, $0.b] }.filter(mesh.vertices.indices.contains)
             return ends.isEmpty ? nil : ends.reduce(Vec3.zero) { $0 + mesh.vertices[$1] } / Double(ends.count)
-        }) { mesh throws(Failure) in
-            do throws(EdgeBevel.Failure) {
-                return try EdgeBevel.apply(mesh, edges: edges, size: size, style: style)
-            } catch {
-                throw .shape(.bevel(error))
-            }
+        }) { mesh, tags in
+            .bevel(edges: edgeRefs(edges, in: mesh, tags: tags), size: size, style: style)
         }
     }
 
     /// Hollows the object to walls `thickness` thick, leaving `open` faces off.
     static func shell(_ id: ObjectID, thickness: Double, open: Set<Int>, in scene: Scene) throws(Failure) -> EditCommand {
-        try reshape(id, label: "Shell", in: scene, near: { open.isEmpty ? nil : centroid(ofFaces: Array(open), in: $0) }) { mesh throws(Failure) in
-            do throws(Shell.Failure) {
-                return try Shell.apply(mesh, thickness: thickness, open: open)
-            } catch {
-                throw .shape(.shell(error))
-            }
+        let picked = open.sorted()
+        return try record(id, label: "Shell", in: scene, picks: .faces(picked),
+                          near: { picked.isEmpty ? nil : centroid(ofFaces: picked, in: $0) }) { mesh, tags in
+            .shell(thickness: thickness, open: faceRefs(picked, in: mesh, tags: tags))
         }
     }
 

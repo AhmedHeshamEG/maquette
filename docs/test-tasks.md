@@ -3,6 +3,11 @@
 One task per feature for the two test weeks (between M14 and M16), written for its person in `studio-h/USERS.md`. A
 task says what to make, never which buttons to press; the tester says where they got stuck.
 
+## 0.17 (H1): editable history
+
+- **The maker:** the 40 × 20 × 10 mm block with a 6 mm hole and rounded corners; then the screw is bigger than planned:
+  make the hole 8 mm without building it again, and print it.
+
 ## 0.16 (U6): shape
 
 - **The maker:** a box with a lid that fits it, 60 × 40 × 30 mm, built by pulling faces and typing sizes, the lid's

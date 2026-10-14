@@ -97,6 +97,18 @@ final class ModelVerbTests: XCTestCase {
         }
     }
 
+    /// H1: a step pulled again through the bridge; the reply lists the steps.
+    func testStepsAreListedAndChanged() throws {
+        let result = try run(#"""
+        {"do": "model", "target": "Box", "op": "pull", "face": "top", "distance": 0.5},
+        {"do": "model", "target": "Box", "op": "step", "step": 1, "number": "distance", "value": 1},
+        {"do": "model", "target": "Box", "op": "steps"}
+        """#)
+        XCTAssertEqual(try mesh(result, "box").bounds?.size.y ?? 0, 2, accuracy: 1e-9)
+        XCTAssertTrue(result.report.contains("1. Push/pull (distance 1)"), result.report.joined(separator: " | "))
+        XCTAssertThrowsError(try run(#"{"do": "model", "target": "Box", "op": "step", "step": 1, "value": 1}"#))
+    }
+
     func testTheReferenceShowsTheNewVerbs() {
         XCTAssertTrue(ScriptReference.text.contains(#""do":"model""#))
         XCTAssertTrue(ScriptReference.text.contains(#""do":"profile""#))
