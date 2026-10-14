@@ -326,7 +326,17 @@ extension EditorModel {
         default: nil
         }
         guard let resized else { return }
-        sketch.curves[ref.index] = resized
+        if sketch.constraints.isEmpty {
+            sketch.curves[ref.index] = resized
+        } else {
+            // Its rules hold: the other curves follow (U6).
+            do {
+                sketch = try sketch.changing(curve: ref.index, to: resized)
+            } catch {
+                app.show(String.LocalizationValue(error.description), kind: .error)
+                return
+            }
+        }
         guard perform(.batch("Change size", [.setKind(ref.sketch, .sketch(sketch))]), coalesceKey: gesture) else { return }
         if gesture == nil { HmmHaptics.play(.commit) }
         // Still picked at its new size, its arrow and pull number with it.
