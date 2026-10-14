@@ -69,7 +69,7 @@ extension EditorModel {
         let options = QuadRemesh.Options(faces: faces, pureQuads: pureQuads)
         Task { [weak self] in
             let result = await Task.detached(priority: .userInitiated) { () -> Result<EditableMesh, QuadRemesh.Failure> in
-                do {
+                do throws(QuadRemesh.Failure) {
                     return try .success(QuadRemesh.remesh(source, options: options))
                 } catch {
                     return .failure(error)
@@ -156,12 +156,12 @@ extension EditorModel {
     }
 
     /// The selection's size along an axis (world metres).
-    func selectionLength(_ axis: Axis) -> Double? {
+    func selectionLength(_ axis: CoreAxis) -> Double? {
         operations.bounds.worldBounds(of: selection, in: scene)?.size[axis]
     }
 
     /// Types a side's length (world metres): it stretches along that axis.
-    func setSelectionLength(_ axis: Axis, to metres: Double, gesture: String? = nil) {
+    func setSelectionLength(_ axis: CoreAxis, to metres: Double, gesture: String? = nil) {
         guard let object = singleSelection else { return }
         do {
             try perform(Arrange.setLength(object.id, axis: axis, to: metres, in: baseScene), coalesceKey: gesture)

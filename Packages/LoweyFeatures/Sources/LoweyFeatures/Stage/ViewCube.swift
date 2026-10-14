@@ -129,7 +129,15 @@ struct ViewCube: View {
         }.sorted { $0.depth < $1.depth }
     }
 
+    /// Even-odd point in polygon.
     static func contains(_ polygon: [CGPoint], _ point: CGPoint) -> Bool {
-        Outlines.contains(polygon.map { Vec2(Double($0.x), Double($0.y)) }, Vec2(Double(point.x), Double(point.y)))
+        var inside = false
+        var j = polygon.count - 1
+        for i in polygon.indices {
+            let a = polygon[i], b = polygon[j]
+            if (a.y > point.y) != (b.y > point.y), point.x < (b.x - a.x) * (point.y - a.y) / (b.y - a.y) + a.x { inside.toggle() }
+            j = i
+        }
+        return inside
     }
 }

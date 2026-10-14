@@ -61,7 +61,7 @@ final class QuadRemeshTests: XCTestCase {
     func testACageMovesFiftyThousandTrianglesQuickly() throws {
         let model = Self.ball(rings: 160)
         XCTAssertGreaterThan(model.triangleCount, 50000)
-        var cage = DeformCage.around(try XCTUnwrap(model.bounds), counts: [4, 4, 4])
+        var cage = try DeformCage.around(XCTUnwrap(model.bounds), counts: [4, 4, 4])
         cage.offsets[cage.index(3, 3, 3)] = Vec3(0.4, 0.2, 0)
         let start = Date()
         let moved = CageDeform.apply(cage, to: model.positions)

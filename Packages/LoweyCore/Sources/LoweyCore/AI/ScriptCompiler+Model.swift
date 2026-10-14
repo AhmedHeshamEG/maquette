@@ -28,7 +28,8 @@ extension ScriptState {
         "pull": { try $0.modelPull($1, $2) },
         "loopCut": { try $0.modelLoopCut($1, $2) },
         "knife": { state, id, action in
-            guard let point = state.vec3(action["point"]), let normal = state.vec3(action["normal"]) else { throw state.fail("knife needs “point” and “normal”") }
+            guard let point = state.vec3(action["point"]),
+                  let normal = state.vec3(action["normal"]) else { throw state.fail("knife needs “point” and “normal”") }
             let space = ModelingOperations.modellingSpace(of: id, in: state.scene)
             try state.run(ModelingOperations.knife(id, planePoint: space.inverseApply(to: point), planeNormal: space.inverseApplyDirection(normal),
                                                    within: { _ in true }, in: state.scene), label: "Knife")
@@ -142,7 +143,8 @@ extension ScriptState {
         }
         let axis = string(action, "along").flatMap(Axis.init(rawValue:)) ?? .x
         guard let edge = mesh.edges.max(by: { lhs, rhs in
-            abs((mesh.vertices[lhs.b] - mesh.vertices[lhs.a]).normalized.dot(axis.unit)) < abs((mesh.vertices[rhs.b] - mesh.vertices[rhs.a]).normalized.dot(axis.unit))
+            abs((mesh.vertices[lhs.b] - mesh.vertices[lhs.a]).normalized.dot(axis.unit)) <
+                abs((mesh.vertices[rhs.b] - mesh.vertices[rhs.a]).normalized.dot(axis.unit))
         }) else { throw fail("no edge") }
         try run(ModelingOperations.loopCut(id, across: edge, cuts: Int(number(action, "cuts") ?? 1), in: scene), label: "Loop cut")
     }

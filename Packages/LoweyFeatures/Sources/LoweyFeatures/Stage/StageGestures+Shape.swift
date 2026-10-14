@@ -16,7 +16,7 @@ extension StageGestures {
         case .brush:
             guard let id = editor.shapedSelection?.id, stage?.pickObject(at: point)?.0 == id else { return nil }
             editor.sculptBegan(at: point)
-            return editor.sculpting.session == nil ? .none : .sculpt
+            return editor.sculpting.session == nil ? DragKind.none : .sculpt
         case .shape:
             return editor.beginPartDrag(at: point).map { .part($0) }
         case .cage, .bend, .measure:

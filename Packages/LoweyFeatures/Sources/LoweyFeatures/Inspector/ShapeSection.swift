@@ -26,7 +26,7 @@ struct ShapeSection: View {
 
     private var sizes: some View {
         HStack(spacing: HmmSpacing.xxs) {
-            ForEach(Axis.allCases, id: \.self) { axis in
+            ForEach(CoreAxis.allCases, id: \.self) { axis in
                 if let length = editor.selectionLength(axis) {
                     HmmNumberPill(Self.side(axis), value: Binding(get: { length / editor.units.metres }, set: { value in
                         editor.setSelectionLength(axis, to: value * editor.units.metres, gesture: gesture)
@@ -43,7 +43,7 @@ struct ShapeSection: View {
         }
     }
 
-    static func side(_ axis: Axis) -> String {
+    static func side(_ axis: CoreAxis) -> String {
         switch axis {
         case .x: "Width"
         case .y: "Height"

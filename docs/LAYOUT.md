@@ -151,9 +151,15 @@ Three short pages; the page is remembered.
 | Add: a photo or video (a card in the world) | `Model › model-add › add-media` |
 | Add: effects (fire, sparks, smoke…) | `Model › model-add › add-fx-fire` |
 | Add: Building, walls along tapped corners, floor, door, window, stairs | Model ▸ Add while the scene is set up for a Room |
-| Edit: push/pull: pick faces, edges or corners (tap, Pencil loop), or a shape sketched in Draw | `Model › model-shape › pick-face` |
+| Edit: Shape it: Shape, Brush, Cage, Bend (no buttons for faces, edges or corners: the Pencil touches the part, U6) | `Model › model-shape › model-verb-shape` |
+| | `Model › model-shape › model-verb-cage` |
 | Edit: 3D print: the printer, check for printing, repair | `Model › model-shape › print-check` |
-| The Model tool's bar: pick modes, grow / shrink / select similar, bevel / round (edges), inset / shell (faces), the measurement and Keep, ✕ | shown at the bottom while the Model tool is on |
+| Model's bar: Shape · Brush · Cage · Bend · Measure; the brushes (grab, smooth, inflate) and their mirror; the cage on, back or off; the bend's kind, axis and amount; the measurement and Keep, ✕ | shown at the bottom while the Model tool is on |
+| Touch and drag (U6): over the selected shape the Pencil lights the face, edge or corner under its tip; a drag pulls a face, rounds an edge, moves a corner; a tap picks it | the Pencil on the selected shape, with any tool but Draw |
+| The part's chip: a face's inset, shell, bridge (two faces), knife; an edge's bevel, round, loop cut, knife; corners' merge and fill the hole; ⋯ grow, shrink, similar, the pivot here | above the picked part |
+| A sketch region's chip: sweep along a path, revolve around a line (or its own side), loft through more shapes | above a picked region |
+| Sketch lines' rules: one line (lock its size, its angle, level), two (parallel, square, same size, twice that), a line and a circle (touching); a size's lock | above the picked lines; the lock beside a size |
+| The cage's points and the bend's handle | on the stage with Cage or Bend in the hand |
 | The numbers on the stage (pull distance, sides, diameter, length, offset, a bevel's or shell's size, the wall height and thickness): tap to type | shown beside what they measure |
 | Measurements and kept dimensions on the stage: tap one to keep it, or to select it | shown beside what they measure |
 | Precision: the grid on the ground | `Model › model-precision › show-grid` |
@@ -238,9 +244,10 @@ you until a finger's tap places it, and reads as paper while you draw. Tap Draw 
 | | `[cube] preset-popIn` |
 | On the selection: Scatter copies on the ground | `[cube] tool-scatter` |
 | On the selection: Mirror and symmetry | `[cube] mirror` |
-| On the selection: Make editable | `[cube] make-editable` |
+| On the selection: Model it (a placed library model; shapes are always editable) | in the panel of a placed model |
 | On the selection: Combine (union, subtract, intersect), with two or more shapes | in the panel when two or more shapes are selected |
 | Look of this object: glow, smoothing, bevel; its own Look, line weight, rim light, accent, gloss | `[cube] object-look` |
+| Shape of this object: typed sides, Smooth, the smooth angle, triangles, clean up, holes, linked copies, the pivot | `[cube] object-shape` |
 | More ways to move: once-moves' length, behaviours, animated on (ones…fours), physics, joints, paths, onion skin | `[cube] more-motion` |
 | Numbers: position, rotation, size | `[cube] transform-toggle` |
 | About this object | `[cube] inspector-more` |
@@ -268,7 +275,8 @@ you until a finger's tap places it, and reads as paper while you draw. Tap Draw 
 
 | Control | Walk |
 |---|---|
-| Views (top, front, side; perspective or orthographic): the view cube's place | `views-menu` |
+| The view cube: tap a side to look from there, drag to turn, double-tap for perspective or flat; hold for the views and Frame all | `view-cube` |
+| Views (top, front, side; perspective or orthographic), when Settings ▸ Stage hides the view cube | in the cube's place |
 | The Snap magnet: everything that snaps, on or off (a finger held down while the Pencil works flips it for that move) | `snap-magnet` |
 | The magnet's details: the grid and its size, corners and middles, edges, faces, objects, the ground, turning in steps, how near | touch and hold the magnet |
 | The camera button: tap to look through (again: the next, then back); hold for a new camera from this view | `camera-button` |

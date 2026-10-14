@@ -94,12 +94,10 @@ extension EditorModel {
         selection.filter { id in baseScene.objects[id].map(ModelingOperations.canModel) ?? false }
     }
 
-    /// The single selected object, when it's a shape that isn't an editable mesh yet, or a placed library model.
+    /// The single selected object, when it's a placed library model (U6: every shape is always editable, quietly on
+    /// the first touch; a placed model is turned into one on purpose, since it gives up its own parts).
     var convertibleSelection: ObjectID? {
-        guard let object = singleSelection else { return nil }
-        if object.kind.assetID != nil { return object.id }
-        guard ModelingOperations.canModel(object) else { return nil }
-        if case .mesh = object.kind { return nil }
+        guard let object = singleSelection, object.kind.assetID != nil else { return nil }
         return object.id
     }
 

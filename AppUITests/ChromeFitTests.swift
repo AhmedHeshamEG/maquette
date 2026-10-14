@@ -10,7 +10,7 @@ final class ChromeFitTests: XCTestCase {
 
     /// The corner clusters, the scene's name, the sidebar's undo and redo, the bottom row.
     private static let chrome = ["Home", "Actions", "Look", "Library", "scene-name", "Model", "Draw", "Rig", "Animate",
-                                 "views-menu", "camera-button", "joystick-toggle", "snap-magnet"]
+                                 "view-cube", "camera-button", "joystick-toggle", "snap-magnet"]
     /// The panels each cluster button opens.
     private static let panels = ["Actions", "Look", "Library", "Model", "Rig", "scene-name"]
 
@@ -68,7 +68,7 @@ final class ChromeFitTests: XCTestCase {
             // Draw's bar: five verbs, each whole and apart from the rest of the chrome (U5).
             element("Draw").tap()
             settle(1)
-            assertWholeAndApart(["draw-brush", "draw-smudge", "draw-erase", "draw-sheets", "colour-well", "views-menu", "camera-button"], in: name)
+            assertWholeAndApart(["draw-brush", "draw-smudge", "draw-erase", "draw-sheets", "colour-well", "view-cube", "camera-button"], in: name)
             element("Draw").tap()
             settle(0.5)
         }

@@ -385,6 +385,22 @@
         }
       }
     },
+    "%lld shapes": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld forme"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld أشكال"
+          }
+        }
+      }
+    },
     "%lld words. They're on the timeline now": {
       "localizations": {
         "it": {
@@ -1581,6 +1597,22 @@
         }
       }
     },
+    "Along %@": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lungo %@"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "على امتداد %@"
+          }
+        }
+      }
+    },
     "Along a sketch": {
       "localizations": {
         "it": {
@@ -2185,6 +2217,22 @@
         }
       }
     },
+    "Around its side": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Attorno al suo lato"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "حول جانبه"
+          }
+        }
+      }
+    },
     "Array": {
       "localizations": {
         "it": {
@@ -2441,6 +2489,22 @@
         }
       }
     },
+    "Base": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Base"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "القاعدة"
+          }
+        }
+      }
+    },
     "Becomes": {
       "localizations": {
         "it": {
@@ -2549,6 +2613,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "انحناء"
+          }
+        }
+      }
+    },
+    "Bend handle": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Maniglia della piega"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "مقبض الانحناء"
           }
         }
       }
@@ -2889,6 +2969,22 @@
         }
       }
     },
+    "Bridge": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ponte"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "جسر"
+          }
+        }
+      }
+    },
     "Bridge on (this local network only)": {
       "localizations": {
         "it": {
@@ -2981,6 +3077,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "حجم الفرشاة"
+          }
+        }
+      }
+    },
+    "Brush the surface: grab pulls it, smooth evens it, inflate puffs it up": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Spennella la superficie: afferra la tira, leviga la uniforma, gonfia la gonfia"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "مرّر الفرشاة على السطح: الإمساك يسحبه، والتنعيم يسوّيه، والنفخ ينفخه"
           }
         }
       }
@@ -3129,6 +3241,22 @@
         }
       }
     },
+    "Bulge": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rigonfiamento"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "انتفاخ"
+          }
+        }
+      }
+    },
     "Burn into the video": {
       "localizations": {
         "it": {
@@ -3157,6 +3285,38 @@
           "stringUnit": {
             "state": "translated",
             "value": "الأزرار"
+          }
+        }
+      }
+    },
+    "Cage": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gabbia"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "القفص"
+          }
+        }
+      }
+    },
+    "Cage point %lld": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Punto della gabbia %lld"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "نقطة القفص %lld"
           }
         }
       }
@@ -3705,6 +3865,38 @@
         }
       }
     },
+    "Clean up the shape": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pulisci la forma"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "نظّف الشكل"
+          }
+        }
+      }
+    },
+    "Cleaning up…": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pulizia in corso…"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "جارٍ التنظيف…"
+          }
+        }
+      }
+    },
     "Clear": {
       "localizations": {
         "paint-it": {
@@ -3937,6 +4129,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "إغلاق %@"
+          }
+        }
+      }
+    },
+    "Close holes": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chiudi i buchi"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "أغلق الثقوب"
           }
         }
       }
@@ -6221,6 +6429,38 @@
         }
       }
     },
+    "Drag the cage's points to reshape the thing smoothly": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Trascina i punti della gabbia per rimodellare l'oggetto dolcemente"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "اسحب نقاط القفص لتعيد تشكيل الشيء بنعومة"
+          }
+        }
+      }
+    },
+    "Drag the handle to bend, twist, taper or bulge the thing": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Trascina la maniglia per piegare, torcere, assottigliare o gonfiare l'oggetto"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "اسحب المقبض لتحني الشيء أو تلويه أو تستدقه أو تنفخه"
+          }
+        }
+      }
+    },
     "Drag to change it, tap to type it": {
       "localizations": {
         "it": {
@@ -6377,6 +6617,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "رسم إطار"
+          }
+        }
+      }
+    },
+    "Draw a line across the shape to cut it": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Disegna una linea attraverso la forma per tagliarla"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ارسم خطًا عبر الشكل لتقطعه"
           }
         }
       }
@@ -7485,6 +7741,22 @@
         }
       }
     },
+    "Every point back": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tutti i punti al loro posto"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "كل النقاط إلى مكانها"
+          }
+        }
+      }
+    },
     "Everything after the playhead": {
       "localizations": {
         "it": {
@@ -8257,6 +8529,22 @@
         }
       }
     },
+    "Fill the hole": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Riempi il buco"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "املأ الثقب"
+          }
+        }
+      }
+    },
     "Filled": {
       "localizations": {
         "it": {
@@ -8477,6 +8765,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "مسطّحة"
+          }
+        }
+      }
+    },
+    "Flat shading": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ombreggiatura piatta"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تظليل مسطح"
           }
         }
       }
@@ -9181,6 +9485,22 @@
         }
       }
     },
+    "Frame all": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Inquadra tutto"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "أطّر الكل"
+          }
+        }
+      }
+    },
     "Frame it": {
       "localizations": {
         "it": {
@@ -9657,6 +9977,22 @@
         }
       }
     },
+    "Grab": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Afferra"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "إمساك"
+          }
+        }
+      }
+    },
     "Grain": {
       "localizations": {
         "it": {
@@ -9893,6 +10229,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "أظهره بالتكبير واحدًا تلو الآخر"
+          }
+        }
+      }
+    },
+    "Grow the pick": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Allarga la scelta"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "وسّع الاختيار"
           }
         }
       }
@@ -10697,6 +11049,22 @@
         }
       }
     },
+    "Inflate": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gonfia"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "نفخ"
+          }
+        }
+      }
+    },
     "Ink": {
       "localizations": {
         "it": {
@@ -10789,6 +11157,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "المراقب"
+          }
+        }
+      }
+    },
+    "Instant Meshes": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Instant Meshes"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Instant Meshes"
           }
         }
       }
@@ -11061,6 +11445,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "التذبذب"
+          }
+        }
+      }
+    },
+    "Join close corners": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Unisci gli angoli vicini"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ادمج الزوايا المتقاربة"
           }
         }
       }
@@ -11513,6 +11913,22 @@
         }
       }
     },
+    "Knife: draw a line across": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Coltello: disegna una linea attraverso"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "السكين: ارسم خطًا عبره"
+          }
+        }
+      }
+    },
     "Label": {
       "localizations": {
         "it": {
@@ -11725,6 +12141,22 @@
         }
       }
     },
+    "Left": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sinistra"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "اليسار"
+          }
+        }
+      }
+    },
     "Left and right": {
       "localizations": {
         "it": {
@@ -11849,6 +12281,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "العدسة"
+          }
+        }
+      }
+    },
+    "Level": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "In piano"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "مستوٍ"
           }
         }
       }
@@ -12205,6 +12653,22 @@
         }
       }
     },
+    "Linked copy": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Copia collegata"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "نسخة مرتبطة"
+          }
+        }
+      }
+    },
     "Lip bite (F, V)": {
       "localizations": {
         "it": {
@@ -12253,6 +12717,38 @@
         }
       }
     },
+    "Lock its angle": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Blocca l'angolo"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ثبّت زاويته"
+          }
+        }
+      }
+    },
+    "Lock its size": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Blocca la misura"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ثبّت قياسه"
+          }
+        }
+      }
+    },
     "Locked": {
       "localizations": {
         "it": {
@@ -12281,6 +12777,38 @@
           "stringUnit": {
             "state": "translated",
             "value": "لا يمكن حذف العناصر المقفلة"
+          }
+        }
+      }
+    },
+    "Loft": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Raccorda"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "وصل المقاطع"
+          }
+        }
+      }
+    },
+    "Loft through shapes": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Raccorda attraverso le forme"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "صِل عبر الأشكال"
           }
         }
       }
@@ -12393,6 +12921,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "تكرار الكل"
+          }
+        }
+      }
+    },
+    "Loop cut": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Taglio ad anello"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "قطع حلقي"
           }
         }
       }
@@ -12669,6 +13213,22 @@
         }
       }
     },
+    "Make the smoothing real": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rendi reale la levigatura"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "اجعل التنعيم حقيقيًا"
+          }
+        }
+      }
+    },
     "Make things, top right": {
       "localizations": {
         "it": {
@@ -12877,6 +13437,22 @@
         }
       }
     },
+    "Merge": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Unisci"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "دمج"
+          }
+        }
+      }
+    },
     "Merge down": {
       "localizations": {
         "paint-it": {
@@ -12949,6 +13525,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "مستوى الميكروفون"
+          }
+        }
+      }
+    },
+    "Middle": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Centro"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "المنتصف"
           }
         }
       }
@@ -13109,6 +13701,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "اعكس الوضعية"
+          }
+        }
+      }
+    },
+    "Mirror the strokes": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Specchia i tratti"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "اعكس الضربات"
           }
         }
       }
@@ -13569,6 +14177,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "حرّك الآيباد: تتبعه الكاميرا. سجّل في الأداء."
+          }
+        }
+      }
+    },
+    "Move the pivot here": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sposta qui il perno"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "انقل المحور إلى هنا"
           }
         }
       }
@@ -14189,6 +14813,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "لا حساب ولا تتبّع: لا شيء يغادر هذا الآيباد ما لم تشاركه."
+          }
+        }
+      }
+    },
+    "No bend": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nessuna piega"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "بلا انحناء"
           }
         }
       }
@@ -16461,6 +17101,38 @@
         }
       }
     },
+    "Pick the similar ones": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Scegli quelli simili"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "اختر المتشابهة"
+          }
+        }
+      }
+    },
+    "Pick two faces to bridge (touch and hold to add the second)": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Scegli due facce da unire con un ponte (tieni premuto per aggiungere la seconda)"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "اختر وجهين لتصل بينهما بجسر (المس مطولًا لإضافة الثاني)"
+          }
+        }
+      }
+    },
     "Picked": {
       "localizations": {
         "it": {
@@ -16641,6 +17313,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "دبابيس ونقاط"
+          }
+        }
+      }
+    },
+    "Pivot": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Perno"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "المحور"
           }
         }
       }
@@ -17497,6 +18185,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "قرّب الورقة أو أبعدها"
+          }
+        }
+      }
+    },
+    "Put a cage on": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Metti una gabbia"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ضع قفصًا"
           }
         }
       }
@@ -18561,6 +19265,22 @@
         }
       }
     },
+    "Revolve around a line": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ruota attorno a una linea"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "أدِر حول خط"
+          }
+        }
+      }
+    },
     "Ribbon": {
       "localizations": {
         "it": {
@@ -18717,6 +19437,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "بهيكل عظمي"
+          }
+        }
+      }
+    },
+    "Right": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Destra"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "اليمين"
           }
         }
       }
@@ -19117,6 +19853,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "المناطق الآمنة"
+          }
+        }
+      }
+    },
+    "Same size": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Stessa misura"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "القياس نفسه"
           }
         }
       }
@@ -20033,6 +20785,22 @@
         }
       }
     },
+    "Select the thing to brush": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Seleziona l'oggetto da spennellare"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "حدد الشيء الذي تريد تمرير الفرشاة عليه"
+          }
+        }
+      }
+    },
     "Select this dimension": {
       "localizations": {
         "it": {
@@ -20477,6 +21245,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "الشكل"
+          }
+        }
+      }
+    },
+    "Shape it": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Modellalo"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "شكّله"
           }
         }
       }
@@ -21057,6 +21841,22 @@
         }
       }
     },
+    "Shrink the pick": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Restringi la scelta"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ضيّق الاختيار"
+          }
+        }
+      }
+    },
     "Side": {
       "localizations": {
         "it": {
@@ -21385,6 +22185,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "تنعيم"
+          }
+        }
+      }
+    },
+    "Smooth angle": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Angolo di levigatura"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "زاوية التنعيم"
           }
         }
       }
@@ -22185,6 +23001,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "الانتشار"
+          }
+        }
+      }
+    },
+    "Square": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ad angolo retto"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "متعامد"
           }
         }
       }
@@ -23053,6 +23885,22 @@
         }
       }
     },
+    "Sweep along a path": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Estrudi lungo un percorso"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "اسحب على مسار"
+          }
+        }
+      }
+    },
     "Swell": {
       "localizations": {
         "it": {
@@ -23245,6 +24093,22 @@
         }
       }
     },
+    "Take the cage off": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Togli la gabbia"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "أزل القفص"
+          }
+        }
+      }
+    },
     "Take the tour": {
       "localizations": {
         "it": {
@@ -23401,6 +24265,22 @@
         }
       }
     },
+    "Tap a side to look from there, drag to turn the view": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tocca un lato per guardare da lì, trascina per girare la vista"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "اضغط على جانب لتنظر منه، واسحب لتدير المنظر"
+          }
+        }
+      }
+    },
     "Tap a sound in the timeline to edit it.": {
       "localizations": {
         "it": {
@@ -23413,6 +24293,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "انقر على صوت في الخط الزمني لتعديله."
+          }
+        }
+      }
+    },
+    "Tap a straight line to turn around": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tocca una linea dritta attorno a cui ruotare"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "اضغط على خط مستقيم لتدير حوله"
           }
         }
       }
@@ -23509,6 +24405,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "المس زاوية"
+          }
+        }
+      }
+    },
+    "Tap one more closed shape to loft through": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tocca un'altra forma chiusa da raccordare"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "اضغط على شكل مغلق آخر للوصل عبره"
           }
         }
       }
@@ -23625,6 +24537,22 @@
         }
       }
     },
+    "Tap the line to turn around": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tocca la linea attorno a cui ruotare"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "اضغط على الخط الذي تدير حوله"
+          }
+        }
+      }
+    },
     "Tap the next corner. Tap the first one to close": {
       "localizations": {
         "it": {
@@ -23641,6 +24569,22 @@
         }
       }
     },
+    "Tap the next shape to loft through, then Loft": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tocca la forma successiva da raccordare, poi Raccorda"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "اضغط على الشكل التالي للوصل عبره، ثم وصل المقاطع"
+          }
+        }
+      }
+    },
     "Tap the opposite corner": {
       "localizations": {
         "it": {
@@ -23653,6 +24597,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "المس الزاوية المقابلة"
+          }
+        }
+      }
+    },
+    "Tap the path to sweep along": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tocca il percorso lungo cui estrudere"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "اضغط على المسار الذي تسحب عليه"
           }
         }
       }
@@ -24889,6 +25849,22 @@
         }
       }
     },
+    "The view cube": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Il cubo della vista"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "مكعب المنظر"
+          }
+        }
+      }
+    },
     "The whole library: Brush Studio, new sets, imports": {
       "localizations": {
         "it": {
@@ -25941,6 +26917,22 @@
         }
       }
     },
+    "Touch a face, an edge or a corner with the Pencil and drag it. Tap one for more": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tocca una faccia, uno spigolo o un angolo con la Pencil e trascinalo. Toccane uno per altro"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "المس وجهًا أو حافة أو زاوية بالقلم واسحبها. اضغط على واحدة للمزيد"
+          }
+        }
+      }
+    },
     "Touch a joint on the stage to let it hang loose here: hair, ears, a tail.": {
       "localizations": {
         "it": {
@@ -26033,6 +27025,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "من اللمس إلى الشاشة: %@"
+          }
+        }
+      }
+    },
+    "Touching": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tangenti"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "متماسّان"
           }
         }
       }
@@ -26293,6 +27301,22 @@
         }
       }
     },
+    "Triangles": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Triangoli"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "المثلثات"
+          }
+        }
+      }
+    },
     "Trigger": {
       "localizations": {
         "it": {
@@ -26469,6 +27493,38 @@
         }
       }
     },
+    "Turns a sculpt into clean quads. Copyright (c) 2015 Wenzel Jakob, Daniele Panozzo, Marco Tarini and Olga ": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Trasforma una scultura in quadrilateri puliti. Copyright (c) 2015 Wenzel Jakob, Daniele Panozzo, Marco Tarini and Olga "
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "يحوّل المنحوتة إلى رباعيات نظيفة. Copyright (c) 2015 Wenzel Jakob, Daniele Panozzo, Marco Tarini and Olga "
+          }
+        }
+      }
+    },
+    "Turns it into even four-sided faces, the kind games and rigs like. The shape stays.": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lo trasforma in facce regolari a quattro lati, quelle che piacciono a giochi e rig. La forma resta."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "يحوّله إلى أوجه رباعية متساوية، النوع الذي تحبه الألعاب والهياكل. يبقى الشكل كما هو."
+          }
+        }
+      }
+    },
     "Turns with the stroke": {
       "localizations": {
         "it": {
@@ -26513,6 +27569,38 @@
           "stringUnit": {
             "state": "translated",
             "value": "أبطأ بمرتين"
+          }
+        }
+      }
+    },
+    "Twice that": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Il doppio di quello"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ضعف ذاك"
+          }
+        }
+      }
+    },
+    "Twist": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Torsione"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "التواء"
           }
         }
       }
@@ -26641,6 +27729,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "آلة كاتبة"
+          }
+        }
+      }
+    },
+    "Under": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sotto"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الأسفل"
           }
         }
       }
@@ -26801,6 +27905,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "الوحدات والالتقاط والشبكة والخط الزمني تتبع العمل. ما صنعته يبقى كما هو."
+          }
+        }
+      }
+    },
+    "Unlink": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Scollega"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "افصل الارتباط"
           }
         }
       }
@@ -27073,6 +28193,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "فيديو"
+          }
+        }
+      }
+    },
+    "View cube": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cubo della vista"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "مكعب المنظر"
           }
         }
       }
@@ -27617,6 +28753,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "مسح"
+          }
+        }
+      }
+    },
+    "With a Pencil, touch a face, an edge or a corner of the selected thing and drag it. Tap one for more.": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Con la Pencil, tocca una faccia, uno spigolo o un angolo dell'oggetto selezionato e trascinalo. Toccane uno per altro."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "بالقلم، المس وجهًا أو حافة أو زاوية للشيء المحدد واسحبها. اضغط على واحدة للمزيد."
           }
         }
       }

@@ -114,7 +114,7 @@ public extension ModelingOperations {
         return .batch("Clean up the shape", commands)
     }
 
-    internal static func edgeMiddle(_ edge: MeshEdge, in mesh: EditableMesh) -> Vec3? {
+    static func edgeMiddle(_ edge: MeshEdge, in mesh: EditableMesh) -> Vec3? {
         guard mesh.vertices.indices.contains(edge.a), mesh.vertices.indices.contains(edge.b) else { return nil }
         return (mesh.vertices[edge.a] + mesh.vertices[edge.b]) / 2
     }

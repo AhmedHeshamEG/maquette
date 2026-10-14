@@ -9,9 +9,9 @@ import LoweyEngine
 extension EditorModel {
     // MARK: Bend
 
-    func bend(of object: SceneObject) -> (kind: Deform, amount: Double, axis: Axis)? {
+    func bend(of object: SceneObject) -> (kind: Deform, amount: Double, axis: CoreAxis)? {
         guard let kind = object[.deform]?.stringValue.flatMap(Deform.init(rawValue:)) else { return nil }
-        return (kind, object[.deformAmount]?.floatValue ?? 0, object[.deformAxis]?.stringValue.flatMap(Axis.init(rawValue:)) ?? .y)
+        return (kind, object[.deformAmount]?.floatValue ?? 0, object[.deformAxis]?.stringValue.flatMap(CoreAxis.init(rawValue:)) ?? .y)
     }
 
     /// Chooses the kind of bend (nil takes it off), starting at an amount that shows.
@@ -38,7 +38,7 @@ extension EditorModel {
         perform(.setProperties([PropertyChange(object: object.id, key: .deformAmount, value: .float(value))]), coalesceKey: gesture)
     }
 
-    func setBendAxis(_ axis: Axis) {
+    func setBendAxis(_ axis: CoreAxis) {
         guard let object = shapedSelection else { return }
         perform(.setProperties([PropertyChange(object: object.id, key: .deformAxis, value: axis == .y ? nil : .enumeration(axis.rawValue))]))
     }

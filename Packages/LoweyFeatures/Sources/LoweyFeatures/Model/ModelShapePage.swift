@@ -134,7 +134,7 @@ struct BendControls: View {
             .accessibilityIdentifier("bend-kind")
             if let current {
                 Menu {
-                    ForEach(Axis.allCases, id: \.self) { axis in
+                    ForEach(CoreAxis.allCases, id: \.self) { axis in
                         Button(axis.rawValue.uppercased()) { editor.setBendAxis(axis) }
                     }
                 } label: {

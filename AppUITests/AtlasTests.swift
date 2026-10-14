@@ -198,7 +198,7 @@ final class AtlasTests: XCTestCase {
             Page(name: "Fine tune the world", steps: ["Look", "Fine tune the world"], scrolls: 1, side: .leading),
             Page(name: "Set up for a Room", steps: ["scene-name", "setup-room", "scene-name", "Model", "model-add"]),
             Page(name: "Print check", steps: ["Model", "model-shape", "print-check"]),
-            Page(name: "Views", steps: ["views-menu"]),
+            Page(name: "View cube", steps: ["view-cube"]),
             Page(name: "Through the camera", steps: ["camera-button"]),
             Page(name: "The sidebar awake", steps: ["sidebar-rail"])
         ], from: .blank)
