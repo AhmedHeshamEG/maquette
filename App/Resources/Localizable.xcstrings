@@ -12781,6 +12781,22 @@
         }
       }
     },
+    "Lock this size": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Blocca questa misura"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ثبّت هذا القياس"
+          }
+        }
+      }
+    },
     "Locked": {
       "localizations": {
         "it": {
@@ -28065,6 +28081,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "إلغاء القفل"
+          }
+        }
+      }
+    },
+    "Unlock this size": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sblocca questa misura"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ألغِ تثبيت هذا القياس"
           }
         }
       }

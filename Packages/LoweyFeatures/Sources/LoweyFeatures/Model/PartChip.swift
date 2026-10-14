@@ -2,19 +2,21 @@ import HmmDesign
 import LoweyCore
 import SwiftUI
 
-/// The picked part's chip (U6: one obvious move by dragging, the rest one step deeper). A face: inset, shell, bridge
+/// The picked part's chip (U6: one obvious move by dragging, the rest one step deeper), docked above the tool's bar. A face: inset, shell, bridge
 /// (two faces), knife. An edge: bevel, round, loop cut, knife. Corners: merge, fill the hole. Each: the pivot here, and
 /// the pick grown, shrunk or made similar. A sketch region: sweep, revolve, loft. Sketch lines: their rules.
 struct PartChip: View {
     @Bindable var editor: EditorModel
 
     var body: some View {
-        GeometryReader { geometry in
-            if let rect = editor.pickedPartRect, hasContent {
-                chip
-                    .fixedSize()
-                    .position(x: min(max(rect.midX, 190), geometry.size.width - 190), y: max(rect.minY - 44, 96))
+        // Docked above the tool's bar, never over the work: the pick's floating numbers (a pull, a size) stay free to tap.
+        if hasContent {
+            VStack {
+                Spacer(minLength: 0)
+                chip.fixedSize()
             }
+            .padding(.bottom, 92)
+            .frame(maxWidth: .infinity)
         }
     }
 
@@ -121,28 +123,5 @@ struct PartChip: View {
             HmmButton(rule.systemImage, label: rule.title, size: 40) { editor.applyRule(rule) }
                 .accessibilityIdentifier("rule-\(rule.rawValue)")
         }
-    }
-}
-
-extension EditorModel {
-    /// Where the picked part is on screen (corners of the picked faces, edges or corners; a region's outline; the
-    /// picked sketch lines).
-    var pickedPartRect: CGRect? {
-        _ = viewRevision
-        guard let stage else { return nil }
-        var points: [CGPoint] = []
-        if let id = modeling.target, let elements = modeling.elements, let (mesh, world) = modelMesh(of: id) {
-            points = elements.touchedVertices(in: mesh).filter(mesh.vertices.indices.contains)
-                .compactMap { stage.screenPoint(of: world.apply(to: mesh.vertices[$0])) }
-        } else if let region = modeling.region, let sketch = sketch(region.sketch), let shape = sketch.regions[safe: region.index] {
-            points = shape.outline.compactMap { stage.screenPoint(of: sketch.plane.lift($0)) }
-        } else {
-            for ref in modeling.ruleCurves {
-                guard let sketch = sketch(ref.sketch), let curve = sketch.curves[safe: ref.index] else { continue }
-                points += curve.points.compactMap { stage.screenPoint(of: sketch.plane.lift($0)) }
-            }
-        }
-        guard let first = points.first else { return nil }
-        return points.dropFirst().reduce(CGRect(origin: first, size: .zero)) { $0.union(CGRect(origin: $1, size: .zero)) }
     }
 }

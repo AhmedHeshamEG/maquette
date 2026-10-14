@@ -156,9 +156,9 @@ Three short pages; the page is remembered.
 | Edit: 3D print: the printer, check for printing, repair | `Model › model-shape › print-check` |
 | Model's bar: Shape · Brush · Cage · Bend · Measure; the brushes (grab, smooth, inflate) and their mirror; the cage on, back or off; the bend's kind, axis and amount; the measurement and Keep, ✕ | shown at the bottom while the Model tool is on |
 | Touch and drag (U6): over the selected shape the Pencil lights the face, edge or corner under its tip; a drag pulls a face, rounds an edge, moves a corner; a tap picks it | the Pencil on the selected shape, with any tool but Draw |
-| The part's chip: a face's inset, shell, bridge (two faces), knife; an edge's bevel, round, loop cut, knife; corners' merge and fill the hole; ⋯ grow, shrink, similar, the pivot here | above the picked part |
-| A sketch region's chip: sweep along a path, revolve around a line (or its own side), loft through more shapes | above a picked region |
-| Sketch lines' rules: one line (lock its size, its angle, level), two (parallel, square, same size, twice that), a line and a circle (touching); a size's lock | above the picked lines; the lock beside a size |
+| The part's chip: a face's inset, shell, bridge (two faces), knife; an edge's bevel, round, loop cut, knife; corners' merge and fill the hole; ⋯ grow, shrink, similar, the pivot here | above the tool's bar |
+| A sketch region's chip: sweep along a path, revolve around a line (or its own side), loft through more shapes | above the tool's bar |
+| Sketch lines' rules: one line (lock its size, its angle, level), two (parallel, square, same size, twice that), a line and a circle (touching); a size's lock | above the tool's bar; the lock beside a size |
 | The cage's points and the bend's handle | on the stage with Cage or Bend in the hand |
 | The numbers on the stage (pull distance, sides, diameter, length, offset, a bevel's or shell's size, the wall height and thickness): tap to type | shown beside what they measure |
 | Measurements and kept dimensions on the stage: tap one to keep it, or to select it | shown beside what they measure |

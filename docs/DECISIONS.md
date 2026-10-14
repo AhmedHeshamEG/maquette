@@ -2161,7 +2161,8 @@ so it keeps one deliberate button, renamed *Model it*. *Rejected:* converting pl
 
 **D-305 — The part's chip holds the rest.** A face: inset, shell, bridge (two faces), knife. An edge: bevel, round, loop
 cut, knife. Corners: merge (two or more), fill the hole. Behind ⋯: grow, shrink, similar, the pivot here. A held Pencil
-adds a part to the pick. The chip floats above the pick like the stroke chip (U5).
+adds a part to the pick. The chip is docked above the tool's bar, never over the work: the pick's floating numbers (a pull,
+a size) stay free to tap (first it floated above the pick and covered them).
 
 **D-306 — Subdivision is Catmull–Clark on whole faces; the Smooth switch is a property.** `subdivision` (0–3) smooths the
 shape as it's built, everywhere it's shown; *Make the smoothing real* bakes it. Faces with holes become triangles first;
