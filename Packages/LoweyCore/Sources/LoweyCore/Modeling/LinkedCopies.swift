@@ -44,7 +44,9 @@ public enum LinkedCopies {
 
     private static func visit(_ command: EditCommand, _ body: (EditCommand) -> Void) {
         if case let .batch(_, commands) = command {
-            for inner in commands { visit(inner, body) }
+            for inner in commands {
+                visit(inner, body)
+            }
         } else {
             body(command)
         }

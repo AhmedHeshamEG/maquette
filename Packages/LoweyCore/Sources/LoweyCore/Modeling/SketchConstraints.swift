@@ -183,11 +183,15 @@ public enum SketchSolver {
         var a = [[Double]](repeating: [Double](repeating: 0, count: n + 1), count: n)
         for row in j.indices {
             for c in 0 ..< n where j[row][c] != 0 {
-                for d in 0 ..< n where j[row][d] != 0 { a[c][d] += j[row][c] * j[row][d] }
+                for d in 0 ..< n where j[row][d] != 0 {
+                    a[c][d] += j[row][c] * j[row][d]
+                }
                 a[c][n] -= j[row][c] * r[row]
             }
         }
-        for c in 0 ..< n { a[c][c] += lambda * max(a[c][c], 1e-9) }
+        for c in 0 ..< n {
+            a[c][c] += lambda * max(a[c][c], 1e-9)
+        }
         return gauss(&a, n)
     }
 
@@ -197,13 +201,17 @@ public enum SketchSolver {
             a.swapAt(column, pivot)
             for row in column + 1 ..< n where a[row][column] != 0 {
                 let factor = a[row][column] / a[column][column]
-                for k in column ... n { a[row][k] -= factor * a[column][k] }
+                for k in column ... n {
+                    a[row][k] -= factor * a[column][k]
+                }
             }
         }
         var x = [Double](repeating: 0, count: n)
         for row in stride(from: n - 1, through: 0, by: -1) {
             var value = a[row][n]
-            for k in row + 1 ..< n { value -= a[row][k] * x[k] }
+            for k in row + 1 ..< n {
+                value -= a[row][k] * x[k]
+            }
             x[row] = value / a[row][row]
         }
         return x

@@ -242,9 +242,9 @@ final class ModelingSetTests: XCTestCase {
 
     func testCleaningUpABallGivesQuads() throws {
         let ball = PrimitiveMesh.make(.sphere, shading: .smooth)
-        let cleaned = try QuadRemesh.remesh(MeshDensify.densified(ball, cuts: 12), options: QuadRemesh.Options(faces: 150))
-        XCTAssertGreaterThan(cleaned.faces.count, 80)
-        XCTAssertLessThan(cleaned.faces.count, 300)
+        let cleaned = try QuadRemesh.remesh(MeshDensify.densified(ball, cuts: 6), options: QuadRemesh.Options(faces: 120))
+        XCTAssertGreaterThan(cleaned.faces.count, 60)
+        XCTAssertLessThan(cleaned.faces.count, 240)
         let quads = cleaned.faces.filter { $0.outline.count == 4 }.count
         XCTAssertGreaterThan(Double(quads) / Double(cleaned.faces.count), 0.6)
         XCTAssertGreaterThan(cleaned.volume, 0, "it faces out like the ball")

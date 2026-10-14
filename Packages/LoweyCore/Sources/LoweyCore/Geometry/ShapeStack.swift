@@ -1,28 +1,27 @@
 import Foundation
 
 /// Everything done to a shape between its recipe and the screen, in one order the stage, painting, rigging and every
-/// export share: smoothed (subdivision) as it's built, then cut finer for bending (`bendDetail`), then the surface
-/// brushes' strokes, the cage, and the whole-shape bend. Every step after building moves corners only, so a painted or
-/// rigged shape still finds its corners.
+/// export share: smoothed (subdivision) as it's built, then cut finer for bending (`bendDetail`), then moved: the
+/// surface brushes' strokes, the cage, and the whole-shape bend. Moving keeps every corner (none added, none taken
+/// away, same order), so paint and rigs found on the unmoved mesh carry over corner for corner.
 public enum ShapeStack {
-    /// What changes the shown shape after it's built, for keying caches (nil when nothing does).
+    /// What moves the shape's corners after it's built, for keying caches (nil when nothing does).
     public struct Key: Hashable, Sendable {
-        public var cuts: Int
         public var sculpt: UInt64?
         public var cage: DeformCage?
         public var deform: String?
-        /// Bend amounts are kept to a tenth of a thousandth, so an animated bend reuses its meshes when it holds still.
+        /// Bend amounts are kept to a ten-thousandth, so an animated bend reuses its meshes when it holds still.
         public var amount: Int64
         public var axis: String?
     }
 
     public static func key(of object: SceneObject) -> Key? {
-        let cuts = object[.bendDetail]?.floatValue.map { Int($0) } ?? 0
         let deform = Deform.of(object)
-        let shaping = object.shaping
-        guard cuts >= 1 || deform != nil || shaping?.cage.map({ !$0.isAtRest }) == true || shaping?.sculpt != nil else { return nil }
-        return Key(cuts: max(cuts, 0), sculpt: shaping?.sculpt?.fingerprint, cage: shaping?.cage?.isAtRest == false ? shaping?.cage : nil,
-                   deform: deform?.kind.rawValue, amount: Int64(((deform?.amount ?? 0) * 10000).rounded()), axis: deform?.axis.rawValue)
+        let cage = object.shaping?.cage.flatMap { $0.isAtRest ? nil : $0 }
+        let sculpt = object.shaping?.sculpt?.fingerprint
+        guard deform != nil || cage != nil || sculpt != nil else { return nil }
+        return Key(sculpt: sculpt, cage: cage, deform: deform?.kind.rawValue, amount: Int64(((deform?.amount ?? 0) * 10000).rounded()),
+                   axis: deform?.axis.rawValue)
     }
 
     // MARK: Building
@@ -53,29 +52,42 @@ public enum ShapeStack {
 
     // MARK: After building
 
-    /// The built mesh with the rest of the stack applied: cut finer, the strokes, the cage, the bend.
+    /// The built mesh cut finer and moved: what's shown.
     public static func shaped(_ mesh: MeshData, for object: SceneObject) -> MeshData {
-        var result = MeshDensify.apply(mesh, for: object)
-        let bounds = result.bounds
-        var moved = false
-        if let sculpt = object.shaping?.sculpt, sculpt.vertexCount == result.positions.count {
-            for (corner, offset) in sculpt.moved { result.positions[corner] += offset }
-            moved = true
-        }
-        if let cage = object.shaping?.cage, !cage.isAtRest {
-            result.positions = CageDeform.apply(cage, to: result.positions)
-            moved = true
-        }
-        if let deform = Deform.of(object), let bounds {
-            result.positions = deform.kind.apply(result.positions, amount: deform.amount, axis: deform.axis, bounds: bounds)
-            moved = true
-        }
-        if moved { result.computeSmoothNormals() }
+        moved(unshaped(mesh, for: object), for: object)
+    }
+
+    /// The built mesh cut finer for bending: what brushes, the cage, paint and rigs are measured on.
+    public static func unshaped(_ mesh: MeshData, for object: SceneObject) -> MeshData {
+        MeshDensify.apply(mesh, for: object)
+    }
+
+    /// The unmoved mesh's corners moved by the strokes, the cage and the bend (the same corners, in order).
+    public static func moved(_ mesh: MeshData, for object: SceneObject) -> MeshData {
+        guard key(of: object) != nil else { return mesh }
+        var result = mesh
+        result.positions = movedPositions(mesh.positions, for: object, bounds: mesh.bounds)
+        result.computeSmoothNormals()
         return result
     }
 
-    /// The object's mesh before the bend, cage and strokes (what brushes and the cage are measured on): built and cut.
-    public static func unshaped(_ mesh: MeshData, for object: SceneObject) -> MeshData {
-        MeshDensify.apply(mesh, for: object)
+    /// Positions moved as `moved` does; the bend is measured over `bounds` (a placed model's parts use the whole
+    /// model's box). Strokes apply only when they were made for this many corners (and `strokes` allows them: a placed
+    /// model's separate parts never take them).
+    public static func movedPositions(_ positions: [SIMD3<Float>], for object: SceneObject, bounds: Bounds?,
+                                      strokes: Bool = true) -> [SIMD3<Float>] {
+        var result = positions
+        if strokes, let sculpt = object.shaping?.sculpt, sculpt.vertexCount == result.count {
+            for (corner, offset) in sculpt.moved {
+                result[corner] += offset
+            }
+        }
+        if let cage = object.shaping?.cage, !cage.isAtRest {
+            result = CageDeform.apply(cage, to: result)
+        }
+        if let deform = Deform.of(object), let bounds {
+            result = deform.kind.apply(result, amount: deform.amount, axis: deform.axis, bounds: bounds)
+        }
+        return result
     }
 }

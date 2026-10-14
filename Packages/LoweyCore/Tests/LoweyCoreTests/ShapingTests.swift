@@ -2,7 +2,7 @@ import Foundation
 @testable import LoweyCore
 import XCTest
 
-/// U6: whole-shape bends, the cage, surface brushes, the shape stack, linked copies, arranging and typed sizes.
+/// U6: whole-shape bends, the cage, surface brushes, the shape stack, linked copies, the pivot and typed sizes.
 final class ShapingTests: XCTestCase {
     private func object(_ kind: ObjectKind, _ properties: [PropertyKey: PropertyValue] = [:]) -> SceneObject {
         SceneObject(id: ObjectID("thing"), name: "Thing", kind: kind, properties: properties)
@@ -68,16 +68,18 @@ final class ShapingTests: XCTestCase {
 
     func testACageAtRestChangesNothing() throws {
         let column = column
-        let cage = DeformCage.around(try XCTUnwrap(column.bounds))
+        let cage = try DeformCage.around(XCTUnwrap(column.bounds))
         XCTAssertTrue(cage.isAtRest)
         XCTAssertEqual(CageDeform.apply(cage, to: column.positions), column.positions)
     }
 
     func testPullingTheCagesTopPointsStretchesTheTop() throws {
         let column = column
-        var cage = DeformCage.around(try XCTUnwrap(column.bounds), counts: [2, 2, 2])
+        var cage = try DeformCage.around(XCTUnwrap(column.bounds), counts: [2, 2, 2])
         for k in 0 ..< 2 {
-            for i in 0 ..< 2 { cage.offsets[cage.index(i, 1, k)] = Vec3(0, 1, 0) }
+            for i in 0 ..< 2 {
+                cage.offsets[cage.index(i, 1, k)] = Vec3(0, 1, 0)
+            }
         }
         let moved = CageDeform.apply(cage, to: column.positions)
         let topBefore = column.positions.map(\.y).max() ?? 0
@@ -87,7 +89,7 @@ final class ShapingTests: XCTestCase {
 
     func testAMovedPointInABiggerCageMovesOnlyItsCorner() throws {
         let column = column
-        var cage = DeformCage.around(try XCTUnwrap(column.bounds), counts: [3, 3, 3])
+        var cage = try DeformCage.around(XCTUnwrap(column.bounds), counts: [3, 3, 3])
         cage.offsets[cage.index(2, 2, 2)] = Vec3(1, 0, 0)
         let moved = CageDeform.apply(cage, to: column.positions)
         let far = try XCTUnwrap(zip(column.positions, moved).first { $0.0 == SIMD3<Float>(0.5, 4, 0.5) })
@@ -146,7 +148,9 @@ final class ShapingTests: XCTestCase {
         XCTAssertGreaterThan(inflate.positions.map(\.y).max() ?? 0, top.y)
         var smooth = SculptStroke(brush: .smooth, mesh: mesh, cornerOffsets: inflate.cornerOffsets, symmetry: nil)
         let peak = smooth.positions.map(\.y).max() ?? 0
-        for _ in 0 ..< 10 { smooth.dab(at: top, radius: 0.3, strength: 1) }
+        for _ in 0 ..< 10 {
+            smooth.dab(at: top, radius: 0.3, strength: 1)
+        }
         XCTAssertLessThan(smooth.positions.map(\.y).max() ?? 0, peak)
     }
 
@@ -237,7 +241,7 @@ final class ShapingTests: XCTestCase {
         var ids = IDFactory.sequential("o")
         let original = SceneObject(id: ObjectID("a"), name: "Box", kind: .mesh(.box(min: .zero, max: .one)))
         var start = scene(with: [original])
-        start = try apply(try XCTUnwrap(LinkedCopies.makeCopy(of: ObjectID("a"), in: start, offset: Vec3(2, 0, 0), ids: &ids)), to: start)
+        start = try apply(XCTUnwrap(LinkedCopies.makeCopy(of: ObjectID("a"), in: start, offset: Vec3(2, 0, 0), ids: &ids)), to: start)
         let copy = try XCTUnwrap(LinkedCopies.partners(of: ObjectID("a"), in: start).first)
         let edit = try ModelingOperations.pushPull(ObjectID("a"), face: 3, distance: 0.5, in: start)
         let after = try apply(LinkedCopies.propagate(edit, in: start), to: start)
@@ -254,7 +258,7 @@ final class ShapingTests: XCTestCase {
         var ids = IDFactory.sequential("o")
         let original = SceneObject(id: ObjectID("a"), name: "Box", kind: .mesh(.box(min: .zero, max: .one)), transform: Transform(scale: Vec3(2, 2, 2)))
         var start = scene(with: [original])
-        start = try apply(try XCTUnwrap(LinkedCopies.makeCopy(of: ObjectID("a"), in: start, offset: .zero, ids: &ids)), to: start)
+        start = try apply(XCTUnwrap(LinkedCopies.makeCopy(of: ObjectID("a"), in: start, offset: .zero, ids: &ids)), to: start)
         let copy = try XCTUnwrap(LinkedCopies.partners(of: ObjectID("a"), in: start).first)
         // Push/pull bakes the 2× scale into the original's corners; the copy keeps its own 2× and gets the unit shape.
         let edit = try ModelingOperations.pushPull(ObjectID("a"), face: 3, distance: 1, in: start)
@@ -265,37 +269,24 @@ final class ShapingTests: XCTestCase {
         XCTAssertEqual(copyMesh.volume * 8, mine.volume, accuracy: 1e-9)
     }
 
-    func testAlignAndDistribute() throws {
-        let things = (0 ..< 3).map { index in
-            SceneObject(id: ObjectID(raw: "o\(index)"), name: "Box", kind: .primitive(.cube),
-                        transform: Transform(position: Vec3(Double(index) * Double(index) * 2, Double(index), 0)))
-        }
-        let start = scene(with: things)
-        let ids = things.map { $0.id }
-        let aligned = try apply(try XCTUnwrap(Arrange.align(ids, axis: .y, to: .min, in: start, bounds: SceneBounds())), to: start)
-        XCTAssertTrue(ids.allSatisfy { aligned.objects[$0]?.transform.position.y == 0 })
-        let spaced = try apply(try XCTUnwrap(Arrange.distribute(ids, axis: .x, in: start, bounds: SceneBounds())), to: start)
-        XCTAssertEqual(spaced.objects[ObjectID("o1")]?.transform.position.x ?? 0, 4, accuracy: 1e-9, "halfway between 0 and 8")
-    }
-
     func testMovingThePivotKeepsTheShapeWhereItIs() throws {
         let start = scene(with: [SceneObject(id: ObjectID("a"), name: "Box", kind: .primitive(.cube), transform: Transform(position: Vec3(1, 0, 0)))])
         let before = SceneBounds().worldBounds(of: ObjectID("a"), in: start)
         let middle = try XCTUnwrap(Arrange.pivotPoint(.middle, of: ObjectID("a"), in: start, bounds: SceneBounds()))
-        let after = try apply(try Arrange.movePivot(ObjectID("a"), to: middle, in: start), to: start)
+        let after = try apply(Arrange.movePivot(ObjectID("a"), to: middle, in: start), to: start)
         XCTAssertEqual(after.objects[ObjectID("a")]?.transform.position, Vec3(1, 0.5, 0))
         let bounds = try XCTUnwrap(SceneBounds().worldBounds(of: ObjectID("a"), in: after))
-        XCTAssertTrue(bounds.min.isApproximately(try XCTUnwrap(before).min))
+        XCTAssertTrue(try bounds.min.isApproximately(XCTUnwrap(before).min))
     }
 
     func testTypingALengthResizesOneSide() throws {
         let start = scene(with: [SceneObject(id: ObjectID("a"), name: "Box", kind: .mesh(.box(min: Vec3(-0.5, 0, -0.5), max: Vec3(0.5, 1, 0.5))))])
-        let after = try apply(try Arrange.setLength(ObjectID("a"), axis: .y, to: 0.04, in: start), to: start)
+        let after = try apply(Arrange.setLength(ObjectID("a"), axis: .y, to: 0.04, in: start), to: start)
         let bounds = try XCTUnwrap(SceneBounds().worldBounds(of: ObjectID("a"), in: after))
         XCTAssertEqual(bounds.size.y, 0.04, accuracy: 1e-12)
         XCTAssertEqual(bounds.min.y, 0, accuracy: 1e-12, "it stays on the ground")
         let primitive = scene(with: [SceneObject(id: ObjectID("p"), name: "Cube", kind: .primitive(.cube))])
-        let wider = try apply(try Arrange.setLength(ObjectID("p"), axis: .x, to: 3, in: primitive), to: primitive)
+        let wider = try apply(Arrange.setLength(ObjectID("p"), axis: .x, to: 3, in: primitive), to: primitive)
         XCTAssertEqual(wider.objects[ObjectID("p")]?.transform.scale.x ?? 0, 3, accuracy: 1e-12)
     }
 
@@ -320,8 +311,12 @@ final class ShapingTests: XCTestCase {
         XCTAssertEqual((d - c).length, 6, accuracy: 1e-5)
         XCTAssertEqual((newB - newA).length, 3, accuracy: 1e-6)
         XCTAssertEqual((c - newA).length, 0, accuracy: 1e-9, "still joined")
-        XCTAssertTrue(changed.constraints.contains { if case let .length(0, value, _) = $0 { abs(value - 3) < 1e-9 } else { false } },
-                      "the lock takes the typed number")
+        XCTAssertTrue(changed.constraints.contains {
+            if case let .length(0, value, _) = $0 {
+                abs(value - 3) < 1e-9
+            } else { false }
+        },
+        "the lock takes the typed number")
     }
 
     func testParallelEqualAngleAndTangent() throws {

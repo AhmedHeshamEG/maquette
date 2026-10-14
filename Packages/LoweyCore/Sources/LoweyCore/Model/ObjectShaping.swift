@@ -120,7 +120,9 @@ public struct SculptLayer: Hashable, Sendable {
     /// An offset per corner.
     public var offsets: [SIMD3<Float>] {
         var result = Array(repeating: SIMD3<Float>(0, 0, 0), count: vertexCount)
-        for (corner, offset) in moved { result[corner] = offset }
+        for (corner, offset) in moved {
+            result[corner] = offset
+        }
         return result
     }
 

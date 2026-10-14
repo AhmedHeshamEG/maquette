@@ -1,61 +1,8 @@
 import Foundation
 
-/// Placing things relative to each other and to themselves: line them up, space them out, move a thing's pivot (where
-/// it turns and sizes from), and type a side's length.
+/// A thing's own placing (U6; lining things up is `Operations.align` and `distribute`): move its pivot (where it turns
+/// and sizes from), and type a side's length.
 public enum Arrange {
-    public enum Edge: String, Codable, Sendable, CaseIterable {
-        case min, middle, max
-    }
-
-    /// Lines the things up on one axis: their low sides, middles or high sides at the first one's (world space).
-    public static func align(_ ids: [ObjectID], axis: Axis, to edge: Edge, in scene: Scene, bounds: SceneBounds) -> EditCommand? {
-        let boxes = ids.compactMap { id in bounds.worldBounds(of: id, in: scene).map { (id, $0) } }
-        guard let anchor = boxes.first, boxes.count >= 2 else { return nil }
-        let target = value(of: anchor.1, axis: axis, edge: edge)
-        let changes = boxes.dropFirst().compactMap { id, box -> PropertyChange? in
-            moved(id, by: target - value(of: box, axis: axis, edge: edge), along: axis, in: scene)
-        }
-        return changes.isEmpty ? nil : .batch("Align", [.setProperties(changes)])
-    }
-
-    /// Spaces the things out evenly between the two furthest apart on one axis (equal gaps between them).
-    public static func distribute(_ ids: [ObjectID], axis: Axis, in scene: Scene, bounds: SceneBounds) -> EditCommand? {
-        let boxes = ids.compactMap { id in bounds.worldBounds(of: id, in: scene).map { (id, $0) } }
-            .sorted { $0.1.center[axis] < $1.1.center[axis] }
-        guard boxes.count >= 3, let first = boxes.first, let last = boxes.last else { return nil }
-        let sizes = boxes.map { $0.1.size[axis] }
-        let span = last.1.max[axis] - first.1.min[axis]
-        let gap = (span - sizes.reduce(0, +)) / Double(boxes.count - 1)
-        var cursor = first.1.max[axis] + gap
-        var changes: [PropertyChange] = []
-        for (id, box) in boxes.dropFirst().dropLast() {
-            if let change = moved(id, by: cursor - box.min[axis], along: axis, in: scene) { changes.append(change) }
-            cursor += box.size[axis] + gap
-        }
-        return changes.isEmpty ? nil : .batch("Distribute", [.setProperties(changes)])
-    }
-
-    static func value(of box: Bounds, axis: Axis, edge: Edge) -> Double {
-        switch edge {
-        case .min: box.min[axis]
-        case .middle: box.center[axis]
-        case .max: box.max[axis]
-        }
-    }
-
-    /// The position change that moves a thing by `distance` along a world axis (through its parent's space).
-    static func moved(_ id: ObjectID, by distance: Double, along axis: Axis, in scene: Scene) -> PropertyChange? {
-        guard abs(distance) > 1e-12, let object = scene.objects[id] else { return nil }
-        let world = axis.unit * distance
-        let parent = object.parent.map { scene.worldTransform(of: $0) } ?? .identity
-        let local = parent.inverseApplyDirection(world)
-        let scale = parent.scale
-        let unscaled = Vec3(local.x / nonZero(scale.x), local.y / nonZero(scale.y), local.z / nonZero(scale.z))
-        return PropertyChange(object: id, key: .position, value: .vec3(object.transform.position + unscaled))
-    }
-
-    private static func nonZero(_ value: Double) -> Double { abs(value) < 1e-12 ? 1 : value }
-
     // MARK: Pivot
 
     /// Moves a thing's pivot to a world point without moving the thing: a modelled shape's corners (or a group's

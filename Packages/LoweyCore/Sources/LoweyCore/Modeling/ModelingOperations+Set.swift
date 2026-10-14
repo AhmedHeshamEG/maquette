@@ -65,6 +65,16 @@ public extension ModelingOperations {
         }) { mesh in MeshRepair.merge(corners, in: mesh) }
     }
 
+    /// Corners moved together by a distance in modelling space (a dragged corner; under symmetry its mirror too).
+    static func moveCorners(_ id: ObjectID, corners: Set<Int>, by delta: Vec3, in scene: Scene) throws(Failure) -> EditCommand {
+        try reshape(id, label: "Move corner", in: scene, near: { mesh in
+            let valid = corners.filter(mesh.vertices.indices.contains)
+            return valid.isEmpty ? nil : valid.reduce(Vec3.zero) { $0 + mesh.vertices[$1] } / Double(valid.count)
+        }) { mesh in
+            mesh.moving(Dictionary(uniqueKeysWithValues: corners.filter(mesh.vertices.indices.contains).map { ($0, mesh.vertices[$0] + delta) }))
+        }
+    }
+
     static func mergeByDistance(_ id: ObjectID, distance: Double, in scene: Scene) throws(Failure) -> EditCommand {
         try reshape(id, label: "Merge by distance", in: scene, near: { _ in nil }) { mesh in MeshRepair.merge(within: distance, in: mesh) }
     }

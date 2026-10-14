@@ -53,7 +53,9 @@ public enum Subdivision {
                                       edgePoints: [MeshEdge: (point: Vec3, border: Bool)]) -> [Vec3] {
         var aroundFaces = [[Int]](repeating: [], count: mesh.vertices.count)
         for (index, outline) in faces.enumerated() {
-            for corner in outline { aroundFaces[corner].append(index) }
+            for corner in outline {
+                aroundFaces[corner].append(index)
+            }
         }
         var aroundEdges = [[MeshEdge]](repeating: [], count: mesh.vertices.count)
         for edge in edgePoints.keys {

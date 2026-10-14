@@ -125,12 +125,18 @@ public struct SculptStroke: Sendable {
             offsets = start
             for (side, patch) in held.enumerated() {
                 let delta = side == 0 ? moved : flip(moved)
-                for (point, weight) in patch { offsets[point] += delta * weight }
+                for (point, weight) in patch {
+                    offsets[point] += delta * weight
+                }
             }
         case .smooth:
-            for centre in centres { smooth(around: centre, radius: radius, strength: strength) }
+            for centre in centres {
+                smooth(around: centre, radius: radius, strength: strength)
+            }
         case .inflate:
-            for centre in centres { inflate(around: centre, radius: radius, strength: strength) }
+            for centre in centres {
+                inflate(around: centre, radius: radius, strength: strength)
+            }
         }
     }
 

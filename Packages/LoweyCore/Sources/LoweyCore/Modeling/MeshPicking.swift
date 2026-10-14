@@ -49,6 +49,33 @@ public enum MeshPicking {
         }
     }
 
+    /// No modes (U6): what the tip is over, by how near it is on screen. A corner within `corner` points of the tip,
+    /// else an edge within `edge` points, else the face under it.
+    public static func nearestPart(_ ray: Ray, screenPoint: Vec2, in mesh: EditableMesh, corner: Double = 16, edge: Double = 11,
+                                   project: (Vec3) -> Vec2?) -> MeshSelection? {
+        guard let hit = face(ray, in: mesh) else { return nil }
+        let face = mesh.faces[hit.face]
+        if let nearest = face.vertices.min(by: { screenDistance(mesh.vertices[$0], screenPoint, project) < screenDistance(
+            mesh.vertices[$1],
+            screenPoint,
+            project
+        ) }),
+            screenDistance(mesh.vertices[nearest], screenPoint, project) <= corner {
+            return MeshSelection(mode: .vertex, vertices: [nearest])
+        }
+        var edges: [MeshEdge] = []
+        for loop in face.loops {
+            for index in loop.indices {
+                edges.append(MeshEdge(loop[index], loop[(index + 1) % loop.count]))
+            }
+        }
+        if let nearest = edges.min(by: { edgeDistance($0, mesh, screenPoint, project) < edgeDistance($1, mesh, screenPoint, project) }),
+           edgeDistance(nearest, mesh, screenPoint, project) <= edge {
+            return MeshSelection(mode: .edge, edges: [nearest])
+        }
+        return MeshSelection(mode: .face, faces: [hit.face])
+    }
+
     static func screenDistance(_ point: Vec3, _ screen: Vec2, _ project: (Vec3) -> Vec2?) -> Double {
         guard let projected = project(point) else { return .infinity }
         return (projected - screen).length

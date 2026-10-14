@@ -56,7 +56,7 @@ public enum Knife {
         guard events.count == 2 else { return nil }
         // Two corners next to each other: the plane runs along a side, nothing to cut.
         if case let .corner(a) = events[0], case let .corner(b) = events[1],
-           (b - a == 1 || (a == 0 && b == outline.count - 1)) { return nil }
+           b - a == 1 || (a == 0 && b == outline.count - 1) { return nil }
         return (events[0], events[1])
     }
 
