@@ -19,6 +19,7 @@ struct StageChrome: View {
         ZStack {
             if editor.tool == .model || editor.precision.showsDimensions { ModelDimensions(editor: editor) }
             if editor.tool == .ink, !editor.inkStrokes.isEmpty { StrokeChip(editor: editor) }
+            if editor.tool == .model || editor.tool == .select { PartChip(editor: editor) }
             HStack {
                 if !sidebarOnRight { EditorSidebar(editor: editor) }
                 Spacer()
@@ -186,20 +187,23 @@ private struct SceneNameDoor: View {
 private struct ViewControls: View {
     let editor: EditorModel
     @AppStorage(AppSettings.showsJoystick) private var showsJoystick = true
+    @AppStorage(AppSettings.showsViewCube) private var showsViewCube = true
 
     var body: some View {
-        HStack(spacing: HmmSpacing.xxs) {
-            Menu {
-                ForEach(ViewAxis.allCases, id: \.self) { axis in
-                    Button(LocalizedStringKey(axis.displayName)) { editor.stage?.quickView(axis) }
-                }
-                Divider()
-                Button(editor.projection == .orthographic ? "Perspective" : "Orthographic") { editor.toggleProjection() }
-            } label: {
-                Image(systemName: "cube.transparent").font(.system(size: 17, weight: .medium)).frame(width: 44, height: 44)
+        // The view cube sits in the view corner, above its row (U6); hidden, the views menu takes its place.
+        VStack(alignment: .trailing, spacing: HmmSpacing.xs) {
+            if showsViewCube {
+                ViewCube(editor: editor)
+                    .padding(HmmSpacing.xxs)
+                    .hmmGlass(in: RoundedRectangle(cornerRadius: 14, style: .continuous), interactive: false)
             }
-            .accessibilityLabel("Views")
-            .accessibilityIdentifier("views-menu")
+            row
+        }
+    }
+
+    private var row: some View {
+        HStack(spacing: HmmSpacing.xxs) {
+            if !showsViewCube { viewsMenu }
             CameraButton(editor: editor)
             HmmButton("gamecontroller", label: "Joystick", isOn: showsJoystick) { showsJoystick.toggle() }
                 .accessibilityIdentifier("joystick-toggle")
@@ -210,6 +214,20 @@ private struct ViewControls: View {
         .hmmGlass(in: Capsule(), interactive: false)
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("view-controls")
+    }
+
+    private var viewsMenu: some View {
+        Menu {
+            ForEach(ViewAxis.allCases, id: \.self) { axis in
+                Button(LocalizedStringKey(axis.displayName)) { editor.stage?.quickView(axis) }
+            }
+            Divider()
+            Button(editor.projection == .orthographic ? "Perspective" : "Orthographic") { editor.toggleProjection() }
+        } label: {
+            Image(systemName: "cube.transparent").font(.system(size: 17, weight: .medium)).frame(width: 44, height: 44)
+        }
+        .accessibilityLabel("Views")
+        .accessibilityIdentifier("views-menu")
     }
 }
 

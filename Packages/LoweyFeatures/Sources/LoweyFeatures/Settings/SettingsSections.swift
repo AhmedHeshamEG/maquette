@@ -54,6 +54,7 @@ struct StageSettingsSection: View {
     @AppStorage(AppSettings.showsJoystick) private var showsJoystick = true
     @AppStorage(AppSettings.joystickSpeed) private var joystickSpeed = 1.0
     @AppStorage(AppSettings.boardEnabled) private var boardEnabled = true
+    @AppStorage(AppSettings.showsViewCube) private var showsViewCube = true
 
     var body: some View {
         Section {
@@ -70,6 +71,8 @@ struct StageSettingsSection: View {
                 LabeledSlider(title: "Joystick speed", value: joystickSpeed, range: AppSettings.joystickSpeedRange,
                               format: { String(format: "%.2g×", $0) }) { joystickSpeed = $0 }
             }
+            Toggle("The view cube", isOn: $showsViewCube)
+                .accessibilityIdentifier("settings-view-cube")
             Toggle("The Board", isOn: $boardEnabled)
                 .accessibilityIdentifier("settings-board")
         } header: {
