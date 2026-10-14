@@ -79,6 +79,7 @@ public struct LoweyMenuCommands: Commands {
             Button("Fly the Camera") { editor.map { $0.flying ? $0.stopFlying() : $0.startFlying() } }.keyboardShortcut("y", modifiers: [.command, .option])
             Button("Hide Interface") { editor?.chromeHidden.toggle() }.keyboardShortcut("f", modifiers: [.command, .control])
             Divider()
+            Button("History and Steps") { editor?.openHistory() }.keyboardShortcut("y", modifiers: .command)
             Button("Export…") { editor?.sheet = .export }.keyboardShortcut("e", modifiers: .command)
             Button("Paste a Scene Script") { editor?.importScriptFromClipboard() }.keyboardShortcut("v", modifiers: [.command, .option])
             Button("AI & Laptop Bridge…") { editor?.sheet = .bridge }.keyboardShortcut("b", modifiers: [.command, .shift])

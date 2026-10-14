@@ -59,7 +59,7 @@ private let layoutWalkRows: [LayoutWalk.Row] = [
                    control: "The Board: plan before building (below)",
                    steps: ["Actions", "open-board"], held: ""),
     LayoutWalk.Row(home: "Actions", precondition: "",
-                   control: "History scrubber, versions",
+                   control: "History scrubber, versions; over it, the selected thing's modelling steps to change (H1)",
                    steps: ["Actions", "open-history"], held: ""),
     LayoutWalk.Row(home: "Actions", precondition: "",
                    control: "Learn: the tour, every gesture, the instructions switch",
