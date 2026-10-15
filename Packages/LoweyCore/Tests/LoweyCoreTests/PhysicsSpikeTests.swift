@@ -27,6 +27,11 @@ final class PhysicsSpikeTests: XCTestCase {
     }
 
     func testAGlassFillsWithWaterAndPlaysFromTheRun() throws {
+        #if DEBUG
+            // Release only (CI's spike step): a debug build with coverage is tens of times slower; the everyday suite
+            // fills a smaller glass (PhysicsMoreTests).
+            throw XCTSkip("the water benchmark runs in a release build")
+        #endif
         let glass = PhysicsMoreTests.glass()
         let tap = SceneObject(id: "tap", name: "Tap", kind: .fluid(FluidRecipe(kind: .pour, box: Vec3(0.4, 0.4, 0.4), amount: 0.12, duration: 2)),
                               transform: Transform(position: Vec3(0, 0.22, 0)))

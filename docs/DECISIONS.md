@@ -2511,7 +2511,10 @@ and land on the ground.
 **D-377 — Small-scale fluids.** Water is position-based fluid (Macklin & Müller 2013), at most 5 000 drops, each step
 small enough that no drop crosses half its spacing; it meets every surface in its box through unsigned distance fields
 (moving ones followed), loses a little speed where it touches, and doesn't push things back. Its surface is a blob field
-cut by marching tetrahedra, made for each frame of the run, so playing it costs nothing. Smoke and fire are stable fluids
+cut by marching tetrahedra, made for each frame of the run, so playing it costs nothing (0.01 ms a frame). Neighbours come
+from a dense grid of half-kernel cells over where the drops are, and many small steps take one solver pass each (Macklin
+et al., "Small Steps"): a glass filling with a quarter litre bakes at 360 ms a frame in a release build on the PC's
+Docker CPU, in the background. Smoke and fire are stable fluids
 on a grid 40 cells along the box's long side, drawn as soft puffs in the scene's Look. The box is at most 4 m a side.
 *Rejected:* grid water (FLIP: more code, the same look at a glass's scale); two-way coupling (a later step, if boats ask).
 
@@ -2545,7 +2548,7 @@ physics module.
 
 **D-384 — Every tier, the same run.** The run doesn't depend on the device: a Tier B iPad plays the same frames, made a
 little later. The benchmark gates are the 500-body stack (D-365) and a glass filling with water (`PhysicsSpikeTests`, a
-release build, its bake time in CI's summary); the device checklist times both on the iPad.
+release build only, its bake time in CI's summary; 500 bodies take 2.1 ms a frame through the whole Core path); the device checklist times both on the iPad.
 
 **D-385 — Translations still ride along.** The new strings were translated into Italian and Arabic for the catalog check
 (D-300, D-325, D-337, D-364).

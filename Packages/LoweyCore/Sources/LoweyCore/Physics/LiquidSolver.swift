@@ -110,17 +110,18 @@ struct LiquidSolver {
         let small = dt / Double(substeps)
         for index in 0 ..< substeps {
             pour(small, time: time - dt + small * Double(index + 1))
-            substep(Float(small), places: places, forces: forces)
+            // Many small steps need fewer solver passes each (Macklin et al., "Small Steps in Physics Simulation").
+            substep(Float(small), iterations: substeps >= 8 ? 1 : substeps >= 4 ? 2 : 3, places: places, forces: forces)
         }
     }
 
-    private mutating func substep(_ dt: Float, places: [Transform], forces: [(ForceRecipe, Transform)]) {
+    private mutating func substep(_ dt: Float, iterations: Int, places: [Transform], forces: [(ForceRecipe, Transform)]) {
         guard !positions.isEmpty else { return }
         var predicted = predict(dt, places: places, forces: forces)
         var touched = [Bool](repeating: false, count: predicted.count)
-        let grid = SpatialHash(predicted, cell: h)
+        let grid = NeighbourGrid(predicted, reach: h)
         let kernel = Kernel(h: h)
-        for _ in 0 ..< 3 {
+        for _ in 0 ..< iterations {
             let lambdas = constraints(predicted, grid: grid, kernel: kernel)
             predicted = corrected(predicted, lambdas: lambdas, grid: grid, kernel: kernel, places: places, touched: &touched)
         }
@@ -146,7 +147,7 @@ struct LiquidSolver {
     }
 
     /// How much each drop is squeezed past the water's rest density, as PBF's λ.
-    private func constraints(_ predicted: [SIMD3<Float>], grid: SpatialHash, kernel: Kernel) -> [Float] {
+    private func constraints(_ predicted: [SIMD3<Float>], grid: NeighbourGrid, kernel: Kernel) -> [Float] {
         var lambdas = [Float](repeating: 0, count: predicted.count)
         for i in predicted.indices {
             var density: Float = 0
@@ -167,7 +168,7 @@ struct LiquidSolver {
     }
 
     /// Each drop moved to undo the squeeze (with a little pull apart, so drops don't clump), out of every surface.
-    private func corrected(_ predicted: [SIMD3<Float>], lambdas: [Float], grid: SpatialHash, kernel: Kernel, places: [Transform],
+    private func corrected(_ predicted: [SIMD3<Float>], lambdas: [Float], grid: NeighbourGrid, kernel: Kernel, places: [Transform],
                            touched: inout [Bool]) -> [SIMD3<Float>] {
         let tensileReference = kernel.w(SIMD3<Float>(0.2 * h, 0, 0))
         var result = predicted
@@ -187,7 +188,7 @@ struct LiquidSolver {
     }
 
     /// Velocities from the move, a touch of viscosity, and drops that leave the box are gone.
-    private mutating func finish(_ predicted: [SIMD3<Float>], touched: [Bool], grid: SpatialHash, kernel: Kernel, dt: Float) {
+    private mutating func finish(_ predicted: [SIMD3<Float>], touched: [Bool], grid: NeighbourGrid, kernel: Kernel, dt: Float) {
         var kept: [Int] = []
         kept.reserveCapacity(predicted.count)
         for i in predicted.indices {
@@ -270,24 +271,46 @@ struct Kernel {
     }
 }
 
-/// Particles sorted into hashed cells, so each finds its neighbours in the 27 cells around it.
-struct SpatialHash {
+/// Drops sorted into a dense grid over where they are, cells half the kernel's reach wide, so each finds its neighbours
+/// in one short run of five cells along x for each of the 25 rows around it (2.6 times the kernel's volume, where whole
+/// cells would scan 6.4). The grid grows its cells when the drops spread far (at most four million cells).
+struct NeighbourGrid {
+    let origin: SIMD3<Float>
     let cell: Float
-    let size: Int
+    let nx: Int
+    let ny: Int
+    let nz: Int
+    /// How many cells either side hold everything within reach.
+    let span: Int
     var starts: [Int32]
     var order: [Int32]
 
-    init(_ points: [SIMD3<Float>], cell: Float) {
-        self.cell = cell
-        let tableSize = max(points.count * 2, 64)
-        size = tableSize
-        var counts = [Int32](repeating: 0, count: tableSize + 1)
-        let keys = points.map { Self.hash(Self.coordinate($0, cell: cell), size: tableSize) }
-        for key in keys {
+    init(_ points: [SIMD3<Float>], reach: Float) {
+        var low = points.first ?? .zero
+        var high = low
+        for point in points {
+            low = SIMD3(min(low.x, point.x), min(low.y, point.y), min(low.z, point.z))
+            high = SIMD3(max(high.x, point.x), max(high.y, point.y), max(high.z, point.z))
+        }
+        let extent = high - low
+        let volume = Double(max(extent.x, reach)) * Double(max(extent.y, reach)) * Double(max(extent.z, reach))
+        let size = max(reach / 2, Float(pow(volume / 4_000_000, 1.0 / 3.0)))
+        span = Int((reach / size).rounded(.up))
+        origin = low
+        cell = size
+        nx = Int(extent.x / size) + 1
+        ny = Int(extent.y / size) + 1
+        nz = Int(extent.z / size) + 1
+        let cells = nx * ny * nz
+        var counts = [Int32](repeating: 0, count: cells + 1)
+        var keys = [Int](repeating: 0, count: points.count)
+        for (index, point) in points.enumerated() {
+            let key = Self.index(point, origin: low, cell: size, nx: nx, ny: ny, nz: nz)
+            keys[index] = key
             counts[key + 1] += 1
         }
-        for index in 1 ... tableSize {
-            counts[index] += counts[index - 1]
+        for index in 0 ..< cells {
+            counts[index + 1] += counts[index]
         }
         starts = counts
         var cursor = counts
@@ -298,32 +321,27 @@ struct SpatialHash {
         }
     }
 
-    static func coordinate(_ point: SIMD3<Float>, cell: Float) -> SIMD3<Int32> {
-        SIMD3<Int32>(Int32((point.x / cell).rounded(.down)), Int32((point.y / cell).rounded(.down)), Int32((point.z / cell).rounded(.down)))
+    @inline(__always) static func index(_ point: SIMD3<Float>, origin: SIMD3<Float>, cell: Float, nx: Int, ny: Int, nz: Int) -> Int {
+        let p = (point - origin) / cell
+        let x = min(max(Int(p.x), 0), nx - 1)
+        let y = min(max(Int(p.y), 0), ny - 1)
+        let z = min(max(Int(p.z), 0), nz - 1)
+        return (z * ny + y) * nx + x
     }
 
-    static func hash(_ c: SIMD3<Int32>, size: Int) -> Int {
-        let value = (Int(c.x) &* 73_856_093) ^ (Int(c.y) &* 19_349_663) ^ (Int(c.z) &* 83_492_791)
-        return abs(value % size)
-    }
-
-    /// Calls `body` with every particle within one cell of `point` (and some from colliding cells; kernels ignore them).
+    /// Calls `body` with every drop in the cells around `point` (kernels ignore the ones beyond their reach).
     @inline(__always) func forEachNeighbour(of point: SIMD3<Float>, in _: [SIMD3<Float>], _ body: (Int) -> Void) {
-        let centre = Self.coordinate(point, cell: cell)
-        withUnsafeTemporaryAllocation(of: Int.self, capacity: 27) { seen in
-            var count = 0
-            for dz in -1 ... 1 {
-                for dy in -1 ... 1 {
-                    for dx in -1 ... 1 {
-                        let key = Self.hash(centre &+ SIMD3<Int32>(Int32(dx), Int32(dy), Int32(dz)), size: size)
-                        // Two neighbouring cells can hash alike; visit each bucket once.
-                        if (0 ..< count).contains(where: { seen[$0] == key }) { continue }
-                        seen[count] = key
-                        count += 1
-                        for slot in Int(starts[key]) ..< Int(starts[key + 1]) {
-                            body(Int(order[slot]))
-                        }
-                    }
+        let p = (point - origin) / cell
+        let x = min(max(Int(p.x.rounded(.down)), 0), nx - 1)
+        let y = min(max(Int(p.y.rounded(.down)), 0), ny - 1)
+        let z = min(max(Int(p.z.rounded(.down)), 0), nz - 1)
+        let x0 = max(x - span, 0)
+        let x1 = min(x + span, nx - 1)
+        for dz in max(z - span, 0) ... min(z + span, nz - 1) {
+            for dy in max(y - span, 0) ... min(y + span, ny - 1) {
+                let row = (dz * ny + dy) * nx
+                for slot in Int(starts[row + x0]) ..< Int(starts[row + x1 + 1]) {
+                    body(Int(order[slot]))
                 }
             }
         }
