@@ -5,7 +5,7 @@ import Foundation
 public enum PaintFills {
     /// What a fill needs besides the surface: the shape's wear bake (for wear) and the decoded pictures of an imported
     /// material set.
-    public struct Inputs {
+    public struct Inputs: Sendable {
         public var wear: WearBake?
         public var pictures: MaterialPictureSource?
 

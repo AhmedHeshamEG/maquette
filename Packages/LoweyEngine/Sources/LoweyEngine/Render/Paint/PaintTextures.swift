@@ -176,11 +176,12 @@ final class PaintTextures {
         return surface.composites[.color]?.view
     }
 
-    /// Every layer key a paint has textures for: each map with tiles, and each mask (even one with no tiles).
+    /// Every layer key a paint has textures for: each layer's colour (an empty layer is painted on), each other map with
+    /// tiles, and each mask (even one with no tiles).
     static func keys(of paint: ObjectPaint) -> Set<String> {
         var keys = Set<String>()
         for layer in paint.layers {
-            for map in PaintMap.allCases where !layer.tiles(of: map).isEmpty || (map == .mask && layer.hasMask) {
+            for map in PaintMap.allCases where map == .color || !layer.tiles(of: map).isEmpty || (map == .mask && layer.hasMask) {
                 keys.insert(PaintPictures.key(layer.id, map))
             }
         }
@@ -237,7 +238,7 @@ final class PaintTextures {
 
     /// A map's composite: mipmapped; colour and glow read through an sRGB view (so they arrive linear), the value maps
     /// as they're stored.
-    private func makeComposite(size: Int, map: PaintMap, label: String) -> Composite? {
+    func makeComposite(size: Int, map: PaintMap, label: String) -> Composite? {
         let levels = Int(log2(Double(size))) + 1
         let descriptor = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: .rgba8Unorm, width: size, height: size, mipmapped: true)
         descriptor.mipmapLevelCount = levels
@@ -250,7 +251,7 @@ final class PaintTextures {
         return Composite(texture: texture, view: view)
     }
 
-    private func makeLayer(size: Int) -> Layer? {
+    func makeLayer(size: Int) -> Layer? {
         guard let texture = try? device.makeTexture(RenderDevice.layerFormat, width: size, height: size,
                                                     usage: [.renderTarget, .shaderRead], label: "paint layer") else { return nil }
         return Layer(texture: texture)

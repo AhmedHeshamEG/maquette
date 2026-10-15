@@ -155,7 +155,7 @@ extension PaintTextures {
     /// projected, and again mirrored when the paint mirrors), and composites that map again, all before the frame's
     /// shading reads it. A stroke in the flat view lands on the texture as drawn.
     func encodeStroke(_ live: LivePaint, view: StrokeView, stamper: BrushStamper, image: (String) -> CGImage?, commandBuffer: MTLCommandBuffer) {
-        guard let surface = surfaces[live.object], let layer = surface.layers[live.layer] else { return }
+        guard let surface = surfaces[live.object], let layer = strokeLayer(live.layer, of: surface, commandBuffer: commandBuffer) else { return }
         let flat = live.isFlat
         guard let before = beforeTexture(for: live, layer: layer, size: surface.size, commandBuffer: commandBuffer),
               let target = flat ? strokeTexture(width: surface.size, height: surface.size)
@@ -176,6 +176,25 @@ extension PaintTextures {
         }
         markDirty(surface, key: live.layer)
         compose(surface, commandBuffer: commandBuffer)
+    }
+
+    /// The layer map a stroke paints: the one there, or a new clear one (the first stroke on a map), with a composite
+    /// for its map so the stroke shows as it's drawn.
+    private func strokeLayer(_ key: String, of surface: Surface, commandBuffer: MTLCommandBuffer) -> Layer? {
+        if let known = surface.layers[key] { return known }
+        guard let made = makeLayer(size: surface.size) else { return nil }
+        clear(made.texture, commandBuffer: commandBuffer)
+        made.needsClear = false
+        for index in 0 ..< surface.size / PaintSurface.tileSize * (surface.size / PaintSurface.tileSize) {
+            let tiles = surface.size / PaintSurface.tileSize
+            made.loaded[PaintTileIndex(column: index % tiles, row: index / tiles).key] = ""
+        }
+        surface.layers[key] = made
+        let map = Self.map(ofKey: key)
+        if map != .mask, surface.composites[map] == nil {
+            surface.composites[map] = makeComposite(size: surface.size, map: map, label: "paint \(map.rawValue)")
+        }
+        return made
     }
 
     private func encodeProjection(_ live: LivePaint, view: StrokeView, target: MTLTexture, layer: Layer, mirror: SIMD3<Float>?,

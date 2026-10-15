@@ -270,9 +270,10 @@ extension EditorModel {
         let mesh = surface.mesh
         let folder = assetsFolder
         let name = high.name
+        let detailed = moved
         Task {
             let png = await Task.detached(priority: .userInitiated) {
-                PaintPixels.png(NormalBake.bake(low: mesh, high: moved, size: paint.surface.size))
+                PaintPixels.png(NormalBake.bake(low: mesh, high: detailed, size: paint.surface.size))
             }.value
             let file = PaintFiles.tileName(for: png)
             do {

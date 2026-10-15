@@ -50,7 +50,7 @@ extension EditorModel {
     }
 
     /// The painted surface under a stage point.
-    struct SurfaceHit {
+    struct PaintHit {
         var object: SceneObject
         var paint: ObjectPaint
         var mesh: MeshData
@@ -62,7 +62,7 @@ extension EditorModel {
 
     /// The painted surface under a stage point: the object, its paint, where in the texture, and how many texels a
     /// stage point covers there.
-    func surfaceHit(at point: CGPoint) -> SurfaceHit? {
+    func surfaceHit(at point: CGPoint) -> PaintHit? {
         guard let stage, let picked = stage.pickObject(at: point), let object = displayed.scene.objects[picked.0],
               let surface = paintSurface(of: object), let ray = stage.worldRay(at: point),
               let across = stage.worldRay(at: CGPoint(x: point.x + 1, y: point.y)) else { return nil }
@@ -72,7 +72,7 @@ extension EditorModel {
         // A stage point's width at the hit: where the next pixel's ray is at the same distance.
         let distance = picked.1.point.distance(to: ray.origin)
         let worldPerPoint = Float(across.point(at: distance).distance(to: picked.1.point))
-        return SurfaceHit(object: object, paint: surface.paint, mesh: surface.mesh, pick: surface.pick, hit: hit, texelsPerPoint: worldPerPoint * hit.density)
+        return PaintHit(object: object, paint: surface.paint, mesh: surface.mesh, pick: surface.pick, hit: hit, texelsPerPoint: worldPerPoint * hit.density)
     }
 
     // MARK: Smudge

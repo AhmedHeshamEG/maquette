@@ -156,7 +156,7 @@ public extension PaintMaterial {
 }
 
 /// Decoded pictures of imported sets, sampled with triplanar projection (no unwrap needed, no seams).
-public struct MaterialPictureSource {
+public struct MaterialPictureSource: Sendable {
     public var images: [String: RGBAImage]
 
     public init(images: [String: RGBAImage]) {
