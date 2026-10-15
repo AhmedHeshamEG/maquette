@@ -128,6 +128,15 @@ final class SceneCompiler {
             }
         case .particles:
             compileParticles(object, state: state, input: input, scene: &scene)
+        case .fluid where state.ghost, .force where state.ghost:
+            return
+        case .fluid:
+            compileFluid(object, state: state, input: input, scene: &scene)
+        case let .force(recipe):
+            if input.showsHelpers {
+                scene.helpers.append(HelperItem(kind: .emitter, object: object.id, transform: state.world, color: RGBA(0.45, 0.75, 1),
+                                                radius: recipe.kind == .fan ? 0.18 : 0.12))
+            }
         default:
             compileSurface(object, state: state, input: input, scene: &scene)
         }
