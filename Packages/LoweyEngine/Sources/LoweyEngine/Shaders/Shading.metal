@@ -192,7 +192,10 @@ static inline float3 lw_mapNormal(float3 n, float3 p, float2 uv, float3 local) {
     float3 dp2perp = cross(dp2, n), dp1perp = cross(n, dp1);
     float3 alongU = dp2perp * duv1.x + dp1perp * duv2.x;
     float3 alongV = dp2perp * duv1.y + dp1perp * duv2.y;
-    float scale = rsqrt(max(max(dot(alongU, alongU), dot(alongV, alongV)), 1e-20));
+    // The cotangent frame assumes the screen's axes turn the way the normal faces; Metal's y runs down, so a surface
+    // facing the camera turns the other way: undo the flip it puts on both directions.
+    float handed = dot(cross(dp1, dp2), n) < 0.0 ? -1.0 : 1.0;
+    float scale = handed * rsqrt(max(max(dot(alongU, alongU), dot(alongV, alongV)), 1e-20));
     return normalize(alongU * scale * local.x - alongV * scale * local.y + n * local.z);
 }
 
