@@ -8,7 +8,9 @@ public enum NormalBake {
     /// and looks down through it for the high one (then from below, for spots the high one dips under). Texels that
     /// find nothing keep the low surface's own normal (flat in tangent space).
     public static func bake(low paintMesh: MeshData, high: MeshData, size: Int, reach: Float? = nil) -> RGBAImage {
-        var image = RGBAImage.clear(width: size, height: size)
+        // Flat everywhere first, so filtering at a chart's edge never reads a normal pointing nowhere.
+        var image = RGBAImage(width: size, height: size, color: RGBA(0.5, 0.5, 1, 1))
+        var covered = [UInt8](repeating: 0, count: size * size)
         let bvh = TriangleBVH(high)
         let distance = reach ?? SurfaceTexels.diagonal(paintMesh) * 0.05
         let highNormals = high.normals.count == high.positions.count
@@ -38,8 +40,11 @@ public enum NormalBake {
                 let (tangent, bitangent) = orthonormal(frames[face], normal: normal)
                 let local = SIMD3<Float>(dot3(detail, tangent), dot3(detail, bitangent), dot3(detail, normal))
                 image.write((y * size + x) * 4, local * 0.5 + 0.5)
+                covered[y * size + x] = 1
             }
         }
+        // Each chart's normals pushed a few texels past its edge (as paint is), so bilinear filtering stays on it.
+        PaintRaster.dilate(&image, coverage: covered)
         return image
     }
 
