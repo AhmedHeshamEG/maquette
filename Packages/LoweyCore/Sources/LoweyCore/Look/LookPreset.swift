@@ -116,25 +116,51 @@ public struct LineParams: Codable, Hashable, Sendable {
     public static let off = LineParams(enabled: false)
 }
 
-/// Print-comic language: halftone dots and colour misregistration.
+/// Print-comic language: halftone dots, hatched shadows and colour misregistration.
 public struct ComicParams: Codable, Hashable, Sendable {
     /// Halftone dots in the shadow band (0 = off).
     public var halftone: Double
-    /// Dot spacing in points at 1080p.
+    /// Dot spacing in points at 1080p (the hatching's line spacing too).
     public var halftoneScale: Double
     /// Dots stick to surfaces instead of the screen (no "shower door" on moving things).
     public var objectSpaceDots: Bool
     /// Depth of field becomes RGB misregistration instead of blur.
     public var misregistration: Bool
+    /// Hatched lines in the shadow band, crossed where it's darkest (0 = off; D-358).
+    public var hatching: Double
 
-    public init(halftone: Double = 0, halftoneScale: Double = 7, objectSpaceDots: Bool = false, misregistration: Bool = false) {
+    public init(halftone: Double = 0, halftoneScale: Double = 7, objectSpaceDots: Bool = false, misregistration: Bool = false,
+                hatching: Double = 0) {
         self.halftone = halftone
         self.halftoneScale = halftoneScale
         self.objectSpaceDots = objectSpaceDots
         self.misregistration = misregistration
+        self.hatching = hatching
     }
 
     public static let off = ComicParams()
+
+    private enum CodingKeys: String, CodingKey {
+        case halftone, halftoneScale, objectSpaceDots, misregistration, hatching
+    }
+
+    public init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        try self.init(halftone: c.decodeIfPresent(Double.self, forKey: .halftone) ?? 0,
+                      halftoneScale: c.decodeIfPresent(Double.self, forKey: .halftoneScale) ?? 7,
+                      objectSpaceDots: c.decodeIfPresent(Bool.self, forKey: .objectSpaceDots) ?? false,
+                      misregistration: c.decodeIfPresent(Bool.self, forKey: .misregistration) ?? false,
+                      hatching: c.decodeIfPresent(Double.self, forKey: .hatching) ?? 0)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var c = encoder.container(keyedBy: CodingKeys.self)
+        try c.encode(halftone, forKey: .halftone)
+        try c.encode(halftoneScale, forKey: .halftoneScale)
+        try c.encode(objectSpaceDots, forKey: .objectSpaceDots)
+        try c.encode(misregistration, forKey: .misregistration)
+        if hatching != 0 { try c.encode(hatching, forKey: .hatching) }
+    }
 }
 
 /// The finish of a Look: paper, vignette, grade, and Sketch's desaturation with an accent.
