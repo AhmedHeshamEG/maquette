@@ -12,9 +12,11 @@ public struct ExportMesh: Hashable, Sendable {
     public var metallic: Double
     /// Painted colour (an opaque PNG over the mesh's uvs); `color` multiplies it, so it's white then.
     public var texture: Data?
+    /// The painted surface's other maps.
+    public var maps: ExportMaps
 
     public init(name: String, transform: Transform, mesh: MeshData, color: RGBA, emissive: RGBA? = nil, emissiveStrength: Double = 0,
-                roughness: Double = 0.85, metallic: Double = 0, texture: Data? = nil) {
+                roughness: Double = 0.85, metallic: Double = 0, texture: Data? = nil, maps: ExportMaps = ExportMaps()) {
         self.name = name
         self.transform = transform
         self.mesh = mesh
@@ -24,6 +26,7 @@ public struct ExportMesh: Hashable, Sendable {
         self.roughness = roughness
         self.metallic = metallic
         self.texture = texture
+        self.maps = maps
     }
 }
 
@@ -36,23 +39,35 @@ public struct ExportMaterial: Hashable, Sendable {
     public var metallic: Double
     /// Painted colour (an opaque PNG); `color` multiplies it.
     public var texture: Data?
+    /// The painted surface's other maps (each replaces its number where it's given).
+    public var maps: ExportMaps
 
     public init(color: RGBA, emissive: RGBA? = nil, emissiveStrength: Double = 0, roughness: Double = 0.85, metallic: Double = 0,
-                texture: Data? = nil) {
+                texture: Data? = nil, maps: ExportMaps = ExportMaps()) {
         self.color = color
         self.emissive = emissive
         self.emissiveStrength = emissiveStrength
         self.roughness = roughness
         self.metallic = metallic
         self.texture = texture
+        self.maps = maps
     }
 
     /// The material over a painted texture: white (the texture carries the colour), the rest as it was.
-    public func painted(_ texture: Data) -> ExportMaterial {
+    public func painted(_ texture: Data, maps: ExportMaps = ExportMaps()) -> ExportMaterial {
         var material = self
         material.color = RGBA(1, 1, 1, color.a)
         material.texture = texture
+        material.maps = maps
         return material
+    }
+
+    /// What a painted object is where nothing is painted, for its maps.
+    public var paintBase: PaintExport.Base {
+        PaintExport.Base(color: color, roughness: roughness, metal: metallic, glow: emissive.map { e in
+            let s = min(emissiveStrength, 1)
+            return RGBA(e.r * s, e.g * s, e.b * s, 1)
+        } ?? .black)
     }
 }
 
@@ -74,10 +89,11 @@ public enum SceneExport {
                 guard let object = scene.objects[id], scene.isEffectivelyVisible(id) else { continue }
                 let world = scene.worldTransform(of: id)
                 if let paint = painted(object) {
-                    let surface = material(of: object, look: look).painted(paint.texture)
+                    let surface = material(of: object, look: look).painted(paint.texture, maps: paint.maps)
                     result.append(ExportMesh(
                         name: object.name, transform: world, mesh: paint.mesh, color: surface.color, emissive: surface.emissive,
-                        emissiveStrength: surface.emissiveStrength, roughness: surface.roughness, metallic: surface.metallic, texture: paint.texture
+                        emissiveStrength: surface.emissiveStrength, roughness: surface.roughness, metallic: surface.metallic, texture: paint.texture,
+                        maps: paint.maps
                     ))
                 } else if let pieces = posed(object) {
                     result += pieces.map { piece in
