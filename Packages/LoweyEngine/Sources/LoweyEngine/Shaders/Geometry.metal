@@ -55,6 +55,40 @@ vertex SurfaceOut lw_vertexSkinned(SkinnedVertexIn in [[stage_in]], uint instanc
 }
 
 // ---------------------------------------------------------------------------------------------------------------
+// Fur shells (U7): the surface pushed out along its normal and dropped by its droop; `fur` is
+// (out, dropped, strands across the texture, how far up the strand), as the fur pass sets it per shell.
+
+static inline SurfaceVaryings lw_furShell(SurfaceVaryings out, float4 fur, constant FrameUniforms &frame) {
+    float4 world = float4(out.worldPosition + out.worldNormal * fur.x + float3(0.0, -fur.y, 0.0), 1.0);
+    out.worldPosition = world.xyz;
+    out.viewPosition = (frame.view * world).xyz;
+    out.position = frame.viewProjection * world;
+    return out;
+}
+
+vertex SurfaceOut lw_vertexFur(VertexIn in [[stage_in]], uint instance [[instance_id]],
+                               constant ObjectUniforms *objects [[buffer(LW_OBJECTS)]],
+                               constant FrameUniforms &frame [[buffer(LW_FRAME)]],
+                               constant float4 &fur [[buffer(LW_CASCADE)]]) {
+    constant ObjectUniforms &object = objects[instance];
+    SurfaceVaryings out = lw_furShell(lw_surface(float4(in.position, 1.0), in.normal, in.uv, in.shadowBias, object, frame), fur, frame);
+    out.objectIndex = instance;
+    return lw_clipped(out, frame);
+}
+
+vertex SurfaceOut lw_vertexFurSkinned(SkinnedVertexIn in [[stage_in]], uint instance [[instance_id]],
+                                      constant ObjectUniforms *objects [[buffer(LW_OBJECTS)]],
+                                      constant FrameUniforms &frame [[buffer(LW_FRAME)]],
+                                      constant float4x4 *palette [[buffer(LW_JOINTS)]],
+                                      constant float4 &fur [[buffer(LW_CASCADE)]]) {
+    constant ObjectUniforms &object = objects[instance];
+    Skinned skinned = lw_skin(in.position, in.normal, in.joints, in.weights, palette, object.ids.w);
+    SurfaceVaryings out = lw_furShell(lw_surface(skinned.position, skinned.normal, in.uv, in.shadowBias, object, frame), fur, frame);
+    out.objectIndex = instance;
+    return lw_clipped(out, frame);
+}
+
+// ---------------------------------------------------------------------------------------------------------------
 // Character outlines (inverted hull): the surface pushed out along its normal by the hull width (metres).
 
 static inline SurfaceVaryings lw_hull(SurfaceVaryings out, float width, constant FrameUniforms &frame) {

@@ -60,7 +60,8 @@ enum LookResolver {
         let lines = preset.lines
         look.lines = SIMD4<Float>(lines.enabled ? 1 : 0, Float(lines.width), Float(lines.darken), lines.colorMode == .ink ? 1 : 0)
         look.lineInk = SIMD4<Float>(lines.inkColor.linear, Float(lines.boil))
-        look.lineShape = SIMD4<Float>(Float(cos(lines.creaseAngle * .pi / 180)), Float(lines.depthSensitivity), lines.pencil ? 1 : 0, 0)
+        look.lineShape = SIMD4<Float>(Float(cos(lines.creaseAngle * .pi / 180)), Float(lines.depthSensitivity), lines.pencil ? 1 : 0,
+                                      Float(preset.comic.hatching))
         let comic = preset.comic
         look.comic = SIMD4<Float>(Float(comic.halftone), Float(comic.halftoneScale), comic.objectSpaceDots ? 1 : 0, comic.misregistration ? 1 : 0)
         let finish = preset.finish

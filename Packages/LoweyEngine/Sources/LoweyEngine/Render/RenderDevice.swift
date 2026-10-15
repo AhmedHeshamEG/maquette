@@ -128,6 +128,10 @@ struct Pipelines {
     let shadeGround: MTLRenderPipelineState
     let hullStatic: MTLRenderPipelineState
     let hullSkinned: MTLRenderPipelineState
+    /// Fur shells (static and skinned) and hair cards (U7).
+    let furStatic: MTLRenderPipelineState
+    let furSkinned: MTLRenderPipelineState
+    let furCards: MTLRenderPipelineState
     let sky: MTLRenderPipelineState
     let editor: MTLRenderPipelineState
     let grid: MTLRenderPipelineState
@@ -167,6 +171,9 @@ struct Pipelines {
         shadeGround = try builder.shading(vertex: "lw_vertexGround", fragment: "lw_shadeGround", skinned: false, blended: false)
         hullStatic = try builder.shading(vertex: "lw_vertexHull", fragment: "lw_shadeHull", skinned: false, blended: false)
         hullSkinned = try builder.shading(vertex: "lw_vertexHullSkinned", fragment: "lw_shadeHull", skinned: true, blended: false)
+        furStatic = try builder.shading(vertex: "lw_vertexFur", fragment: "lw_shadeFur", skinned: false, blended: false)
+        furSkinned = try builder.shading(vertex: "lw_vertexFurSkinned", fragment: "lw_shadeFur", skinned: true, blended: false)
+        furCards = try builder.shading(vertex: "lw_vertexStatic", fragment: "lw_shadeFurCard", skinned: false, blended: false)
         sky = try builder.sky()
         editor = try builder.editor(fragment: "lw_editorFragment")
         grid = try builder.editor(fragment: "lw_gridFragment")

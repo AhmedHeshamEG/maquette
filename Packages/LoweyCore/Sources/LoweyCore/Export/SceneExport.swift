@@ -41,9 +41,11 @@ public struct ExportMaterial: Hashable, Sendable {
     public var texture: Data?
     /// The painted surface's other maps (each replaces its number where it's given).
     public var maps: ExportMaps
+    /// A picture whose alpha cuts the surface out (fur's strands): drawn two-sided, cut where alpha is under a half.
+    public var cutout: Data?
 
     public init(color: RGBA, emissive: RGBA? = nil, emissiveStrength: Double = 0, roughness: Double = 0.85, metallic: Double = 0,
-                texture: Data? = nil, maps: ExportMaps = ExportMaps()) {
+                texture: Data? = nil, maps: ExportMaps = ExportMaps(), cutout: Data? = nil) {
         self.color = color
         self.emissive = emissive
         self.emissiveStrength = emissiveStrength
@@ -51,6 +53,7 @@ public struct ExportMaterial: Hashable, Sendable {
         self.metallic = metallic
         self.texture = texture
         self.maps = maps
+        self.cutout = cutout
     }
 
     /// The material over a painted texture: white (the texture carries the colour), the rest as it was.

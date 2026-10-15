@@ -8,6 +8,8 @@ public enum ModelExportFormat: String, CaseIterable, Sendable, Identifiable, Cod
     case threeMF = "3mf"
     case blender
     case fbx
+    /// Every painted map as PNG pictures (U7).
+    case textures
 
     public var id: String { rawValue }
 
@@ -20,6 +22,7 @@ public enum ModelExportFormat: String, CaseIterable, Sendable, Identifiable, Cod
         case .threeMF: "3MF"
         case .blender: "Blender"
         case .fbx: "FBX"
+        case .textures: "Texture maps (PNG)"
         }
     }
 
@@ -33,6 +36,7 @@ public enum ModelExportFormat: String, CaseIterable, Sendable, Identifiable, Cod
         case .threeMF: "For 3D printing: millimetres, a colour per part, closed shapes slicers trust."
         case .blender: "Render on your computer: a folder Blender turns into the scene with its Look, lights and cameras."
         case .fbx: "For Unity and other game engines: the rigged thing with its bones and their keys."
+        case .textures: "Every painted map as pictures: colour, roughness, metal, glow and normal, for any 3D app or engine."
         }
     }
 
@@ -122,14 +126,14 @@ public enum ModelExport {
     /// A painted object's paint mesh and texture (its shape from Core, or a placed model's parts as one).
     /// A rigged object's paint lies on its surface as `pose` bends it (see `posedParts`).
     public static func painted(_ object: SceneObject, look: Look, catalog: AssetCatalog, models: ModelLibrary = .shared,
-                               file: (String) -> Data?, pose: [LoweyCore.Transform]? = nil) -> PaintedExport? {
+                               file: (String) -> Data?, pose: [LoweyCore.Transform]? = nil, colors: PaintColorOutput = .texture) -> PaintedExport? {
         guard object.paint != nil else { return nil }
         // Paint is found on the unmoved surface; the strokes, cage and bend move its corners (as on the stage).
         var source = PaintSource.unshaped(of: object)
-        var base = object.color?.resolved(in: look.palette) ?? .blockout
+        var base = SceneExport.material(of: object, look: look).paintBase
         if source == nil, let id = object.kind.assetID, let asset = catalog.manifest.asset(id), let model = models.model(asset, catalog: catalog) {
             source = AssetPaint.mergedMesh(model)
-            if object.color == nil { base = .white }
+            if object.color == nil { base.color = .white }
         }
         let shown = source.map { ShapeStack.moved($0, for: object) }
         var posed: MeshData? = ShapeStack.key(of: object) == nil ? nil : shown
@@ -139,7 +143,7 @@ public enum ModelExport {
             let model = skeleton.modelSpace(RigPoses.posed(pose ?? skeleton.restPose, skeleton: skeleton, by: object))
             posed = Skinning.deform(shown, weights: weights, bind: skeleton.modelRest, pose: model)
         }
-        return PaintExport.painted(object, source: source, base: base, file: file, posed: posed, encode: PaintPixels.png)
+        return PaintExport.painted(object, source: source, base: base, file: file, posed: posed, colors: colors, encode: PaintPixels.png)
     }
 
     /// A library model's or a prefab's pieces in the object's own space (the glTF scene keeps them under their node).
@@ -178,10 +182,10 @@ public enum ModelExport {
     public static func files(_ format: ModelExportFormat, ids: [ObjectID]?, scene: CoreScene, look: Look, preset: LookPreset,
                              catalog: AssetCatalog, models: ModelLibrary = .shared, name: String,
                              paintFile: @escaping (String) -> Data? = { _ in nil },
-                             poses: [ObjectID: [LoweyCore.Transform]] = [:]) -> [(name: String, data: Data)] {
+                             poses: [ObjectID: [LoweyCore.Transform]] = [:], colors: PaintColorOutput = .texture) -> [(name: String, data: Data)] {
         let parts: (SceneObject) -> [GLTFScene.LocalPart] = { localParts($0, look: look, catalog: catalog, models: models) }
         let paintOf: (SceneObject) -> PaintedExport? = {
-            Self.painted($0, look: look, catalog: catalog, models: models, file: paintFile, pose: poses[$0.id])
+            Self.painted($0, look: look, catalog: catalog, models: models, file: paintFile, pose: poses[$0.id], colors: colors)
         }
         let posed: (SceneObject) -> [GLTFScene.LocalPart]? = {
             posedParts($0, pose: poses[$0.id], look: look, catalog: catalog, models: models, file: paintFile)
@@ -203,6 +207,14 @@ public enum ModelExport {
             let selected = ids.map { scene.restricted(to: $0) } ?? scene
             return [("\(name) for Blender.zip", BlenderPackage.archive(selected, look: look, preset: preset, parts: parts, painted: paintOf,
                                                                        posed: posed))]
+        case .textures:
+            // Each painted thing's maps, named after it (the colour as a texture: a PNG set is pictures).
+            let colourOf: (SceneObject) -> PaintedExport? = {
+                Self.painted($0, look: look, catalog: catalog, models: models, file: paintFile, pose: poses[$0.id])
+            }
+            let objects = (ids ?? scene.roots).flatMap { scene.subtree(of: $0) }.compactMap { scene.objects[$0] }
+            return objects.flatMap { object in colourOf(object).map { PaintExport.pngSet($0, name: Self.fileName(object.name)) } ?? [] }
+                .map { (name: $0.0, data: $0.1) }
         default:
             break
         }
@@ -217,8 +229,14 @@ public enum ModelExport {
         case .obj:
             let (obj, mtl) = OBJFile.text(meshes, materialFile: "\(name).mtl")
             return [("\(name).obj", Data(obj.utf8)), ("\(name).mtl", Data(mtl.utf8))] + OBJFile.textures(meshes)
-        case .glb, .blender, .fbx: return []
+        case .glb, .blender, .fbx, .textures: return []
         }
+    }
+
+    /// A thing's name as a file name (letters, numbers, spaces, dashes).
+    static func fileName(_ name: String) -> String {
+        let kept = String(name.map { $0.isLetter || $0.isNumber || $0 == " " || $0 == "-" ? $0 : "_" }).trimmingCharacters(in: .whitespaces)
+        return kept.isEmpty ? "Painted" : kept
     }
 }
 

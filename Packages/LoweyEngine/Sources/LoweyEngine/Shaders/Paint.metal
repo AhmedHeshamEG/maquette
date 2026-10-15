@@ -3,7 +3,9 @@
 //   project  — a stroke (or a picture) on the screen lands on the texels the camera sees, through the frame's own
 //              ID buffer and depth (nothing paints through what stands in front, nor round the back);
 //   coverage — which texels the unwrap uses, once per surface;
-//   compose  — layers laid over each other with their blend mode and opacity (premultiplied, stored sRGB values);
+//   compose  — layers laid over each other with their blend mode, opacity and mask (premultiplied, stored values),
+//              once per map (colour, roughness, metal, glow, bumps, fur);
+//   flat     — a stroke drawn on the flat texture (the UV view) laid on its layer;
 //   finish   — the composite turned straight-alpha and pushed a few texels past each chart's edge (no seams).
 
 #include "LoweyCommon.h"
@@ -60,11 +62,20 @@ fragment float4 lw_paintCoverage(PaintVaryings in [[stage_in]]) {
     return float4(1.0);
 }
 
+/// A stroke drawn on the flat texture (the same size as the layer), where the unwrap uses the texel.
+fragment float4 lw_paintFlat(float4 position [[position]],
+                             texture2d<float, access::read> stroke [[texture(0)]],
+                             texture2d<float, access::read> coverage [[texture(1)]]) {
+    uint2 pixel = uint2(position.xy);
+    if (coverage.read(pixel).r < 0.5) { discard_fragment(); }
+    return stroke.read(pixel);
+}
+
 // ---------------------------------------------------------------------------------------------------------------
 // Layers
 
 struct PaintComposeUniforms {
-    float4 params;  // x = opacity, y = blend (0 normal, 1 multiply, 2 screen, 3 overlay, 4 add)
+    float4 params;  // x = opacity, y = blend (PaintBlend.shaderIndex), z = mask (0 none, 1 its alpha, 2 hidden)
 };
 
 struct PaintFullVaryings {
@@ -80,12 +91,20 @@ vertex PaintFullVaryings lw_paintFullVertex(uint vid [[vertex_id]]) {
     return out;
 }
 
+static inline float3 lw_softLight(float3 b, float3 s) {
+    float3 d = select(sqrt(b), ((16.0 * b - 12.0) * b + 4.0) * b, b <= 0.25);
+    return select(b + (2.0 * s - 1.0) * (d - b), b - (1.0 - 2.0 * s) * b * (1.0 - b), s <= 0.5);
+}
+
 static inline float3 lw_paintBlend(float3 b, float3 s, uint mode) {
     switch (mode) {
     case 1u: return b * s;
     case 2u: return b + s - b * s;
     case 3u: return select(1.0 - 2.0 * (1.0 - b) * (1.0 - s), 2.0 * b * s, b <= 0.5);
     case 4u: return min(b + s, 1.0);
+    case 5u: return min(b, s);
+    case 6u: return max(b, s);
+    case 7u: return lw_softLight(b, s);
     default: return s;
     }
 }
@@ -93,11 +112,14 @@ static inline float3 lw_paintBlend(float3 b, float3 s, uint mode) {
 /// One layer over the layers under it (both premultiplied): Cs' = (1 − αb)·Cs + αb·B(Cb, Cs), then source-over.
 fragment float4 lw_paintCompose(PaintFullVaryings in [[stage_in]], constant PaintComposeUniforms &u [[buffer(1)]],
                                 texture2d<float, access::read> backdrop [[texture(0)]],
-                                texture2d<float, access::read> layer [[texture(1)]]) {
+                                texture2d<float, access::read> layer [[texture(1)]],
+                                texture2d<float, access::read> mask [[texture(2)]]) {
     uint2 pixel = uint2(in.position.xy);
     float4 under = backdrop.read(pixel);
     float4 over = layer.read(pixel);
     float alpha = over.a * u.params.x;
+    if (u.params.z > 1.5) { return under; }
+    if (u.params.z > 0.5) { alpha *= mask.read(pixel).a; }
     if (alpha <= 0.0) { return under; }
     float3 source = over.rgb / max(over.a, 1e-6);
     float3 mixed = source;

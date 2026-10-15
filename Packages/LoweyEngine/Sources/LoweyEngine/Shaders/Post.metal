@@ -126,6 +126,18 @@ static inline float lw_halftone(float2 pixel, float darkness, float spacing, flo
     return 1.0 - smoothstep(radius - 0.08, radius + 0.08, length(local));
 }
 
+/// Hatched lines in the shadow band: one direction as it darkens, crossed where it's darkest; each line thickens with
+/// the darkness, as a pen presses harder.
+static inline float lw_hatch(float2 pixel, float darkness, float spacing, float amount) {
+    float along = (pixel.x + pixel.y) / spacing;
+    float width = saturate(darkness) * 0.42 * amount;
+    float first = 1.0 - smoothstep(width - 0.06, width + 0.06, abs(fract(along) - 0.5));
+    float crossed = (pixel.x - pixel.y) / spacing;
+    float deep = smoothstep(0.55, 0.85, darkness);
+    float second = (1.0 - smoothstep(width * deep - 0.06, width * deep + 0.06, abs(fract(crossed) - 0.5))) * deep;
+    return max(first, second);
+}
+
 static inline float3 lw_grade(float3 color, constant PostUniforms &u, constant LookUniforms &look, bool accent) {
     // Contrast around mid grey, saturation, temperature.
     color = (color - 0.5) * (1.0 + u.grade.y * 0.5) + 0.5;
@@ -168,6 +180,13 @@ kernel void lw_finish(texture2d<float, access::sample> source [[texture(0)]],
         float darkness = 1.0 - smoothstep(0.0, 0.5, level);
         float dots = lw_halftone(float2(gid), darkness, look.comic.y * u.pixels.x, look.comic.x);
         color = mix(color, color * 0.55, dots * darkness);
+    }
+    // Hatched lines in the shadow band.
+    if (look.lineShape.w > 0.0 && lw_idObject(id) != 0u) {
+        float level = light.sample(lw_postSampler, uv).r;
+        float darkness = 1.0 - smoothstep(0.0, 0.5, level);
+        float strokes = lw_hatch(float2(gid), darkness, max(look.comic.y, 3.0) * u.pixels.x, look.lineShape.w);
+        color = mix(color, color * 0.45, strokes * darkness);
     }
     color += bloom.sample(lw_postSampler, uv).rgb * (u.bloom.x + u.bloom.z);
     color = lw_softClip(color * u.grade.x);

@@ -184,6 +184,25 @@ final class TextureExportTests: XCTestCase {
         XCTAssertTrue(palette.maps.isEmpty)
     }
 
+    func testFurLeavesAsCutOutCardsOrShells() throws {
+        var fluffy = SceneObject(id: "f", name: "Fluffy", kind: .primitive(.sphere))
+        fluffy[.color] = .color(.rgba(RGBA(0.8, 0.5, 0.2)))
+        fluffy[.furLength] = .float(0.05)
+        let scene = Scene(id: "s", name: "Fur", objects: ["f": fluffy], roots: ["f"])
+        let look = Look(presetID: LookPreset.clay.id)
+        let (shells, _) = try glbJSON(GLTFScene.glb(nil, in: scene, look: look))
+        let primitives = try XCTUnwrap((shells["meshes"] as? [[String: Any]])?.first?["primitives"] as? [[String: Any]])
+        XCTAssertEqual(primitives.count, 9, "the surface and eight shells")
+        let materials = try XCTUnwrap(shells["materials"] as? [[String: Any]])
+        XCTAssertEqual(materials.last?["alphaMode"] as? String, "MASK")
+        XCTAssertEqual(materials.last?["doubleSided"] as? Bool, true)
+        var cards = scene
+        cards.objects["f"]?[.furStyle] = .enumeration("cards")
+        let (json, _) = try glbJSON(GLTFScene.glb(nil, in: cards, look: look))
+        XCTAssertEqual((json["meshes"] as? [[String: Any]])?.first.flatMap { ($0["primitives"] as? [[String: Any]])?.count }, 2,
+                       "the surface and its hair cards")
+    }
+
     // MARK: The bridge
 
     private func bridgeDocument() -> Document {

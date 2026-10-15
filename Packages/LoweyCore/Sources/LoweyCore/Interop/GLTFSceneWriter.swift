@@ -141,6 +141,9 @@ struct GLTFSceneWriter {
             pieces = parts(object).filter { !$0.mesh.isEmpty }
         }
         guard !pieces.isEmpty else { return nil }
+        if let fur = FurSettings(object), let surface = pieces.first?.mesh {
+            pieces += Self.furParts(fur, on: surface, name: object.name, material: SceneExport.material(of: object, look: look))
+        }
         let primitives = pieces.map { piece -> [String: Any] in
             ["attributes": attributes(piece.mesh, colors: piece.colors, tangents: piece.tangents), "indices": indices(piece.mesh),
              "material": addMaterial(piece)]
@@ -201,6 +204,12 @@ struct GLTFSceneWriter {
         if surface.color.a < 1 { material["alphaMode"] = "BLEND" }
         var pbr = material["pbrMetallicRoughness"] as? [String: Any] ?? [:]
         if let texture = surface.texture { pbr["baseColorTexture"] = ["index": addTexture(texture)] }
+        if let cutout = surface.cutout {
+            pbr["baseColorTexture"] = ["index": addTexture(cutout)]
+            material["alphaMode"] = "MASK"
+            material["alphaCutoff"] = 0.5
+            material["doubleSided"] = true
+        }
         if let packed = surface.maps.metallicRoughness {
             // The texture holds the values; the factors multiply it.
             pbr["metallicRoughnessTexture"] = ["index": addTexture(packed)]
@@ -219,6 +228,26 @@ struct GLTFSceneWriter {
         if let normal = surface.maps.normal { material["normalTexture"] = ["index": addTexture(normal)] }
         materials.append(material)
         return materials.count - 1
+    }
+
+    /// Fur in a 3D file (D-355): hair cards as they are, or a few shells (8: enough to read as fur, light enough for an
+    /// engine), each cut out by the strand picture, in the thing's own colour.
+    static func furParts(_ fur: FurSettings, on surface: MeshData, name: String, material: ExportMaterial) -> [GLTFScene.LocalPart] {
+        var strands = material
+        strands.texture = nil
+        strands.maps = ExportMaps()
+        strands.roughness = 0.9
+        switch fur.style {
+        case .cards:
+            strands.cutout = PNGCodec.encode(FurGeometry.strandPicture(cards: true))
+            let cards = FurGeometry.cards(on: surface, fur: fur)
+            return cards.isEmpty ? [] : [GLTFScene.LocalPart(name: "\(name) hair cards", mesh: cards, material: strands)]
+        case .shells:
+            strands.cutout = PNGCodec.encode(FurGeometry.strandPicture(cards: false))
+            return FurGeometry.shells(of: surface, fur: fur, count: 8).enumerated().map { index, shell in
+                GLTFScene.LocalPart(name: "\(name) fur \(index + 1)", mesh: shell, material: strands)
+            }
+        }
     }
 
     /// A PNG in the buffer as an image, with a repeating linear sampler.

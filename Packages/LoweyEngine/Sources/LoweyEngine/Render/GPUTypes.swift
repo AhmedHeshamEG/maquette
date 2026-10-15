@@ -116,6 +116,12 @@ struct ObjectFlags: OptionSet {
     static let ghost = ObjectFlags(rawValue: 128)
     /// Painted colour (the albedo texture) lies over the base colour (shading only; past the ID buffer's 8 bits).
     static let painted = ObjectFlags(rawValue: 256)
+    /// Painted maps (shading only): roughness, metal, glow, bumps and a baked normal map, textures 3 … 7.
+    static let roughness = ObjectFlags(rawValue: 512)
+    static let metal = ObjectFlags(rawValue: 1024)
+    static let glow = ObjectFlags(rawValue: 2048)
+    static let bumps = ObjectFlags(rawValue: 4096)
+    static let normals = ObjectFlags(rawValue: 8192)
 }
 
 /// Buffer indices, as in LoweyCommon.h.
