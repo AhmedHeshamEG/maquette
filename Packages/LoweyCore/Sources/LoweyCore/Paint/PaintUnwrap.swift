@@ -37,19 +37,26 @@ public struct PaintUnwrap: Hashable, Sendable {
 
     /// Lays a mesh flat with xatlas (one square atlas, charts padded for bilinear filtering). `scale` stretches the
     /// mesh first, so a long box gets as many pixels along its length as it shows (the renderer scales primitives).
-    public static func unwrap(_ mesh: MeshData, scale: SIMD3<Float> = SIMD3<Float>(1, 1, 1), padding: UInt32 = 3) throws(Failure) -> PaintUnwrap {
+    /// `seams` are edges marked by hand: no chart crosses one that closes off an area (D-349).
+    public static func unwrap(_ mesh: MeshData, scale: SIMD3<Float> = SIMD3<Float>(1, 1, 1), padding: UInt32 = 3,
+                              seams: [PaintSeam]? = nil) throws(Failure) -> PaintUnwrap {
         guard !mesh.isEmpty else { throw .empty }
         let positions = mesh.positions.flatMap { [$0.x * scale.x, $0.y * scale.y, $0.z * scale.z] }
         let normals = mesh.normals.count == mesh.positions.count ? mesh.normals.flatMap { [$0.x, $0.y, $0.z] } : nil
+        let groups = seams.flatMap { $0.isEmpty ? nil : SeamGroups.groups(mesh, seams: $0) }
         var result = XAUnwrap()
         let status = positions.withUnsafeBufferPointer { p in
             mesh.indices.withUnsafeBufferPointer { i in
-                if let normals {
-                    normals.withUnsafeBufferPointer { n in
-                        XAUnwrapMesh(p.baseAddress, n.baseAddress, mesh.positions.count, i.baseAddress, mesh.indices.count, 1024, padding, &result)
+                (groups ?? []).withUnsafeBufferPointer { g in
+                    let faceGroups = groups == nil ? nil : g.baseAddress
+                    if let normals {
+                        return normals.withUnsafeBufferPointer { n in
+                            XAUnwrapMeshGrouped(p.baseAddress, n.baseAddress, mesh.positions.count, i.baseAddress, mesh.indices.count, faceGroups,
+                                                1024, padding, &result)
+                        }
                     }
-                } else {
-                    XAUnwrapMesh(p.baseAddress, nil, mesh.positions.count, i.baseAddress, mesh.indices.count, 1024, padding, &result)
+                    return XAUnwrapMeshGrouped(p.baseAddress, nil, mesh.positions.count, i.baseAddress, mesh.indices.count, faceGroups, 1024,
+                                               padding, &result)
                 }
             }
         }
@@ -185,5 +192,59 @@ public enum PaintMesh {
         }
         mesh.indices.forEach(mix)
         return BrushKey.hex(hash)
+    }
+}
+
+/// Hand-marked seams as groups of triangles: triangles are joined across every edge that isn't on a seam, so each
+/// area a seam closes off is its own group and the unwrap cuts there.
+enum SeamGroups {
+    static func groups(_ mesh: MeshData, seams: [PaintSeam]) -> [UInt32] {
+        let count = mesh.triangleCount
+        guard count > 0 else { return [] }
+        let tolerance = max(SurfaceTexels.diagonal(mesh) * 1e-4, 1e-6)
+        let segments = seams.map { (SIMD3<Float>(Float($0.a.x), Float($0.a.y), Float($0.a.z)), SIMD3<Float>(Float($0.b.x), Float($0.b.y), Float($0.b.z))) }
+        func onSeam(_ a: SIMD3<Float>, _ b: SIMD3<Float>) -> Bool {
+            // An edge lies on a seam when both its ends do (a seam can span several edges of a finer mesh).
+            segments.contains { SharpEdges.distance(a, $0.0, $0.1) < tolerance && SharpEdges.distance(b, $0.0, $0.1) < tolerance }
+        }
+        var welded: [SIMD3<Int32>: Int] = [:]
+        func key(_ index: UInt32) -> Int {
+            let p = mesh.positions[Int(index)] / tolerance
+            let q = SIMD3<Int32>(Int32(clamping: Int(p.x.rounded())), Int32(clamping: Int(p.y.rounded())), Int32(clamping: Int(p.z.rounded())))
+            if let known = welded[q] { return known }
+            welded[q] = welded.count
+            return welded.count - 1
+        }
+        var edges: [SIMD2<Int>: [Int]] = [:]
+        var cut = Set<SIMD2<Int>>()
+        for face in 0 ..< count {
+            for (a, b) in [(0, 1), (1, 2), (2, 0)] {
+                let ia = mesh.indices[face * 3 + a], ib = mesh.indices[face * 3 + b]
+                let ka = key(ia), kb = key(ib)
+                let edge = SIMD2<Int>(min(ka, kb), max(ka, kb))
+                edges[edge, default: []].append(face)
+                if !cut.contains(edge), onSeam(mesh.positions[Int(ia)], mesh.positions[Int(ib)]) { cut.insert(edge) }
+            }
+        }
+        var neighbours = [[Int]](repeating: [], count: count)
+        for (edge, faces) in edges where !cut.contains(edge) && faces.count > 1 {
+            for face in faces {
+                neighbours[face] += faces.filter { $0 != face }
+            }
+        }
+        var group = [UInt32](repeating: .max, count: count)
+        var next: UInt32 = 0
+        for start in 0 ..< count where group[start] == .max {
+            var stack = [start]
+            group[start] = next
+            while let face = stack.popLast() {
+                for other in neighbours[face] where group[other] == .max {
+                    group[other] = next
+                    stack.append(other)
+                }
+            }
+            next += 1
+        }
+        return group
     }
 }

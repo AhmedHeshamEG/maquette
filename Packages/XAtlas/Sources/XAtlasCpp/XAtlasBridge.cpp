@@ -8,6 +8,12 @@
 
 extern "C" XAStatus XAUnwrapMesh(const float *positions, const float *normals, size_t vertexCount, const uint32_t *indices,
                                  size_t indexCount, uint32_t resolution, uint32_t padding, XAUnwrap *result) {
+    return XAUnwrapMeshGrouped(positions, normals, vertexCount, indices, indexCount, nullptr, resolution, padding, result);
+}
+
+extern "C" XAStatus XAUnwrapMeshGrouped(const float *positions, const float *normals, size_t vertexCount, const uint32_t *indices,
+                                        size_t indexCount, const uint32_t *faceGroups, uint32_t resolution, uint32_t padding,
+                                        XAUnwrap *result) {
     if (result == nullptr || positions == nullptr || indices == nullptr || vertexCount == 0 || indexCount < 3 || indexCount % 3 != 0) {
         return XAInvalidInput;
     }
@@ -30,6 +36,8 @@ extern "C" XAStatus XAUnwrapMesh(const float *positions, const float *normals, s
     mesh.indexData = indices;
     mesh.indexCount = (uint32_t)indexCount;
     mesh.indexFormat = xatlas::IndexFormat::UInt32;
+    // Charts never span faces of different groups: hand-marked seams cut between groups.
+    mesh.faceMaterialData = faceGroups;
     if (xatlas::AddMesh(atlas, mesh) != xatlas::AddMeshError::Success) {
         xatlas::Destroy(atlas);
         return XAInvalidInput;
