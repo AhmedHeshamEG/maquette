@@ -3,6 +3,21 @@
 One line per feature for the person it serves (`studio-h/USERS.md`), in Hesham's voice, for the YouTube lessons the
 Learn place links to (CONTEXT §8). A phase adds the lines of what it built; M16 records them.
 
+## 0.18 (U7): texture
+
+- **The texture artist:** "Layers paint more than colour: tap Roughness and paint where it's matte, Metal where it
+  shines. Swipe a layer for a mask."
+- **The texture artist:** "Drag a material onto anything. Hold one and Paint it on: the brush paints where it shows."
+- **The texture artist:** "Surface, Dirt: grime settles in the creases by itself. Worn edges: the paint rubs off the
+  corners. The amount is one slider."
+- **The texture artist:** "Mirror on, paint one cheek, get both. Seams: tap the edges to cut, then Cut, and paint it
+  flat."
+- **The game developer:** "The faces brush fills a whole face with one tap. Export glTF, Painted colour: Vertex colours
+  or Palette."
+- **The sculptor:** "Bake normals from your sculpt onto its light copy: the detail stays, the weight goes."
+- **Everyone:** "Surface, Fur: soft fur or hair cards. Paint the Fur map to keep it short where you want."
+- **The explainer maker:** "Look, Hatching: shadows drawn like a pen sketch."
+
 ## 0.17 (H1): editable history
 
 - **The maker:** "Changed your mind about the hole? Open History: every step is there with its numbers. Make the hole

@@ -3,6 +3,33 @@
 All notable changes. 1.x grew in four phases (v0.1 → v1.4); 2.0 is the remaster, released as betas first. Maquette
 continues from 2.0 and numbers its phases again from 0.1 (each phase bumps the minor version until 1.0).
 
+## [0.18] — Maquette — texture (phase U7)
+
+Everything a texture artist would leave the app for, on Draw's bar.
+
+- **Layers per map.** A painted thing's layers each paint colour, roughness, metal, glow, bumps and fur; Layers chooses
+  which the brush paints (and the value for the grey ones). Masks (paint shows the layer, erase hides it), fill layers,
+  three new blend modes (Darken, Lighten, Soft light), swipe a layer for options, drag it to reorder, pinch two together
+  to merge them. Smudge drags paint along the surface; Erase works with any brush and on any map.
+- **The colour picker** (Procreate's): a disc, values with hex, saved palettes, the colour before and the ones used
+  lately, the scene's palette first, and **Materials**. Drag a colour or a material onto any thing: a colour becomes its
+  colour, a material a fill layer.
+- **Materials.** Our own 24 (woods, metals, plastic, fabric, leather, glass, stone, marble, concrete, brick, tiles,
+  sand…), procedural, so they wrap any shape with no seam. Tap one to fill, hold one to *Paint it on* (a fill behind a
+  mask you paint) or edit it in the **Material Studio**. Import a PBR set by its pictures.
+- **Surface** joins the bar while painting: automatic wear (dirt in the creases, worn edges), decals (a picture pressed
+  on like a sticker), painting mirrored left and right, the faces brush (whole flat faces, the low-poly way), seams marked
+  by hand, the texture's size (512 to 4096), the **flat view** to paint the surface in 2D, normals baked from a detailed
+  sculpt onto its light copy, and **fur**: soft shells or hair cards, with a Fur map.
+- **Hatched shadows** in the Look beside halftone.
+- **Every map leaves**: glTF with roughness, metal, glow and a normal map; USDZ the same; **Maps (PNG)** as a set of
+  pictures; painted colour as a texture, vertex colours or a palette; fur as cut-out shells or hair cards.
+- **The bridge**: a `paint` verb (colour, material, wear, decal, faces, layers, mask, mirror, size, seams, bakeNormals,
+  fur).
+- **Fixed**: the iPad's own brushes were forgotten at every update since 0.5 (their file couldn't be read by a newer
+  app); they now carry over.
+- Projects move to **schema 17**; 0.17 refuses them with its usual message.
+
 ## [0.17] — Maquette — editable history (phase H1)
 
 Shapr3D's history: every modelling step listed, and changing an early one updates everything after it.

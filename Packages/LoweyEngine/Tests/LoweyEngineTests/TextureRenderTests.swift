@@ -110,7 +110,8 @@ final class TextureRenderTests: XCTestCase {
         document.scene.objects["cube"]?[.furStyle] = .enumeration("cards")
         let frames = try FrameRenderer(device: device, models: ModelLibrary())
         let builder = ShotBuilder(document: document, catalog: .empty, models: ModelLibrary())
-        builder.paintFile = { files[$0] }
+        let known = files
+        builder.paintFile = { known[$0] }
         _ = try await frames.image(builder.request(at: 0, framing: .landscape, size: CGSize(width: 640, height: 360), frameIndex: 0), width: 640,
                                    height: 360)
         XCTAssertTrue(frames.renderer.lastScene?.items.contains { $0.furCards } == true, "cards drawn as their own items")

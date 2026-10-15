@@ -230,6 +230,8 @@ jobs:
         run: |
           npm install --no-save --silent gltf-validator@2.0.0-dev.3.10
           node Tools/validate_gltf.mjs acceptance/painted/painted.glb
+          # U7: every map (metallic-roughness, emissive, normal with tangents) of a painted, smudged, masked crate.
+          node Tools/validate_gltf.mjs acceptance/textured/textured.glb
       - name: The painted glTF shows its paint in Blender
         run: |
           set -o pipefail

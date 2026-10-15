@@ -66,6 +66,21 @@ Faces are named by the way they face, edges by the axis they run along:
 
 Shape the hero prop only; the set itself is still Kit models placed by relation.
 
+## Surfaces (Maquette 0.18)
+
+What a thing is made of reads before its shape does. `paint` gives it a surface, one layer per action:
+
+- A material over all of it: `{"do":"paint","target":"Crate","op":"material","material":"oak"}` (oak, pine, walnut,
+  floorboards, steel, aluminium, gold, copper, iron, rust, plastic, rubber, fabric, denim, leather, glass, ceramic, neon,
+  stone, marble, concrete, brick, tiles, sand; `"scale"` in metres sizes its pattern). A plain colour: `"op":"color"`.
+- Age it: `{"op":"wear","kind":"dirt","amount":0.5}` (grime in the creases), `"kind":"edges"` (paint rubbed off the
+  corners). Wear on a hero prop sells it; on everything it's noise.
+- A label: `{"op":"decal","picture":"<a PNG sent with media>","at":[x,y,z],"size":0.3}`.
+- Low-poly colouring: `{"op":"faces","at":[x,y,z],"color":"#…"}` fills the flat face at that point.
+- Fur on a creature: `{"op":"fur","length":0.03}` (`"style":"cards"` for a game).
+- A sculpt's detail on its light copy: `{"do":"paint","target":"Light copy","op":"bakeNormals","from":"Sculpt"}`.
+- `{"op":"layers"}` lists what's there before you add more. Keep a thing to three or four layers.
+
 ## Don't
 
 - Don't build greybox sets from cubes when a Kit model exists.
