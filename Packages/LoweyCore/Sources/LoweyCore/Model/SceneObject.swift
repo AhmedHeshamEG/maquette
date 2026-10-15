@@ -110,6 +110,10 @@ public enum ObjectKind: Hashable, Sendable {
     case sketch(Sketch)
     /// A kept measurement (drawn on the stage only).
     case dimension(DimensionRecipe)
+    /// A force on real things: a fan, a pull to a point, a whirl (drawn on the stage only).
+    case force(ForceRecipe)
+    /// Water poured or splashed, smoke or fire, in a box (simulated, played from a cache).
+    case fluid(FluidRecipe)
 
     public var typeName: String {
         switch self {
@@ -127,6 +131,8 @@ public enum ObjectKind: Hashable, Sendable {
         case .mesh: "mesh"
         case .sketch: "sketch"
         case .dimension: "dimension"
+        case .force: "force"
+        case .fluid: "fluid"
         }
     }
 
@@ -150,14 +156,14 @@ public enum ObjectKind: Hashable, Sendable {
     public var hasSurface: Bool {
         switch self {
         case .primitive, .asset, .prefab, .drawing, .text, .card, .mesh: true
-        case .group, .light, .camera, .overlay, .particles, .sketch, .dimension: false
+        case .group, .light, .camera, .overlay, .particles, .sketch, .dimension, .force, .fluid: false
         }
     }
 }
 
 extension ObjectKind: Codable {
     private enum Key: String, CodingKey {
-        case type, shape, asset, prefab, drawing, light, text, overlay, particles, card, mesh, sketch, dimension
+        case type, shape, asset, prefab, drawing, light, text, overlay, particles, card, mesh, sketch, dimension, force, fluid
     }
 
     public init(from decoder: Decoder) throws {
@@ -178,6 +184,8 @@ extension ObjectKind: Codable {
         case "mesh": self = try .mesh(container.decode(EditableMesh.self, forKey: .mesh))
         case "sketch": self = try .sketch(container.decode(Sketch.self, forKey: .sketch))
         case "dimension": self = try .dimension(container.decode(DimensionRecipe.self, forKey: .dimension))
+        case "force": self = try .force(container.decode(ForceRecipe.self, forKey: .force))
+        case "fluid": self = try .fluid(container.decode(FluidRecipe.self, forKey: .fluid))
         default:
             throw DecodingError.dataCorruptedError(forKey: .type, in: container, debugDescription: "Unknown object type \(type)")
         }
@@ -200,6 +208,8 @@ extension ObjectKind: Codable {
         case let .mesh(mesh): try container.encode(mesh, forKey: .mesh)
         case let .sketch(sketch): try container.encode(sketch, forKey: .sketch)
         case let .dimension(recipe): try container.encode(recipe, forKey: .dimension)
+        case let .force(recipe): try container.encode(recipe, forKey: .force)
+        case let .fluid(recipe): try container.encode(recipe, forKey: .fluid)
         }
     }
 }
@@ -222,6 +232,8 @@ public struct SceneObject: Codable, Hashable, Sendable, Identifiable {
     public var shaping: ObjectShaping?
     /// The modelling steps that made its shape, which can be changed and replayed (nil = none; `ModelHistory`).
     public var modelHistory: ModelHistory?
+    /// Real: a material, a mass, and a part in the scene's simulation (nil = none; `ObjectPhysics`).
+    public var physics: ObjectPhysics?
 
     public init(
         id: ObjectID,

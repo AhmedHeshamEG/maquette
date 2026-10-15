@@ -16,6 +16,7 @@ let package = Package(
     dependencies: [
         .package(path: "../HmmKit"),
         .package(path: "../InstantMeshes"),
+        .package(path: "../Jolt"),
         .package(path: "../Manifold"),
         .package(path: "../XAtlas")
     ],
@@ -33,7 +34,9 @@ let package = Package(
                 // Clean quads from a sculpt (C++ behind a C face; see Packages/InstantMeshes/VENDORED.md).
                 .product(name: "InstantMeshesCpp", package: "InstantMeshes"),
                 // Unwrapping models for painting (C++ behind a C face; see Packages/XAtlas/VENDORED.md).
-                .product(name: "XAtlasCpp", package: "XAtlas")
+                .product(name: "XAtlasCpp", package: "XAtlas"),
+                // Physics (C++ behind a C face; see Packages/Jolt/VENDORED.md).
+                .product(name: "JoltCpp", package: "Jolt")
             ],
             path: "Sources/LoweyCore",
             // Word → mouth shapes (from the CMU Pronouncing Dictionary, BSD; see LICENSES.md).

@@ -74,7 +74,7 @@ public extension EditCommand {
             document.scene.timeline = timeline
             return (.setTimeline(old), ChangeSet(objects: Set(timeline.tracks.map(\.target) + old.tracks.map(\.target)), scene: true))
 
-        case .setShadowPaint, .setPaint, .paintTiles, .setRig, .setShaping, .setModelHistory:
+        case .setShadowPaint, .setPaint, .paintTiles, .setRig, .setShaping, .setModelHistory, .setPhysics, .setScenePhysics:
             return try applyPaint(to: &document)
 
         case let .setCustomLooks(looks):
@@ -106,7 +106,8 @@ public extension EditCommand {
         }
     }
 
-    /// What lies on and in a surface: the Shadow Brush's dabs, colour layers, tiles, and the rig that bends it.
+    /// What lies on and in a surface (the Shadow Brush's dabs, colour layers, tiles, the rig that bends it), and what
+    /// makes it real (its physics, the scene's).
     private func applyPaint(to document: inout Document) throws -> Applied {
         switch self {
         case let .setRig(id, rig):
@@ -118,6 +119,14 @@ public extension EditCommand {
         case let .setModelHistory(id, history):
             let old = try Self.replaceField(\.modelHistory, of: id, to: history, in: &document)
             return (.setModelHistory(id, old), ChangeSet(objects: [id]))
+        case let .setPhysics(id, physics):
+            let old = try Self.replaceField(\.physics, of: id, to: physics, in: &document)
+            return (.setPhysics(id, old), ChangeSet(objects: [id]))
+        case let .setScenePhysics(physics):
+            let old = document.scene.physics
+            document.scene.physics = physics
+            let joined = Set((physics?.joints ?? []).flatMap { [$0.first] + ($0.second.map { [$0] } ?? []) })
+            return (.setScenePhysics(old), ChangeSet(objects: joined, scene: true))
         case let .setShadowPaint(id, dabs):
             let old = try Self.replaceField(\.shadowDabs, of: id, to: dabs, in: &document)
             return (.setShadowPaint(id, old), ChangeSet(objects: [id]))

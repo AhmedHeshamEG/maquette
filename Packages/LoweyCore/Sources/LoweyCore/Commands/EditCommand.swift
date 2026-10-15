@@ -123,6 +123,10 @@ public indirect enum EditCommand: Hashable, Sendable {
     case setShaping(ObjectID, ObjectShaping?)
     /// Replaces an object's editable modelling history (`ModelHistory`; nil removes it).
     case setModelHistory(ObjectID, ModelHistory?)
+    /// Makes a thing real, changes how, or makes it unreal again (nil).
+    case setPhysics(ObjectID, ObjectPhysics?)
+    /// The scene's gravity, wind, ground and joints (nil: the defaults, no joints).
+    case setScenePhysics(ScenePhysics?)
     /// Replace the project's own Looks ("My Look").
     case setCustomLooks([LookPreset])
     /// The project's brushes (`ProjectInfo.brushes`): a stroke's first use of a brush adds its frozen copy.
@@ -169,6 +173,8 @@ public indirect enum EditCommand: Hashable, Sendable {
         case .setRig: return "Rig"
         case .setShaping: return "Shape"
         case .setModelHistory: return "Shape"
+        case let .setPhysics(_, physics): return physics == nil ? "Not real" : "Real"
+        case .setScenePhysics: return "Physics"
         case .setCustomLooks: return "Edit looks"
         case .setBrushes: return "Draw"
         case let .setFlipbooks(edits): return edits.allSatisfy { $0.track == nil } ? "Delete flipbook" : "Draw"
