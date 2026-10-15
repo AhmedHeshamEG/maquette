@@ -51,6 +51,17 @@ public enum ScriptReference {
     {"do":"paint","target":"Crate","op":"layers"}   (lists them)   {"op":"mask","layer":2}   {"op":"seams","edges":[[[x,y,z],[x,y,z]],…]}
     {"do":"paint","target":"Light copy","op":"bakeNormals","from":"Sculpt"}   {"do":"paint","target":"Fox","op":"fur","length":0.03,"style":"shells|cards"}
 
+    Physics (P1; real things move when the timeline plays, from the scene's physics start; each one step)
+    {"do":"physics","op":"real","target":"Crate","material":"wood|steel|aluminium|stone|concrete|glass|ice|plastic|rubber|foam|cardboard|cloth|jelly","motion":"falls|stays|follows"}   {"op":"unreal","target":"Crate"}
+    {"do":"physics","op":"real","target":"Ball","mass":2,"bounce":0.8,"speed":[2,0,0],"breaks":true}   {"op":"real","target":"Flag","material":"cloth","hangs":true}
+    {"do":"physics","op":"scene","gravity":"earth|moon|mars|jupiter|none","wind":{"speed":6,"heading":90},"ground":true,"start":0.5}
+    {"do":"physics","op":"joint","kind":"hinge|slider|ball|glue|spring|rope|gear","first":"Door","second":"Frame","anchor":[0,1,0],"axis":[0,1,0],"limits":[0,110],"motor":45}
+    {"do":"physics","op":"joint","kind":"gear","first":"Wheel A","gears":["hingeA","hingeB"],"ratio":2}   {"op":"unjoin","id":"hingeA"}
+    {"do":"physics","op":"force","kind":"fan|pull|whirl","at":[0,1,2],"aim":[0,0,-1],"strength":8,"reach":3}
+    {"do":"physics","op":"fluid","kind":"pour|splash|smoke|fire","at":[0,0.4,0],"amount":0.3,"duration":3,"box":[1,1,1]}
+    {"do":"physics","op":"keep"}   (the run becomes keys)   {"op":"settle","target":"Rock"}   {"op":"stand","target":"Tower"}   (says whether it stands)
+    {"do":"physics","op":"sun","place":"Rome","date":"2026-06-21","hour":15,"north":0,"study":[7,19]}   {"op":"sun","latitude":45.1,"longitude":7.7,"utcOffset":2}   {"op":"sun","off":true}
+
     Shoot and light
     {"do":"frameShot","subject":"Hesham","shotType":"extremeWide|wide|full|medium|closeUp|extremeCloseUp|overTheShoulder|twoShot|insert",
      "composition":"center|leftThird|rightThird|lowAngle|highAngle","lens":85,"other":"Ada","side":"left|right","camera":"Shot 2","at":{"word":"Nobody"}}

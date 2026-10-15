@@ -20,10 +20,12 @@ public struct ScriptContext: Sendable {
     public var encodePNG: @Sendable (RGBAImage) -> Data
     /// The device's materials, which `paint`'s `material` names.
     public var materials: MaterialLibrary
+    /// A thing's local mesh as the app has it (placed models too), for `physics`; nil leaves it to Core's own shapes.
+    public var mesh: @Sendable (SceneObject) -> MeshData?
 
     public init(library: LibraryManifest = LibraryManifest(), now: Double = 0, focus: Vec3 = .zero, ids: IDFactory = .random,
                 file: @escaping @Sendable (String) -> Data? = { _ in nil }, encodePNG: @escaping @Sendable (RGBAImage) -> Data = PNGCodec.encode,
-                materials: MaterialLibrary = .standard) {
+                materials: MaterialLibrary = .standard, mesh: @escaping @Sendable (SceneObject) -> MeshData? = { _ in nil }) {
         self.library = library
         self.now = now
         self.focus = focus
@@ -31,6 +33,7 @@ public struct ScriptContext: Sendable {
         self.file = file
         self.encodePNG = encodePNG
         self.materials = materials
+        self.mesh = mesh
     }
 }
 
