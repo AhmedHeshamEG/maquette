@@ -41,6 +41,7 @@ struct MyLookEditor: View {
                 .pickerStyle(.segmented)
             }
             slider("Halftone", \.comic.halftone, 0 ... 1)
+            slider("Hatching", \.comic.hatching, 0 ... 1)
             Toggle("Colour misregistration", isOn: binding(\.comic.misregistration))
             slider("Paper grain", \.finish.paperGrain, 0 ... 1)
             slider("Saturation", \.finish.saturation, -1 ... 1)

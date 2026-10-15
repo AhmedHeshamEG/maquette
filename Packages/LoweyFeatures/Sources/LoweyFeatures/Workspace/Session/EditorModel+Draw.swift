@@ -66,8 +66,14 @@ extension EditorModel {
                 tool = .ink
             }
         case .smudge:
-            ink.mode = .reshape
-            tool = .ink
+            if drawBrush == .paint {
+                // U7: smudge drags paint along the surface of a painted thing.
+                colourPaint.mode = .smudge
+                tool = .paint
+            } else {
+                ink.mode = .reshape
+                tool = .ink
+            }
         }
     }
 
@@ -82,7 +88,7 @@ extension EditorModel {
                 tool = .ink
             }
         case .paint:
-            colourPaint.mode = .paint
+            if colourPaint.mode != .faces { colourPaint.mode = .paint }
             tool = .paint
         case let .solid(style):
             draw.style = style
@@ -100,7 +106,7 @@ extension EditorModel {
         switch tool {
         case .ink: ink.mode == .erase ? .erase : ink.mode == .reshape ? .smudge : .brush
         case .flipbook: flipbook.mode == .erase ? .erase : .brush
-        case .paint: colourPaint.mode == .erase ? .erase : .brush
+        case .paint: colourPaint.mode == .erase ? .erase : colourPaint.mode == .smudge ? .smudge : .brush
         default: .brush
         }
     }

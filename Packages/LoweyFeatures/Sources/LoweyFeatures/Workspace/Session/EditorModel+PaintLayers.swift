@@ -29,8 +29,13 @@ extension EditorModel {
 
     /// Moves a layer up (+1) or down (−1) the stack.
     func movePaintLayer(_ layer: String, of id: ObjectID, by offset: Int) {
-        guard let paint = baseScene.objects[id]?.paint, let index = paint.layerIndex(layer),
-              let command = PaintOperations.moveLayer(layer, to: index + offset, in: paint, object: id) else { return }
+        guard let paint = baseScene.objects[id]?.paint, let index = paint.layerIndex(layer) else { return }
+        movePaintLayer(layer, of: id, to: index + offset)
+    }
+
+    /// Moves a layer to a place in the stack (0 is the bottom): a row dragged in the list.
+    func movePaintLayer(_ layer: String, of id: ObjectID, to index: Int) {
+        guard let paint = baseScene.objects[id]?.paint, let command = PaintOperations.moveLayer(layer, to: index, in: paint, object: id) else { return }
         perform(command)
     }
 
@@ -53,13 +58,9 @@ extension EditorModel {
         let folder = assetsFolder
         Task {
             let merged = await Task.detached(priority: .userInitiated) { () -> (command: EditCommand, files: PaintOperations.Files)? in
-                var pictures: [String: RGBAImage] = [:]
-                for name in Set(paint.layers[index - 1 ... index].flatMap(\.tiles.values)) {
-                    pictures[name] = file(name).flatMap { try? PNGCodec.decode($0) }
-                }
-                return PaintOperations.mergeDown(layer, in: paint, object: id, image: { layer in
-                    PaintComposer.layerImage(layer, surface: paint.surface) { pictures[$0] }
-                }, encode: PaintPixels.png)
+                let pictures = PaintPictures(paint) { file($0) }
+                return PaintOperations.mergeDown(layer, in: paint, object: id, image: { layer, map in pictures.image(layer, map) },
+                                                 encode: PaintPixels.png)
             }.value
             guard let merged else { return }
             do {

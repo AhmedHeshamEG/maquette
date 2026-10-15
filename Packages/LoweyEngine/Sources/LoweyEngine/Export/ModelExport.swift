@@ -22,7 +22,7 @@ public enum ModelExportFormat: String, CaseIterable, Sendable, Identifiable, Cod
         case .threeMF: "3MF"
         case .blender: "Blender"
         case .fbx: "FBX"
-        case .textures: "Texture maps (PNG)"
+        case .textures: "Maps (PNG)"
         }
     }
 

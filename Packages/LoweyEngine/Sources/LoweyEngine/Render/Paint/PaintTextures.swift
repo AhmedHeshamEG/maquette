@@ -149,16 +149,10 @@ final class PaintTextures {
         surface.lastUse = clock
         surface.mesh = mesh
         if surface.coverageMesh != ObjectIdentifier(mesh) { surface.markAll() }
-        var wanted = Set<String>()
-        for layer in paint.layers {
-            for map in PaintMap.allCases where !layer.tiles(of: map).isEmpty || (map == .mask && layer.hasMask) {
-                wanted.insert(PaintPictures.key(layer.id, map))
-            }
-        }
+        let wanted = Self.keys(of: paint)
         for key in surface.layers.keys where !wanted.contains(key) {
             surface.layers[key] = nil
-            surface.dirty.insert(Self.map(ofKey: key) == .mask ? .color : Self.map(ofKey: key))
-            if Self.map(ofKey: key) == .mask { surface.markAll() }
+            if Self.map(ofKey: key) == .mask { surface.markAll() } else { surface.dirty.insert(Self.map(ofKey: key)) }
         }
         var budget = streams ? Self.tilesPerFrame : Int.max
         for layer in paint.layers {
@@ -178,6 +172,23 @@ final class PaintTextures {
             surface.settings = settings
             surface.markAll()
         }
+        keepComposites(of: surface, for: paint, object: object)
+        return surface.composites[.color]?.view
+    }
+
+    /// Every layer key a paint has textures for: each map with tiles, and each mask (even one with no tiles).
+    static func keys(of paint: ObjectPaint) -> Set<String> {
+        var keys = Set<String>()
+        for layer in paint.layers {
+            for map in PaintMap.allCases where !layer.tiles(of: map).isEmpty || (map == .mask && layer.hasMask) {
+                keys.insert(PaintPictures.key(layer.id, map))
+            }
+        }
+        return keys
+    }
+
+    /// A composite for each map the paint shows (colour always), and none for the rest.
+    private func keepComposites(of surface: Surface, for paint: ObjectPaint, object: ObjectID) {
         for map in paint.shownMaps where surface.composites[map] == nil {
             surface.composites[map] = makeComposite(size: surface.size, map: map, label: "paint \(map.rawValue) \(object.raw)")
             surface.dirty.insert(map)
@@ -185,7 +196,6 @@ final class PaintTextures {
         for map in Array(surface.composites.keys) where map != .color && !paint.shows(map) {
             surface.composites[map] = nil
         }
-        return surface.composites[.color]?.view
     }
 
     /// The object's painted maps besides colour, as this frame's compile left them (and its baked normal map).

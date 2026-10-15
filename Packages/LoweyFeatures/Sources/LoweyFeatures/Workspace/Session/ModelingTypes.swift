@@ -174,6 +174,8 @@ struct PrecisionState: Equatable {
     var wallHeight = Architecture.wallHeight
     var wallThickness = Architecture.wallThickness
     var exportFormat: ModelExportFormat = .glb
+    /// How painted colour leaves a glTF (U7): the texture, a colour per corner, or a palette.
+    var paintColors: PaintColorOutput = .texture
     /// The last printability check (Model ▸ Edit ▸ 3D print) and what it checked.
     var printReport: PrintReport?
     var printChecked: [ObjectID] = []

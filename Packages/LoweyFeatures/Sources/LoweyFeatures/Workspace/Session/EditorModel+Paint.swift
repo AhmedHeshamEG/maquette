@@ -160,25 +160,9 @@ extension EditorModel {
         }
     }
 
-    /// The paint on a fresh unwrap of `source`, each layer carried by position, and its files.
+    /// The paint on a fresh unwrap of `source`, every layer's maps and mask carried by position, and its files.
     nonisolated static func rebased(_ paint: ObjectPaint, source: MeshData, file: (String) -> Data?) -> (paint: ObjectPaint, files: PaintOperations.Files)? {
-        guard let (unwrap, layers) = PaintExport.current(paint, source: source, file: file) else { return nil }
-        let data = unwrap.data
-        let name = PaintFiles.unwrapName(for: data)
-        var files: PaintOperations.Files = [name: data]
-        var rebased = paint
-        rebased.surface = PaintSurface(size: paint.surface.size, unwrap: name, mesh: PaintMesh.fingerprint(source))
-        for index in rebased.layers.indices {
-            let picture = layers[rebased.layers[index].id] ?? .clear(width: paint.surface.size, height: paint.surface.size)
-            rebased.layers[index].tiles = [:]
-            for (tile, image) in PaintComposer.tiles(of: picture, surface: rebased.surface) {
-                let png = PaintPixels.png(image)
-                let tileName = PaintFiles.tileName(for: png)
-                files[tileName] = png
-                rebased.layers[index][tile] = tileName
-            }
-        }
-        return (rebased, files)
+        PaintOperations.rebased(paint, source: source, file: file, encode: PaintPixels.png)
     }
 
     // MARK: Strokes
@@ -203,8 +187,10 @@ extension EditorModel {
                 app.show("Couldn't save the stroke: \(error.localizedDescription)", kind: .error)
                 return
             }
-            let changes = files.sorted { $0.0 < $1.0 }.map { PaintTileChange(layer: painted.layer, tile: $0.0, file: $0.1) }
-            guard baseScene.objects[painted.object]?.paint?.layer(painted.layer) != nil else { return }
+            // The stroke painted one map of one layer (its key, "l1#roughness").
+            let (layerID, map) = PaintPictures.split(painted.layer)
+            let changes = files.sorted { $0.0 < $1.0 }.map { PaintTileChange(layer: layerID, tile: $0.0, file: $0.1, map: map) }
+            guard let layer = baseScene.objects[painted.object]?.paint?.layer(layerID), map != .mask || layer.hasMask else { return }
             stage?.renderer.adoptPaint(object: painted.object, layer: painted.layer, changes: changes)
             perform(.paintTiles(painted.object, changes))
         }
@@ -221,12 +207,34 @@ extension EditorModel {
         return RGBA(color.r, color.g, color.b, 1)
     }
 
+    /// What a stroke lays on the map in hand: the colour on colour and glow, the value as grey on the others, white on a
+    /// mask.
+    var strokeColor: RGBA {
+        colourPaint.map == .mask ? .white : colourPaint.map.strokeColor(value: colourPaint.value, color: paintColor)
+    }
+
+    /// The map the Pencil paints on a layer: the one chosen, unless it's the mask and the layer has none (then colour).
+    func paintedMap(of layer: PaintLayer) -> PaintMap {
+        colourPaint.map == .mask && !layer.hasMask ? .color : colourPaint.map
+    }
+
+    /// The axis strokes mirror across on this object's paint, as the scale that mirrors it.
+    func paintMirror(of object: SceneObject) -> SIMD3<Float>? {
+        object.paint?.mirror?.scale
+    }
+
     // MARK: Fill, eyedropper, pictures
 
-    /// Fills the target's layer with the current colour (the whole layer: what isn't seen on the model is never drawn).
+    /// Fills the target's layer with the current colour (or value) in the map in hand (the whole layer: what isn't seen
+    /// on the model is never drawn).
     func fillPaint(_ id: ObjectID) {
         guard let object = baseScene.objects[id], let paint = object.paint, let layer = paintLayer(of: object) else { return }
-        let fill = PaintOperations.fill(paintColor, layer: layer, surface: paint.surface, object: id, encode: PaintPixels.png)
+        let map = paintedMap(of: layer)
+        var fill = PaintOperations.fill(strokeColor, layer: layer, surface: paint.surface, object: id, encode: PaintPixels.png)
+        if map != .color, case let .paintTiles(target, changes) = fill.command {
+            fill.command = .paintTiles(target, changes.map { PaintTileChange(layer: $0.layer, tile: PaintTileIndex(key: $0.tile) ?? .init(column: 0, row: 0),
+                                                                             file: $0.file, map: map) })
+        }
         let folder = assetsFolder
         Task {
             do {
@@ -261,7 +269,7 @@ extension EditorModel {
         paintStrokes += 1
         let color = RGBA(1, 1, 1, colourPaint.opacity)
         stage.showLivePaint(LivePaint(object: object.id, layer: layer.id, stroke: paintStrokes, source: .picture(picture.image, rect: picture.rect),
-                                      color: color, erases: false, pixelsPerPoint: Double(stage.contentScaleFactor)))
+                                      color: color, erases: false, pixelsPerPoint: Double(stage.contentScaleFactor), mirror: paintMirror(of: object)))
         // The frame that draws it runs before the read-back is encoded (both on the main thread, in this order).
         DispatchQueue.main.async { [weak self] in
             MainActor.assumeIsolated {
@@ -276,10 +284,24 @@ extension EditorModel {
 }
 
 extension EditorModel {
-    /// A tap with Paint ▸ Colour: fill, take a colour, or choose (and ready) the object to paint.
+    /// A tap with Paint ▸ Colour: fill, take a colour, fill a face, mark a seam, or choose (and ready) the object to paint.
     func paintTap(at point: CGPoint) {
         if colourPaint.mode == .pick {
             pickPaintColour(at: point)
+            return
+        }
+        if colourPaint.mode == .faces {
+            fillFace(at: point)
+            return
+        }
+        if colourPaint.mode == .seams {
+            markSeam(at: point)
+            return
+        }
+        if colourPaint.decalWaiting, let picture = texture.decal {
+            colourPaint.decalWaiting = false
+            texture.decal = nil
+            placeDecal(picture, at: point, size: colourPaint.decalSize)
             return
         }
         guard let stage, let hit = stage.pickObject(at: point), let object = displayed.scene.objects[hit.0] else { return }
@@ -319,11 +341,13 @@ enum PaintSampler {
         for index in single.layers.indices {
             let name = paint.layers[index][tile]
             single.layers[index].tiles = name.map { ["0,0": $0] } ?? [:]
+            let mask = paint.layers[index][.mask, tile]
+            single.layers[index].maps = paint.layers[index].hasMask ? [PaintMap.mask.rawValue: mask.map { ["0,0": $0] } ?? [:]] : [:]
         }
-        let pictures = Dictionary(single.layers.compactMap { layer in layer.tiles["0,0"].map { ($0, file($0)) } }) { first, _ in first }
-            .compactMapValues { $0.flatMap { try? PNGCodec.decode($0) } }
-        let composite = PaintComposer.composite(single) { layer in
-            PaintComposer.layerImage(layer, surface: single.surface) { pictures[$0] }
+        let names = single.layers.flatMap { [$0.tiles["0,0"], $0.tiles(of: .mask)["0,0"]].compactMap(\.self) }
+        let pictures = Dictionary(names.map { ($0, file($0)) }) { first, _ in first }.compactMapValues { $0.flatMap { try? PNGCodec.decode($0) } }
+        let composite = PaintComposer.composite(single) { layer, map in
+            PaintComposer.layerImage(layer, map: map, surface: single.surface) { pictures[$0] }
         }
         let pixel = composite.pixel(x % PaintSurface.tileSize, y % PaintSurface.tileSize)
         return pixel.a > 0.01 ? pixel : nil

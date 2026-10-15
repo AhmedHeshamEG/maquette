@@ -2,9 +2,10 @@ import LoweyCore
 import LoweyEngine
 import UIKit
 
-/// The Pencil on Paint ▸ Colour: a stroke paints (or erases) the object it starts on, drawn into the object's layer by
-/// the very frame that shows it; when it ends, the tiles it changed become one undo step. Fill and the eyedropper act
-/// where the Pencil (or a finger) touches.
+/// The Pencil on Paint ▸ Colour: a stroke paints (or erases) the map in hand of the object it starts on, drawn into the
+/// object's layer by the very frame that shows it (and again mirrored when its paint mirrors); when it ends, the tiles
+/// it changed become one undo step. Smudge drags paint along the surface (worked out in the texture, shown as it goes).
+/// Fill, the eyedropper, faces and seams act where the Pencil (or a finger) touches.
 extension StageGestures {
     func colourStroke(_ recognizer: StrokeGestureRecognizer, editor: EditorModel, stage: StageView) {
         let samples = recognizer.samples
@@ -14,13 +15,27 @@ extension StageGestures {
             flipSamples = []
             paintStroke = nil
             guard let first = samples.first else { return }
-            guard editor.colourPaint.mode == .paint || editor.colourPaint.mode == .erase else {
+            if editor.colourPaint.mode == .smudge {
+                editor.beginPaintSmudge(at: first.location)
+                editor.continuePaintSmudge(samples.map(\.location))
+                consumedSamples = samples.count
+                return
+            }
+            guard editor.colourPaint.mode.strokes, !editor.colourPaint.decalWaiting else {
                 editor.paintTap(at: first.location)
                 return
             }
             paintStroke = beginColourStroke(at: first.location, editor: editor, stage: stage)
             strokeSeed = EditorModel.strokeSeed()
             colourContinue(Array(samples), recognizer: recognizer, editor: editor, stage: stage)
+        case .changed where editor.colourPaint.mode == .smudge:
+            editor.continuePaintSmudge(samples.suffix(from: min(consumedSamples, samples.count)).map(\.location))
+            consumedSamples = samples.count
+        case .ended where editor.colourPaint.mode == .smudge:
+            editor.continuePaintSmudge(samples.suffix(from: min(consumedSamples, samples.count)).map(\.location))
+            editor.finishPaintSmudge(keep: true)
+            consumedSamples = 0
+            editor.strokeEnded()
         case .changed:
             colourContinue(Array(samples.suffix(from: min(consumedSamples, samples.count))), recognizer: recognizer, editor: editor, stage: stage)
         case .ended:
@@ -28,6 +43,10 @@ extension StageGestures {
                            predicted: false)
             colourFinish(editor: editor, stage: stage, keep: true)
         default:
+            if editor.colourPaint.mode == .smudge {
+                editor.finishPaintSmudge(keep: false)
+                editor.strokeEnded()
+            }
             colourFinish(editor: editor, stage: stage, keep: false)
         }
     }
@@ -55,8 +74,14 @@ extension StageGestures {
             editor.app.show("This layer is hidden")
             return nil
         }
+        let map = editor.paintedMap(of: layer)
+        guard layer.fill == nil || map == .mask else {
+            // A fill's pixels are made from what it's made of: painting shapes where it shows is its mask's job.
+            editor.app.show("\(layer.name) is a fill: give it a mask and paint the mask")
+            return nil
+        }
         editor.paintStrokes += 1
-        return (object.id, layer.id, editor.paintStrokes)
+        return (object.id, PaintPictures.key(layer.id, map), editor.paintStrokes)
     }
 
     private func colourContinue(_ samples: [StrokeGestureRecognizer.Sample], recognizer: StrokeGestureRecognizer, editor: EditorModel,
@@ -70,9 +95,10 @@ extension StageGestures {
         let brush = editor.currentBrush(for: .paint)
         let dabs = BrushStroker.dabs(editor.paintPath(flipSamples + ahead), brush: brush, seed: strokeSeed)
         let erases = editor.colourPaint.mode == .erase
+        let mirror = editor.displayed.scene.objects[target.object].flatMap(editor.paintMirror(of:))
         stage.showLivePaint(LivePaint(object: target.object, layer: target.layer, stroke: target.number, source: .stamps(dabs, brush: brush),
-                                      color: erases ? RGBA(0, 0, 0, 1) : editor.paintColor, erases: erases,
-                                      pixelsPerPoint: Double(stage.contentScaleFactor)))
+                                      color: erases ? RGBA(0, 0, 0, 1) : editor.strokeColor, erases: erases,
+                                      pixelsPerPoint: Double(stage.contentScaleFactor), mirror: mirror))
     }
 
     /// The stroke's last frame is drawn now, then its layer is read back and committed (or a cancelled stroke undone

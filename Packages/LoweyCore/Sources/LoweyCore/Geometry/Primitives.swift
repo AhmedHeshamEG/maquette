@@ -80,7 +80,7 @@ public enum PrimitiveMesh {
         return mesh
     }
 
-    static func sphere(segments: Int, rings: Int) -> MeshData {
+    public static func sphere(segments: Int, rings: Int) -> MeshData {
         var mesh = MeshData()
         let radius: Float = 0.5
         for ring in 0 ... rings {

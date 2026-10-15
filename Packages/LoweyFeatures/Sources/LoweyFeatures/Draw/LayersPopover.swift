@@ -83,25 +83,44 @@ struct LayersPopover: View {
     }
 }
 
-/// An object's paint layers, top first: show/hide, choose the one the Pencil paints on, its opacity and blend, and
-/// the layer actions.
+/// An object's paint layers, top first (U7): what the brush paints (a map, or the layer's mask) and the value it lays,
+/// the layers with their maps as badges, swipe for options, drag to reorder, pinch two together to merge them; a fill's
+/// own controls; the chosen layer's opacity and blend; adding a layer or a fill.
 struct PaintLayersSection: View {
     @Bindable var editor: EditorModel
     let object: SceneObject
     @State private var renaming: (id: String, name: String)?
     @State private var gesture = UUID().uuidString
+    @State private var pinch: CGFloat = 1
     @Environment(\.hmmTheme) private var theme
 
     var body: some View {
         let paint = object.paint
         let current = editor.paintLayer(of: object)
         PanelSection("Layers") {
-            VStack(spacing: HmmSpacing.xxs) {
+            if let current { PaintsRow(editor: editor, layer: current) }
+            List {
                 ForEach((paint?.layers ?? []).reversed()) { layer in
                     row(layer, isCurrent: layer.id == current?.id)
+                        .listRowInsets(EdgeInsets(top: 2, leading: 0, bottom: 2, trailing: 0))
+                        .listRowBackground(Color.clear)
+                        .listRowSeparator(.hidden)
+                        .swipeActions(edge: .trailing) { swipes(layer) }
                 }
+                .onMove { from, to in move(from: from, to: to, count: paint?.layers.count ?? 0) }
             }
+            .listStyle(.plain)
+            .scrollContentBackground(.hidden)
+            .environment(\.editMode, .constant(.inactive))
+            .frame(height: min(CGFloat(max(paint?.layers.count ?? 1, 1)) * 52, 260))
+            .simultaneousGesture(MagnifyGesture().onChanged { pinch = $0.magnification }.onEnded { _ in
+                // Two fingers pinched together over the layers: the chosen one merges into the one under it (Procreate's).
+                if pinch < 0.7, let current { editor.mergePaintLayerDown(current.id, of: object.id) }
+                pinch = 1
+            })
+            .accessibilityIdentifier("paint-layers-list")
             if let current {
+                if let fill = current.fill { FillControls(editor: editor, object: object, layer: current, fill: fill) }
                 LabeledSlider(title: "Layer opacity", value: current.opacity, range: 0 ... 1, format: NumberFormat.percent) { value in
                     editor.updatePaintLayer(current.id, of: object.id, gesture: gesture) { $0.opacity = value }
                 }
@@ -122,8 +141,16 @@ struct PaintLayersSection: View {
         }
     }
 
+    /// The list is top first; the paint is bottom first.
+    private func move(from source: IndexSet, to destination: Int, count: Int) {
+        guard let from = source.first, let paint = object.paint else { return }
+        let layer = paint.layers[count - 1 - from]
+        let target = destination > from ? count - destination : count - 1 - destination
+        editor.movePaintLayer(layer.id, of: object.id, to: target)
+    }
+
     private func row(_ layer: PaintLayer, isCurrent: Bool) -> some View {
-        HStack(spacing: HmmSpacing.s) {
+        HStack(spacing: HmmSpacing.xs) {
             Button {
                 editor.updatePaintLayer(layer.id, of: object.id) { $0.visible.toggle() }
             } label: {
@@ -131,8 +158,22 @@ struct PaintLayersSection: View {
             }
             .buttonStyle(.plain)
             .accessibilityLabel(layer.visible ? "Hide \(layer.name)" : "Show \(layer.name)")
-            Text(layer.name).font(.hmm(.body, weight: isCurrent ? .semibold : .regular)).lineLimit(1)
+            VStack(alignment: .leading, spacing: 1) {
+                Text(layer.name).font(.hmm(.body, weight: isCurrent ? .semibold : .regular)).lineLimit(1)
+                MapBadges(layer: layer)
+            }
             Spacer(minLength: 0)
+            if layer.hasMask {
+                Button {
+                    editor.choosePaintLayer(layer.id, on: object.id)
+                    editor.colourPaint.map = editor.colourPaint.map == .mask && isCurrent ? .color : .mask
+                } label: {
+                    Image(systemName: "circle.lefthalf.filled").frame(width: 36, height: 44)
+                        .foregroundStyle(isCurrent && editor.colourPaint.map == .mask ? theme.accent : theme.text2)
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel("Paint \(layer.name)'s mask")
+            }
             if layer.blend != .normal { Text(LocalizedStringKey(layer.blend.title)).font(.hmm(.caption)).foregroundStyle(theme.text2) }
             Text("\(Int((layer.opacity * 100).rounded())) %").font(.hmm(.caption).monospacedDigit()).foregroundStyle(theme.text2)
         }
@@ -141,6 +182,7 @@ struct PaintLayersSection: View {
         .contentShape(Rectangle())
         .onTapGesture {
             editor.choosePaintLayer(layer.id, on: object.id)
+            if editor.colourPaint.map == .mask, !layer.hasMask { editor.colourPaint.map = .color }
             gesture = UUID().uuidString
         }
         .hmmHoldMenu(menu(for: layer))
@@ -149,9 +191,22 @@ struct PaintLayersSection: View {
         .accessibilityIdentifier("paint-layer-\(layer.id)")
     }
 
+    @ViewBuilder private func swipes(_ layer: PaintLayer) -> some View {
+        Button(role: .destructive) { editor.deletePaintLayer(layer.id, of: object.id) } label: { Label("Delete", systemImage: "trash") }
+        Button { editor.duplicatePaintLayer(layer.id, of: object.id) } label: { Label("Duplicate", systemImage: "plus.square.on.square") }
+            .tint(.gray)
+        Button { editor.setMask(!layer.hasMask, layer: layer.id, of: object.id) } label: {
+            Label(layer.hasMask ? "No mask" : "Mask", systemImage: "circle.lefthalf.filled")
+        }
+        .tint(theme.accent)
+    }
+
     private func menu(for layer: PaintLayer) -> HmmHoldMenu {
         let isLowest = (object.paint?.layerIndex(layer.id) ?? 0) == 0
         return HmmHoldMenu(duplicate: { editor.duplicatePaintLayer(layer.id, of: object.id) }, rename: { renaming = (layer.id, layer.name) }, extras: [
+            HmmHoldMenu.Item(layer.hasMask ? "Remove mask" : "Add a mask", systemName: "circle.lefthalf.filled") {
+                editor.setMask(!layer.hasMask, layer: layer.id, of: object.id)
+            },
             HmmHoldMenu.Item("Merge down", systemName: "square.3.layers.3d.down.right", isEnabled: !isLowest) {
                 editor.mergePaintLayerDown(layer.id, of: object.id)
             },
@@ -160,19 +215,18 @@ struct PaintLayersSection: View {
     }
 
     private func actions(_ layer: PaintLayer, paint: ObjectPaint?) -> some View {
-        let index = paint?.layerIndex(layer.id) ?? 0
-        let count = paint?.layers.count ?? 0
-        return HStack(spacing: HmmSpacing.xs) {
-            HmmButton("plus", label: "Add a layer", size: 40) { editor.addPaintLayer(to: object.id) }
-                .accessibilityIdentifier("paint-layer-add")
+        HStack(spacing: HmmSpacing.xs) {
             Menu {
-                Button("Duplicate", systemImage: "plus.square.on.square") { editor.duplicatePaintLayer(layer.id, of: object.id) }
-                Button("Merge down", systemImage: "square.3.layers.3d.down.right") { editor.mergePaintLayerDown(layer.id, of: object.id) }
-                    .shown(index != 0)
-                Button("Move up", systemImage: "arrow.up") { editor.movePaintLayer(layer.id, of: object.id, by: 1) }
-                    .shown(index < count - 1)
-                Button("Move down", systemImage: "arrow.down") { editor.movePaintLayer(layer.id, of: object.id, by: -1) }
-                    .shown(index != 0)
+                Button("Layer", systemImage: "square.3.layers.3d") { editor.addPaintLayer(to: object.id) }
+                Button("Colour fill", systemImage: "drop.fill") { editor.addFill(.color(editor.paintColor), to: object.id) }
+                Button("Dirt", systemImage: "aqi.medium") { editor.addFill(.wear(PaintWear(kind: .dirt)), to: object.id) }
+                Button("Worn edges", systemImage: "square.dashed") { editor.addFill(.wear(PaintWear(kind: .edges)), to: object.id) }
+            } label: {
+                Label("Add", systemImage: "plus").font(.hmm(.body))
+            }
+            .accessibilityIdentifier("paint-layer-add")
+            Spacer(minLength: 0)
+            Menu {
                 Button("Clear", systemImage: "eraser") { editor.clearPaintLayer(layer.id, of: object.id) }
                 Button("Rename", systemImage: "pencil") { renaming = (layer.id, layer.name) }
                 Divider()
@@ -182,6 +236,94 @@ struct PaintLayersSection: View {
                 Label("Layer", systemImage: "ellipsis.circle").font(.hmm(.body))
             }
             .accessibilityIdentifier("paint-layer-menu")
+        }
+    }
+}
+
+/// What the brush paints on the chosen layer: Colour, Roughness, Metal, Glow, Bumps, Fur (and Mask when it has one),
+/// with the value it lays on a value map.
+struct PaintsRow: View {
+    @Bindable var editor: EditorModel
+    let layer: PaintLayer
+
+    var body: some View {
+        let maps = PaintMap.channels + (layer.hasMask ? [.mask] : [])
+        VStack(alignment: .leading, spacing: HmmSpacing.xxs) {
+            FlowChips(items: maps.map { ($0.rawValue, $0.title) }, isOn: { $0 == editor.paintedMap(of: layer).rawValue }) { key in
+                editor.colourPaint.map = PaintMap(rawValue: key) ?? .color
+                HmmHaptics.play(.selection)
+            }
+            .accessibilityIdentifier("paint-map")
+            if editor.colourPaint.map.isValue {
+                LabeledSlider(title: valueTitle, value: editor.colourPaint.value, range: 0 ... 1, format: NumberFormat.percent) { value in
+                    editor.colourPaint.value = value
+                }
+            } else if editor.colourPaint.map == .mask {
+                Hint("Paint shows the layer, erase hides it.")
+            }
+        }
+    }
+
+    private var valueTitle: String {
+        switch editor.colourPaint.map {
+        case .roughness: "Rough"
+        case .metal: "Metal"
+        case .bumps: "Height"
+        case .fur: "Length"
+        default: "Value"
+        }
+    }
+}
+
+/// A layer's maps as small badges.
+struct MapBadges: View {
+    let layer: PaintLayer
+    @Environment(\.hmmTheme) private var theme
+
+    var body: some View {
+        let maps = layer.paintedMaps
+        if !maps.isEmpty || layer.fill != nil {
+            Text(((layer.fill.map { [$0.kindTitle] } ?? []) + maps.map(\.title)).joined(separator: " · "))
+                .font(.hmm(.caption))
+                .foregroundStyle(theme.text3)
+                .lineLimit(1)
+        }
+    }
+}
+
+/// A fill layer's own controls: wear's amount and colour, a material's name.
+struct FillControls: View {
+    @Bindable var editor: EditorModel
+    let object: SceneObject
+    let layer: PaintLayer
+    let fill: PaintFill
+    @State private var amount: Double?
+
+    var body: some View {
+        switch fill {
+        case let .wear(wear):
+            LabeledSlider(title: "Amount", value: amount ?? wear.amount, range: 0 ... 1, format: NumberFormat.percent) { amount = $0 } done: {
+                var changed = wear
+                changed.amount = amount ?? wear.amount
+                editor.changeFill(layer.id, of: object.id, to: .wear(changed))
+                amount = nil
+            }
+        case .color:
+            Button("Use the colour in hand", systemImage: "drop.fill") { editor.changeFill(layer.id, of: object.id, to: .color(editor.paintColor)) }
+                .buttonStyle(.bordered)
+        case let .material(material):
+            Hint("\(material.name): change it in the Material Studio, then fill again.")
+        }
+    }
+}
+
+extension PaintFill {
+    /// What kind of fill it is, for the layer's badges.
+    var kindTitle: String {
+        switch self {
+        case .color: "Fill"
+        case .material: "Material"
+        case .wear: "Wear"
         }
     }
 }

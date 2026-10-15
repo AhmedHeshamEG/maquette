@@ -17,6 +17,8 @@ public final class AppModel {
     let library: LibraryModel
     /// The brush library, and the brush each drawing tool holds.
     let brushes: BrushModel
+    /// The material library (U7): the built-ins, the person's own, imported PBR sets.
+    let materials: MaterialModel
     private(set) var projects: [ProjectSummary] = []
     private(set) var archived: [ProjectSummary] = []
     /// Bumped when a project's card is drawn again, so its still and turntable reload. Cards load their own pictures
@@ -62,6 +64,7 @@ public final class AppModel {
         try? FileManager.default.createDirectory(at: libraryRoot, withIntermediateDirectories: true)
         library = LibraryModel(store: LibraryStore(root: libraryRoot))
         brushes = BrushModel(root: libraryRoot.deletingLastPathComponent().appendingPathComponent("Brushes"))
+        materials = MaterialModel(root: libraryRoot.deletingLastPathComponent().appendingPathComponent("Materials"))
     }
 
     /// Launch: diagnostics, storage, library, projects, first-run samples and tour.
@@ -74,6 +77,7 @@ public final class AppModel {
         }
         library.load()
         brushes.load()
+        materials.load()
         refreshProjects()
         if !AppIdentity.isUITesting { await resolveStorage() }
         let wantsSamples = !AppIdentity.isUITesting || ProcessInfo.processInfo.arguments.contains("-ui-testing-sample")

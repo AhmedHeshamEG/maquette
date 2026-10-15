@@ -181,7 +181,7 @@ extension EditorModel {
         let edited = format == .glb || format == .blender || format == .fbx
         let source = edited ? baseScene : displayed.scene
         let files = ModelExport.files(format, ids: ids, scene: source, look: look, preset: lookPreset, catalog: library.catalog, models: library.models,
-                                      name: name, paintFile: paintFiles, poses: edited ? [:] : displayed.poses)
+                                      name: name, paintFile: paintFiles, poses: edited ? [:] : displayed.poses, colors: precision.paintColors)
         guard !files.isEmpty else {
             app.show("Nothing to export")
             return []

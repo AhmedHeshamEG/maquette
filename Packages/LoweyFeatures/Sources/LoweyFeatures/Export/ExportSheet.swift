@@ -38,6 +38,13 @@ struct ExportSheet: View {
                 }
                 .pickerStyle(.segmented)
                 .accessibilityIdentifier("model-format")
+                if editor.precision.exportFormat == .glb {
+                    Picker("Painted colour", selection: $editor.precision.paintColors) {
+                        ForEach(PaintColorOutput.allCases, id: \.self) { Text(LocalizedStringKey($0.title)).tag($0) }
+                    }
+                    .pickerStyle(.segmented)
+                    .accessibilityIdentifier("model-colours")
+                }
             }
             if preset.kind == .video || preset.kind == .gif {
                 Toggle("Custom size, frame rate and quality", isOn: $custom)

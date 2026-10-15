@@ -124,6 +124,12 @@ public final class PaintPictures {
         map == .color ? layer : "\(layer)#\(map.rawValue)"
     }
 
+    /// A key back into its layer and map ("l1#bumps" → l1, bumps); a key naming no map this app knows is colour.
+    public static func split(_ key: String) -> (layer: String, map: PaintMap) {
+        guard let mark = key.lastIndex(of: "#"), let map = PaintMap(rawValue: String(key[key.index(after: mark)...])) else { return (key, .color) }
+        return (String(key[..<mark]), map)
+    }
+
     public func image(_ layer: PaintLayer, _ map: PaintMap) -> RGBAImage {
         let key = Self.key(layer.id, map)
         if let known = images[key] { return known }
