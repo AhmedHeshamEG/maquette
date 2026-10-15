@@ -7,6 +7,7 @@ Only permissively licensed dependencies are allowed.
 | [CMU Pronouncing Dictionary](https://github.com/cmusphinx/cmudict) | cmudict.dict (2026 master) | BSD 2-clause | Word → mouth shapes for lip sync (converted by `Tools/make_visemes.py` into `LoweyCore/Resources/visemes.txt`) |
 | [Manifold](https://github.com/elalish/manifold) | 3.5.4 (vendored in `Packages/Manifold`) | Apache 2.0 | Booleans (union, subtract, intersect) on solids |
 | [xatlas](https://github.com/jpcy/xatlas) | commit f700c77 (vendored in `Packages/XAtlas`) | MIT | Unwrapping models (UV atlases) for painting on them |
+| [Jolt Physics](https://github.com/jrouwe/JoltPhysics) | 5.6.0 (vendored in `Packages/Jolt`) | MIT | Physics: falling, colliding, joints and mechanisms, ragdolls, cloth and jelly |
 | [Instant Meshes](https://github.com/wjakob/instant-meshes) | commit 7b31608 (vendored in `Packages/InstantMeshes`) | BSD 3-clause | Clean quads from a sculpt (Clean up the shape) |
 | [Eigen](https://eigen.tuxfamily.org) | 3.4.0, the headers Instant Meshes uses (vendored with it) | MPL 2.0 | Instant Meshes' linear algebra |
 | [pcg32](https://github.com/wjakob/pcg32) and [dset](https://github.com/wjakob/dset) | commits 70099ea, 7967ef0 (vendored with Instant Meshes) | Apache 2.0; zlib-style | Instant Meshes' random numbers and disjoint sets |
