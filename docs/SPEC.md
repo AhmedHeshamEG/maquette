@@ -37,6 +37,32 @@ Cast is gone (D-227): what said *Cast ▸ Voice & face*, *Triggers* and *Life* b
 button beside Record in the timeline's Perform; *Cast ▸ Rig* is Rig; *Make it part of* is in Rig. Everything below
 still works the same way.
 
+### Physics (0.19)
+
+- **Real** (D-367, D-369): the object panel's Real row. The switch; a material in words (wood, steel, aluminium, stone,
+  concrete, glass, ice, plastic, rubber, foam, cardboard, cloth, jelly); how it moves (Falls, Stays put, Follows its
+  keys); what it weighs once the run is made; Hangs from its top edge (cloth). Exact numbers one step deeper: mass (kg,
+  or from its size), grip, bounce, breaks when knocked hard (or stiffness for cloth and jelly), a start speed, Show speed
+  and forces. Several things at once: Make them real, Made of…, Not real.
+- **The run** (D-366, D-370, D-371): from the scene's start time to the end of the timeline, worked out in the
+  background and played as far as it's gone; playback waits at its edge. Rigid bodies, joints, ragdolls (a rigged thing
+  that falls, D-373), cloth and jelly (D-374), breaking (D-375), wind and forces (D-376), fluids (D-377).
+- **Joints** (D-369): Real ▸ Join them (two things) or Join to the world (one): hinge, slider, ball, glue, spring, rope,
+  gear (two hinged wheels). Each joint is a row: its motor (°/s or m/s), a spring's bounces a second, ✕. Marks on the stage
+  while the thing is selected.
+- **Behind the scene's name** ▸ Physics: gravity (Earth, Moon, Mars, Jupiter, Floating), wind (speed, where it blows
+  toward, gusts), a solid ground, when things start; the run's progress; Keep it.
+- **Model ▸ Add ▸ Forces & fluids**: Fan, Pull, Whirl (strength, reach); Pour water, Splash, Billowing smoke, Flames
+  (amount, seconds, the room's size, colour).
+- **Keep it** (D-372): the run as keys; what fell follows its keys afterwards. **Settle** (D-378): the object's menu, or
+  Real. **Does it stand?** (D-378): one line, and the centre of mass, plumb line and footprint on the stage.
+- **The real sun** (D-379): Look ▸ World ▸ Fine tune the world ▸ Real sun: a place (ten cities, or latitude and
+  longitude), a date, a time, which way north is; Shadow study across the timeline with its hours.
+- **Export** (D-380): video and stills wait for the whole run; glTF, Blender and FBX bake it into keys; glTF carries
+  colliders (OMI_physics_body, OMI_physics_shape).
+- **The bridge** (D-382): `physics` with `op` real, unreal, scene, joint, unjoin, force, fluid, keep, settle, stand, sun.
+- **Keys**: ⇧⌘J make real, ⌥⌘J not real, ⌘J settle, ⌥⌘U does it stand, ⇧⌘K keep the run.
+
 ### Texture (0.18)
 
 - **Layers per map** (D-338): Draw ▸ Layers while painting a thing. The chips under the layer choose what the brush

@@ -161,6 +161,38 @@
         }
       }
     },
+    "%@ to %lld": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$@ a %2$lld"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$@ إلى %2$lld"
+          }
+        }
+      }
+    },
+    "%@ to the world": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ al mondo"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ بالعالم"
+          }
+        }
+      }
+    },
     "%@ × %@ · %@ fps · %@ s · %@ frames": {
       "localizations": {
         "it": {
@@ -785,6 +817,22 @@
         }
       }
     },
+    "A gear joins two hinges: give each wheel a hinge first": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Un ingranaggio unisce due cerniere: dai prima una cerniera a ogni ruota"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الترس يربط مفصلين: أعطِ كل عجلة مفصلًا أولًا"
+          }
+        }
+      }
+    },
     "a hip": {
       "localizations": {
         "it": {
@@ -881,6 +929,22 @@
         }
       }
     },
+    "A real thing falls, collides and is pushed, with the weight of what it's made of.": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Una cosa reale cade, urta e viene spinta, con il peso di ciò di cui è fatta."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الشيء الحقيقي يسقط ويصطدم ويُدفع، بوزن المادة المصنوع منها."
+          }
+        }
+      }
+    },
     "A saved pose": {
       "localizations": {
         "it": {
@@ -925,6 +989,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "كتف"
+          }
+        }
+      }
+    },
+    "A solid ground": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Un terreno solido"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "أرض صلبة"
           }
         }
       }
@@ -1785,6 +1865,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "على امتداد رسم، مع الدوران معه"
+          }
+        }
+      }
+    },
+    "Aluminium": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Alluminio"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ألومنيوم"
           }
         }
       }
@@ -2681,6 +2777,22 @@
         }
       }
     },
+    "Ball joint": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Snodo sferico"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "مفصل كروي"
+          }
+        }
+      }
+    },
     "Bands": {
       "localizations": {
         "it": {
@@ -2953,6 +3065,22 @@
         }
       }
     },
+    "Blows toward": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Soffia verso"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تهب نحو"
+          }
+        }
+      }
+    },
     "Blue": {
       "localizations": {
         "it": {
@@ -3173,6 +3301,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "صندوق"
+          }
+        }
+      }
+    },
+    "Breaks when knocked hard": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Si rompe se urtata forte"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ينكسر عند ضربة قوية"
           }
         }
       }
@@ -3749,6 +3893,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "تعليقات مكتوبة من التعليق الصوتي"
+          }
+        }
+      }
+    },
+    "Cardboard": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cartone"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "كرتون"
           }
         }
       }
@@ -4513,6 +4673,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "الأشكال المغلقة تمتلئ: اسحب أحدها لتصبح مجسمًا من النموذج ▸ تحرير."
+          }
+        }
+      }
+    },
+    "Cloth": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Stoffa"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "قماش"
           }
         }
       }
@@ -6561,6 +6737,38 @@
         }
       }
     },
+    "Does It Stand?": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sta in piedi?"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "هل يقف؟"
+          }
+        }
+      }
+    },
+    "Does it stand?": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sta in piedi?"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "هل يقف؟"
+          }
+        }
+      }
+    },
     "Dolly": {
       "localizations": {
         "it": {
@@ -7869,6 +8077,22 @@
         }
       }
     },
+    "Earth": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Terra"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الأرض"
+          }
+        }
+      }
+    },
     "Ease": {
       "localizations": {
         "it": {
@@ -9001,6 +9225,54 @@
         }
       }
     },
+    "Falls": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cade"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "يسقط"
+          }
+        }
+      }
+    },
+    "Fan": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ventilatore"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "مروحة"
+          }
+        }
+      }
+    },
+    "Fans and pulls push real things; water, smoke and fire fill a room-sized box around them.": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ventilatori e attrazioni spingono le cose reali; acqua, fumo e fuoco riempiono uno spazio grande come una stanza."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "المراوح والجواذب تحرّك الأشياء الحقيقية؛ الماء والدخان والنار تملأ مساحة بحجم غرفة حولها."
+          }
+        }
+      }
+    },
     "Farther": {
       "localizations": {
         "it": {
@@ -9633,6 +9905,22 @@
         }
       }
     },
+    "Floating": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Senza peso"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "طافٍ"
+          }
+        }
+      }
+    },
     "Flock": {
       "localizations": {
         "it": {
@@ -9725,6 +10013,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "طِر بالكاميرا بعصي الشاشة أو بيد التحكم؛ سجّل في الأداء للاحتفاظ بالحركة."
+          }
+        }
+      }
+    },
+    "Foam": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gommapiuma"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "إسفنج"
           }
         }
       }
@@ -9953,6 +10257,22 @@
         }
       }
     },
+    "Follows its keys": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Segue le sue chiavi"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "يتبع مفاتيحه"
+          }
+        }
+      }
+    },
     "Font": {
       "localizations": {
         "it": {
@@ -10057,6 +10377,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "لـUnity وغيره من محرّكات الألعاب: الشيء بهيكله وعظامه ومفاتيحها."
+          }
+        }
+      }
+    },
+    "Forces & fluids": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Forze e fluidi"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "قوى وسوائل"
           }
         }
       }
@@ -10365,6 +10701,22 @@
         }
       }
     },
+    "From": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Da"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "من"
+          }
+        }
+      }
+    },
     "From %@": {
       "localizations": {
         "it": {
@@ -10541,6 +10893,22 @@
         }
       }
     },
+    "Gear": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ingranaggio"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ترس"
+          }
+        }
+      }
+    },
     "Gestures": {
       "localizations": {
         "it": {
@@ -10649,6 +11017,22 @@
         }
       }
     },
+    "Glass": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vetro"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "زجاج"
+          }
+        }
+      }
+    },
     "Glitch": {
       "localizations": {
         "it": {
@@ -10693,6 +11077,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "توهّج"
+          }
+        }
+      }
+    },
+    "Glue": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Colla"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "غراء"
           }
         }
       }
@@ -10969,6 +11369,22 @@
         }
       }
     },
+    "Grip": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aderenza"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تماسك"
+          }
+        }
+      }
+    },
     "Ground": {
       "localizations": {
         "it": {
@@ -11097,6 +11513,22 @@
         }
       }
     },
+    "Gusts": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Raffiche"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "هبّات"
+          }
+        }
+      }
+    },
     "Hair cards": {
       "localizations": {
         "it": {
@@ -11141,6 +11573,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "اليد"
+          }
+        }
+      }
+    },
+    "Hangs from its top edge": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Appesa al bordo superiore"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "معلّق من حافته العليا"
           }
         }
       }
@@ -11433,6 +11881,22 @@
         }
       }
     },
+    "Hinge": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cerniera"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "مفصل"
+          }
+        }
+      }
+    },
     "History": {
       "localizations": {
         "it": {
@@ -11657,6 +12121,22 @@
         }
       }
     },
+    "How it moves": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Come si muove"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "كيف يتحرك"
+          }
+        }
+      }
+    },
     "How many": {
       "localizations": {
         "it": {
@@ -11733,6 +12213,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "التدرّج"
+          }
+        }
+      }
+    },
+    "Ice": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ghiaccio"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "جليد"
           }
         }
       }
@@ -12281,6 +12777,38 @@
         }
       }
     },
+    "It stands: its weight is %@ cm inside its footprint": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sta in piedi: il suo peso è %@ cm dentro la sua base"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "يقف: وزنه داخل قاعدته بمقدار %@ سم"
+          }
+        }
+      }
+    },
+    "It tips over: its weight is %@ cm past its footprint": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Si ribalta: il suo peso è %@ cm oltre la sua base"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ينقلب: وزنه خارج قاعدته بمقدار %@ سم"
+          }
+        }
+      }
+    },
     "It will move with the nearest bone. An eye, a brow or a mouth can then follow your face.": {
       "localizations": {
         "it": {
@@ -12393,6 +12921,22 @@
         }
       }
     },
+    "Jelly": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gelatina"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "هلام"
+          }
+        }
+      }
+    },
     "Jitter": {
       "localizations": {
         "it": {
@@ -12473,6 +13017,22 @@
         }
       }
     },
+    "Jolt Physics": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Jolt Physics"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Jolt Physics"
+          }
+        }
+      }
+    },
     "Joystick": {
       "localizations": {
         "it": {
@@ -12521,6 +13081,22 @@
         }
       }
     },
+    "Jupiter": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Giove"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "المشتري"
+          }
+        }
+      }
+    },
     "Keep": {
       "localizations": {
         "it": {
@@ -12549,6 +13125,38 @@
           "stringUnit": {
             "state": "translated",
             "value": "الاحتفاظ بكلتيهما"
+          }
+        }
+      }
+    },
+    "Keep it": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tienila"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "احتفظ بها"
+          }
+        }
+      }
+    },
+    "Keep it turns the run into keys you can change by hand.": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tienila trasforma la simulazione in chiavi da cambiare a mano."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "«احتفظ بها» تحوّل المحاكاة إلى مفاتيح تغيّرها بيدك."
           }
         }
       }
@@ -12617,6 +13225,22 @@
         }
       }
     },
+    "Keep the Run as Keys": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tieni la simulazione come chiavi"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "احتفظ بالمحاكاة كمفاتيح"
+          }
+        }
+      }
+    },
     "Keep this colour in %@": {
       "localizations": {
         "it": {
@@ -12661,6 +13285,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "الاحتفاظ بهذه النسخة"
+          }
+        }
+      }
+    },
+    "Kept: the run is keys now": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tenuta: ora la simulazione è fatta di chiavi"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تم: المحاكاة صارت مفاتيح"
           }
         }
       }
@@ -14173,6 +14813,22 @@
         }
       }
     },
+    "Made of…": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fatte di…"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "مصنوعة من…"
+          }
+        }
+      }
+    },
     "Magic": {
       "localizations": {
         "it": {
@@ -14265,6 +14921,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "إنشاء إطارات مفتاحية"
+          }
+        }
+      }
+    },
+    "Make Real": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rendi reale"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "اجعله حقيقيًا"
           }
         }
       }
@@ -14425,6 +15097,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "علامات"
+          }
+        }
+      }
+    },
+    "Mars": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Marte"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "المريخ"
           }
         }
       }
@@ -15045,6 +15733,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "الأجواء"
+          }
+        }
+      }
+    },
+    "Moon": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Luna"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "القمر"
           }
         }
       }
@@ -16289,6 +16993,22 @@
         }
       }
     },
+    "North points": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Il nord punta a"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الشمال يشير إلى"
+          }
+        }
+      }
+    },
     "Not applied: Hesham said no (or didn't answer). Ask what to change.": {
       "localizations": {
         "it": {
@@ -16317,6 +17037,38 @@
           "stringUnit": {
             "state": "translated",
             "value": "ليس الآن"
+          }
+        }
+      }
+    },
+    "Not Real": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Non reale"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "غير حقيقي"
+          }
+        }
+      }
+    },
+    "Not real": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Non reale"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "غير حقيقي"
           }
         }
       }
@@ -16429,6 +17181,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "لا يوجد هناك ما يستطيع Maquette فتحه (glTF وGLB وOBJ وUSDZ وSTL و3MF)"
+          }
+        }
+      }
+    },
+    "Nothing moved": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Non si è mosso niente"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "لم يتحرك شيء"
           }
         }
       }
@@ -18397,6 +19165,22 @@
         }
       }
     },
+    "Physics": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fisica"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الفيزياء"
+          }
+        }
+      }
+    },
     "Pick": {
       "localizations": {
         "it": {
@@ -18913,6 +19697,22 @@
         }
       }
     },
+    "Plastic": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Plastica"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "بلاستيك"
+          }
+        }
+      }
+    },
     "Play": {
       "localizations": {
         "it": {
@@ -18973,6 +19773,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "تشغيل مرة واحدة"
+          }
+        }
+      }
+    },
+    "Play to see it; it's worked out in the background": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Premi play per vederlo: viene calcolato in sottofondo"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "شغّل لتراه؛ يُحسب في الخلفية"
           }
         }
       }
@@ -19181,6 +19997,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "الموضع"
+          }
+        }
+      }
+    },
+    "Pour": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Versa"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "صبّ"
           }
         }
       }
@@ -19465,6 +20297,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "مضموم (أو)"
+          }
+        }
+      }
+    },
+    "Pull": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Attrazione"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "جذب"
           }
         }
       }
@@ -19913,6 +20761,22 @@
         }
       }
     },
+    "Reach m": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Portata m"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "المدى م"
+          }
+        }
+      }
+    },
     "Ready": {
       "localizations": {
         "it": {
@@ -19941,6 +20805,54 @@
           "stringUnit": {
             "state": "translated",
             "value": "جاهز للطباعة"
+          }
+        }
+      }
+    },
+    "Real": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reale"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "حقيقي"
+          }
+        }
+      }
+    },
+    "Real sun": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sole reale"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "شمس حقيقية"
+          }
+        }
+      }
+    },
+    "Real things move when you play": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le cose reali si muovono quando premi play"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الأشياء الحقيقية تتحرك عند التشغيل"
           }
         }
       }
@@ -20305,6 +21217,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "إزالة من اللوحة"
+          }
+        }
+      }
+    },
+    "Remove the %@": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Togli %@"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "أزل %@"
           }
         }
       }
@@ -21121,6 +22049,22 @@
         }
       }
     },
+    "Room m": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Stanza m"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الغرفة م"
+          }
+        }
+      }
+    },
     "Room or building": {
       "localizations": {
         "it": {
@@ -21133,6 +22077,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "غرفة أو مبنى"
+          }
+        }
+      }
+    },
+    "Rope": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Corda"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "حبل"
           }
         }
       }
@@ -21293,6 +22253,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "صف من 5"
+          }
+        }
+      }
+    },
+    "Rubber": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gomma"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "مطاط"
           }
         }
       }
@@ -22081,6 +23057,22 @@
         }
       }
     },
+    "Seconds": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Secondi"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ثوانٍ"
+          }
+        }
+      }
+    },
     "Section view": {
       "localizations": {
         "it": {
@@ -22705,6 +23697,22 @@
         }
       }
     },
+    "Settle": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Adagia"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "أرسِه"
+          }
+        }
+      }
+    },
     "Shading": {
       "localizations": {
         "it": {
@@ -22797,6 +23805,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "ظل للداخل"
+          }
+        }
+      }
+    },
+    "Shadow study across the timeline": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Studio delle ombre lungo la timeline"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "دراسة الظلال على امتداد الخط الزمني"
           }
         }
       }
@@ -23245,6 +24269,38 @@
           "stringUnit": {
             "state": "translated",
             "value": "أظهر القياسات المحفوظة"
+          }
+        }
+      }
+    },
+    "Show Speed and Forces": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mostra velocità e forze"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "أظهر السرعة والقوى"
+          }
+        }
+      }
+    },
+    "Show speed and forces": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mostra velocità e forze"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "أظهر السرعة والقوى"
           }
         }
       }
@@ -23705,6 +24761,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "حرّك حركات كاملة عبر الزمن."
+          }
+        }
+      }
+    },
+    "Slider": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Guida scorrevole"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "منزلق"
           }
         }
       }
@@ -24605,6 +25677,22 @@
         }
       }
     },
+    "Splash": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Schizzo d'acqua"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "رشّة ماء"
+          }
+        }
+      }
+    },
     "Splatter": {
       "localizations": {
         "it": {
@@ -24697,6 +25785,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "الانتشار"
+          }
+        }
+      }
+    },
+    "Spring": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Molla"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "نابض"
           }
         }
       }
@@ -25005,6 +26109,38 @@
         }
       }
     },
+    "Stays put": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Resta ferma"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "يبقى ثابتًا"
+          }
+        }
+      }
+    },
+    "Steel": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Acciaio"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "فولاذ"
+          }
+        }
+      }
+    },
     "Step": {
       "localizations": {
         "it": {
@@ -25113,6 +26249,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "الصق بالكاميرا"
+          }
+        }
+      }
+    },
+    "Stiffness": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rigidità"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "صلابة"
           }
         }
       }
@@ -27385,6 +28537,22 @@
         }
       }
     },
+    "The physics run is still being worked out; export again in a moment": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La simulazione è ancora in calcolo: esporta di nuovo tra un momento"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "المحاكاة الفيزيائية ما زالت تُحسب؛ صدّر مرة أخرى بعد لحظة"
+          }
+        }
+      }
+    },
     "The quick menu": {
       "localizations": {
         "it": {
@@ -27413,6 +28581,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "القائمة السريعة عند الطرف"
+          }
+        }
+      }
+    },
+    "The run is still being worked out": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La simulazione è ancora in calcolo"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "المحاكاة ما زالت تُحسب"
           }
         }
       }
@@ -27929,6 +29113,22 @@
         }
       }
     },
+    "There's nothing to settle it on": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Non c'è niente su cui adagiarla"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "لا يوجد شيء يُرسى عليه"
+          }
+        }
+      }
+    },
     "These put colour on a model. Started in the air, they draw a line.": {
       "localizations": {
         "it": {
@@ -28037,6 +29237,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "الأشياء"
+          }
+        }
+      }
+    },
+    "Things that fall, collide, hinge, swing, flop and drape. Copyright (c) 2021 Jorrit Rouwe. MIT License: permission is ": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cose che cadono, urtano, ruotano, oscillano, si afflosciano e si drappeggiano. Copyright (c) 2021 Jorrit Rouwe. Licenza MIT: il permesso è "
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "أشياء تسقط وتصطدم وتدور على مفاصل وتتأرجح وترتخي وتنسدل. حقوق النشر (c) 2021 Jorrit Rouwe. رخصة MIT: الإذن "
           }
         }
       }
@@ -28597,6 +29813,22 @@
         }
       }
     },
+    "Time": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ora"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الوقت"
+          }
+        }
+      }
+    },
     "Time comes when called": {
       "localizations": {
         "it": {
@@ -28753,6 +29985,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "عنوان"
+          }
+        }
+      }
+    },
+    "To": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "إلى"
           }
         }
       }
@@ -30485,6 +31733,22 @@
         }
       }
     },
+    "Weighs": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pesa"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "يزن"
+          }
+        }
+      }
+    },
     "Welcome island": {
       "localizations": {
         "it": {
@@ -30609,6 +31873,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "تحريك خاطف"
+          }
+        }
+      }
+    },
+    "Whirl": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vortice"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "دوّامة"
           }
         }
       }
@@ -30757,6 +32037,22 @@
         }
       }
     },
+    "Wind m/s": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vento m/s"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الرياح م/ث"
+          }
+        }
+      }
+    },
     "Wind sway": {
       "localizations": {
         "it": {
@@ -30853,6 +32149,22 @@
         }
       }
     },
+    "Wood": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Legno"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "خشب"
+          }
+        }
+      }
+    },
     "Wood grain": {
       "localizations": {
         "it": {
@@ -30933,6 +32245,22 @@
         }
       }
     },
+    "Working it out": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "In calcolo"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "قيد الحساب"
+          }
+        }
+      }
+    },
     "Working out how it bends…": {
       "localizations": {
         "it": {
@@ -30945,6 +32273,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "جارٍ حساب كيف ينثني…"
+          }
+        }
+      }
+    },
+    "Working out the run": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Calcolo della simulazione"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "حساب المحاكاة"
           }
         }
       }

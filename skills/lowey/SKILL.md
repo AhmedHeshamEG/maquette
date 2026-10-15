@@ -39,6 +39,7 @@ grounds things; you decide what the shot is, then check it with your own eyes (`
 | how things move, timing, twos | `modules/animation.md` |
 | characters, faces, acting, lip sync | `modules/characters.md` |
 | speed lines, impacts, sparkles, smears | `modules/flipbook-fx.md` |
+| falling, knocking over, joints, cloth, water, wind, the real sun | `modules/physics.md` |
 | "is it good?", fixing a shot | `modules/critique.md` |
 | photos, video, Manim graphs | `modules/media.md` |
 | which Look, colour, composition | `style/looks.md`, `style/color.md`, `style/composition.md` |

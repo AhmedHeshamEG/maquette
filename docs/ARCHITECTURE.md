@@ -14,6 +14,7 @@ flowchart TD
     Core["LoweyCore<br/>pure Swift: model · commands · timeline · geometry · modelling · characters · samples"]
     Manifold["Manifold<br/>vendored C++ booleans behind a C face"]
     InstantMeshes["InstantMeshes<br/>vendored C++ quad remeshing behind a C face"]
+    Jolt["Jolt<br/>vendored C++ physics behind a C face"]
     subgraph HmmKit["hmm-kit (Packages/HmmKit, git subtree)"]
         Design[HmmDesign]
         Commands[HmmCommands]
@@ -33,6 +34,7 @@ flowchart TD
     Engine --> Core
     Core --> Manifold
     Core --> InstantMeshes
+    Core --> Jolt
     Features --> Design & Bridge & Diagnostics & Documents & Perception & Board & Held
     Engine --> Media & Diagnostics & Transcript & Perception & Brush
     Core --> Commands & Documents & Transcript & Brush
@@ -45,6 +47,7 @@ flowchart TD
 rigs, bone heat, IK chains, the person rig), blob and puppet characters, Scene Script compiler, Looks as data, samples (Enigma, Welcome island, Night Market) | Linux (`swift:6.1`), coverage gate |
 | **Manifold** (`Packages/Manifold`) | the C++ standard library | Manifold 3.5.4 (Apache-2.0) as a C++17 target, single-threaded, and `ManifoldBridge.h`: boolean and validate in plain C, so Swift needs no C++ interop. `VENDORED.md` says how to update it | Linux and the iPad simulator (its own tests; LoweyCore's boolean tests) |
 | **InstantMeshes** (`Packages/InstantMeshes`) | the C++ standard library | Instant Meshes (BSD-3-Clause) with the Eigen 3.4.0 headers it includes (MPL-2.0, scalar) and a stand-in for the TBB it calls, and `InstantMeshesBridge.h`: remesh into quads in plain C (`VENDORED.md`) | Linux (its own tests; LoweyCore's `QuadRemeshTests`, the U6 SPIKE in a release build) |
+| **Jolt** (`Packages/Jolt`) | the C++ standard library | Jolt Physics 5.6.0 (MIT) without its GPU compute, single-threaded and cross-platform deterministic, and `JoltBridge.h`: rigid bodies, joints and soft bodies in plain C (`VENDORED.md`) | Linux (its own tests and the 500-body SPIKE in a release build; LoweyCore's physics tests) and the iPad simulator (the app build) |
 | **XAtlas** (`Packages/XAtlas`) | the C++ standard library | xatlas (MIT) as a single-threaded C++ target and `XAtlasBridge.h`: unwrap in plain C (`VENDORED.md`) | Linux (its own tests; LoweyCore's paint tests) |
 | **LoweyEngine** | Core, Metal, AVFoundation, Vision, ARKit, JavaScriptCore, hmm-kit's Media / Diagnostics / Perception / Transcript / BrushRender (re-exported) | LoweyRender 2 (with the brush engine's stamps, painted layers and drawn rigs skinned on the GPU), the shot builder, the stage view (`StageView`), model loading and caching, export sessions and presets, overlays and captions, the Night Market benchmark, face capture, the JavaScript runner | iPad simulator: golden images, export, picking, skinning |
 | **LoweyFeatures** | Core, Engine, SwiftUI, hmm-kit's Design / Bridge / Documents / Diagnostics / Board / BoardUI | The editor. `Workspace/` is shared by every feature (app and editor models, the session API, controls); each other folder is one feature's views; `Shell/` composes them | iPad simulator: bridge security, editor flows |
@@ -541,6 +544,44 @@ flowchart LR
   `MapBadges`, `FillControls`), `Draw/SurfacePopover`, `Draw/FlatPaintView`, `Workspace/UI/ColourChooser` (hmm-kit's
   `HmmColourPicker` with `MaterialsPage`), `Workspace/UI/MaterialStudioView`. The bridge's context gets the project's
   files, `PaintPixels.png` and the material library; `applyScript` writes a script's files first.
+
+## Physics (0.19)
+
+```mermaid
+flowchart LR
+    Doc[Document] --> Src[PhysicsSources.gather<br/>Engine: meshes, models' parts, rigs]
+    Src --> In[PhysicsInput.make<br/>start scene · paths · key]
+    In --> Sim[PhysicsSimulator<br/>Jolt world · soft bodies · ragdolls · pieces · forces · fluids]
+    Sim --> Frames[PhysicsFrames<br/>frame by frame]
+    Frames --> Run[PhysicsRun<br/>Features: background, as far as it's gone]
+    Run --> Anim[Animator.evaluate physics:<br/>live values · pieces · SimulatedShapes]
+    Anim --> SB[ShotBuilder → RenderInput.simulated]
+    SB --> SC[SceneCompiler: bent surfaces · fluids · forces]
+    Frames --> Keep[PhysicsKeep<br/>keys · pieces]
+    Keep --> Export[glTF · Blender · FBX<br/>+ OMI physics]
+```
+
+- **Jolt** (`Packages/Jolt`): the vendored library and `JoltBridge` (bodies by shape: box, sphere, capsule, cylinder,
+  convex hull, triangles, glued hulls; joints: fixed, ball, hinge, slider, distance, swing-twist, gear, with motors; soft
+  bodies with pressure and wind on their faces).
+- **Core `Physics/`**: `PhysicsMaterial`, `ObjectPhysics` (on `SceneObject.physics`), `ScenePhysics` and `PhysicsJoint` (on
+  `Scene.physics`), `ForceRecipe` and `FluidRecipe` (the `force` and `fluid` kinds), `BodyShape` (+ `QuickHull3D`,
+  `ConvexVolume`), `PhysicsWorld` (the Swift face of a Jolt world), `PhysicsInput` (what a run needs, its stable key,
+  `StableHasher`), `PhysicsSimulator` (+`Bodies`: rigid, soft, breakables, joints; +`Ragdoll`; +`Forces`: wind, forces,
+  fluids stepped beside the bodies), `PhysicsFrames`, `PhysicsPlayback` (live values, pieces, `SimulatedShapes`, arrows),
+  `PhysicsKeep` (Keep it, `baked` for exports), `PhysicsTools` (Settle, `Stability`, `Outline2D`), `SoftMesh` (weld,
+  refine), `Shatter` (Voronoi cells through `MeshBoolean`, `ConvexPolyhedron`), `DistanceField`, `LiquidSolver` (PBF,
+  `Kernel`, `SpatialHash`), `FluidSurface` (marching tetrahedra), `SmokeSolver`, `SolarPosition` and `RealSun` (on the
+  Look's lighting; `RealSunPlayback` in the Animator). Commands `setPhysics`, `setScenePhysics`. `AI/ScriptCompiler+Physics`:
+  the `physics` verb. `GLTFSceneWriter+Physics`: OMI_physics_body and OMI_physics_shape.
+- **Engine**: `Physics/PhysicsSources` (meshes and rigs as values; `ExportSession.preparePhysics` waits for the whole run,
+  reusing a finished one), `ShotBuilder.physics`, `RenderInput.simulated`, `SceneCompiler+Fluids` (water, puffs) and the
+  bent surfaces in `compileSurface`; particles get the scene's wind and ground; `StageView.showPhysicsOverlay`.
+- **Features**: `Workspace/Session/PhysicsRun` (the background run, the last three kept), `EditorModel+Physics` (real,
+  joints, forces, fluids, Keep it, Settle, does it stand), `EditorModel+PhysicsOverlay` (joints, arrows, the footprint),
+  `Inspector/RealSection` (+ `RealSeveral`, `JointRows`, `RealNumbers`), `Inspector/EffectSections` (forces, fluids),
+  `Scene/ScenePhysicsSection`, `Look/RealSunSection`, the Physics menu in `Shell/MenuCommands`. Playback holds at the edge
+  of the run (`physicsHold`).
 
 ## LoweyRender 2
 
