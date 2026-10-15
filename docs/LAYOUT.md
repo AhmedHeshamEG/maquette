@@ -188,7 +188,7 @@ you until a finger's tap places it, and reads as paper while you draw. Tap Draw 
 | Erase (what's in the hand: lines, frames, paint) | `Draw › draw-erase` |
 | Sheets: the sheets kept in the scene (draw on one again, rename, delete with its drawings), a new one | `Draw › draw-sheets › sheet-new` |
 | Frames: frame by frame on the sheet (or stuck to the camera), tracks, blend, opacity, loop, hold, drawn effects | `Draw › draw-sheets › draw-frames` |
-| Colour: the colour picker (disc, values, palettes, the colour before, recent colours, the scene's palette first) and Materials (tap to fill, drag onto a thing, hold for Paint it on, Edit, Duplicate; New; Import a set) | `Draw › colour-well` |
+| Colour: the picker (disc, values, palettes, recent, the scene's palette) and Materials (fill, drag, Paint it on, Edit, Import) | `Draw › colour-well` |
 | Layers (in place of Sheets while a paint brush is over a thing): what the brush paints (Colour, Roughness, Metal, Glow, Bumps, Fur, the Mask) and its value; show or hide, the one painted on, each layer's maps; swipe for Mask, Duplicate, Delete; drag to reorder; pinch to merge; a fill's controls; opacity, blend, Add (layer, colour fill, dirt, worn edges), the layer's menu; project a picture | shown while a paint brush is over a thing |
 | Surface (beside Layers, U7): Brushes (Faces, Seams with Cut and Automatic), Wear, Decal, Mirror, Texture size, Flat view, Detail from a sculpt, Fur | shown while a paint brush is over a thing |
 | The sheet's hold menu: place (nearer, farther, face me), shape (flat, around, dome, on the object), guide (grid, isometric, symmetry), rename, delete | touch and hold the sheet |
