@@ -36,6 +36,9 @@ public extension SceneExport {
         var files = [("scene.usda", Data(usda(meshes).utf8))]
         for (index, item) in meshes.enumerated() {
             if let texture = item.texture { files.append((USDText.textureFile(index), texture)) }
+            for (map, data) in USDText.maps(item) {
+                files.append((USDText.mapFile(index, map), data))
+            }
         }
         return ZipWriter.storedArchive(files, alignment: 64)
     }
@@ -60,6 +63,16 @@ private enum USDText {
         "textures/paint_\(index).png"
     }
 
+    static func mapFile(_ index: Int, _ map: String) -> String {
+        "textures/paint_\(index)_\(map).png"
+    }
+
+    /// The painted maps an item carries, by the name their reader shader takes.
+    static func maps(_ item: ExportMesh) -> [(String, Data)] {
+        [("roughness", item.maps.roughness), ("metal", item.maps.metal), ("emissive", item.maps.emissive), ("normal", item.maps.normal)]
+            .compactMap { name, data in data.map { (name, $0) } }
+    }
+
     static func material(_ item: ExportMesh, index: Int) -> String {
         let linear = SceneExport.linear
         let emissive = item.emissive.map { e in
@@ -75,13 +88,14 @@ private enum USDText {
                     {
                         uniform token info:id = "UsdPreviewSurface"
                         \(diffuse(item, index: index))
-                        color3f inputs:emissiveColor = \(emissive)
-                        float inputs:roughness = \(f(item.roughness))
-                        float inputs:metallic = \(f(item.metallic))
+                        \(input("color3f", "emissiveColor", map: item.maps.emissive == nil ? nil : "emissive", output: "rgb", constant: emissive, index: index))
+                        \(input("float", "roughness", map: item.maps.roughness == nil ? nil : "roughness", output: "r", constant: f(item.roughness), index: index))
+                        \(input("float", "metallic", map: item.maps.metal == nil ? nil : "metal", output: "r", constant: f(item.metallic), index: index))
+                        \(item.maps.normal == nil ? "" : "normal3f inputs:normal.connect = </Root/Materials/M\(index)/normal.outputs:rgb>")
                         float inputs:opacity = \(f(item.color.a))
                         token outputs:surface
                     }
-        \(item.texture == nil ? "" : textureShaders(index))
+        \(item.texture == nil ? "" : textureShaders(index))\(maps(item).map { mapShader(index, $0.0) }.joined())
                 }
 
         """
@@ -94,6 +108,33 @@ private enum USDText {
             return "color3f inputs:diffuseColor = (\(f(linear(item.color.r))), \(f(linear(item.color.g))), \(f(linear(item.color.b))))"
         }
         return "color3f inputs:diffuseColor.connect = </Root/Materials/M\(index)/Paint.outputs:rgb>"
+    }
+
+    /// An input as a constant, or read from a painted map's texture.
+    static func input(_ type: String, _ name: String, map: String?, output: String, constant: String, index: Int) -> String {
+        guard let map else { return "\(type) inputs:\(name) = \(constant)" }
+        return "\(type) inputs:\(name).connect = </Root/Materials/M\(index)/\(map).outputs:\(output)>"
+    }
+
+    /// The reader of one painted map (raw values; a normal map scaled from 0…1 to −1…1).
+    static func mapShader(_ index: Int, _ map: String) -> String {
+        let normal = map == "normal"
+        let colour = map == "emissive"
+        let outputs = normal || colour ? "float3 outputs:rgb" : "float outputs:r"
+        let scale = normal ? "\n                        float4 inputs:scale = (2, 2, 2, 1)\n                        float4 inputs:bias = (-1, -1, -1, 0)" : ""
+        return """
+
+                    def Shader "\(map)"
+                    {
+                        uniform token info:id = "UsdUVTexture"
+                        asset inputs:file = @\(mapFile(index, map))@
+                        float2 inputs:st.connect = </Root/Materials/M\(index)/UV.outputs:result>
+                        token inputs:wrapS = "repeat"
+                        token inputs:wrapT = "repeat"
+                        token inputs:sourceColorSpace = "\(colour ? "sRGB" : "raw")"\(scale)
+                        \(outputs)
+                    }
+        """
     }
 
     /// The texture reader and the uv reader of a painted material.

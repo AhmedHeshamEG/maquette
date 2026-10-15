@@ -24,6 +24,8 @@ final class SceneCompiler {
     var activeDeform: simd_float4x4?
     /// The outline width of the character part being compiled.
     var activeHull: Float = 0
+    /// How many fur shells a surface draws (the stage's tier; exports draw them all).
+    var furShells = FurSettings.exportShells
 
     init(device: MTLDevice, meshes: MeshCache, textures: TextureStore, models: ModelLibrary, stamper: BrushStamper, paints: PaintTextures) {
         self.device = device

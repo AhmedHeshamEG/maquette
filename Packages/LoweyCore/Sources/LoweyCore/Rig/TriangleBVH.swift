@@ -15,6 +15,8 @@ public struct TriangleBVH: Sendable {
     let positions: [SIMD3<Float>]
     /// Triangles as index triples, reordered by the build.
     let triangles: [SIMD3<UInt32>]
+    /// Each reordered triangle's index in the mesh.
+    let original: [Int32]
     let nodes: [Node]
 
     public init(_ mesh: MeshData) {
@@ -24,15 +26,17 @@ public struct TriangleBVH: Sendable {
         for tri in stride(from: 0, to: mesh.indices.count - 2, by: 3) {
             triangles.append(SIMD3<UInt32>(mesh.indices[tri], mesh.indices[tri + 1], mesh.indices[tri + 2]))
         }
-        var builder = Builder(positions: mesh.positions, triangles: triangles)
+        var builder = Builder(positions: mesh.positions, triangles: triangles, original: (0 ..< Int32(triangles.count)).map(\.self))
         if !triangles.isEmpty { builder.build(0, triangles.count) }
         self.triangles = builder.triangles
+        original = builder.original
         nodes = builder.nodes
     }
 
     private struct Builder {
         let positions: [SIMD3<Float>]
         var triangles: [SIMD3<UInt32>]
+        var original: [Int32]
         var nodes: [Node] = []
 
         func centre(_ tri: SIMD3<UInt32>) -> SIMD3<Float> {
@@ -54,8 +58,9 @@ public struct TriangleBVH: Sendable {
             guard end - start > 4 else { return nodeIndex }
             let extent = high - low
             let axis = extent.x > extent.y ? (extent.x > extent.z ? 0 : 2) : (extent.y > extent.z ? 1 : 2)
-            let slice = triangles[start ..< end].sorted { centre($0)[axis] < centre($1)[axis] }
-            triangles.replaceSubrange(start ..< end, with: slice)
+            let order = (start ..< end).sorted { centre(triangles[$0])[axis] < centre(triangles[$1])[axis] }
+            triangles.replaceSubrange(start ..< end, with: order.map { triangles[$0] })
+            original.replaceSubrange(start ..< end, with: order.map { original[$0] })
             let middle = (start + end) / 2
             nodes[nodeIndex].size = 0
             nodes[nodeIndex].start = Int32(nodes.count)
@@ -100,6 +105,65 @@ public struct TriangleBVH: Sendable {
             return false
         }
         return blocked
+    }
+
+    /// The nearest crossing within `limit`: its distance, the mesh's triangle and the weights of its three corners.
+    public func nearest(origin: SIMD3<Float>, direction: SIMD3<Float>, limit: Float = .infinity) -> (t: Float, triangle: Int, weights: SIMD3<Float>)? {
+        var best: (t: Float, triangle: Int, weights: SIMD3<Float>)?
+        visitTriangles(origin: origin, direction: direction, limit: min(limit, 1e30)) { t, index, weights in
+            if t < best?.t ?? .infinity { best = (t, Int(original[index]), weights) }
+            return false
+        }
+        return best
+    }
+
+    /// Whether the ray meets the surface within `limit` (beyond `start`, so a ray leaving a surface doesn't meet it).
+    public func anyHit(origin: SIMD3<Float>, direction: SIMD3<Float>, start: Float = 0, limit: Float) -> Bool {
+        var hit = false
+        visitTriangles(origin: origin, direction: direction, limit: limit) { t, _, _ in
+            hit = t > start
+            return hit
+        }
+        return hit
+    }
+
+    private func visitTriangles(origin: SIMD3<Float>, direction: SIMD3<Float>, limit: Float,
+                                found: (Float, Int, SIMD3<Float>) -> Bool) {
+        guard !nodes.isEmpty else { return }
+        func safe(_ value: Float) -> Float { abs(value) < 1e-20 ? (value < 0 ? -1e-20 : 1e-20) : value }
+        let inverse = SIMD3<Float>(1 / safe(direction.x), 1 / safe(direction.y), 1 / safe(direction.z))
+        var stack: [Int32] = [0]
+        while let index = stack.popLast() {
+            let node = nodes[Int(index)]
+            guard Self.slab(node.low, node.high, origin: origin, inverse: inverse, limit: limit) else { continue }
+            guard node.size > 0 else {
+                stack.append(node.start)
+                stack.append(node.right)
+                continue
+            }
+            for tri in Int(node.start) ..< Int(node.start + node.size) {
+                guard let hit = barycentric(triangles[tri], origin: origin, direction: direction), hit.t <= limit else { continue }
+                if found(hit.t, tri, hit.weights) { return }
+            }
+        }
+    }
+
+    private func barycentric(_ tri: SIMD3<UInt32>, origin: SIMD3<Float>, direction: SIMD3<Float>) -> (t: Float, weights: SIMD3<Float>)? {
+        let a = positions[Int(tri.x)]
+        let edge1 = positions[Int(tri.y)] - a
+        let edge2 = positions[Int(tri.z)] - a
+        let p = cross3(direction, edge2)
+        let determinant = dot3(edge1, p)
+        guard abs(determinant) > 1e-12 else { return nil }
+        let inverse = 1 / determinant
+        let s = origin - a
+        let u = dot3(s, p) * inverse
+        guard u >= 0, u <= 1 else { return nil }
+        let q = cross3(s, edge1)
+        let v = dot3(direction, q) * inverse
+        guard v >= 0, u + v <= 1 else { return nil }
+        let t = dot3(edge2, q) * inverse
+        return t > 0 ? (t, SIMD3<Float>(1 - u - v, u, v)) : nil
     }
 
     /// Calls `found` with each crossing's distance and whether the ray meets the triangle's front there; `found`

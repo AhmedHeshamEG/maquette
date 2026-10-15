@@ -203,7 +203,7 @@ private let layoutWalkRows: [LayoutWalk.Row] = [
                    control: "Frames: frame by frame on the sheet (or stuck to the camera), tracks, blend, opacity, loop, hold, drawn effects",
                    steps: ["Draw", "draw-sheets", "draw-frames"], held: ""),
     LayoutWalk.Row(home: "Draw", precondition: "",
-                   control: "Colour: the palette and any colour",
+                   control: "Colour: the picker (disc, values, palettes, recent, the scene's palette) and Materials (fill, drag, Paint it on, Edit, Import)",
                    steps: ["Draw", "colour-well"], held: ""),
     LayoutWalk.Row(home: "Rig", precondition: "",
                    control: "With nothing selected: where characters come from",

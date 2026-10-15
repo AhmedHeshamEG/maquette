@@ -57,13 +57,20 @@ extension EditorModel {
 
     func scriptContext() -> ScriptContext {
         refreshOperationsLibrary()
-        return ScriptContext(library: library.manifest, now: time, focus: dropPoint(), ids: .random)
+        let materials = app.materials
+        // Materials' pictures live in the library until a fill copies them into the project.
+        let project = paintFiles
+        let file: @Sendable (String) -> Data? = { name in project(name) ?? materials.pictureData(name) }
+        return ScriptContext(library: library.manifest, now: time, focus: dropPoint(), ids: .random, file: file, encodePNG: PaintPixels.png,
+                             materials: materials.library)
     }
 
-    /// Compiles against the current document and performs it (one undo step).
+    /// Compiles against the current document and performs it (one undo step). The files its paint names are written
+    /// under the project's assets first.
     func applyScript(_ script: SceneScript) -> Result<ScriptResult, Error> {
         do {
             let result = try ScriptCompiler.compile(script, document: session.document, context: scriptContext())
+            try Self.writeNow(result.files, to: assetsFolder)
             if let command = result.command {
                 perform(command)
                 HmmHaptics.play(.commit)
@@ -71,6 +78,16 @@ extension EditorModel {
             return .success(result)
         } catch {
             return .failure(error)
+        }
+    }
+
+    /// Files a script made, written before its command (they're named by content: one already there is kept).
+    nonisolated static func writeNow(_ files: [String: Data], to folder: URL) throws {
+        for (name, data) in files {
+            let url = folder.appendingPathComponent(name)
+            guard !FileManager.default.fileExists(atPath: url.path) else { continue }
+            try FileManager.default.createDirectory(at: url.deletingLastPathComponent(), withIntermediateDirectories: true)
+            try data.write(to: url, options: .atomic)
         }
     }
 

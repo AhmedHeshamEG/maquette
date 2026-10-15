@@ -31,6 +31,12 @@ public extension LoweyRenderer {
         paints.adopt(object: object, layer: layer, changes: changes)
     }
 
+    /// Tiles a stroke worked out on the CPU (smudge, the faces brush) shown before the stroke is kept. `layer` is the
+    /// map's key (`PaintPictures.key`).
+    func showLivePaint(object: ObjectID, layer: String, tiles: [PaintTileIndex: RGBAImage]) {
+        paints.queueLive(object: object, layer: layer, tiles: tiles)
+    }
+
     internal func encodeLivePaint(_ live: LivePaint, request: FrameRequest, scene: RenderScene, camera: RenderCamera, viewProjection: simd_float4x4,
                                   targets: FrameTargets, commandBuffer: MTLCommandBuffer) {
         guard let item = scene.items.first(where: { $0.painted == live.object && !$0.ghost }) else { return }

@@ -504,6 +504,44 @@ flowchart LR
 - **Features**: `EditorModel+ModelSteps` (`stepsObject`, `changeStep` replays in a detached task and drops a result whose
   object changed meanwhile), `History/ModelStepsPanel` (over `HistoryScrubberBar` in `EditorScreen`). ⌘Y opens History.
 
+## Texture (0.18)
+
+```mermaid
+flowchart LR
+    Stroke[StageGestures+Paint<br/>a layer's map, mirrored] --> Live[LivePaint<br/>key "l1#roughness"]
+    Live --> GPU[PaintTextures<br/>a texture per layer and map]
+    GPU --> Compose[compose map by map<br/>masks, blend modes]
+    Compose --> Shade[Shading.metal lw_applyMaps<br/>roughness · metal · glow · bumps · normals]
+    Smudge[EditorModel+Texture<br/>SmudgeSession, CPU] --> LiveTiles[showLivePaint tiles] --> GPU
+    Fill[EditorModel+Surface<br/>colour · material · wear] --> Fills[PaintFills.images<br/>off the main thread] --> Cmd[setPaint]
+    Cmd --> Export[PaintExport.painted<br/>every map] --> GLB[glTF · USDZ · PNG set]
+```
+
+- **Core `Paint/`**: `PaintMaps` (`PaintMap`, `PaintFill`, `PaintWear`, `PaintSeam`, `PaintMirror`); `ObjectPaint`'s layers
+  hold `maps` and a `fill`; `PaintComposer` composites one map with masks; `PaintPictures` decodes a paint's layer pictures
+  by key (`key`, `split`); `PaintMaterial` (+ `MaterialPictures`, `MaterialSample`, `MaterialPictureSource` for triplanar
+  pictures), `MaterialPatterns` (+ `PatternNoise`), `MaterialLibrary` and `BuiltInMaterials`, `MaterialPreview` and
+  `PBRSetImport`; `SurfaceTexels` and `WearBake` (+ `SharpEdges`); `PaintFills` (a fill's pictures, `filled`, `addFill`,
+  `changeFill`, `setMask`); `PaintDecal`, `PaintTools` (`PaintSurfacePick`: a ray to a uv and the flat face; `PaintSmudge`;
+  `fillFaces`, `resized`); `NormalBake` (bakes, bumps to normals, tangents); `Fur` (`FurSettings`, `FurGeometry`: cards,
+  shells, the strand picture); `PaintExport` (every map, `ExportMaps`, `pngSet`) and `PaintPalette` (`PaintColorOutput`);
+  `PaintUnwrap.unwrap(_:seams:)` with `SeamGroups` (xatlas's face groups, `XAUnwrapMeshGrouped`). `TriangleBVH` gains
+  `nearest` and `anyHit`. `AI/ScriptCompiler+Paint`: the `paint` verb (the context reads files and encodes PNGs; the
+  result carries `files`).
+- **Engine**: `PaintTextures` keeps a layer texture per `PaintPictures.key`, a composite per shown map (colour and glow as
+  sRGB views), the baked normal map, live tiles (`queueLive`), mirrored and flat strokes (`PaintTextures+Encode`,
+  `Paint.metal`'s mask, `lw_paintFlat`); `PaintMapTextures` on `DrawItem`, bound as textures 3 … 7 (`Renderer+Fur`'s
+  `bindMaps`) and read by `Shading.metal`'s `lw_applyMaps` under the `LW_FLAG_ROUGHNESS` … `LW_FLAG_NORMALS` flags. Fur:
+  `FurDraw` on a surface's item draws shells in `encodeFur` (`lw_vertexFur`, `lw_shadeFur`; the count from the tier),
+  hair cards are their own items (`furCards`, `lw_shadeFurCard`). `Post.metal`'s `lw_hatch` (the Look's `lineShape.w`).
+  `ModelExport` writes the Maps (PNG) format and passes the painted colour's output.
+- **Features**: `EditorModel+Texture` (`TextureWork`: picks, the smudge, wear bakes; `surfaceHit`, smudge, faces, seams
+  and their overlay), `EditorModel+Surface` (drops, fills, masks, decals, size, mirror, normal bakes, fur),
+  `MaterialModel` (the device's materials, previews, PBR import) on `AppModel`; `Draw/LayersPopover` (`PaintsRow`,
+  `MapBadges`, `FillControls`), `Draw/SurfacePopover`, `Draw/FlatPaintView`, `Workspace/UI/ColourChooser` (hmm-kit's
+  `HmmColourPicker` with `MaterialsPage`), `Workspace/UI/MaterialStudioView`. The bridge's context gets the project's
+  files, `PaintPixels.png` and the material library; `applyScript` writes a script's files first.
+
 ## LoweyRender 2
 
 ```mermaid

@@ -98,6 +98,8 @@ indirect enum MeshKey: Hashable {
     case rigged(String, skin: String, dabs: [ShadowDab])
     /// Ink ribbons facing an eye (object-local, centimetres) with a reveal (per mille).
     case ink(DrawingRecipe, eye: SIMD3<Int32>, reveal: Int32)
+    /// Hair cards grown on the mesh with this fingerprint, for these fur settings.
+    case furCards(String, FurSettings)
 
     /// Millimetre quantisation for size-dependent meshes (bevels, cards).
     static func mm(_ value: Double) -> Int32 {

@@ -44,6 +44,13 @@ public enum ScriptReference {
     {"do":"model","target":"Block","op":"steps"}   (lists its modelling steps)   {"op":"step","step":1,"number":"diameter","value":0.008}   (H1: later steps replay)
     {"do":"profile","target":"Sketch","region":0,"op":"revolve","axis":{"point":[0,0,0],"direction":[0,1,0]}}   ("sweep" with "path", "loft" with "through")
 
+    Texture (U7; each a layer or a setting, one step each)
+    {"do":"paint","target":"Crate","op":"material","material":"oak|steel|gold|brick|stone|fabric|…","scale":0.2}   {"op":"color","color":"#B5512E"}
+    {"do":"paint","target":"Crate","op":"wear","kind":"dirt|edges","amount":0.6}   {"op":"mirror","axis":"x"}   {"op":"size","pixels":1024}
+    {"do":"paint","target":"Crate","op":"decal","picture":"media/logo.png","at":[0,0.5,0.5],"size":0.3}   {"op":"faces","at":[0,1,0],"color":"#22AA44"}
+    {"do":"paint","target":"Crate","op":"layers"}   (lists them)   {"op":"mask","layer":2}   {"op":"seams","edges":[[[x,y,z],[x,y,z]],…]}
+    {"do":"paint","target":"Light copy","op":"bakeNormals","from":"Sculpt"}   {"do":"paint","target":"Fox","op":"fur","length":0.03,"style":"shells|cards"}
+
     Shoot and light
     {"do":"frameShot","subject":"Hesham","shotType":"extremeWide|wide|full|medium|closeUp|extremeCloseUp|overTheShoulder|twoShot|insert",
      "composition":"center|leftThird|rightThird|lowAngle|highAngle","lens":85,"other":"Ada","side":"left|right","camera":"Shot 2","at":{"word":"Nobody"}}

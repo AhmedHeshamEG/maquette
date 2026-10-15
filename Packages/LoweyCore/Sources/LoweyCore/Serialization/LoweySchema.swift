@@ -3,7 +3,7 @@ import HmmDocuments
 
 /// The JSON files inside a `.lowey` package, the library and the brush library.
 public enum FileKind: String, Sendable {
-    case project, scene, library, brushes
+    case project, scene, library, brushes, materials
 }
 
 public extension Migration {
@@ -54,7 +54,10 @@ public enum LoweySchema {
     ///     `constraints`.
     /// 16: Maquette 0.17's editable history: objects' `modelHistory` (the shape the steps start from, the steps, the
     ///     tags of the faces), the `setModelHistory` command.
-    public static let currentVersion = 16
+    /// 17: Maquette 0.18's texture: layers' `maps` (roughness, metal, glow, bumps, fur, mask) and `fill`, paint's
+    ///     `mirror`, `normalMap` and the surface's `seams`, tile changes' `map`, the `fur…` properties, the
+    ///     `materials` library file.
+    public static let currentVersion = 17
 
     public static let migrations: [Migration] = [
         Migration(kind: .scene, from: 0, transform: liftSceneV0),
@@ -116,8 +119,18 @@ public enum LoweySchema {
         // 15 → 16 adds the optional model history; nothing older changes shape.
         Migration(kind: .scene, from: 15) { $0 },
         Migration(kind: .project, from: 15) { $0 },
-        Migration(kind: .library, from: 15) { $0 }
-    ]
+        Migration(kind: .library, from: 15) { $0 },
+        // 16 → 17 adds optional paint maps, fills, mirror, normals, seams and fur; nothing older changes shape.
+        Migration(kind: .scene, from: 16) { $0 },
+        Migration(kind: .project, from: 16) { $0 },
+        Migration(kind: .library, from: 16) { $0 }
+    ] + unchangedSince(.brushes) + unchangedSince(.materials)
+
+    /// A file kind whose payload hasn't changed shape at any version: every step keeps it as it is (D-339; the
+    /// brush library was missing these, so each schema bump failed to read the device's brushes).
+    static func unchangedSince(_ kind: FileKind) -> [Migration] {
+        (0 ..< currentVersion).map { Migration(kind: kind, from: $0) { $0 } }
+    }
 
     /// The render style a 1.x look maps to.
     static func v1PresetID(for look: JSONValue) -> String {

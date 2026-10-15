@@ -109,6 +109,7 @@ public final class LoweyRenderer: SceneRendering {
         stamper = try BrushStamper(device: device.device)
         paints = PaintTextures(device: device)
         compiler = SceneCompiler(device: device.device, meshes: meshes, textures: textures, models: models, stamper: stamper, paints: paints)
+        compiler.furShells = FurSettings.shells(forTier: quality.tier == .a ? 0 : quality.tier == .b ? 1 : 2)
         upscaler = Upscaler(device: device)
         shadowMap = try device.makeTexture(RenderDevice.depthFormat, width: quality.shadowMapSize, height: quality.shadowMapSize,
                                            usage: [.renderTarget, .shaderRead], label: "sun shadows", arrayLength: 2)

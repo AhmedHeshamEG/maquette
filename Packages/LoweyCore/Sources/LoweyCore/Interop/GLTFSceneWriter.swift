@@ -11,12 +11,15 @@ public enum GLTFScene {
         public var material: ExportMaterial
         /// A colour per vertex (sRGB), written as `COLOR_0` (a painted sculpt).
         public var colors: [SIMD4<Float>]
+        /// Tangents for a normal map (`TANGENT`).
+        public var tangents: [SIMD4<Float>]?
 
-        public init(name: String, mesh: MeshData, material: ExportMaterial, colors: [SIMD4<Float>] = []) {
+        public init(name: String, mesh: MeshData, material: ExportMaterial, colors: [SIMD4<Float>] = [], tangents: [SIMD4<Float>]? = nil) {
             self.name = name
             self.mesh = mesh
             self.material = material
             self.colors = colors
+            self.tangents = tangents
         }
     }
 
@@ -126,8 +129,10 @@ struct GLTFSceneWriter {
     mutating func addMesh(for object: SceneObject) -> Int? {
         var pieces: [GLTFScene.LocalPart] = []
         if let paint = painted(object) {
-            pieces = [GLTFScene.LocalPart(name: object.name, mesh: paint.mesh,
-                                          material: SceneExport.material(of: object, look: look).painted(paint.texture))]
+            var material = SceneExport.material(of: object, look: look).painted(paint.texture, maps: paint.maps)
+            // Vertex colours carry the colour on their own (glTF multiplies them by the texture).
+            if !paint.vertexColors.isEmpty { material.texture = nil }
+            pieces = [GLTFScene.LocalPart(name: object.name, mesh: paint.mesh, material: material, colors: paint.vertexColors, tangents: paint.tangents)]
         } else if let bent = posed(object) {
             pieces = bent
         } else if let mesh = SceneExport.localMesh(of: object, look: look), !mesh.isEmpty {
@@ -136,14 +141,18 @@ struct GLTFSceneWriter {
             pieces = parts(object).filter { !$0.mesh.isEmpty }
         }
         guard !pieces.isEmpty else { return nil }
+        if let fur = FurSettings(object), let surface = pieces.first?.mesh {
+            pieces += Self.furParts(fur, on: surface, name: object.name, material: SceneExport.material(of: object, look: look))
+        }
         let primitives = pieces.map { piece -> [String: Any] in
-            ["attributes": attributes(piece.mesh, colors: piece.colors), "indices": indices(piece.mesh), "material": addMaterial(piece)]
+            ["attributes": attributes(piece.mesh, colors: piece.colors, tangents: piece.tangents), "indices": indices(piece.mesh),
+             "material": addMaterial(piece)]
         }
         meshes.append(["name": object.name, "primitives": primitives])
         return meshes.count - 1
     }
 
-    mutating func attributes(_ mesh: MeshData, colors: [SIMD4<Float>] = []) -> [String: Int] {
+    mutating func attributes(_ mesh: MeshData, colors: [SIMD4<Float>] = [], tangents: [SIMD4<Float>]? = nil) -> [String: Int] {
         let bounds = mesh.bounds ?? Bounds(min: .zero, max: .zero)
         var result = ["POSITION": addAccessor(Self.floats(mesh.positions.flatMap { [$0.x, $0.y, $0.z] }), target: Self.arrayBuffer,
                                               count: mesh.positions.count, type: "VEC3",
@@ -167,6 +176,10 @@ struct GLTFSceneWriter {
             }
             result["COLOR_0"] = addAccessor(Self.floats(linear), target: Self.arrayBuffer, count: colors.count, type: "VEC4")
         }
+        if let tangents, tangents.count == mesh.positions.count {
+            result["TANGENT"] = addAccessor(Self.floats(tangents.flatMap { [$0.x, $0.y, $0.z, $0.w] }), target: Self.arrayBuffer,
+                                            count: tangents.count, type: "VEC4")
+        }
         return result
     }
 
@@ -189,17 +202,52 @@ struct GLTFSceneWriter {
             ]
         ]
         if surface.color.a < 1 { material["alphaMode"] = "BLEND" }
-        if let texture = surface.texture {
-            var pbr = material["pbrMetallicRoughness"] as? [String: Any] ?? [:]
-            pbr["baseColorTexture"] = ["index": addTexture(texture)]
-            material["pbrMetallicRoughness"] = pbr
+        var pbr = material["pbrMetallicRoughness"] as? [String: Any] ?? [:]
+        if let texture = surface.texture { pbr["baseColorTexture"] = ["index": addTexture(texture)] }
+        if let cutout = surface.cutout {
+            pbr["baseColorTexture"] = ["index": addTexture(cutout)]
+            material["alphaMode"] = "MASK"
+            material["alphaCutoff"] = 0.5
+            material["doubleSided"] = true
         }
+        if let packed = surface.maps.metallicRoughness {
+            // The texture holds the values; the factors multiply it.
+            pbr["metallicRoughnessTexture"] = ["index": addTexture(packed)]
+            pbr["metallicFactor"] = 1.0
+            pbr["roughnessFactor"] = 1.0
+        }
+        material["pbrMetallicRoughness"] = pbr
         if let emissive = surface.emissive, surface.emissiveStrength > 0 {
             let strength = min(surface.emissiveStrength, 1)
             material["emissiveFactor"] = [linear(emissive.r) * strength, linear(emissive.g) * strength, linear(emissive.b) * strength]
         }
+        if let glow = surface.maps.emissive {
+            material["emissiveTexture"] = ["index": addTexture(glow)]
+            material["emissiveFactor"] = [1.0, 1.0, 1.0]
+        }
+        if let normal = surface.maps.normal { material["normalTexture"] = ["index": addTexture(normal)] }
         materials.append(material)
         return materials.count - 1
+    }
+
+    /// Fur in a 3D file (D-355): hair cards as they are, or a few shells (8: enough to read as fur, light enough for an
+    /// engine), each cut out by the strand picture, in the thing's own colour.
+    static func furParts(_ fur: FurSettings, on surface: MeshData, name: String, material: ExportMaterial) -> [GLTFScene.LocalPart] {
+        var strands = material
+        strands.texture = nil
+        strands.maps = ExportMaps()
+        strands.roughness = 0.9
+        switch fur.style {
+        case .cards:
+            strands.cutout = PNGCodec.encode(FurGeometry.strandPicture(cards: true))
+            let cards = FurGeometry.cards(on: surface, fur: fur)
+            return cards.isEmpty ? [] : [GLTFScene.LocalPart(name: "\(name) hair cards", mesh: cards, material: strands)]
+        case .shells:
+            strands.cutout = PNGCodec.encode(FurGeometry.strandPicture(cards: false))
+            return FurGeometry.shells(of: surface, fur: fur, count: 8).enumerated().map { index, shell in
+                GLTFScene.LocalPart(name: "\(name) fur \(index + 1)", mesh: shell, material: strands)
+            }
+        }
     }
 
     /// A PNG in the buffer as an image, with a repeating linear sampler.

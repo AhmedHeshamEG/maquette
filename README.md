@@ -4,6 +4,11 @@ Shapr3D's ease, Procreate's feel, Dreams' animation and ToonSquid's rigging, in 
 or art degree. Build a set like Lego, drop in characters, direct them with a camera, sync them to your voice, and
 export the video. By **studio h.**; the continuation of 3D-lowey 2.0. All rights reserved (see [LICENSE](LICENSE)).
 
+**0.18** (phase U7): **texture**. Layers that paint colour, roughness, metal, glow, bumps and fur, with masks and
+fills; Procreate's colour picker with materials to drop onto anything; our own procedural materials and a Material
+Studio; automatic wear, decals, mirrored painting, the faces brush, seams, a flat view, normals baked from a sculpt, fur
+and hatched shadows; every map out to glTF, USDZ and PNG.
+
 **0.17** (phase H1): **editable history**. Every modelling step of a thing is listed in plain words ("Hole, 6 mm",
 "Round, 2 mm") over the History scrubber. Change an early step's numbers and everything after it follows: the steps
 find the same faces and edges on the changed shape, and say in one line when one can't.

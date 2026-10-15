@@ -73,6 +73,14 @@ public struct LoweyMenuCommands: Commands {
             Button("Linked Copy") { stageEditor?.makeLinkedCopy() }.keyboardShortcut("d", modifiers: [.command, .shift])
             Button("Pivot to the Middle") { stageEditor?.movePivot(to: .middle) }
         }
+        CommandMenu("Texture") {
+            // U7: the surface's tools, for the keyboard.
+            Button("Paint Flat") { stageEditor?.colourPaint.flatView = true }.keyboardShortcut("f", modifiers: [.command, .shift])
+            Button("Add Dirt") { stageEditor?.addFill(.wear(PaintWear(kind: .dirt))) }.keyboardShortcut("w", modifiers: [.command, .option])
+            Button("Add Worn Edges") { stageEditor?.addFill(.wear(PaintWear(kind: .edges))) }.keyboardShortcut("e", modifiers: [.command, .option])
+            Button("Mirror Paint") { stageEditor?.togglePaintMirror() }.keyboardShortcut("m", modifiers: [.command, .control])
+            Button("Fill Faces") { stageEditor?.toggleFacesBrush() }.keyboardShortcut("f", modifiers: [.command, .option, .shift])
+        }
         CommandMenu("Scene") {
             Button("Frame Selection") { editor?.frameSelection() }.keyboardShortcut("f", modifiers: .command)
             Button("Director View") { editor.map { $0.setDirectorView(!$0.directorView) } }.keyboardShortcut("d", modifiers: [.command, .option])

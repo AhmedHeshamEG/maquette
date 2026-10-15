@@ -33,6 +33,11 @@ typedef enum {
 XAStatus XAUnwrapMesh(const float *positions, const float *normals, size_t vertexCount, const uint32_t *indices, size_t indexCount,
                       uint32_t resolution, uint32_t padding, XAUnwrap *result);
 
+/// The same, with a group per triangle (`indexCount / 3` of them, or null): no chart spans two groups, so the
+/// boundaries between groups are seams.
+XAStatus XAUnwrapMeshGrouped(const float *positions, const float *normals, size_t vertexCount, const uint32_t *indices, size_t indexCount,
+                             const uint32_t *faceGroups, uint32_t resolution, uint32_t padding, XAUnwrap *result);
+
 void XAUnwrapFree(XAUnwrap *unwrap);
 
 #ifdef __cplusplus

@@ -2323,3 +2323,124 @@ with its usual message.
 
 **D-337 — Translations still ride along.** The 8 new strings were translated into Italian and Arabic for the catalog check
 (D-300, D-325).
+
+## Maquette 0.18 — U7, texture
+
+**D-338 — A layer holds maps; a stroke paints one.** A paint layer keeps its colour as before (`tiles`) and, beside it,
+tiles for roughness, metal, glow, bumps and fur, and a mask (`maps`). Value maps are grey (white = 1), glow a colour; where
+a map is clear, the thing's own value shows. The brush paints one map at a time (Layers ▸ the map chips, with a value for
+the value maps); a fill of a material writes all its maps at once. The GPU keeps a texture per layer and map only for maps
+that have tiles, and composites map by map. *Rejected:* one channel per layer (a material would be five layers);
+Substance's every-layer-every-channel (five textures per layer on a Tier B iPad).
+
+**D-339 — The brush and material library files migrate like the rest.** The device's `brushes.json` had no migrations,
+so every schema bump since 0.5 made it unreadable and the library fell back to the built-ins (the person's own brushes
+were lost on the next save). Both library files now step through every version unchanged; a test reads a 16 file.
+
+**D-340 — Fill layers make their tiles from what they're made of.** A colour, a material (a frozen copy, so the project
+carries it), or wear. The tiles are made when the fill is added or changed (off the main thread; a plain colour or a
+patternless material is one tile repeated, so one small file per map). A fill isn't painted on: its mask is (the brush
+says so in one line). *Paint it on* (a material's hold menu) adds the fill behind an empty mask and puts the brush on the
+mask: the Substance way, in two taps.
+
+**D-341 — Materials are numbers, procedural.** Two colours, roughness, metal, glow, a pattern, its size in metres, how
+strongly it shows, and bumps. Solid patterns (noise, wood, marble, stone, concrete, leather, rust, sand, brushed) are 3D,
+so they wrap any shape with no seam; laid ones (bricks, tiles, planks, weave) blend over the three planes by how the
+surface faces. Seeded arithmetic: the same everywhere, testable on Linux. *Rejected:* bundled photo textures (licences,
+size, and the Looks are drawn, not photographed).
+
+**D-342 — Our own library of 24.** Oak, pine, walnut, floorboards; brushed steel, aluminium, gold, copper, cast iron,
+rusty metal; glossy plastic, rubber, cotton, denim, leather, glass, ceramic, neon; stone, marble, concrete, brick, tiles,
+sand. Glass is glossy and pale, not see-through (the Looks have no refraction; a later Look may).
+
+**D-343 — The Material Studio in the Brush Studio's grammar.** The ball on top changes as you go; pages Look, Surface,
+Pattern, Bumps, About. The ball is drawn on the CPU (`MaterialPreview`), so the library shows without the renderer.
+Edits reach the library at once (`materials.json`, newest of your own first); things already filled keep their copy.
+
+**D-344 — PBR sets come in by their names.** basecolor/albedo/diffuse, roughness (gloss is turned into roughness), metallic,
+normal (a DirectX one's green flipped), height/displacement, emissive, AO; stored as PNG in the library and laid on the
+surface by triplanar projection, so they need no unwrap and show no seam. Pictures are copied into the project when a
+fill uses them.
+
+**D-345 — Wear from the shape's own bakes.** Ambient occlusion (24 rays a texel against the shape, at 256 texels: it's soft)
+and the distance to sharp edges (faces meeting at more than 25°, outer and inner). Dirt gathers where it's enclosed and
+in inner creases, worn edges on outer ones; noise breaks the line so it never reads as a gradient; Amount moves the
+threshold. A bake is made once per shape and kept while the app runs.
+
+**D-346 — Smudge on paint works in the texture.** Each Pencil sample is found on the surface (a ray against the paint
+mesh), becomes a dab in texels sized by how many texels a stage point covers there, and drags the paint under the last
+dab forward (premultiplied, so clear paint carries no colour). The changed tiles go to the GPU as the stroke goes and
+are kept as one step. *Rejected:* smudging in screen space (the stroke texture can't read what's already painted).
+
+**D-347 — Mirrored painting draws the stroke twice.** The second projection flips the object's own space across the chosen
+axis, so each point takes the paint its mirror image would get, even on the side facing away. Stored on the paint
+(`mirror`), so it travels with the thing.
+
+**D-348 — A decal is a picture pressed on from in front.** Tapped onto the surface, it lands on what faces it within a box
+its width deep, fading where the surface turns away; it's its own layer ("Decal"). The camera projection stays as
+Project a picture.
+
+**D-349 — Seams are marked edges that close an area.** Seams mode marks the outline edge of the flat face under the
+Pencil (pending ones in amber), Cut lays the surface out again carrying the paint. Triangles are grouped across every
+edge that isn't a seam and xatlas never lets a chart span two groups, so a seam cuts where it closes a loop (or meets the
+border); an open seam cuts nothing. Stored as segments in the object's space, so they survive a re-triangulation.
+*Rejected:* splitting vertices (xatlas joins vertices in the same place).
+
+**D-350 — Texture size per thing: 512, 1024, 2048, 4096.** Every layer, map and mask resampled; baked normals dropped (bake
+again at the new size). The device check covers 4096 on a Tier B iPad.
+
+**D-351 — The flat view paints through the same GPU stroke.** Dabs are drawn in texture pixels onto the layer, kept where
+the unwrap uses the texel; it's a sheet (not a cover) so the stage keeps drawing under it, and the picture refreshes after
+each stroke.
+
+**D-352 — Normals baked from a detailed copy.** For each texel of the light surface a ray from 5 % of its size above looks
+down for the detailed surface (then from below); its normal goes into the texel's tangent frame (x along u, y up the
+picture, as glTF reads). Stored on the paint (`normalMap`, `normalsFrom`), dropped when the shape changes. A dense sphere
+stands in for the Nomad fixture (D-275): in the Core test the light copy's baked normals are under 4° from the true
+shape and under half the facets' error; the engine test renders it closer to the sculpt than the bare facets.
+
+**D-353 — How deep bumps are.** On the stage a unit of height is a centimetre (the slope across the screen tilts the
+normal, no tangents needed); in an exported normal map a unit rises over 6 texels at 2048 (scaled with the size), close
+to the stage's look on a thing a metre across.
+
+**D-354 — Every map leaves.** glTF: the colour, roughness and metal packed as glTF wants (green and blue), emissive and a
+normal map with tangents. USDZ: a reader per map into UsdPreviewSurface. PNG sets: the new Maps (PNG) format writes
+`<name>_color.png` and each painted map. Where nothing is painted a map takes the thing's own value. Exported maps are the
+person's own work; the built-in materials are ours and carry no licence of anyone else's.
+
+**D-355 — Fur: four properties, shells and cards.** `furLength`, `furDensity`, `furStyle`, `furDroop`. Shells draw the
+surface again outward (24 on Tier A, 14 on B, 9 on C; exports draw 24), keeping each cell's strand thinning to its tip; a
+Fur map lengthens or bares it. Cards are crossed strips Core grows on the surface. 3D files get 8 cut-out shells or the
+cards. On the stage cards aren't grown on skinned surfaces yet (they'd stay in the rest pose; backlog).
+
+**D-356 — Painted colour leaves three ways.** Texture (as before), vertex colours (glTF's COLOR_0; the texture is left off,
+since glTF multiplies them) or a palette (each face one swatch of a small picture). Export ▸ glTF ▸ Painted colour.
+
+**D-357 — The faces brush fills a flat face.** A tap fills every triangle in the plane of the one under the Pencil and
+touching it, a texel past its edge, with the colour (or value) in hand: low-poly colouring on any shape.
+
+**D-358 — Hatched shadows beside halftone.** Lines in the shadow band, crossed where it's darkest, thickening with the
+darkness, spaced as the halftone dots are. A Look setting (`comic.hatching`), saved only when it's on.
+
+**D-359 — The bridge paints.** `{"do": "paint", "op": …}`: color, material, wear, decal, faces, layers, mask, mirror, size,
+seams, bakeNormals, fur. The compiler reads the project's files and returns the files its command names; the app writes
+them before applying (one undo step). A material fill at 2048 takes a moment in the proposal.
+
+**D-360 — Dropping onto a thing.** A colour becomes the thing's own colour (under any paint); a material becomes a fill
+layer on top. Swatches and materials drag out of the picker.
+
+**D-361 — The colour picker is the kit's (hmm-kit 0.10).** Procreate's disc, values (HSB, RGB, hex) and saved palettes,
+the colour before and the colours used lately, with the scene's palette first; Maquette adds Materials as a fourth page.
+A swatch of the scene's palette stays bound to its slot.
+
+**D-362 — Surface joins Draw's bar while painting a thing.** Brush · Smudge · Erase · Layers · Colour · Surface (six, the
+most a bar holds). Surface holds the faces brush and seams, wear, a decal, mirror, the texture's size, the flat view,
+normals from a sculpt and fur: one deliberate step past the layers.
+
+**D-363 — Schema 17.** Layers' optional `maps` and `fill`; paint's `mirror`, `normalMap`, `normalsFrom`; the surface's
+`seams`; tile changes' `map`; the fur properties; the Look's `comic.hatching`; the `materials` library file. A mask's tiles
+change only a mask that's there (masks come and go with their layer), so undo is exact. 0.17 refuses a schema-17 file with
+its usual message.
+
+**D-364 — Translations still ride along.** The new strings were translated into Italian and Arabic for the catalog check
+(D-300, D-325, D-337).

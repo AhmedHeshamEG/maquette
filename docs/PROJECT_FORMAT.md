@@ -5,7 +5,7 @@ surface of that package: power users, scripts and MCP clients may **read** any o
 (the laptop bridge), so undo and the history journal stay true; a file changed behind the app's back is overwritten at
 the next checkpoint.
 
-Format version: package **2**, document schema **16** (`LoweySchema.currentVersion`), journal **1**.
+Format version: package **2**, document schema **17** (`LoweySchema.currentVersion`), journal **1**.
 
 ```
 My film.maquette/                 (3D-lowey's .lowey packages open too, and are upgraded in place)
@@ -457,6 +457,43 @@ A modelled object may keep the steps that made its shape (`ModelHistory`), in it
 
 Schema 16 only adds the optional key and the command; files from schema 15 open unchanged, and Maquette 0.16 refuses
 schema 16.
+
+## Texture (schema 17)
+
+Paint gains maps, masks and fills (0.18). A layer's colour stays in `tiles`; its other maps and its mask have tiles of
+their own in `maps`, by name:
+
+```json
+{"id": "l2", "name": "Brick", "opacity": 1, "blend": "normal", "visible": true,
+ "tiles": {"0,0": "paint/…png"},
+ "maps": {"roughness": {"0,0": "paint/…png"}, "metal": {…}, "bumps": {…}, "mask": {"0,0": "paint/…png"}},
+ "fill": {"type": "material", "material": {"id": "brick", "name": "Brick", "color": "#9E4A35", "secondColor": "#CFC8BC",
+          "roughness": 0.85, "metal": 0, "glow": "#000000", "pattern": "bricks", "scale": 0.22, "variation": 1, "bumps": 0.6}}}
+```
+
+- `maps`: `roughness`, `metal`, `bumps` and `fur` are grey (white = 1; bumps' 0.5 is the surface itself), `glow` a colour;
+  each tile's alpha is how much it covers (where a map is clear the thing's own value shows). `mask`'s alpha is how much
+  of the layer shows; a layer with a `mask` key and no tiles under it is hidden. Absent when the layer has none.
+- `blend` adds `darken`, `lighten` and `softLight`.
+- `fill`: what a fill layer's tiles are made from: `{"type": "color", "color"}`, `{"type": "material", "material"}` (a
+  frozen copy: two colours, `roughness`, `metal`, `glow`, `pattern` — `none`, `noise`, `wood`, `planks`, `brushed`,
+  `marble`, `stone`, `concrete`, `bricks`, `tiles`, `weave`, `leather`, `rust`, `sand` — `scale` in metres, `variation`,
+  `bumps`, and `pictures` for an imported set: keys of PNGs under `assets/materials/`), or `{"type": "wear", "wear":
+  {"kind": "dirt" | "edges", "amount", "color", "roughness", "seed"}}`. The tiles are written whenever it changes.
+
+`paint` gains `mirror` (`x`, `y` or `z`: strokes are painted again mirrored across that axis of the object's own space),
+`normalMap` (a tangent-space normal map baked from a more detailed surface, a PNG at the surface's size: x along u, y up
+the picture, z out) and `normalsFrom` (that surface's name). `surface` gains `seams`: edges marked by hand where the
+unwrap cuts, `[{"a": [x, y, z], "b": [x, y, z]}]` in the object's own space.
+
+`paintTiles`' changes gain `map` (absent for colour); a change to a `mask` needs the layer to have one. The Look's
+`comic` gains `hatching` (0 off … 1). Objects gain the properties `furLength` (metres; absent or 0: no fur),
+`furDensity` (0–1), `furStyle` (`shells` when absent, or `cards`) and `furDroop` (0–1).
+
+The device's material library is `materials.json` beside `materials/` (a versioned envelope, `kind: "materials"`):
+`{"materials": {id: material}, "order": [id]}`, the person's own and edited built-ins.
+
+Schema 17 only added optional keys; files from schema 16 open unchanged, and Maquette 0.17 refuses schema 17.
 
 ## workspace.json
 

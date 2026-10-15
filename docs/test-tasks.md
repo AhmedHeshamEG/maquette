@@ -3,6 +3,17 @@
 One task per feature for the two test weeks (between M14 and M16), written for its person in `studio-h/USERS.md`. A
 task says what to make, never which buttons to press; the tester says where they got stuck.
 
+## 0.18 (U7): texture
+
+- **The texture artist:** a wooden crate beside the Keeper's Tower: planks, dirt in the corners, worn metal corners
+  that shine, a stencilled label on one side, and the same scratch on both sides at once. Export it for a game engine
+  with all its maps.
+- **The game developer:** a low-poly lantern coloured face by face, out as a glTF with vertex colours and again with a
+  palette texture; then a heavy sculpt's detail on its light copy.
+- **The Procreate person:** a fox with soft fur, longer on its tail than its face, and a colour picked from the
+  scene's palette.
+- **Everyone:** drag Gold from the materials onto the keeper's lamp; make the lamp's glass glow.
+
 ## 0.17 (H1): editable history
 
 - **The maker:** the 40 × 20 × 10 mm block with a 6 mm hole and rounded corners; then the screw is bigger than planned:

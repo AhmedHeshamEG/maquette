@@ -63,6 +63,11 @@ struct EditorScreen: View {
             }
         }
         .modifier(EditorSheets(editor: editor))
+        .sheet(isPresented: $editor.colourPaint.flatView) {
+            // A sheet, not a cover: the stage keeps drawing under it, and the flat view's strokes land through it.
+            FlatPaintView(editor: editor)
+                .presentationDetents([.large])
+        }
         .modifier(ObjectRenameAlert(editor: editor))
         .modifier(SheetRenameAlert(editor: editor))
         .modifier(PrefabSaveAlert(editor: editor))
@@ -103,7 +108,8 @@ struct EditorScreen: View {
             StageHost(editor: editor)
                 .ignoresSafeArea(edges: [.top, .horizontal])
                 .dropDestination(for: String.self) { items, location in
-                    for id in items {
+                    // A colour or a material dropped on a thing fills it (U7); anything else is from the library.
+                    for id in items where !editor.dropSurface(id, at: location) {
                         editor.placeLibraryItem(id: id, at: location)
                     }
                     return !items.isEmpty

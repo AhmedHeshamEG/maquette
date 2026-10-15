@@ -101,6 +101,42 @@ struct DrawItem {
     var brushDrawn = false
     /// The painted object this draw shows (its paint mesh and composite).
     var painted: ObjectID?
+    /// Its painted maps besides colour (textures 3 … 7 of the shading pass).
+    var maps: PaintMapTextures?
+    /// Fur shells drawn over this surface after it (U7).
+    var fur: FurDraw?
+    /// Hair cards: drawn in the fur pass only (no prepass, shadows or picking).
+    var furCards = false
+}
+
+/// A painted surface's maps on the GPU (nil where nothing paints one).
+struct PaintMapTextures {
+    var roughness: MTLTexture?
+    var metal: MTLTexture?
+    var glow: MTLTexture?
+    var bumps: MTLTexture?
+    var normals: MTLTexture?
+    var fur: MTLTexture?
+
+    var flags: ObjectFlags {
+        var flags = ObjectFlags()
+        if roughness != nil { flags.insert(.roughness) }
+        if metal != nil { flags.insert(.metal) }
+        if glow != nil { flags.insert(.glow) }
+        if bumps != nil { flags.insert(.bumps) }
+        if normals != nil { flags.insert(.normals) }
+        return flags
+    }
+}
+
+/// Fur shells over a surface: how long, how dense, how it hangs, how many shells this frame draws.
+struct FurDraw {
+    var length: Float
+    var density: Float
+    var droop: Float
+    var shells: Int
+    /// The Fur map (white long, black bare), when one is painted.
+    var map: MTLTexture?
 }
 
 /// An editor helper (light bulb, camera box, particle emitter): drawn only on the stage, picked by its sphere.

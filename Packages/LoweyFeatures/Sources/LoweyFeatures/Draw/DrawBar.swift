@@ -3,7 +3,8 @@ import LoweyCore
 import SwiftUI
 
 /// Draw's bar under the stage (U5, CONTEXT §10.11): Procreate's five, Brush · Smudge · Erase · Sheets · Colour. Tap the
-/// Brush while it's in the hand and the library drops down; Sheets becomes Layers while a paint brush is over a thing.
+/// Brush while it's in the hand and the library drops down; Sheets becomes Layers while a paint brush is over a thing,
+/// and Surface joins it (U7: wear, decals, mirror, size, seams, the flat view, baked normals, fur).
 /// While a shape waits for more points, Done; while a picture is placed to project onto a model, Project and put it
 /// away. No panel opens while drawing.
 struct DrawBar: View {
@@ -11,6 +12,7 @@ struct DrawBar: View {
     @State private var library = false
     @State private var sheets = false
     @State private var layers = false
+    @State private var surface = false
 
     var body: some View {
         HStack(spacing: HmmSpacing.xxs) {
@@ -37,8 +39,10 @@ struct DrawBar: View {
             DrawBrushLibrary(editor: editor) { library = false }
                 .presentationCompactAdaptation(.popover)
         }
-        HmmButton(DrawVerb.smudge.systemImage, label: "Smudge", isOn: inUse == .smudge, accent: inUse == .smudge) { editor.chooseDrawVerb(.smudge) }
-            .accessibilityIdentifier("draw-smudge")
+        HmmButton(DrawVerb.smudge.systemImage, label: "Smudge", isOn: inUse == .smudge, accent: inUse == .smudge) {
+            editor.chooseDrawVerb(.smudge)
+        }
+        .accessibilityIdentifier("draw-smudge")
         HmmButton(DrawVerb.erase.systemImage, label: "Erase", isOn: inUse == .erase, accent: inUse == .erase) { editor.chooseDrawVerb(.erase) }
             .accessibilityIdentifier("draw-erase")
         if editor.drawShowsLayers {
@@ -46,6 +50,12 @@ struct DrawBar: View {
                 .accessibilityIdentifier("draw-layers")
                 .popover(isPresented: $layers, arrowEdge: .bottom) {
                     LayersPopover(editor: editor)
+                        .presentationCompactAdaptation(.popover)
+                }
+            HmmButton("cube.transparent", label: "Surface", isOn: surface) { surface = true }
+                .accessibilityIdentifier("draw-surface")
+                .popover(isPresented: $surface, arrowEdge: .bottom) {
+                    SurfacePopover(editor: editor)
                         .presentationCompactAdaptation(.popover)
                 }
         } else {
@@ -58,14 +68,7 @@ struct DrawBar: View {
         }
         HmmColourWell(editor.paintColor.color) { editor.hands.choosingColour = true }
             .popover(isPresented: $editor.hands.choosingColour, arrowEdge: .bottom) {
-                VStack(alignment: .leading, spacing: HmmSpacing.s) {
-                    HmmSectionHeader("Colour")
-                    ColourChooser(editor: editor)
-                }
-                .padding(HmmSpacing.m)
-                .frame(width: 300)
-                .presentationCompactAdaptation(.popover)
-                .accessibilityIdentifier("colour-chooser")
+                ColourPopover(editor: editor)
             }
         if editor.isSketching, editor.modeling.pending != nil {
             HmmButton("checkmark", label: "Done") { editor.finishSketchShape() }

@@ -188,8 +188,9 @@ you until a finger's tap places it, and reads as paper while you draw. Tap Draw 
 | Erase (what's in the hand: lines, frames, paint) | `Draw › draw-erase` |
 | Sheets: the sheets kept in the scene (draw on one again, rename, delete with its drawings), a new one | `Draw › draw-sheets › sheet-new` |
 | Frames: frame by frame on the sheet (or stuck to the camera), tracks, blend, opacity, loop, hold, drawn effects | `Draw › draw-sheets › draw-frames` |
-| Colour: the palette and any colour | `Draw › colour-well` |
-| Layers (in place of Sheets while a paint brush is over a thing): show or hide, the one painted on, opacity, blend, add, the layer's menu; project a picture | shown while a paint brush is over a thing |
+| Colour: the picker (disc, values, palettes, recent, the scene's palette) and Materials (fill, drag, Paint it on, Edit, Import) | `Draw › colour-well` |
+| Layers (in place of Sheets while a paint brush is over a thing): what the brush paints (Colour, Roughness, Metal, Glow, Bumps, Fur, the Mask) and its value; show or hide, the one painted on, each layer's maps; swipe for Mask, Duplicate, Delete; drag to reorder; pinch to merge; a fill's controls; opacity, blend, Add (layer, colour fill, dirt, worn edges), the layer's menu; project a picture | shown while a paint brush is over a thing |
+| Surface (beside Layers, U7): Brushes (Faces, Seams with Cut and Automatic), Wear, Decal, Mirror, Texture size, Flat view, Detail from a sculpt, Fur | shown while a paint brush is over a thing |
 | The sheet's hold menu: place (nearer, farther, face me), shape (flat, around, dome, on the object), guide (grid, isometric, symmetry), rename, delete | touch and hold the sheet |
 | The frame strip: the drawings; step, add, reorder, hold longer; hold one and let go for a copy; loop | over the bar while frames are drawn |
 | Flick right with a finger for a new frame, left for the one before | on the stage while frames are drawn |
@@ -385,6 +386,14 @@ explanations in panels; on by default).
   lasso; ⌘L the Library; ⌥⌘1–3 move, turn, size; ⌘T the timeline; Space/J/K/L and ⌥←→ the transport. Holding ⌘ lists
   them. The Perform menu (the microphone, the trigger keys) is *(held: 1.2)*.
 - **Proposals** from the AI bridge appear at the bottom of the stage while one is waiting.
+
+## What moved in 0.18 (U7)
+
+| 0.17 | Now | Why |
+|---|---|---|
+| Colour: the palette and any colour | the colour picker (Procreate's), with Materials | Everything a texture artist leaves the app for |
+| Layers: colour only | maps, masks, fills, swipe, drag, pinch | Same |
+| (nothing) | Surface beside Layers while painting a thing | Wear, decals, seams and the rest one step deeper |
 
 ## What moved in 0.15 (U5)
 

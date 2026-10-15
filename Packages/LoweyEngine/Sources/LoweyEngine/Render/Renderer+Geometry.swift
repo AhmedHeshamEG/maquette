@@ -15,7 +15,8 @@ extension LoweyRenderer {
         for (index, item) in ordered.enumerated() where include(item) {
             if let last = runs.last, last.start + last.count == index {
                 let previous = ordered[last.start]
-                if previous.mesh === item.mesh, previous.texture === item.texture, !item.mesh.isSkinned, !item.blended {
+                if previous.mesh === item.mesh, previous.texture === item.texture, !item.mesh.isSkinned, !item.blended, previous.maps == nil,
+                   item.maps == nil {
                     runs[runs.count - 1].count += 1
                     continue
                 }
@@ -118,7 +119,7 @@ extension LoweyRenderer {
             encoder.setVertexBytes(&uniforms, length: MemoryLayout<FrameUniforms>.stride, index: BufferIndex.frame)
             encoder.setVertexBytes(&index, length: 4, index: BufferIndex.cascade)
             encoder.setVertexBuffer(gpu.joints, offset: 0, index: BufferIndex.joints)
-            for run in Self.runs(ordered, where: { $0.castsShadow && !$0.blended && !$0.ghost }) {
+            for run in Self.runs(ordered, where: { $0.castsShadow && !$0.blended && !$0.ghost && !$0.furCards }) {
                 let item = ordered[run.start]
                 encoder.setRenderPipelineState(item.mesh.isSkinned ? device.pipelines.shadowSkinned : device.pipelines.shadowStatic)
                 draw(item.mesh, run: run, encoder: encoder, objects: gpu.objects)
@@ -168,7 +169,7 @@ extension LoweyRenderer {
             encoder.drawIndexedPrimitives(type: .triangle, indexCount: groundMesh.indexCount, indexType: .uint32,
                                           indexBuffer: groundMesh.indices, indexBufferOffset: 0)
         }
-        for run in Self.runs(ordered, where: { $0.uniforms.baseColor.w > 0.02 && !$0.ghost }) {
+        for run in Self.runs(ordered, where: { $0.uniforms.baseColor.w > 0.02 && !$0.ghost && !$0.furCards }) {
             let item = ordered[run.start]
             encoder.setRenderPipelineState(item.mesh.isSkinned ? device.pipelines.prepassSkinned : device.pipelines.prepassStatic)
             draw(item.mesh, run: run, encoder: encoder, objects: gpu.objects)
@@ -241,7 +242,7 @@ extension LoweyRenderer {
                                           indexBuffer: groundMesh.indices, indexBufferOffset: 0)
             draws += 1
         }
-        for run in Self.runs(ordered, where: { !$0.brushDrawn }) {
+        for run in Self.runs(ordered, where: { !$0.brushDrawn && !$0.furCards }) {
             let item = ordered[run.start]
             let skinned = item.mesh.isSkinned
             if item.blended {
@@ -251,10 +252,12 @@ extension LoweyRenderer {
                 encoder.setRenderPipelineState(skinned ? device.pipelines.shadeSkinned : device.pipelines.shadeStatic)
             }
             encoder.setFragmentTexture(item.texture ?? editorMeshes.white, index: 0)
+            bindMaps(item.maps, encoder: encoder)
             draw(item.mesh, run: run, encoder: encoder, objects: gpu.objects)
             draws += 1
             triangles += item.mesh.indexCount / 3 * run.count
         }
+        draws += encodeFur(ordered: ordered, gpu: gpu, encoder: encoder)
         draws += encodeInkStamps(brushes.batches, frame: frame, targets: targets, image: brushes.image, encoder: encoder)
         draws += encodeHulls(ordered: ordered, gpu: gpu, encoder: encoder)
         encoder.endEncoding()

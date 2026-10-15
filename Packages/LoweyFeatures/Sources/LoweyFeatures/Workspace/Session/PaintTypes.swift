@@ -2,11 +2,12 @@ import CoreGraphics
 import Foundation
 import LoweyCore
 
-/// Paint ▸ Colour (CONTEXT §10.4): what the Pencil does on a model, the brush's size and opacity, the layer each object
-/// paints on, and a picture being placed to project.
+/// Paint ▸ Colour (CONTEXT §10.4, U7): what the Pencil does on a model, the brush's size and opacity, the map it paints
+/// (colour, roughness, metal, glow, bumps, fur, or the layer's mask) and the value it lays on a value map, the layer each
+/// object paints on, and a picture being placed to project.
 public struct ColourPaintSettings: Equatable {
     public enum Mode: String, CaseIterable, Identifiable, Sendable {
-        case paint, erase, fill, pick
+        case paint, erase, fill, pick, smudge, faces, seams
 
         public var id: String { rawValue }
 
@@ -16,6 +17,9 @@ public struct ColourPaintSettings: Equatable {
             case .erase: "Erase"
             case .fill: "Fill"
             case .pick: "Eyedropper"
+            case .smudge: "Smudge"
+            case .faces: "Faces"
+            case .seams: "Seams"
             }
         }
 
@@ -25,11 +29,28 @@ public struct ColourPaintSettings: Equatable {
             case .erase: "eraser"
             case .fill: "drop.fill"
             case .pick: "eyedropper"
+            case .smudge: "hand.point.up.left.and.text"
+            case .faces: "square.on.square.squareshape.controlhandles"
+            case .seams: "scissors"
             }
         }
+
+        /// The Pencil's stroke paints into a layer (the GPU's live stroke).
+        public var strokes: Bool { self == .paint || self == .erase }
     }
 
     public var mode: Mode = .paint
+    /// The map a stroke paints: colour and glow take the colour in hand, the others `value` (D-338).
+    public var map: PaintMap = .color
+    /// The number a stroke lays on a value map (roughness, metal, bumps, fur; a mask is painted white, erased clear).
+    public var value: Double = 0.5
+    /// Seams marked so far in Seams mode, before they're kept (the object's own space).
+    public var pendingSeams: [PaintSeam] = []
+    /// A decal picture waits for a tap on the thing (the picture itself is `TextureWork.decal`), and its width (m).
+    public var decalWaiting = false
+    public var decalSize: Double = 0.3
+    /// The flat view (the surface laid out as its texture) is open.
+    public var flatView = false
     /// The brush's size in points at full pressure.
     public var size: Double = 16
     public var opacity: Double = 1

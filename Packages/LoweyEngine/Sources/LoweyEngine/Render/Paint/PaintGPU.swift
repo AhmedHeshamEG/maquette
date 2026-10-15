@@ -15,6 +15,9 @@ struct PaintPipelines {
     let compose: MTLRenderPipelineState
     /// The composite, straight-alpha and pushed past chart edges.
     let finish: MTLRenderPipelineState
+    /// A stroke drawn on the flat texture, laid on the layer (and its eraser).
+    let flat: MTLRenderPipelineState
+    let flatErase: MTLRenderPipelineState
 
     init(_ builder: PipelineBuilder) throws {
         project = try builder.paint(fragment: "lw_paintProject", write: .over)
@@ -22,6 +25,8 @@ struct PaintPipelines {
         coverage = try builder.paint(fragment: "lw_paintCoverage", format: .r8Unorm, write: .replace)
         compose = try builder.paint(vertex: "lw_paintFullVertex", fragment: "lw_paintCompose", write: .replace)
         finish = try builder.paint(vertex: "lw_paintFullVertex", fragment: "lw_paintFinish", write: .replace)
+        flat = try builder.paint(vertex: "lw_paintFullVertex", fragment: "lw_paintFlat", write: .over)
+        flatErase = try builder.paint(vertex: "lw_paintFullVertex", fragment: "lw_paintFlat", write: .erase)
     }
 }
 
@@ -43,9 +48,12 @@ public struct LivePaint {
         case stamps([BrushDab<Vec2>], brush: Brush)
         /// A picture laid over the stage (points), projected onto what the camera sees.
         case picture(CGImage, rect: CGRect)
+        /// The brush engine's stamps in the texture's own pixels (÷ `pixelsPerPoint`): painting in the flat view.
+        case flat([BrushDab<Vec2>], brush: Brush)
     }
 
     public var object: ObjectID
+    /// The layer's map the stroke paints, as `PaintPictures.key` ("l1", "l1#roughness", "l1#mask").
     public var layer: String
     /// Changes with every new stroke: a new one keeps the layer as it was before it, to paint over again each frame.
     public var stroke: Int
@@ -55,8 +63,11 @@ public struct LivePaint {
     public var erases: Bool
     /// The stage's points to pixels.
     public var pixelsPerPoint: Double
+    /// Painted again mirrored across this axis of the object's own space (the scale that mirrors it).
+    public var mirror: SIMD3<Float>?
 
-    public init(object: ObjectID, layer: String, stroke: Int, source: Source, color: RGBA, erases: Bool, pixelsPerPoint: Double) {
+    public init(object: ObjectID, layer: String, stroke: Int, source: Source, color: RGBA, erases: Bool, pixelsPerPoint: Double,
+                mirror: SIMD3<Float>? = nil) {
         self.object = object
         self.layer = layer
         self.stroke = stroke
@@ -64,6 +75,13 @@ public struct LivePaint {
         self.color = color
         self.erases = erases
         self.pixelsPerPoint = pixelsPerPoint
+        self.mirror = mirror
+    }
+
+    /// A stroke in the flat view (on the texture, not through the camera).
+    public var isFlat: Bool {
+        if case .flat = source { return true }
+        return false
     }
 }
 

@@ -27,6 +27,13 @@ using namespace metal;
 #define LW_FLAG_INK 64u
 // Painted colour over the base colour (not in the ID buffer's 8 flag bits; shading only).
 #define LW_FLAG_PAINTED 256u
+// Painted maps bound beside the colour (shading only): textures 3 … 7.
+#define LW_FLAG_ROUGHNESS 512u
+#define LW_FLAG_METAL 1024u
+#define LW_FLAG_GLOW 2048u
+#define LW_FLAG_BUMPS 4096u
+#define LW_FLAG_NORMALS 8192u
+#define LW_FLAG_MAPS (LW_FLAG_ROUGHNESS | LW_FLAG_METAL | LW_FLAG_GLOW | LW_FLAG_BUMPS | LW_FLAG_NORMALS)
 
 // ID buffer packing: 20 bits object, 4 bits look, 8 bits flags.
 #define LW_ID_OBJECT_MASK 0xFFFFFu
@@ -62,7 +69,7 @@ struct LookUniforms {
     float4 model;      // x = model (0 toon, 1 clay), y = posterize textures, z = soft shadows, w = bloom
     float4 lines;      // x = enabled, y = width (pt @1080p), z = darken, w = colour mode (0 darkened, 1 ink)
     float4 lineInk;    // rgb = ink colour (linear), w = boil
-    float4 lineShape;  // x = cos(crease angle), y = depth sensitivity, z = pencil (1 / 0), w = unused
+    float4 lineShape;  // x = cos(crease angle), y = depth sensitivity, z = pencil (1 / 0), w = hatching
     float4 comic;      // x = halftone, y = dot spacing (pt @1080p), z = object-space dots, w = misregistration
     float4 finish;     // x = paper grain, y = paper tint, z = vignette, w = saturation
     float4 grade;      // x = lift, y = gamma, z = gain, w = accent keeps colour

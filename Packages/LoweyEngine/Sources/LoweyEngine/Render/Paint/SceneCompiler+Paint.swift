@@ -20,7 +20,8 @@ extension SceneCompiler {
             guard let mesh = meshes.mesh(.paintSurface(paint.surface.unwrap, mesh: fingerprint, dabs: dabs), make: {
                 Self.paintMesh(unwrap, over: source.data, dabs: dabs, device: device, label: object.name)
             }), let texture = paints.texture(for: object.id, paint: paint, unwrap: paint.surface.unwrap, mesh: mesh, file: file) else { return nil }
-            return PaintedSurface(mesh: mesh, texture: texture, unwrap: unwrap, key: paint.surface.unwrap)
+            return PaintedSurface(mesh: mesh, texture: texture, unwrap: unwrap, key: paint.surface.unwrap,
+                                  maps: paints.maps(for: object.id, paint: paint, file: file))
         }
         var hasher = Hasher()
         hasher.combine(paint)
@@ -33,7 +34,10 @@ extension SceneCompiler {
             }),
             let texture = paints.texture(for: object.id, paint: paint, unwrap: key, mesh: mesh, pictures: carried.layers, file: file)
         else { return nil }
-        return PaintedSurface(mesh: mesh, texture: texture, unwrap: carried.unwrap, key: key)
+        // Baked normals described the old surface: a carried paint shows without them.
+        var shown = paint
+        shown.normalMap = nil
+        return PaintedSurface(mesh: mesh, texture: texture, unwrap: carried.unwrap, key: key, maps: paints.maps(for: object.id, paint: shown, file: file))
     }
 
     static func paintMesh(_ unwrap: PaintUnwrap, over source: MeshData, dabs: [ShadowDab], device: MTLDevice, label: String) -> GPUMesh? {
@@ -46,7 +50,8 @@ extension SceneCompiler {
     func addPainted(_ painted: PaintedSurface, object: SceneObject, world: simd_float4x4, base: ObjectUniforms, casts: Bool, input: RenderInput,
                     scene: inout RenderScene) {
         var uniforms = base
-        uniforms.ids.z |= ObjectFlags.painted.rawValue
+        uniforms.ids.z |= ObjectFlags.painted.rawValue | (painted.maps?.flags.rawValue ?? 0)
+        defer { finishPainted(painted, object: object, scene: &scene) }
         if let rig = object.rig, let file = rig.skin, let weights = skins.weights(file, read: input.paintFile),
            painted.unwrap.source.allSatisfy({ Int($0) < weights.count }) {
             let device = device
@@ -57,12 +62,17 @@ extension SceneCompiler {
             }) {
                 let palette = appendPalette(rig, object: object, input: input, scene: &scene)
                 addRigged(skinned, rig: rig, palette: palette, world: world, base: uniforms, texture: painted.texture, casts: casts, scene: &scene)
-                scene.items[scene.items.count - 1].painted = object.id
                 return
             }
         }
         add(painted.mesh, world: world, uniforms: uniforms, texture: painted.texture, castsShadow: casts, scene: &scene)
+    }
+
+    /// The draw just added shows the object's paint: its maps, and its fur's map.
+    private func finishPainted(_ painted: PaintedSurface, object: SceneObject, scene: inout RenderScene) {
+        guard !scene.items.isEmpty else { return }
         scene.items[scene.items.count - 1].painted = object.id
+        scene.items[scene.items.count - 1].maps = painted.maps
     }
 
     /// A placed model with paint: its parts as one mesh (in the model's space, as the parts are drawn).
@@ -89,12 +99,14 @@ extension SceneCompiler {
     }
 }
 
-/// A painted surface ready to draw: the paint mesh, the composite, the unwrap it was made with (and its key).
+/// A painted surface ready to draw: the paint mesh, the colour composite, its other maps, the unwrap it was made with
+/// (and its key).
 struct PaintedSurface {
     var mesh: GPUMesh
     var texture: MTLTexture
     var unwrap: PaintUnwrap
     var key: String
+    var maps: PaintMapTextures?
 }
 
 /// Placed models as one paintable surface, and their own colours baked into a first layer.

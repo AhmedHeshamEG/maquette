@@ -7,13 +7,13 @@ import simd
 extension PaintTextures {
     // MARK: Before the frame
 
-    /// Copies the queued tiles into their layers, then rebuilds coverage and the composite of every surface that needs it.
+    /// Copies the queued tiles into their layers, then rebuilds coverage and the composites of every surface that needs it.
     func encodeUpdates(commandBuffer: MTLCommandBuffer) {
         for surface in surfaces.values {
-            for layer in surface.layers.values where layer.needsClear {
+            for (key, layer) in surface.layers where layer.needsClear {
                 clear(layer.texture, commandBuffer: commandBuffer)
                 layer.needsClear = false
-                surface.needsCompose = true
+                markDirty(surface, key: key)
             }
         }
         if !uploads.isEmpty, let blit = commandBuffer.makeBlitCommandEncoder() {
@@ -28,45 +28,63 @@ extension PaintTextures {
                           destinationLevel: 0, destinationOrigin: MTLOrigin(x: upload.tile.column * side, y: upload.tile.row * side, z: 0))
             }
             blit.endEncoding()
-            for surface in surfaces.values where uploads.contains(where: { upload in surface.layers.values.contains { $0 === upload.layer } }) {
-                surface.needsCompose = true
+            for surface in surfaces.values {
+                for (key, layer) in surface.layers where uploads.contains(where: { $0.layer === layer }) {
+                    markDirty(surface, key: key)
+                }
             }
             uploads.removeAll()
         }
-        for surface in surfaces.values where surface.needsCompose {
+        for surface in surfaces.values where !surface.dirty.isEmpty {
             compose(surface, commandBuffer: commandBuffer)
         }
     }
 
-    /// Coverage (when the mesh changed), the layers composited, the finish pass and the mip chain.
+    /// A layer key's map is out of date (a mask's layer may paint any map).
+    func markDirty(_ surface: Surface, key: String) {
+        let map = Self.map(ofKey: key)
+        if map == .mask { surface.markAll() } else { surface.dirty.insert(map) }
+    }
+
+    /// Coverage (when the mesh changed), then each out-of-date map: its layers composited, the finish pass, mips.
     func compose(_ surface: Surface, commandBuffer: MTLCommandBuffer) {
-        guard let mesh = surface.mesh, let (first, second) = scratchTextures(size: surface.size) else { return }
+        guard let mesh = surface.mesh else { return }
         if surface.coverageMesh != ObjectIdentifier(mesh) || surface.coverage == nil {
             encodeCoverage(surface, mesh: mesh, commandBuffer: commandBuffer)
         }
-        guard let coverage = surface.coverage else { return }
+        for map in surface.dirty {
+            if let composite = surface.composites[map] { compose(map, of: surface, into: composite, commandBuffer: commandBuffer) }
+        }
+        surface.dirty.removeAll()
+    }
+
+    private func compose(_ map: PaintMap, of surface: Surface, into composite: Composite, commandBuffer: MTLCommandBuffer) {
+        guard let coverage = surface.coverage, let (first, second) = scratchTextures(size: surface.size) else { return }
         var under = first, over = second
         clear(under, commandBuffer: commandBuffer)
         for layer in surface.settings where layer.visible && layer.opacity > 0 {
-            guard let texture = surface.layers[layer.id]?.texture,
+            guard let texture = surface.layers[PaintPictures.key(layer.id, map)]?.texture,
                   let encoder = commandBuffer.makeRenderCommandEncoder(descriptor: Self.pass(over, load: .dontCare)) else { continue }
-            encoder.label = "Paint layer \(layer.name)"
+            let mask = layer.hasMask ? surface.layers[PaintPictures.key(layer.id, .mask)]?.texture : nil
+            encoder.label = "Paint \(map.rawValue) \(layer.name)"
             encoder.setRenderPipelineState(device.pipelines.paint.compose)
-            var uniforms = SIMD4<Float>(Float(layer.opacity), Float(Self.blendIndex(layer.blend)), 0, 0)
+            // z: 0 no mask, 1 the mask's alpha, 2 a mask with no texture yet (its tiles are clear: the layer hides).
+            var uniforms = SIMD4<Float>(Float(layer.opacity), Float(layer.blend.shaderIndex), layer.hasMask ? (mask == nil ? 2 : 1) : 0, 0)
             encoder.setFragmentBytes(&uniforms, length: MemoryLayout<SIMD4<Float>>.stride, index: 1)
             encoder.setFragmentTexture(under, index: 0)
             encoder.setFragmentTexture(texture, index: 1)
+            encoder.setFragmentTexture(mask ?? texture, index: 2)
             encoder.drawPrimitives(type: .triangle, vertexStart: 0, vertexCount: 3)
             encoder.endEncoding()
             swap(&under, &over)
         }
         let finish = MTLRenderPassDescriptor()
-        finish.colorAttachments[0].texture = surface.composite
+        finish.colorAttachments[0].texture = composite.texture
         finish.colorAttachments[0].level = 0
         finish.colorAttachments[0].loadAction = .dontCare
         finish.colorAttachments[0].storeAction = .store
         if let encoder = commandBuffer.makeRenderCommandEncoder(descriptor: finish) {
-            encoder.label = "Paint finish"
+            encoder.label = "Paint finish \(map.rawValue)"
             encoder.setRenderPipelineState(device.pipelines.paint.finish)
             encoder.setFragmentTexture(under, index: 0)
             encoder.setFragmentTexture(coverage, index: 1)
@@ -74,19 +92,8 @@ extension PaintTextures {
             encoder.endEncoding()
         }
         if let blit = commandBuffer.makeBlitCommandEncoder() {
-            blit.generateMipmaps(for: surface.composite)
+            blit.generateMipmaps(for: composite.texture)
             blit.endEncoding()
-        }
-        surface.needsCompose = false
-    }
-
-    static func blendIndex(_ blend: PaintBlend) -> Int {
-        switch blend {
-        case .normal: 0
-        case .multiply: 1
-        case .screen: 2
-        case .overlay: 3
-        case .add: 4
         }
     }
 
@@ -144,24 +151,64 @@ extension PaintTextures {
         var depth: MTLTexture
     }
 
-    /// Paints the live stroke into its layer (the layer as it was before the stroke, then the whole stroke so far,
-    /// projected), and composites the object again, all before the frame's shading reads it.
+    /// Paints the live stroke into its layer's map (the layer as it was before the stroke, then the whole stroke so far,
+    /// projected, and again mirrored when the paint mirrors), and composites that map again, all before the frame's
+    /// shading reads it. A stroke in the flat view lands on the texture as drawn.
     func encodeStroke(_ live: LivePaint, view: StrokeView, stamper: BrushStamper, image: (String) -> CGImage?, commandBuffer: MTLCommandBuffer) {
-        guard let surface = surfaces[live.object], let layer = surface.layers[live.layer] else { return }
+        guard let surface = surfaces[live.object], let layer = strokeLayer(live.layer, of: surface, commandBuffer: commandBuffer) else { return }
+        let flat = live.isFlat
         guard let before = beforeTexture(for: live, layer: layer, size: surface.size, commandBuffer: commandBuffer),
-              let target = strokeTexture(width: view.ids.width, height: view.ids.height) else { return }
+              let target = flat ? strokeTexture(width: surface.size, height: surface.size)
+              : strokeTexture(width: view.ids.width, height: view.ids.height) else { return }
         guard drawSource(live, into: target, stamper: stamper, image: image, commandBuffer: commandBuffer) else { return }
         if let blit = commandBuffer.makeBlitCommandEncoder() {
             blit.copy(from: before, to: layer.texture)
             blit.endEncoding()
         }
+        if flat {
+            if surface.coverage == nil { compose(surface, commandBuffer: commandBuffer) }
+            encodeFlat(live, target: target, layer: layer, coverage: surface.coverage, commandBuffer: commandBuffer)
+        } else {
+            encodeProjection(live, view: view, target: target, layer: layer, mirror: nil, commandBuffer: commandBuffer)
+            if let mirror = live.mirror {
+                encodeProjection(live, view: view, target: target, layer: layer, mirror: mirror, commandBuffer: commandBuffer)
+            }
+        }
+        markDirty(surface, key: live.layer)
+        compose(surface, commandBuffer: commandBuffer)
+    }
+
+    /// The layer map a stroke paints: the one there, or a new clear one (the first stroke on a map), with a composite
+    /// for its map so the stroke shows as it's drawn.
+    private func strokeLayer(_ key: String, of surface: Surface, commandBuffer: MTLCommandBuffer) -> Layer? {
+        if let known = surface.layers[key] { return known }
+        guard let made = makeLayer(size: surface.size) else { return nil }
+        clear(made.texture, commandBuffer: commandBuffer)
+        made.needsClear = false
+        for index in 0 ..< surface.size / PaintSurface.tileSize * (surface.size / PaintSurface.tileSize) {
+            let tiles = surface.size / PaintSurface.tileSize
+            made.loaded[PaintTileIndex(column: index % tiles, row: index / tiles).key] = ""
+        }
+        surface.layers[key] = made
+        let map = Self.map(ofKey: key)
+        if map != .mask, surface.composites[map] == nil {
+            surface.composites[map] = makeComposite(size: surface.size, map: map, label: "paint \(map.rawValue)")
+        }
+        return made
+    }
+
+    private func encodeProjection(_ live: LivePaint, view: StrokeView, target: MTLTexture, layer: Layer, mirror: SIMD3<Float>?,
+                                  commandBuffer: MTLCommandBuffer) {
         guard let encoder = commandBuffer.makeRenderCommandEncoder(descriptor: Self.pass(layer.texture, load: .load)) else { return }
         encoder.label = live.erases ? "Paint erase" : "Paint stroke"
         encoder.setRenderPipelineState(live.erases ? device.pipelines.paint.erase : device.pipelines.paint.project)
         encoder.setCullMode(.none)
         var uniforms = PaintUniforms()
-        uniforms.model = view.item.uniforms.model
-        uniforms.normalMatrix = view.item.uniforms.normalMatrix
+        // Mirrored: every point of the surface takes the paint its mirror image would (in the object's own space), so
+        // the far side is painted too, wherever it faces.
+        let flip = mirror.map { simd_float4x4(diagonal: SIMD4<Float>($0, 1)) } ?? matrix_identity_float4x4
+        uniforms.model = view.item.uniforms.model * flip
+        uniforms.normalMatrix = view.item.uniforms.normalMatrix * flip
         uniforms.viewProjection = view.viewProjection
         // Orthographic views are a far telephoto (RenderCamera), so the eye is always a point.
         uniforms.eye = SIMD4<Float>(view.camera.position, 0)
@@ -178,7 +225,17 @@ extension PaintTextures {
         encoder.drawIndexedPrimitives(type: .triangle, indexCount: view.item.mesh.indexCount, indexType: .uint32,
                                       indexBuffer: view.item.mesh.indices, indexBufferOffset: 0)
         encoder.endEncoding()
-        compose(surface, commandBuffer: commandBuffer)
+    }
+
+    /// A stroke drawn on the flat texture: laid over the layer as it is, only on texels the unwrap uses.
+    private func encodeFlat(_ live: LivePaint, target: MTLTexture, layer: Layer, coverage: MTLTexture?, commandBuffer: MTLCommandBuffer) {
+        guard let coverage, let encoder = commandBuffer.makeRenderCommandEncoder(descriptor: Self.pass(layer.texture, load: .load)) else { return }
+        encoder.label = live.erases ? "Paint erase (flat)" : "Paint stroke (flat)"
+        encoder.setRenderPipelineState(live.erases ? device.pipelines.paint.flatErase : device.pipelines.paint.flat)
+        encoder.setFragmentTexture(target, index: 0)
+        encoder.setFragmentTexture(coverage, index: 1)
+        encoder.drawPrimitives(type: .triangle, vertexStart: 0, vertexCount: 3)
+        encoder.endEncoding()
     }
 
     /// The layer as it was when this stroke began (copied once per stroke).
@@ -201,12 +258,13 @@ extension PaintTextures {
         return strokeTarget
     }
 
-    /// The stroke on the screen, premultiplied in its sRGB colour: the brush engine's stamps, or the picture.
+    /// The stroke on the screen (or on the flat texture), premultiplied in its colour: the brush engine's stamps, or
+    /// the picture.
     private func drawSource(_ live: LivePaint, into target: MTLTexture, stamper: BrushStamper, image: (String) -> CGImage?,
                             commandBuffer: MTLCommandBuffer) -> Bool {
         let scale = live.pixelsPerPoint
         switch live.source {
-        case let .stamps(dabs, brush):
+        case let .stamps(dabs, brush), let .flat(dabs, brush):
             clear(target, commandBuffer: commandBuffer)
             let pixels = dabs.map { dab -> BrushDabData in
                 var moved = dab

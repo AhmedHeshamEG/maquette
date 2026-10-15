@@ -137,9 +137,12 @@ public extension EditCommand {
         guard var paint = object.paint else { throw CommandError.empty }
         var inverse: [PaintTileChange] = []
         for change in changes {
-            guard let layer = paint.layerIndex(change.layer), let tile = PaintTileIndex(key: change.tile) else { throw CommandError.empty }
-            inverse.append(PaintTileChange(layer: change.layer, tile: tile, file: paint.layers[layer][tile]))
-            paint.layers[layer][tile] = change.file
+            // A mask is made and removed with its layer (`setPaint`); tiles only change one that's there, so undo is exact.
+            guard let layer = paint.layerIndex(change.layer), let tile = PaintTileIndex(key: change.tile), let map = change.paintMap,
+                  map != .mask || paint.layers[layer].hasMask
+            else { throw CommandError.empty }
+            inverse.append(PaintTileChange(layer: change.layer, tile: tile, file: paint.layers[layer][map, tile], map: map))
+            paint.layers[layer][map, tile] = change.file
         }
         object.paint = paint
         document.scene.objects[id] = object

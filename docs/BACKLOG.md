@@ -3,6 +3,26 @@
 What's known and not done yet, so nothing lives only in someone's head. What Maquette is: [SPEC.md](SPEC.md). The
 phase plan (the pass U1 … U5, M12, M14, M16, then 1.0) lives in studio-h's `PHASES.md`; ideas go to its `IDEAS.md`.
 
+## Left from U7 (Maquette 0.18)
+
+- [ ] The device checklist in the "Maquette 0.18 — U7" PR (painting maps and masks with the Pencil, smudge's feel, a
+      material dropped, the Material Studio, wear on a real model, a decal, mirrored strokes, seams cut, the flat view,
+      fur on Tier A and B, a 4096 texture on a Tier B iPad, the painting benchmark, an exported glTF in Blender and a game
+      engine).
+- [ ] Hesham's own painted Nomad export as the normal-bake fixture (D-352, D-275): a dense sphere stands in.
+- [ ] A brush paints one map at a time (D-338); painting colour, roughness and metal of a material in one stroke is
+      "Paint it on" (a fill and its mask).
+- [ ] Hair cards aren't grown on skinned surfaces on the stage (they'd stay in the rest pose, D-355); exports and shells
+      follow the skin. Skinning the cards by their root's weights is to do.
+- [ ] Fur cards take the thing's own colour, not its paint under each tuft (their uvs run along the strip, D-355).
+- [ ] Wear bakes are kept while the app runs, not in the project; a big model bakes again after a relaunch (D-345).
+- [ ] Glass is pale and glossy, not see-through (D-342).
+- [ ] The flat view refreshes its picture after each stroke (a CPU composite); a live GPU view of the layer is nicer.
+- [ ] Smudge reads its layer's picture when it starts (every tile decoded); on a 4096 layer that's a moment's wait.
+- [ ] Projected pictures (Project a picture) paint colour only; decals too (D-348).
+- [ ] Seams are marked on modelled faces' outlines; a placed model's own seams can't be marked yet (D-349).
+- [ ] `.maquettepack` files for materials (law 12) come with L2's packs; materials travel in projects and the library.
+
 ## Left from H1 (Maquette 0.17)
 
 - [ ] The device checklist in the "Maquette 0.17 — H1" PR (the steps list over the scrubber, a hole changed on M3's block,
@@ -39,7 +59,7 @@ phase plan (the pass U1 … U5, M12, M14, M16, then 1.0) lives in studio-h's `PH
       the Pencil Pro's clicks, flicks, carrying, the eyedropper's loupe, a rig dragged, the sheet seen in light and dark).
 - [ ] On the simulator the pull number is redrawn (gone for a moment) right after a size is typed, so a tap can miss
       it; the block-with-a-hole test taps it again until its pad opens. Find what redraws it; check it on the iPad.
-- [ ] Smudge on painted models waits for U7 Texture's per-pixel tools (D-283).
+- [x] Smudge on painted models waits for U7 Texture's per-pixel tools (D-283): done in 0.18 (D-346).
 - [x] Hover lights whole things; faces and edges light with U6's picking (D-291): done in 0.16 for the selected shape.
 - [ ] A thing stuck to the camera is moved by its gizmo in the world; the gizmo doesn't follow the camera's frame yet
       (D-295).
@@ -199,7 +219,7 @@ phase plan (the pass U1 … U5, M12, M14, M16, then 1.0) lives in studio-h's `PH
 - [ ] The device checklist in the "Maquette 0.6 — M6" PR (painting feel with the Pencil, strokes landing only on what
       the camera sees, layers, fill and the eyedropper, a projected picture, painting a placed Kit model, undo after
       relaunch, the painting benchmark at Tier A and as Tier B, an exported glTF and USDZ opened elsewhere).
-- [ ] Roughness, metal and glow painting (CONTEXT §10.4 "later"): today paint is colour only.
+- [x] Roughness, metal and glow painting (CONTEXT §10.4 "later"): done in 0.18, with bumps, fur and masks (D-338).
 - [x] Painting characters with M7's skeletons: drawn rigs are painted in their rest pose (D-171); imported skins
       are in "Left from M7".
 - [ ] Paint files no history refers to any more are kept: a cleanup when old versions are pruned.

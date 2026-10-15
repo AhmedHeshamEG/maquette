@@ -37,6 +37,33 @@ Cast is gone (D-227): what said *Cast ▸ Voice & face*, *Triggers* and *Life* b
 button beside Record in the timeline's Perform; *Cast ▸ Rig* is Rig; *Make it part of* is in Rig. Everything below
 still works the same way.
 
+### Texture (0.18)
+
+- **Layers per map** (D-338): Draw ▸ Layers while painting a thing. The chips under the layer choose what the brush
+  paints: Colour, Roughness, Metal, Glow, Bumps, Fur, or the layer's Mask; a grey map takes a value (Rough, Metal,
+  Height, Length). Each layer shows its maps as badges. Swipe a layer: Mask, Duplicate, Delete; drag it to reorder; pinch
+  two fingers together over the list to merge the chosen layer down. Add ▸ Layer, Colour fill, Dirt, Worn edges. Blend
+  modes gain Darken, Lighten and Soft light.
+- **Masks** (D-338, D-363): a layer's mask shows it where painted, hides it where erased; a new mask shows everything.
+- **Fills** (D-340): a fill layer is made from a colour, a material or wear, and changes as a whole (wear's Amount, the
+  colour in hand). Painting a fill paints its mask; *Paint it on* adds a material behind an empty mask.
+- **Smudge** (D-346) drags paint along the surface; **Erase** works with the brush in hand on any map.
+- **The colour picker** (D-361): the disc, values (HSB, RGB, hex), palettes, the colour before, recent colours, the
+  scene's palette first, and Materials. **Drops** (D-360): a colour onto a thing is its colour; a material is a fill.
+- **Materials** (D-341 … D-344): tap to fill, drag onto any thing, hold for Paint it on, Edit (the Material Studio:
+  Look, Surface, Pattern, Bumps, About), Duplicate, Delete. Import a set takes a PBR set's pictures by their names.
+- **Surface** (D-362, the bar's sixth button while painting): Brushes (Faces: a tap fills a flat face; Seams: tap edges,
+  then Cut, or Automatic), Wear (Dirt, Worn edges), Decal (Photos or Files, then a tap where it goes, its size), Mirror
+  (Off, Left and right, Top and bottom, Front and back), Texture size (512 … 4096), Flat view (paint the surface laid out
+  in 2D), Detail from a sculpt (bake normals from another thing; Remove), Fur (length, density, droop, Soft or Hair cards).
+- **Hatched shadows** (D-358): Look ▸ Hatching, beside Halftone.
+- **Export** (D-354, D-356): glTF carries roughness, metal, glow and normal maps; USDZ the same; Maps (PNG) writes each
+  painted thing's maps as pictures; glTF's Painted colour: Texture, Vertex colours or Palette. Fur leaves as cut-out
+  shells or hair cards (D-355).
+- **The bridge** (D-359): `paint` with `op` color, material, wear, decal, faces, layers, mask, mirror, size, seams,
+  bakeNormals, fur.
+- **Keys**: ⌘⇧F paint flat, ⌘⌥W dirt, ⌘⌥E worn edges, ⌘⌃M mirror paint, ⌘⌥⇧F the faces brush.
+
 ### Editable history (0.17)
 
 - **The steps list** (D-327 … D-334): Actions ▸ History (⌘Y) shows, over the scrubber, the selected modelled thing's

@@ -11,6 +11,10 @@ extension SceneCompiler {
         let base = uniforms(for: object, state: state, input: input, scene: &scene, objectIndex: index)
         let world = state.world.matrix
         let casts = object[.castsShadow]?.boolValue ?? true
+        let first = scene.items.count
+        defer {
+            if !state.ghost, let fur = FurSettings(object) { addFur(fur, object: object, from: first, scene: &scene) }
+        }
         switch object.kind {
         case let .primitive(shape):
             compilePrimitive(shape, object: object, state: state, base: base, casts: casts, input: input, scene: &scene)
@@ -72,7 +76,7 @@ extension SceneCompiler {
         guard let mesh = meshes.mesh(.paintSurface(key, mesh: paints.fingerprint(of: surface.base), dabs: dabs), make: {
             Self.paintMesh(painted.unwrap, over: surface.shown.data, dabs: dabs, device: device, label: object.name)
         }) else { return nil }
-        return PaintedSurface(mesh: mesh, texture: painted.texture, unwrap: painted.unwrap, key: painted.key)
+        return PaintedSurface(mesh: mesh, texture: painted.texture, unwrap: painted.unwrap, key: painted.key, maps: painted.maps)
     }
 
     /// The object's mesh from the cache: cut finer when its rig asked for it (`MeshDensify`), with its Shadow Brush

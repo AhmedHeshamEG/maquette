@@ -791,6 +791,7 @@
             "marker",
             "model",
             "overlay",
+            "paint",
             "particles",
             "place",
             "preset",
@@ -1975,6 +1976,124 @@
             },
             "required": [
               "shape"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "do": {
+                "const": "paint"
+              }
+            }
+          },
+          "then": {
+            "description": "U7's texturing on one thing: a fill layer of a colour, a material or wear; a decal; whole faces; the layers; a mask; mirrored strokes; the texture's size; hand-marked seams; normals baked from a detailed copy; fur.",
+            "properties": {
+              "target": {
+                "$ref": "#/$defs/target"
+              },
+              "op": {
+                "enum": [
+                  "color",
+                  "material",
+                  "wear",
+                  "decal",
+                  "faces",
+                  "layers",
+                  "mask",
+                  "mirror",
+                  "size",
+                  "seams",
+                  "bakeNormals",
+                  "fur"
+                ]
+              },
+              "color": {
+                "type": "string"
+              },
+              "material": {
+                "type": "string"
+              },
+              "scale": {
+                "type": "number"
+              },
+              "kind": {
+                "enum": [
+                  "dirt",
+                  "edges"
+                ]
+              },
+              "amount": {
+                "type": "number"
+              },
+              "picture": {
+                "type": "string"
+              },
+              "at": {
+                "$ref": "#/$defs/point"
+              },
+              "facing": {
+                "$ref": "#/$defs/vec3"
+              },
+              "size": {
+                "type": "number"
+              },
+              "opacity": {
+                "type": "number"
+              },
+              "layer": {
+                "type": "number"
+              },
+              "on": {
+                "type": "boolean"
+              },
+              "axis": {
+                "enum": [
+                  "x",
+                  "y",
+                  "z"
+                ]
+              },
+              "pixels": {
+                "enum": [
+                  512,
+                  1024,
+                  2048,
+                  4096
+                ]
+              },
+              "edges": {
+                "type": "array",
+                "items": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/$defs/vec3"
+                  }
+                }
+              },
+              "from": {
+                "$ref": "#/$defs/target"
+              },
+              "length": {
+                "type": "number"
+              },
+              "density": {
+                "type": "number"
+              },
+              "style": {
+                "enum": [
+                  "shells",
+                  "cards"
+                ]
+              },
+              "droop": {
+                "type": "number"
+              }
+            },
+            "required": [
+              "target",
+              "op"
             ]
           }
         },

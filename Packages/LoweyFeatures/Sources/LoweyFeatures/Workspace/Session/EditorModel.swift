@@ -91,6 +91,8 @@ final class EditorModel {
     }
 
     var colourPaint = ColourPaintSettings()
+    /// U7's work in progress: surfaces to pick on, a smudge under the Pencil, wear bakes (`EditorModel+Texture`).
+    @ObservationIgnored let texture = TextureWork()
     /// Rig: drawing bones, painting weights, the person rig's dots.
     var rigging = RigSettings() {
         didSet {
@@ -436,11 +438,6 @@ final class EditorModel {
         if performPhase == .recording, performedCamera != nil { performTouching = false }
     }
 
-    var canUndo: Bool { session.canUndo }
-    var canRedo: Bool { session.canRedo }
-    var undoTitle: String { session.undoTitle }
-    var redoTitle: String { session.redoTitle }
-
     func undo() {
         if historyScrub != nil { closeHistory() }
         let title = undoTitle
@@ -489,4 +486,11 @@ final class EditorModel {
     func resumeFromBackground() {
         stage?.redraw()
     }
+}
+
+extension EditorModel {
+    var canUndo: Bool { session.canUndo }
+    var canRedo: Bool { session.canRedo }
+    var undoTitle: String { session.undoTitle }
+    var redoTitle: String { session.redoTitle }
 }
