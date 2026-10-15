@@ -1,13 +1,14 @@
 import Foundation
 
-/// Paint layers as pictures: assembled from their tiles, composited with their blend modes and opacity (the W3C
-/// formulas on the stored sRGB values, the same maths as the stage's GPU composite), split back into tiles.
+/// Paint layers as pictures: assembled from their tiles, composited map by map with their blend modes, opacity and
+/// masks (the W3C formulas on the stored sRGB values, the same maths as the stage's GPU composite), split back into
+/// tiles.
 public enum PaintComposer {
-    /// A layer's whole picture; missing or unreadable tiles are transparent.
-    public static func layerImage(_ layer: PaintLayer, surface: PaintSurface, tile: (String) -> RGBAImage?) -> RGBAImage {
+    /// A layer's whole picture of one map; missing or unreadable tiles are transparent.
+    public static func layerImage(_ layer: PaintLayer, map: PaintMap = .color, surface: PaintSurface, tile: (String) -> RGBAImage?) -> RGBAImage {
         var image = RGBAImage.clear(width: surface.size, height: surface.size)
         let size = PaintSurface.tileSize
-        for (key, file) in layer.tiles {
+        for (key, file) in layer.tiles(of: map) {
             guard let index = PaintTileIndex(key: key), index.column < surface.tilesPerSide, index.row < surface.tilesPerSide,
                   let picture = tile(file), picture.width == size, picture.height == size else { continue }
             image.place(picture, x: index.column * size, y: index.row * size)
@@ -25,29 +26,34 @@ public enum PaintComposer {
         return result
     }
 
-    /// Every visible layer, bottom first, into one straight-alpha picture (alpha 0 where nothing is painted: the
-    /// object's own colour shows there).
-    public static func composite(_ paint: ObjectPaint, layer image: (PaintLayer) -> RGBAImage) -> RGBAImage {
+    /// Every visible layer's `map`, bottom first, into one straight-alpha picture (alpha 0 where nothing is painted:
+    /// the object's own value shows there). A layer with a mask shows only where the mask's alpha is.
+    public static func composite(_ paint: ObjectPaint, map: PaintMap = .color, image: (PaintLayer, PaintMap) -> RGBAImage) -> RGBAImage {
         let size = paint.surface.size
-        var premultiplied = [Double](repeating: 0, count: size * size * 4)
-        for layer in paint.layers where layer.visible && layer.opacity > 0 && !layer.isEmpty {
-            let picture = image(layer)
+        let count = size * size
+        var premultiplied = [Float](repeating: 0, count: count * 4)
+        for layer in paint.layers where layer.visible && layer.opacity > 0 && !layer.tiles(of: map).isEmpty {
+            let picture = image(layer, map)
             guard picture.width == size, picture.height == size else { continue }
-            for index in 0 ..< size * size {
-                let alpha = Double(picture.pixels[index * 4 + 3]) / 255 * layer.opacity
+            let mask = layer.hasMask ? image(layer, .mask) : nil
+            let masked = mask.map { $0.width == size && $0.height == size } ?? false
+            let opacity = Float(layer.opacity)
+            for index in 0 ..< count {
+                var alpha = Float(picture.pixels[index * 4 + 3]) / 255 * opacity
+                if let mask {
+                    alpha *= masked ? Float(mask.pixels[index * 4 + 3]) / 255 : 0
+                }
                 guard alpha > 0 else { continue }
-                let source = SIMD3<Double>(Double(picture.pixels[index * 4]), Double(picture.pixels[index * 4 + 1]),
-                                           Double(picture.pixels[index * 4 + 2])) / 255
-                let out = blend(source: source, alpha: alpha, mode: layer.blend,
-                                backdrop: SIMD4<Double>(premultiplied[index * 4], premultiplied[index * 4 + 1], premultiplied[index * 4 + 2],
-                                                        premultiplied[index * 4 + 3]))
+                let source = SIMD3<Float>(Float(picture.pixels[index * 4]), Float(picture.pixels[index * 4 + 1]), Float(picture.pixels[index * 4 + 2])) / 255
+                let backdrop = SIMD4<Float>(premultiplied[index * 4], premultiplied[index * 4 + 1], premultiplied[index * 4 + 2], premultiplied[index * 4 + 3])
+                let out = blend(source: source, alpha: alpha, mode: layer.blend, backdrop: backdrop)
                 for channel in 0 ..< 4 {
                     premultiplied[index * 4 + channel] = out[channel]
                 }
             }
         }
-        var pixels = [UInt8](repeating: 0, count: size * size * 4)
-        for index in 0 ..< size * size {
+        var pixels = [UInt8](repeating: 0, count: count * 4)
+        for index in 0 ..< count {
             let alpha = premultiplied[index * 4 + 3]
             guard alpha > 1e-6 else { continue }
             for channel in 0 ..< 3 {
@@ -59,16 +65,17 @@ public enum PaintComposer {
     }
 
     /// One source pixel over a premultiplied backdrop: Cs' = (1 − αb)·Cs + αb·B(Cb, Cs), then source-over.
-    public static func blend(source: SIMD3<Double>, alpha: Double, mode: PaintBlend, backdrop: SIMD4<Double>) -> SIMD4<Double> {
+    public static func blend(source: SIMD3<Float>, alpha: Float, mode: PaintBlend, backdrop: SIMD4<Float>) -> SIMD4<Float> {
         let backdropAlpha = backdrop.w
-        let straight = backdropAlpha > 1e-6 ? SIMD3<Double>(backdrop.x, backdrop.y, backdrop.z) / backdropAlpha : .zero
+        let straight = backdropAlpha > 1e-6 ? SIMD3<Float>(backdrop.x, backdrop.y, backdrop.z) / backdropAlpha : .zero
         var mixed = source
         if mode != .normal, backdropAlpha > 0 {
-            let blended = SIMD3<Double>(mode.mix(straight.x, source.x), mode.mix(straight.y, source.y), mode.mix(straight.z, source.z))
+            let blended = SIMD3<Float>(Float(mode.mix(Double(straight.x), Double(source.x))), Float(mode.mix(Double(straight.y), Double(source.y))),
+                                       Float(mode.mix(Double(straight.z), Double(source.z))))
             mixed = source * (1 - backdropAlpha) + blended * backdropAlpha
         }
-        let color = mixed * alpha + SIMD3<Double>(backdrop.x, backdrop.y, backdrop.z) * (1 - alpha)
-        return SIMD4<Double>(color.x, color.y, color.z, alpha + backdropAlpha * (1 - alpha))
+        let color = mixed * alpha + SIMD3<Float>(backdrop.x, backdrop.y, backdrop.z) * (1 - alpha)
+        return SIMD4<Float>(color.x, color.y, color.z, alpha + backdropAlpha * (1 - alpha))
     }
 
     /// The paint's texture with the object's own colour under it (opaque): what a viewer without layers shows.
@@ -84,5 +91,59 @@ public enum PaintComposer {
             result.pixels[index * 4 + 3] = 255
         }
         return result
+    }
+
+    /// A value map over the object's own value (0…1), as an opaque grey picture.
+    public static func flattened(_ texture: RGBAImage, over value: Double) -> RGBAImage {
+        let grey = min(max(value, 0), 1)
+        return flattened(texture, over: RGBA(grey, grey, grey, 1))
+    }
+}
+
+/// The pictures of a paint's layers, decoded from their tiles once and kept while they're asked for again.
+public final class PaintPictures {
+    private let paint: ObjectPaint
+    private let file: (String) -> Data?
+    private var tiles: [String: RGBAImage?] = [:]
+    private var images: [String: RGBAImage] = [:]
+
+    public init(_ paint: ObjectPaint, file: @escaping (String) -> Data?) {
+        self.paint = paint
+        self.file = file
+    }
+
+    /// Pictures already decoded (carried paint, a stroke's result) are used as they are.
+    public init(_ paint: ObjectPaint, images: [String: RGBAImage]) {
+        self.paint = paint
+        file = { _ in nil }
+        self.images = images
+    }
+
+    /// The key a layer's map is kept under ("l1", "l1#roughness").
+    public static func key(_ layer: String, _ map: PaintMap) -> String {
+        map == .color ? layer : "\(layer)#\(map.rawValue)"
+    }
+
+    public func image(_ layer: PaintLayer, _ map: PaintMap) -> RGBAImage {
+        let key = Self.key(layer.id, map)
+        if let known = images[key] { return known }
+        let made = PaintComposer.layerImage(layer, map: map, surface: paint.surface) { name in
+            if let known = tiles[name] { return known }
+            let decoded = file(name).flatMap { try? PNGCodec.decode($0) }
+            tiles[name] = decoded
+            return decoded
+        }
+        images[key] = made
+        return made
+    }
+
+    /// Every picture of every layer that has tiles (and its mask), by key.
+    public func all() -> [String: RGBAImage] {
+        for layer in paint.layers {
+            for map in PaintMap.allCases where !layer.tiles(of: map).isEmpty || (map == .mask && layer.hasMask) {
+                _ = image(layer, map)
+            }
+        }
+        return images
     }
 }

@@ -102,8 +102,13 @@ public enum PaintOperations {
         return (.paintTiles(object, changes), [name: png])
     }
 
-    public static func clear(_ layer: PaintLayer, object: ObjectID) -> EditCommand? {
-        let changes = layer.tiles.keys.sorted().compactMap(PaintTileIndex.init(key:)).map { PaintTileChange(layer: layer.id, tile: $0, file: nil) }
+    /// Clears a layer's paint: one map (its mask shows everything again: opaque tiles stay, so a cleared mask hides it
+    /// all, as Procreate's), or every map when `map` is nil.
+    public static func clear(_ layer: PaintLayer, map: PaintMap? = nil, object: ObjectID) -> EditCommand? {
+        let maps = map.map { [$0] } ?? PaintMap.channels
+        let changes = maps.flatMap { map in
+            layer.tiles(of: map).keys.sorted().compactMap(PaintTileIndex.init(key:)).map { PaintTileChange(layer: layer.id, tile: $0, file: nil, map: map) }
+        }
         return changes.isEmpty ? nil : .paintTiles(object, changes)
     }
 
@@ -157,26 +162,31 @@ public enum PaintOperations {
         return (.setPaint(object, changed), copy.id)
     }
 
-    /// A layer merged into the one under it (their composite, at full opacity, in normal mode).
-    public static func mergeDown(_ id: String, in paint: ObjectPaint, object: ObjectID, image: (PaintLayer) -> RGBAImage,
+    /// A layer merged into the one under it: every map either paints is their composite (masks applied), at full
+    /// opacity, in normal mode, painted by hand from then on (no mask, no fill).
+    public static func mergeDown(_ id: String, in paint: ObjectPaint, object: ObjectID, image: (PaintLayer, PaintMap) -> RGBAImage,
                                  encode: (RGBAImage) -> Data = PNGCodec.encode) -> (command: EditCommand, files: Files)? {
         guard let index = paint.layerIndex(id), index > 0 else { return nil }
         let upper = paint.layers[index], lower = paint.layers[index - 1]
         var pair = ObjectPaint(surface: paint.surface, layers: [lower, upper])
         pair.layers[0].visible = true
         pair.layers[1].visible = upper.visible
-        let merged = PaintComposer.composite(pair, layer: image)
         var result = lower
         result.opacity = 1
         result.blend = .normal
         result.visible = lower.visible
         result.tiles = [:]
+        result.maps = [:]
+        result.fill = nil
         var files: Files = [:]
-        for (tile, picture) in PaintComposer.tiles(of: merged, surface: paint.surface) {
-            let png = encode(picture)
-            let name = PaintFiles.tileName(for: png)
-            files[name] = png
-            result[tile] = name
+        for map in PaintMap.channels where !lower.tiles(of: map).isEmpty || !upper.tiles(of: map).isEmpty {
+            let merged = PaintComposer.composite(pair, map: map, image: image)
+            for (tile, picture) in PaintComposer.tiles(of: merged, surface: paint.surface) {
+                let png = encode(picture)
+                let name = PaintFiles.tileName(for: png)
+                files[name] = png
+                result[map, tile] = name
+            }
         }
         var changed = paint
         changed.layers[index - 1] = result

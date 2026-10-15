@@ -159,14 +159,14 @@ final class PaintTests: XCTestCase {
     // MARK: Compositing
 
     func testBlendModesFollowTheW3CFormulas() {
-        let red = SIMD3<Double>(1, 0, 0)
-        let grey = SIMD4<Double>(0.5, 0.5, 0.5, 1)
-        XCTAssertEqual(PaintComposer.blend(source: red, alpha: 1, mode: .normal, backdrop: grey), SIMD4<Double>(1, 0, 0, 1))
-        XCTAssertEqual(PaintComposer.blend(source: red, alpha: 1, mode: .multiply, backdrop: grey), SIMD4<Double>(0.5, 0, 0, 1))
-        XCTAssertEqual(PaintComposer.blend(source: red, alpha: 1, mode: .screen, backdrop: grey), SIMD4<Double>(1, 0.5, 0.5, 1))
-        XCTAssertEqual(PaintComposer.blend(source: red, alpha: 0.5, mode: .normal, backdrop: grey), SIMD4<Double>(0.75, 0.25, 0.25, 1))
+        let red = SIMD3<Float>(1, 0, 0)
+        let grey = SIMD4<Float>(0.5, 0.5, 0.5, 1)
+        XCTAssertEqual(PaintComposer.blend(source: red, alpha: 1, mode: .normal, backdrop: grey), SIMD4<Float>(1, 0, 0, 1))
+        XCTAssertEqual(PaintComposer.blend(source: red, alpha: 1, mode: .multiply, backdrop: grey), SIMD4<Float>(0.5, 0, 0, 1))
+        XCTAssertEqual(PaintComposer.blend(source: red, alpha: 1, mode: .screen, backdrop: grey), SIMD4<Float>(1, 0.5, 0.5, 1))
+        XCTAssertEqual(PaintComposer.blend(source: red, alpha: 0.5, mode: .normal, backdrop: grey), SIMD4<Float>(0.75, 0.25, 0.25, 1))
         // Over nothing, every mode shows the source.
-        XCTAssertEqual(PaintComposer.blend(source: red, alpha: 1, mode: .multiply, backdrop: .zero), SIMD4<Double>(1, 0, 0, 1))
+        XCTAssertEqual(PaintComposer.blend(source: red, alpha: 1, mode: .multiply, backdrop: .zero), SIMD4<Float>(1, 0, 0, 1))
         XCTAssertEqual(PaintBlend.overlay.mix(0.25, 0.5), 0.25, accuracy: 1e-12)
         XCTAssertEqual(PaintBlend.add.mix(0.75, 0.5), 1)
     }
@@ -180,16 +180,16 @@ final class PaintTests: XCTestCase {
         var top = PaintLayer(id: "l2", name: "Top", opacity: 0.5, blend: .multiply)
         top.tiles["0,0"] = "red"
         let pictures = ["white": white, "red": red]
-        func image(_ layer: PaintLayer) -> RGBAImage {
-            PaintComposer.layerImage(layer, surface: surface) { pictures[$0] }
+        func image(_ layer: PaintLayer, _ map: PaintMap) -> RGBAImage {
+            PaintComposer.layerImage(layer, map: map, surface: surface) { pictures[$0] }
         }
-        let both = PaintComposer.composite(ObjectPaint(surface: surface, layers: [bottom, top]), layer: image)
+        let both = PaintComposer.composite(ObjectPaint(surface: surface, layers: [bottom, top]), image: image)
         XCTAssertEqual(both.pixel(10, 10).r, 1, accuracy: 0.01)
         XCTAssertEqual(both.pixel(10, 10).g, 0.5, accuracy: 0.01, "white × red at half opacity")
         top.visible = false
-        let hidden = PaintComposer.composite(ObjectPaint(surface: surface, layers: [bottom, top]), layer: image)
+        let hidden = PaintComposer.composite(ObjectPaint(surface: surface, layers: [bottom, top]), image: image)
         XCTAssertEqual(hidden.pixel(10, 10), RGBA(1, 1, 1, 1))
-        let nothing = PaintComposer.composite(ObjectPaint(surface: surface, layers: []), layer: image)
+        let nothing = PaintComposer.composite(ObjectPaint(surface: surface, layers: []), image: image)
         XCTAssertEqual(nothing.pixel(0, 0).a, 0)
         let flat = PaintComposer.flattened(nothing, over: RGBA(0, 0, 1, 1))
         XCTAssertEqual(flat.pixel(0, 0), RGBA(0, 0, 1, 1), "the object's own colour under no paint")
@@ -252,8 +252,8 @@ final class PaintTests: XCTestCase {
         let pictures = ["blue": RGBAImage(width: 256, height: 256, color: RGBA(0, 0, 1, 1)),
                         "red": RGBAImage(width: 256, height: 256, color: RGBA(1, 0, 0, 1))]
         let paint = ObjectPaint(surface: surface, layers: [bottom, top])
-        let merged = try XCTUnwrap(PaintOperations.mergeDown("l2", in: paint, object: "a") { layer in
-            PaintComposer.layerImage(layer, surface: surface) { pictures[$0] }
+        let merged = try XCTUnwrap(PaintOperations.mergeDown("l2", in: paint, object: "a") { layer, map in
+            PaintComposer.layerImage(layer, map: map, surface: surface) { pictures[$0] }
         })
         guard case let .setPaint(_, result?) = merged.command else { return XCTFail("a layer change") }
         XCTAssertEqual(result.layers.map(\.id), ["l1"])
@@ -261,7 +261,7 @@ final class PaintTests: XCTestCase {
         let pixel = try PNGCodec.decode(XCTUnwrap(merged.files[file])).pixel(0, 0)
         XCTAssertEqual(pixel.r, 0.5, accuracy: 0.01)
         XCTAssertEqual(pixel.b, 0.5, accuracy: 0.01)
-        XCTAssertNil(PaintOperations.mergeDown("l1", in: paint, object: "a") { _ in .clear(width: 1, height: 1) }, "nothing under the bottom layer")
+        XCTAssertNil(PaintOperations.mergeDown("l1", in: paint, object: "a") { _, _ in .clear(width: 1, height: 1) }, "nothing under the bottom layer")
     }
 
     func testThePaintingBenchmarkScene() {
