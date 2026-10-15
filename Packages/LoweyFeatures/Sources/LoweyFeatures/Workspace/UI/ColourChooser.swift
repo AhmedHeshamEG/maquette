@@ -112,7 +112,8 @@ struct MaterialsPage: View {
         let materials = editor.app.materials
         // A built-in that wasn't edited has nothing to delete (an edited one goes back to how it came).
         let deletable = !materials.library.isBuiltIn(material.id) || materials.library.materials[material.id] != nil
-        let delete: (@MainActor () -> Void)? = deletable ? { materials.delete(material.id) } : nil
+        var delete: (@MainActor () -> Void)?
+        if deletable { delete = { materials.delete(material.id) } }
         let paintOn = HmmHoldMenu.Item("Paint it on", systemName: "paintbrush.pointed") { editor.addFill(.material(material), masked: true) }
         let edit = HmmHoldMenu.Item("Edit", systemName: "slider.horizontal.3") { editing = material.id }
         return HmmHoldMenu(duplicate: { editing = materials.duplicate(material.id) }, extras: [paintOn, edit], delete: delete)
