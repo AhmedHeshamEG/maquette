@@ -793,6 +793,7 @@
             "overlay",
             "paint",
             "particles",
+            "physics",
             "place",
             "preset",
             "profile",
@@ -2126,6 +2127,246 @@
             },
             "required": [
               "preset"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "do": {
+                "const": "physics"
+              }
+            }
+          },
+          "then": {
+            "description": "P1's physics: make things real (a material in words, how they move, their numbers), the scene's gravity, wind, ground and start, joints and mechanisms, forces (fan, pull, whirl) and fluids (pour, splash, smoke, fire), Keep it (the run becomes keys), Settle, does it stand, and the real sun of a place and date.",
+            "properties": {
+              "op": {
+                "enum": [
+                  "real",
+                  "unreal",
+                  "scene",
+                  "joint",
+                  "unjoin",
+                  "force",
+                  "fluid",
+                  "keep",
+                  "settle",
+                  "stand",
+                  "sun"
+                ]
+              },
+              "target": {
+                "$ref": "#/$defs/target"
+              },
+              "material": {
+                "enum": [
+                  "wood",
+                  "steel",
+                  "aluminium",
+                  "stone",
+                  "concrete",
+                  "glass",
+                  "ice",
+                  "plastic",
+                  "rubber",
+                  "foam",
+                  "cardboard",
+                  "cloth",
+                  "jelly"
+                ]
+              },
+              "motion": {
+                "enum": [
+                  "falls",
+                  "stays",
+                  "follows"
+                ]
+              },
+              "mass": {
+                "type": "number"
+              },
+              "friction": {
+                "type": "number"
+              },
+              "bounce": {
+                "type": "number"
+              },
+              "speed": {
+                "$ref": "#/$defs/vec3"
+              },
+              "spin": {
+                "$ref": "#/$defs/vec3"
+              },
+              "breaks": {
+                "type": "boolean"
+              },
+              "stiffness": {
+                "type": "number"
+              },
+              "hangs": {
+                "type": "boolean"
+              },
+              "gravity": {
+                "anyOf": [
+                  {
+                    "enum": [
+                      "earth",
+                      "moon",
+                      "mars",
+                      "jupiter",
+                      "none"
+                    ]
+                  },
+                  {
+                    "type": "number"
+                  }
+                ]
+              },
+              "wind": {
+                "type": "object",
+                "properties": {
+                  "speed": {
+                    "type": "number"
+                  },
+                  "heading": {
+                    "type": "number"
+                  },
+                  "gusts": {
+                    "type": "number"
+                  }
+                }
+              },
+              "ground": {
+                "type": "boolean"
+              },
+              "start": {
+                "type": "number"
+              },
+              "kind": {
+                "enum": [
+                  "hinge",
+                  "slider",
+                  "ball",
+                  "glue",
+                  "spring",
+                  "rope",
+                  "gear",
+                  "fan",
+                  "pull",
+                  "whirl",
+                  "pour",
+                  "splash",
+                  "smoke",
+                  "fire"
+                ]
+              },
+              "id": {
+                "type": "string"
+              },
+              "first": {
+                "$ref": "#/$defs/target"
+              },
+              "second": {
+                "$ref": "#/$defs/target"
+              },
+              "anchor": {
+                "$ref": "#/$defs/point"
+              },
+              "to": {
+                "$ref": "#/$defs/point"
+              },
+              "axis": {
+                "$ref": "#/$defs/vec3"
+              },
+              "limits": {
+                "type": "array",
+                "items": {
+                  "type": "number"
+                }
+              },
+              "motor": {
+                "type": "number"
+              },
+              "springiness": {
+                "type": "number"
+              },
+              "length": {
+                "type": "number"
+              },
+              "gears": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "ratio": {
+                "type": "number"
+              },
+              "at": {
+                "$ref": "#/$defs/point"
+              },
+              "aim": {
+                "$ref": "#/$defs/vec3"
+              },
+              "reach": {
+                "type": "number"
+              },
+              "box": {
+                "$ref": "#/$defs/vec3"
+              },
+              "amount": {
+                "type": "number"
+              },
+              "duration": {
+                "type": "number"
+              },
+              "color": {
+                "type": "string"
+              },
+              "width": {
+                "type": "number"
+              },
+              "place": {
+                "type": "string"
+              },
+              "latitude": {
+                "type": "number"
+              },
+              "longitude": {
+                "type": "number"
+              },
+              "utcOffset": {
+                "type": "number"
+              },
+              "date": {
+                "type": "string"
+              },
+              "hour": {
+                "type": "number"
+              },
+              "north": {
+                "type": "number"
+              },
+              "study": {
+                "anyOf": [
+                  {
+                    "type": "array",
+                    "items": {
+                      "type": "number"
+                    }
+                  },
+                  {
+                    "type": "boolean"
+                  }
+                ]
+              },
+              "off": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "op"
             ]
           }
         },

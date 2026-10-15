@@ -48,13 +48,14 @@ public final class ExportSession {
         frames = try FrameRenderer(device: device, models: models)
     }
 
-    /// Loads every model the document uses (exports never show placeholders).
+    /// Loads every model the document uses (exports never show placeholders), then the whole physics run.
     public func loadModels() async {
         for object in builder.document.scene.objects.values {
             guard let id = object.kind.assetID, let asset = builder.catalog.manifest.asset(id) else { continue }
             _ = await builder.models.load(asset, catalog: builder.catalog)
         }
         await builder.models.waitUntilLoaded()
+        await preparePhysics(reusing: builder.physics)
     }
 
     /// Loads the exact pictures and video frames shown at `time` (never "the nearest one").

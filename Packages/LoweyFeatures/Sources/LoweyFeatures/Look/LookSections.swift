@@ -128,8 +128,11 @@ struct WorldSection: View {
             if look.fog.enabled { slider("Fog distance", \.fog.distance, 5 ... 200) }
             slider("Stars", \.sky.stars, 0 ... 1)
             Toggle("Ground", isOn: Binding(get: { look.ground.visible }, set: { value in editor.updateLook { $0.ground.visible = value } }))
-            slider("Sun height", \.lighting.sunElevation, 2 ... 90)
-            slider("Sun direction", \.lighting.sunAzimuth, 0 ... 360)
+            RealSunSection(editor: editor)
+            if look.lighting.realSun == nil {
+                slider("Sun height", \.lighting.sunElevation, 2 ... 90)
+                slider("Sun direction", \.lighting.sunAzimuth, 0 ... 360)
+            }
             slider("Sun strength", \.lighting.sunIntensity, 0 ... 2)
             slider("Ambient", \.lighting.ambientIntensity, 0 ... 2)
             slider("Exposure", \.lighting.exposure, -2 ... 2)

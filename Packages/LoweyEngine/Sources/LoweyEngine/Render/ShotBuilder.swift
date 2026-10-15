@@ -14,6 +14,8 @@ public final class ShotBuilder {
     public var mediaImage: (String) -> CGImage? = { _ in nil }
     /// The project's paint files (painted objects' tiles and unwraps).
     public var paintFile: @Sendable (String) -> Data? = { _ in nil }
+    /// The scene's physics run (the stage's, as far as it has gone; an export's, whole). Nil: things stay where keys put them.
+    public var physics: PhysicsFrames?
     private var captionPages: [Framing: [CaptionPage]] = [:]
 
     public init(document: Document, catalog: AssetCatalog, models: ModelLibrary = .shared) {
@@ -45,7 +47,7 @@ public final class ShotBuilder {
 
     /// The evaluated scene at `time`.
     public func evaluate(at time: Double, overrides: [ObjectID: [PropertyKey: PropertyValue]] = [:]) -> AnimatedScene {
-        Animator.evaluate(document, at: time, rigs: rigs(), overrides: overrides)
+        Animator.evaluate(document, at: time, rigs: rigs(), overrides: overrides, physics: physics)
     }
 
     /// The request for `time` in a frame of `size` pixels.
@@ -62,6 +64,7 @@ public final class ShotBuilder {
                                 lightBudget: 16)
         input.smears = Smear.smears(in: document, at: time)
         input.paintFile = paintFile
+        input.simulated = animated.simulated
         var request = FrameRequest(input: input, camera: camera, lens: mainID.flatMap { animated.scene.objects[$0] }.map(CameraLens.init),
                                    screen: ScreenEffects.state(at: time, effects: timeline.effects, fps: timeline.fps), frameIndex: frameIndex,
                                    renderScale: renderScale, transparent: transparent)

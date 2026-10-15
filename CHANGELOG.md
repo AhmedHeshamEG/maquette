@@ -3,6 +3,30 @@
 All notable changes. 1.x grew in four phases (v0.1 → v1.4); 2.0 is the remaster, released as betas first. Maquette
 continues from 2.0 and numbers its phases again from 0.1 (each phase bumps the minor version until 1.0).
 
+## [0.19] — Maquette — physics (phase P1)
+
+Rigorous physics without an engineering degree: say what a thing is made of and press play.
+
+- **Real**, on a thing's panel: a material in words (wood, steel, aluminium, stone, concrete, glass, ice, plastic,
+  rubber, foam, cardboard, cloth, jelly), how it moves (falls, stays put, follows its keys); its weight comes from the
+  material and its real size. Exact numbers (mass, grip, bounce, breaking, stiffness, a start speed) one step deeper.
+- **Jolt Physics** under it, in real units, the same on every iPad: what you see on the stage is what the export shows.
+  The run is worked out in the background and plays from there; the timeline waits for it rather than show a wrong frame.
+- Falling, colliding, stacking; **joints and mechanisms** (hinge, slider, ball, glue, spring, rope, gear; motors on
+  hinges and sliders); **ragdolls** from any rig; **cloth** (hanging from its top edge too) and **jelly**; **glass and
+  ice break** into pieces that fit; **forces** (a fan, a pull to a point, a whirl) and the scene's **wind**.
+- **Small-scale fluids** in Model ▸ Add: pour water, a splash, billowing smoke, flames, in a room-sized box.
+- Particles feel the wind and land on the ground.
+- **Keep it** turns a run into ordinary keys; **Settle** lays a thing on its natural resting face; **Does it stand?**
+  shows its centre of mass over its footprint; **speed and force arrows** while it plays.
+- Behind the scene's name: **gravity** (Earth, Moon, Mars, Jupiter, floating), wind, the ground, when things start.
+- **The real sun** in Look ▸ World: a place, a date, a time, or a **shadow study** that runs the day across the timeline.
+- Exports: video waits for the whole run; glTF, Blender and FBX carry it as keys, and glTF carries **colliders** Godot
+  reads (OMI physics).
+- The menu bar's **Physics** menu (⇧⌘J, ⌥⌘J, ⌘J, ⌥⌘U, ⇧⌘K).
+- **The bridge**: a `physics` verb (real, scene, joint, force, fluid, keep, settle, stand, sun).
+- Projects move to **schema 18**; 0.18 refuses them with its usual message.
+
 ## [0.18] — Maquette — texture (phase U7)
 
 Everything a texture artist would leave the app for, on Draw's bar.

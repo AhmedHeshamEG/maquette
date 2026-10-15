@@ -125,6 +125,23 @@ verbs = {
                "facing": v3, "size": n, "opacity": n, "layer": n, "on": b, "axis": {"enum": ["x", "y", "z"]},
                "pixels": {"enum": [512, 1024, 2048, 4096]}, "edges": {"type": "array", "items": {"type": "array", "items": v3}},
                "from": tgt, "length": n, "density": n, "style": {"enum": ["shells", "cards"]}, "droop": n}, ["target", "op"]),
+    "physics": ("P1's physics: make things real (a material in words, how they move, their numbers), the scene's gravity, "
+                "wind, ground and start, joints and mechanisms, forces (fan, pull, whirl) and fluids (pour, splash, smoke, "
+                "fire), Keep it (the run becomes keys), Settle, does it stand, and the real sun of a place and date.",
+                {"op": {"enum": ["real", "unreal", "scene", "joint", "unjoin", "force", "fluid", "keep", "settle", "stand", "sun"]},
+                 "target": tgt, "material": {"enum": ["wood", "steel", "aluminium", "stone", "concrete", "glass", "ice", "plastic",
+                                                      "rubber", "foam", "cardboard", "cloth", "jelly"]},
+                 "motion": {"enum": ["falls", "stays", "follows"]}, "mass": n, "friction": n, "bounce": n, "speed": v3, "spin": v3,
+                 "breaks": b, "stiffness": n, "hangs": b,
+                 "gravity": {"anyOf": [{"enum": ["earth", "moon", "mars", "jupiter", "none"]}, n]},
+                 "wind": {"type": "object", "properties": {"speed": n, "heading": n, "gusts": n}}, "ground": b, "start": n,
+                 "kind": {"enum": ["hinge", "slider", "ball", "glue", "spring", "rope", "gear", "fan", "pull", "whirl", "pour", "splash",
+                                   "smoke", "fire"]},
+                 "id": s, "first": tgt, "second": tgt, "anchor": point, "to": point, "axis": v3, "limits": {"type": "array", "items": n},
+                 "motor": n, "springiness": n, "length": n, "gears": {"type": "array", "items": s}, "ratio": n,
+                 "at": point, "aim": v3, "reach": n, "box": v3, "amount": n, "duration": n, "color": s, "width": n,
+                 "place": s, "latitude": n, "longitude": n, "utcOffset": n, "date": s, "hour": n, "north": n,
+                 "study": {"anyOf": [{"type": "array", "items": n}, b]}, "off": b}, ["op"]),
     "command": ("A raw EditCommand.", {"command": ref("command")}, ["command"]),
 }
 

@@ -36,6 +36,10 @@ public struct SceneBounds: Sendable {
             return Bounds(points: sketch.curves.flatMap(\.points).map { sketch.plane.lift($0) })
         case let .dimension(recipe):
             return Bounds(points: [recipe.start, recipe.end])
+        case let .force(recipe):
+            return Bounds(min: Vec3(-0.2, -0.2, recipe.kind == .fan ? -recipe.reach : -0.2), max: Vec3(0.2, 0.2, 0.2))
+        case let .fluid(recipe):
+            return Bounds(min: recipe.box * -0.5, max: recipe.box * 0.5)
         case .group, .overlay:
             return nil
         }

@@ -110,6 +110,7 @@ Three short pages; the page is remembered.
 | World: moods (Day … Studio, Dark studio) | `Look › look-world › mood-dusk` |
 | World: fine tune the world | `Look › look-world › Fine tune the world` |
 | World: save the world to the library | `Look › look-world › Save this world to the library` |
+| World: the real sun (a place, a date, a time; a shadow study across the timeline; which way north is), in Fine tune the world | Look ▸ World ▸ Fine tune the world ▸ Real sun |
 | Finish: clean, cinematic, dreamy, retro, ink outlines, collage, old film; grain, bloom | `Look › look-finish › Cinematic` |
 | Finish: Motion (smooth, on twos, on threes) for the whole scene | `Look › look-finish › finish-motion` |
 | Finish: screen effects at the playhead (a flash, a shake…) | `Look › look-finish › finish-screen-effects` |
@@ -136,6 +137,7 @@ Three short pages; the page is remembered.
 |---|---|
 | Set up for: Blank, Print, Room, Animation (what's in reach changes, never the project) | `scene-name › setup-room` |
 | Scenes: switch, new, duplicate, rename; copy this scene to another project | `scene-name › scene-rename` |
+| Physics: gravity, wind, a solid ground, when things start; the run and Keep it | `scene-name › gravity-moon` |
 | The objects (the outliner): pick, show or hide, lock; a row's hold menu (also: to top level, into a group, frame) | `scene-name › outliner` |
 
 ## Top right
@@ -150,6 +152,8 @@ Three short pages; the page is remembered.
 | Add: 3D text | `Model › model-add › add-text3d` |
 | Add: a photo or video (a card in the world) | `Model › model-add › add-media` |
 | Add: effects (fire, sparks, smoke…) | `Model › model-add › add-fx-fire` |
+| Add: forces (fan, pull, whirl) and fluids (pour water, splash, billowing smoke, flames) | `Model › model-add › add-force-fan` |
+| | `Model › model-add › add-fluid-pour` |
 | Add: Building, walls along tapped corners, floor, door, window, stairs | Model ▸ Add while the scene is set up for a Room |
 | Edit: Shape it: Shape, Brush, Cage, Bend (no buttons for faces, edges or corners: the Pencil touches the part, U6) | `Model › model-shape › model-verb-shape` |
 | | `Model › model-shape › model-verb-cage` |
@@ -249,6 +253,7 @@ you until a finger's tap places it, and reads as paper while you draw. Tap Draw 
 | On the selection: Combine (union, subtract, intersect), with two or more shapes | in the panel when two or more shapes are selected |
 | Look of this object: glow, smoothing, bevel; its own Look, line weight, rim light, accent, gloss | `[cube] object-look` |
 | Shape of this object: typed sides, Smooth, the smooth angle, triangles, clean up, holes, linked copies, the pivot | `[cube] object-shape` |
+| Real: a material in words, how it moves, its weight; joints; Settle, Does it stand?, Keep it; exact numbers deeper | `[cube] object-real` |
 | More ways to move: once-moves' length, behaviours, animated on (ones…fours), physics, joints, paths, onion skin | `[cube] more-motion` |
 | Numbers: position, rotation, size | `[cube] transform-toggle` |
 | About this object | `[cube] inspector-more` |
@@ -342,7 +347,7 @@ grammar: the board itself top left, the making tools top right, the sidebar, the
 Touch and hold any thing and the same menu opens in the same order (CONTEXT §4.1): **Duplicate · Rename · Copy ·
 Paste**, then one to three extras that fit the thing, then **Delete** in red. The first four and Delete are always in
 the same places; a row a thing can't do is dimmed. An object's menu holds everything it can do: Hide, Lock, and More
-(Group or Ungroup, Array, To the ground, Swap for a model, Save to the library, Unpack); on the stage, with other
+(Group or Ungroup, Array, To the ground, Settle, Swap for a model, Save to the library, Unpack); on the stage, with other
 things selected, **Add to the selection** comes first. A finger held still on an object opens it; a finger that moves
 is a drag. The same object has the same menu on the stage, in the outliner, on its timeline row and behind its panel's
 ⋯ button. Also on: keys, clips, flipbook drawings and tracks, cuts, screen effects, paint layers, brushes, Looks,
@@ -383,9 +388,18 @@ explanations in panels; on by default).
   or on any touch.
 - **Under load nothing is said on the stage** (CONTEXT §6): the preview lightens by itself and comes back.
 - **The menu bar and keyboard** reach the same controls: ⌘1–⌘4 Model, Draw, Rig, Animate; ⌘6–⌘8 Actions, Look, the
-  lasso; ⌘L the Library; ⌥⌘1–3 move, turn, size; ⌘T the timeline; Space/J/K/L and ⌥←→ the transport. Holding ⌘ lists
+  lasso; ⌘L the Library; ⌥⌘1–3 move, turn, size; ⌘T the timeline; Space/J/K/L and ⌥←→ the transport; the Physics
+  menu: ⇧⌘J make real, ⌥⌘J not real, ⌘J settle, ⌥⌘U does it stand, ⇧⌘K keep the run as keys. Holding ⌘ lists
   them. The Perform menu (the microphone, the trigger keys) is *(held: 1.2)*.
 - **Proposals** from the AI bridge appear at the bottom of the stage while one is waiting.
+
+## What moved in 0.19 (P1)
+
+Physics found homes that already existed. **Real** is a row on the object panel, beside Look and Shape (one step deeper,
+as those are); **Physics** (gravity, wind, the ground, the run) sits behind the scene's name, where the scene's own
+settings live; **forces and fluids** are tiles in Model ▸ Add beside the particle effects; the **real sun** is in Look ▸
+World's fine tuning, where the sun already was (its height and direction sliders step aside while it's on); **Settle**
+joins To the ground in the object's menu; the menu bar has a Physics menu. Nothing moved.
 
 ## What moved in 0.18 (U7)
 

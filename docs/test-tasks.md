@@ -3,6 +3,18 @@
 One task per feature for the two test weeks (between M14 and M16), written for its person in `studio-h/USERS.md`. A
 task says what to make, never which buttons to press; the tester says where they got stuck.
 
+## 0.19 (P1): physics
+
+- **The curious teenager:** a wooden crate and a steel ball dropped from the top of the Keeper's Tower, landing at the
+  same moment, then a glass on the table that breaks when the ball hits it.
+- **The engineering student:** a door on a hinge that a motor swings open, a pendulum on a rope, and a stack of blocks
+  that "does it stand?" says will tip, then fixed so it stands.
+- **The architecture student:** the shadows of a small house in Rome across 21 June, from 7:00 to 19:00, played as one
+  shot.
+- **The sculptor:** a rigged creature that falls down the tower's stairs, kept as keys, with one arm fixed by hand.
+- **Everyone:** water poured into a glass until it's half full, a flag that flutters in the wind, and smoke rising from
+  the keeper's lamp; then the whole shot exported as a video.
+
 ## 0.18 (U7): texture
 
 - **The texture artist:** a wooden crate beside the Keeper's Tower: planks, dirt in the corners, worn metal corners

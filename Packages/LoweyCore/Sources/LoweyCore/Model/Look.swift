@@ -94,6 +94,8 @@ public struct Lighting: Codable, Hashable, Sendable {
     public var ambientIntensity: Double
     /// Overall exposure in stops, -3...3.
     public var exposure: Double
+    /// The real sun of a place, a date and a time (nil: the sun is placed by hand; `RealSun`).
+    public var realSun: RealSun?
 
     public init(
         sunElevation: Double = 50, sunAzimuth: Double = 35, sunColor: RGBA = .white,

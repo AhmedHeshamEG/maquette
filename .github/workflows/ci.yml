@@ -52,6 +52,7 @@ jobs:
               - 'Packages/HmmKit/**'
               - 'Packages/XAtlas/**'
               - 'Packages/InstantMeshes/**'
+              - 'Packages/Jolt/**'
               - '.swiftlint.yml'
               - '.swiftformat'
               - '.github/workflows/ci.yml'
@@ -60,6 +61,7 @@ jobs:
               - 'Packages/LoweyCore/Sources/**'
               - 'Packages/XAtlas/Sources/**'
               - 'Packages/InstantMeshes/Sources/**'
+              - 'Packages/Jolt/Sources/**'
               - 'Packages/HmmKit/Sources/**'
               - '.github/workflows/ci.yml'
             features:
@@ -68,6 +70,7 @@ jobs:
               - 'Packages/LoweyCore/Sources/**'
               - 'Packages/XAtlas/Sources/**'
               - 'Packages/InstantMeshes/Sources/**'
+              - 'Packages/Jolt/Sources/**'
               - 'Packages/HmmKit/Sources/**'
               - 'App/**'
               - 'AppUITests/**'
@@ -130,8 +133,8 @@ jobs:
       - uses: actions/cache@v4
         with:
           path: Packages/LoweyCore/.build
-          key: core-build-${{ hashFiles('Packages/LoweyCore/Package.swift', 'Packages/HmmKit/Package.swift', 'Packages/XAtlas/Package.swift', 'Packages/InstantMeshes/Package.swift') }}-${{ github.sha }}
-          restore-keys: core-build-${{ hashFiles('Packages/LoweyCore/Package.swift', 'Packages/HmmKit/Package.swift', 'Packages/XAtlas/Package.swift', 'Packages/InstantMeshes/Package.swift') }}-
+          key: core-build-${{ hashFiles('Packages/LoweyCore/Package.swift', 'Packages/HmmKit/Package.swift', 'Packages/XAtlas/Package.swift', 'Packages/InstantMeshes/Package.swift', 'Packages/Jolt/Package.swift') }}-${{ github.sha }}
+          restore-keys: core-build-${{ hashFiles('Packages/LoweyCore/Package.swift', 'Packages/HmmKit/Package.swift', 'Packages/XAtlas/Package.swift', 'Packages/InstantMeshes/Package.swift', 'Packages/Jolt/Package.swift') }}-
       - name: Test (journal, save → load round trips, package upgrades, Look system, geometry)
         working-directory: Packages/LoweyCore
         # Serial: parallel runs corrupt the coverage profile.
@@ -149,7 +152,7 @@ jobs:
         run: |
           PROFILE=$(dirname "$(swift test --show-codecov-path)")/default.profdata
           BINARY=$(find .build -name 'LoweyCorePackageTests.xctest' -type f | head -1)
-          llvm-cov report "$BINARY" -instr-profile="$PROFILE" -ignore-filename-regex='Tests|\.build|HmmKit|XAtlas|InstantMeshes' | tee coverage.txt
+          llvm-cov report "$BINARY" -instr-profile="$PROFILE" -ignore-filename-regex='Tests|\.build|HmmKit|XAtlas|InstantMeshes|Jolt' | tee coverage.txt
           COVERAGE=$(grep TOTAL coverage.txt | awk '{print $10}' | tr -d '%')
           echo "Line coverage: $COVERAGE%"
           echo "### LoweyCore line coverage: ${COVERAGE}%" >> "$GITHUB_STEP_SUMMARY"
@@ -168,6 +171,21 @@ jobs:
           set -o pipefail
           swift test -c release --filter QuadRemeshTests 2>&1 | tee spike-u6.txt
           grep SPIKE spike-u6.txt >> "$GITHUB_STEP_SUMMARY"
+
+      - name: SPIKE (P1) Jolt's own tests and a 500-body stack in a release build
+        working-directory: Packages/Jolt
+        shell: bash
+        run: |
+          set -o pipefail
+          swift test -c release 2>&1 | tee spike-p1.txt
+          grep JOLT_SPIKE spike-p1.txt >> "$GITHUB_STEP_SUMMARY"
+      - name: SPIKE (P1) physics in LoweyCore in a release build (fluids, the stairs ragdoll)
+        working-directory: Packages/LoweyCore
+        shell: bash
+        run: |
+          set -o pipefail
+          swift test -c release --filter PhysicsSpikeTests 2>&1 | tee spike-p1-core.txt
+          grep SPIKE spike-p1-core.txt >> "$GITHUB_STEP_SUMMARY"
 
   godot:
     name: A rigged, animated glTF plays in Godot 4.3
@@ -189,6 +207,12 @@ jobs:
             grep -q "MAQUETTE GODOT: .* bones" "godot-$file.log"
             grep "MAQUETTE GODOT" "godot-$file.log" >> "$GITHUB_STEP_SUMMARY"
           done
+      - name: Godot opens the dropped cube's glTF as a rigid body on a static floor, with its mass and the run as animation
+        run: |
+          set -o pipefail
+          ./Godot_v4.3-stable_linux.x86_64 --headless --path Tools/godot --script check_physics.gd -- "$GITHUB_WORKSPACE/acceptance/physics/drop.glb" 2>&1 | tee godot-physics.log
+          grep -q "MAQUETTE GODOT PHYSICS: .* animated" godot-physics.log
+          grep "MAQUETTE GODOT PHYSICS" godot-physics.log >> "$GITHUB_STEP_SUMMARY"
 
   interop:
     name: Print files (slicer check) + Blender package + painted glTF (Blender ${{ matrix.blender }})

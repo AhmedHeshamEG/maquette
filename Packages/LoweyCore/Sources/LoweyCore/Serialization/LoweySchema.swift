@@ -57,7 +57,10 @@ public enum LoweySchema {
     /// 17: Maquette 0.18's texture: layers' `maps` (roughness, metal, glow, bumps, fur, mask) and `fill`, paint's
     ///     `mirror`, `normalMap` and the surface's `seams`, tile changes' `map`, the `fur…` properties, the
     ///     `materials` library file.
-    public static let currentVersion = 17
+    /// 18: Maquette 0.19's physics: objects' `physics` (a material and how it moves), scenes' `physics` (gravity, wind,
+    ///     ground, joints), the `force` and `fluid` objects, the `setPhysics` and `setScenePhysics` commands, the Look's
+    ///     `realSun`.
+    public static let currentVersion = 18
 
     public static let migrations: [Migration] = [
         Migration(kind: .scene, from: 0, transform: liftSceneV0),
@@ -123,7 +126,11 @@ public enum LoweySchema {
         // 16 → 17 adds optional paint maps, fills, mirror, normals, seams and fur; nothing older changes shape.
         Migration(kind: .scene, from: 16) { $0 },
         Migration(kind: .project, from: 16) { $0 },
-        Migration(kind: .library, from: 16) { $0 }
+        Migration(kind: .library, from: 16) { $0 },
+        // 17 → 18 adds optional physics, two object kinds and the real sun; nothing older changes shape.
+        Migration(kind: .scene, from: 17) { $0 },
+        Migration(kind: .project, from: 17) { $0 },
+        Migration(kind: .library, from: 17) { $0 }
     ] + unchangedSince(.brushes) + unchangedSince(.materials)
 
     /// A file kind whose payload hasn't changed shape at any version: every step keeps it as it is (D-339; the

@@ -15,6 +15,13 @@ extension SceneCompiler {
         defer {
             if !state.ghost, let fur = FurSettings(object) { addFur(fur, object: object, from: first, scene: &scene) }
         }
+        // Cloth and jelly in a run: the bent surface in place of the thing's own.
+        if !state.ghost, let bent = input.simulated.meshes[object.id] {
+            if let mesh = GPUMesh(device: device, mesh: bent, label: "\(object.name) bent") {
+                add(mesh, world: world, uniforms: base, castsShadow: casts, scene: &scene)
+            }
+            return
+        }
         switch object.kind {
         case let .primitive(shape):
             compilePrimitive(shape, object: object, state: state, base: base, casts: casts, input: input, scene: &scene)
@@ -238,7 +245,12 @@ extension SceneCompiler {
         let timeline = input.document.scene.timeline
         let track = timeline.track(for: object.id, .emission)
         let amount = max(object.transform.scale.x, 0)
-        let particles = ParticleSimulator.particles(recipe, at: input.time, amount: amount) { birth in
+        // The scene's wind carries them and the ground stops them (in the emitter's own turned space).
+        let physics = input.document.scene.physics
+        let air = physics.map { state.world.rotation.inverse.act($0.wind(at: input.time)) } ?? .zero
+        let upright = state.world.rotation.act(.unitY).y > 0.999
+        let ground: Double? = (physics?.ground ?? true) && upright ? -state.world.position.y : nil
+        let particles = ParticleSimulator.particles(recipe, at: input.time, amount: amount, air: air, ground: ground) { birth in
             track?.value(at: birth)?.floatValue ?? object[.emission]?.floatValue ?? 1
         }
         guard !particles.isEmpty else { return }

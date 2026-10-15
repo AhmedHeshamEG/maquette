@@ -2444,3 +2444,111 @@ its usual message.
 
 **D-364 — Translations still ride along.** The new strings were translated into Italian and Arabic for the catalog check
 (D-300, D-325, D-337).
+
+## Maquette 0.19 — P1, physics
+
+**D-365 — SPIKE passed: Jolt Physics 5.6.0, vendored.** `Packages/Jolt`: upstream's `Jolt/` (MIT) minus the GPU compute
+back ends and shaders, behind a C face (`JoltBridge.h`: rigid bodies, joints, soft bodies), the way Manifold is. It builds
+for the iPad in CI's app build and on Linux in the test container. The 500-body stack (a 10 × 10 × 5 tower of boxes) stands
+and steps in 1.2 ms per 60 Hz step in a release build on the PC's Docker CPU (14 ms in a debug build); CI's number is in
+the run summary, a Tier B iPad's is the device check. Fallback (our own impulse solver) not needed.
+
+**D-366 — One run, the same everywhere.** Single-threaded, `JPH_CROSS_PLATFORM_DETERMINISTIC`, `-ffp-contract=off`: the
+same input gives the same frames on the iPad, the simulator and Linux. A run's input (`PhysicsInput`: the scene where
+things start, the meshes of real things, the paths of what follows its keys) has a stable fingerprint; the stage and an
+export with the same fingerprint show the same frames. *Rejected:* Jolt's job system (threads change the order of
+contacts, and with it the run).
+
+**D-367 — Materials in words, mass from the real volume.** Wood, steel, aluminium, stone, concrete, glass, ice, plastic,
+rubber, foam, cardboard, cloth, jelly, each a density (kg/m³; cloth kg/m²), a grip, a bounce, a body (rigid, cloth,
+jelly) and whether it breaks. Mass is the density times the volume Jolt measures of the body's shape. Mass, grip, bounce,
+breaking, stiffness and a start speed can be typed, one step deeper.
+
+**D-368 — What shape a thing has in the run.** A cube is an exact box, a round sphere a sphere, a round cylinder a
+cylinder; anything else that moves is its convex hull; what stays or follows its keys keeps its triangles (stairs, a
+glass); a real group is its parts' hulls glued into one body. *Rejected:* convex decomposition (a library, slow on big
+meshes, and a falling cup reads the same as its hull).
+
+**D-369 — Real lives on the thing, physics on the scene.** `SceneObject.physics` (material, how it moves: falls, stays,
+follows its keys, and the numbers); `Scene.physics` (gravity by name, wind with gusts, a solid ground, when things start,
+the joints). A joint's anchor and axis are in its first thing's own space, so moving the thing moves the joint.
+*Rejected:* joints as objects in the outliner (they're relations, like a group).
+
+**D-370 — The run is made in the background and played as far as it's gone.** Every frame of the timeline from the start,
+Jolt stepped at 60 Hz or more; the stage takes a few frames at a time; playback waits at the edge of what's made rather
+than show things that haven't moved; the last three finished runs are kept, so undo and redo don't wait. Runs live in
+memory; reopening a project makes it again in the background. *Rejected:* a run cache on disk (a project would carry
+megabytes that its own scene can make again).
+
+**D-371 — How a run reaches the picture.** The Animator takes it as live values (places, ragdolls' joint turns) under
+anything performed live; cloth, jelly and fluids arrive as shapes the renderer draws instead of the thing's own; a broken
+thing is hidden and its pieces stand in the shown scene. Everything that renders (the stage, stills, exports) goes through
+the one ShotBuilder, which carries the run.
+
+**D-372 — Keep it.** A run becomes position and rotation keys (simplified, one undo step), ragdolls also get their joints'
+keys, and the things that fell then follow their keys (they still push what they meet). A broken thing's pieces become
+things of their own that appear when it breaks. Cloth, jelly and fluids aren't keys: they keep playing from the run.
+*Rejected:* storing soft and fluid runs as files to "keep" them (a run is deterministic; nothing is lost by remaking it).
+
+**D-373 — Ragdolls from any rig.** A capsule along each bone (its mass the thing's, shared by length), joined to its
+parent's by a cone of 52° and a twist of ±26°; one ragdoll's parts never collide with each other. Its run writes the rig's
+own `bone.<joint>` values, so Keep it gives ordinary pose keys. *Rejected:* filtering only neighbouring parts (Jolt's way;
+our rigs have no limb volumes to tell, and limbs crossing in a short fall is rare).
+
+**D-374 — Cloth and jelly are Jolt soft bodies.** The mesh is welded and cut finer until it bends (at most 1 600 vertices
+for cloth, 900 for jelly), its vertices sharing the real mass; jelly is kept full by pressure, its stiffness a slider;
+cloth can hang from its top edge. Wind pushes each face by the air moving across it (`JBSoftBodyApplyWind`). A bent surface
+shows the thing's colour; paint isn't carried onto it yet (backlog).
+
+**D-375 — Breaking.** A breakable thing is cut ahead into Voronoi cells intersected with it by Manifold, so the pieces fit
+exactly (a surface that isn't solid splits by its triangles into shards); it breaks when one step changes its speed by
+more than its material takes (glass: about a metre's fall). Pieces are saved to the nanometre so Keep it travels exactly.
+
+**D-376 — Forces.** Wind is air: drag ½ρCA|v|v on each thing (A from its volume), so foam flies and steel doesn't; a fan
+pushes the same way where it points; a pull and a whirl act on mass. Particles feel the scene's wind through their drag
+and land on the ground.
+
+**D-377 — Small-scale fluids.** Water is position-based fluid (Macklin & Müller 2013), at most 5 000 drops, each step
+small enough that no drop crosses half its spacing; it meets every surface in its box through unsigned distance fields
+(moving ones followed), loses a little speed where it touches, and doesn't push things back. Its surface is a blob field
+cut by marching tetrahedra, made for each frame of the run, so playing it costs nothing (0.01 ms a frame). Neighbours come
+from a dense grid of half-kernel cells over where the drops are, and many small steps take one solver pass each (Macklin
+et al., "Small Steps"): a glass filling with a quarter litre bakes at 360 ms a frame in a release build on the PC's
+Docker CPU, in the background. Smoke and fire are stable fluids
+on a grid 40 cells along the box's long side, drawn as soft puffs in the scene's Look. The box is at most 4 m a side.
+*Rejected:* grid water (FLIP: more code, the same look at a glass's scale); two-way coupling (a later step, if boats ask).
+
+**D-378 — Settle and "does it stand?".** Settle is a short run of the one thing, damped, until it sleeps. Does it stand:
+the centre of mass of the things (their materials' masses) over the outline of where they touch what's under them (the
+points within 3 mm of the lowest); the answer in one line and the centre, a plumb line and the footprint on the stage. No
+structural analysis (CONTEXT §10.11).
+
+**D-379 — The real sun.** NOAA's solar position (Meeus) with refraction, within 0.5° of NREL's SPA reference; stored on the
+Look's lighting (`realSun`: place, latitude, longitude, the clock's offset, date, time, which way north is); a shadow study
+runs a span of hours across the timeline. Ten cities to start from, or typed coordinates. *Rejected:* the device's
+location (a permission prompt for something a city list does).
+
+**D-380 — Exports.** Video and stills wait for the whole run (the stage's, when it's finished for the same scene). glTF,
+Blender and FBX bake the run into keys and keep how things move as made, with colliders in OMI_physics_body and
+OMI_physics_shape (hulls for what moves, triangles for what stays), which Godot 4 reads; Khronos' own physics extension
+replaces them once ratified. CI opens the dropped cube in Godot 4.3: a rigid body of 700 kg on a static floor, animated.
+
+**D-381 — Homes.** Real is a row on the object panel (with Look and Shape); Physics is behind the scene's name; forces and
+fluids are tiles in Model ▸ Add beside the particle effects, the fluids named Pour water, Splash, Billowing smoke and
+Flames so they don't read as the particle Smoke and Fire; the real sun is in Look ▸ World's fine tuning (the sun's height
+and direction step aside while it's on); Settle joins To the ground in the object's menu; the menu bar has a Physics menu
+(⇧⌘J real, ⌥⌘J not real, ⌘J settle, ⌥⌘U does it stand, ⇧⌘K keep the run). Nothing moved.
+
+**D-382 — The bridge's `physics`.** `real`, `unreal`, `scene`, `joint`, `unjoin`, `force`, `fluid`, `keep`, `settle`, `stand`,
+`sun`; the compiler runs a whole run for `keep` with the app's meshes (`ScriptContext.mesh`). The lowey skill has a
+physics module.
+
+**D-383 — Schema 18.** Objects' optional `physics`, scenes' optional `physics`, the `force` and `fluid` objects, the
+`setPhysics` and `setScenePhysics` commands, the Look's `realSun`. 0.18 refuses a schema-18 file with its usual message.
+
+**D-384 — Every tier, the same run.** The run doesn't depend on the device: a Tier B iPad plays the same frames, made a
+little later. The benchmark gates are the 500-body stack (D-365) and a glass filling with water (`PhysicsSpikeTests`, a
+release build only, its bake time in CI's summary; 500 bodies take 2.1 ms a frame through the whole Core path); the device checklist times both on the iPad.
+
+**D-385 — Translations still ride along.** The new strings were translated into Italian and Arabic for the catalog check
+(D-300, D-325, D-337, D-364).

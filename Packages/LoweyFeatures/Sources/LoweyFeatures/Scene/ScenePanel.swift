@@ -14,6 +14,7 @@ struct ScenePanel: View {
         HmmPanel(editor.baseScene.name, width: 360, sizing: HmmPanelSizing(id: "scene"), movable: true, close: { editor.openPanel = nil }) {
             VStack(alignment: .leading, spacing: HmmSpacing.m) {
                 setUp
+                ScenePhysicsSection(editor: editor)
                 scenes
                 SceneObjectsSection(editor: editor)
             }

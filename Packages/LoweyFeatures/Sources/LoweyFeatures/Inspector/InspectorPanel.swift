@@ -70,6 +70,11 @@ struct InspectorPanel: View {
                     ShapeSection(editor: editor, object: object)
                 }
             }
+            if object.kind.hasSurface || object.kind == .group {
+                DisclosureRow(object.physics == nil ? "Real" : "Real: \(object.physics?.material.title ?? "")", systemName: "atom", identifier: "object-real") {
+                    RealSection(editor: editor, object: object)
+                }
+            }
             DisclosureRow("More ways to move", systemName: "figure.run", identifier: "more-motion") {
                 MoreWaysToMove(editor: editor)
             }
@@ -91,6 +96,9 @@ struct InspectorPanel: View {
         VStack(alignment: .leading, spacing: 0) {
             DisclosureRow("Look of these objects", systemName: "paintpalette", identifier: "object-look") {
                 LookOverrideSection(editor: editor, object: nil)
+            }
+            DisclosureRow("Real", systemName: "atom", identifier: "object-real") {
+                RealSeveral(editor: editor)
             }
             DisclosureRow("More ways to move", systemName: "figure.run", identifier: "more-motion") {
                 MoreWaysToMove(editor: editor)
@@ -164,6 +172,8 @@ struct InspectorPanel: View {
         case .mesh: "cube.transparent"
         case .sketch: "pencil.and.ruler"
         case .dimension: "ruler"
+        case .force: "wind"
+        case .fluid: "drop"
         }
     }
 }

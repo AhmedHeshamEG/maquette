@@ -261,6 +261,8 @@ final class EditorModel {
     let faceMonitor = FaceMonitor()
     /// The voice, triggers, the chosen joint and the picked take (`EditorModel+Live`).
     let live = LiveState()
+    /// The scene's physics run, made in the background (`EditorModel+Physics`).
+    let physicsRun = PhysicsRun()
     let performance = PerformanceMonitor()
     private(set) var displayRevision = 0
     /// The Motion row's speed for the next motion tapped (`EditorModel+LoopMotion`).
@@ -383,6 +385,7 @@ final class EditorModel {
         operations = Operations(library: app.library.manifest)
         checkpointedRevision = session.revision
         refreshDisplay()
+        schedulePhysics()
         loadWorkspace()
         saveAutomaticVersion(named: String(localized: "Opened \(Date().formatted(date: .abbreviated, time: .shortened))"))
     }

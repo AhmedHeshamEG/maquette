@@ -3,6 +3,23 @@
 What's known and not done yet, so nothing lives only in someone's head. What Maquette is: [SPEC.md](SPEC.md). The
 phase plan (the pass U1 … U5, M12, M14, M16, then 1.0) lives in studio-h's `PHASES.md`; ideas go to its `IDEAS.md`.
 
+## Left from P1 (Maquette 0.19)
+
+- [ ] The device checklist in the "Maquette 0.19 — P1" PR (the 500-body stack and a glass filling with water on Hesham's
+      iPad and a Tier B one, cloth and jelly feel, a ragdoll down stairs, Keep it, the arrows, the real sun against a
+      sun app, an exported glTF in Godot).
+- [ ] A bent surface (cloth, jelly) shows the thing's colour, not its paint (D-374).
+- [ ] Water doesn't push things back (one-way, D-377); boats and floating things need two-way coupling.
+- [ ] Runs live in memory; a heavy fluid is worked out again after reopening the project (D-370).
+- [ ] More ways to move's quick Fall and Explode still bake the old sphere approximation into keys; Real is the physics.
+      Routing them through Jolt (make real, run, Keep it) is to do.
+- [ ] A ragdoll's parts never collide with each other (D-373); arms can pass through the body in a long tumble.
+- [ ] Joints are added from the selection with their anchor where the things meet; dragging a joint's mark on the stage
+      to move it is to do (numbers move it today through the bridge).
+- [ ] Gears join two hinges' turning; a rack (a gear and a slider) isn't offered.
+- [ ] Fluids' colliders are measured once (a moving glass is followed, a bending one isn't).
+- [ ] Khronos' physics extension for glTF replaces OMI's once ratified (D-380).
+
 ## Left from U7 (Maquette 0.18)
 
 - [ ] The device checklist in the "Maquette 0.18 — U7" PR (painting maps and masks with the Pencil, smudge's feel, a

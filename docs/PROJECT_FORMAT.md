@@ -495,6 +495,52 @@ The device's material library is `materials.json` beside `materials/` (a version
 
 Schema 17 only added optional keys; files from schema 16 open unchanged, and Maquette 0.17 refuses schema 17.
 
+## Physics (schema 18)
+
+A real thing carries `physics` (absent: it takes no part in the run):
+
+```json
+"physics": {"material": "glass", "motion": "falls", "mass": 2.5, "friction": 0.4, "bounce": 0.3,
+            "startSpeed": [0, 0, 1.5], "startSpin": [0, 2, 0], "breaks": true, "stiffness": 0.8, "hangs": true}
+```
+
+- `material`: `wood`, `steel`, `aluminium`, `stone`, `concrete`, `glass`, `ice`, `plastic`, `rubber`, `foam`, `cardboard`,
+  `cloth`, `jelly`. `motion`: `falls`, `stays` or `follows` (its keys). Every other key is optional and overrides what the
+  material says: `mass` (kg; absent: density × volume), `friction`, `bounce` (0–1), `startSpeed` (m/s) and `startSpin`
+  (rad/s) in world space, `breaks`, `stiffness` (cloth and jelly, 0–1), `hangs` (cloth from its top edge).
+- A real group is one body made of its parts; real things inside a real group are part of it.
+
+A scene carries `physics` (absent: Earth's gravity, still air, a ground, no joints, from 0 s):
+
+```json
+"physics": {"gravity": "moon", "customGravity": 2.0, "windHeading": 90, "windSpeed": 6, "gusts": 0.3, "ground": true,
+            "groundMaterial": "concrete", "start": 0.5,
+            "joints": [{"id": "door", "kind": "hinge", "first": "<object id>", "second": "<object id>",
+                        "anchor": [0.4, 1, 0], "axis": [0, 1, 0], "limits": [0, 110], "motorSpeed": 45}]}
+```
+
+- `gravity`: `earth`, `moon`, `mars`, `jupiter`, `none`; `customGravity` (m/s²) wins when present. `windHeading`: degrees
+  around y the wind blows toward (0 toward −z, 90 toward +x).
+- A joint: `kind` (`hinge`, `slider`, `ball`, `glue`, `spring`, `rope`, `gear`), `first`, `second` (absent: the world),
+  `anchor` and `axis` in `first`'s own space, `otherAnchor` (springs and ropes: in `second`'s space, or the world's),
+  `limits` (degrees for hinges, metres for sliders, as `[low, high]`), `motorSpeed` (°/s or m/s), `motorStrength`
+  (N·m or N), `springiness` (oscillations a second), `length` (m), `gears` (two hinge joint ids) and `ratio`.
+
+Two object kinds: `{"type": "force", "force": {"kind": "fan" | "pull" | "whirl", "strength", "reach"}}` (a fan blows
+along its own −z) and `{"type": "fluid", "fluid": {"kind": "pour" | "splash" | "smoke" | "fire", "box": [x, y, z],
+"amount", "duration", "color", "width"}}` (`amount`: litres a second to pour, litres to splash, 0–1 of smoke or fire;
+`box` at most 4 m a side).
+
+The Look's `lighting` gains `realSun`: `{"place", "latitude", "longitude", "utcOffset", "year", "month", "day", "hour",
+"north", "study": [from, to]}` (hours, local clock time; with `study` the time runs from `from` to `to` across the
+timeline).
+
+The commands `setPhysics` (`id`, `physics`) and `setScenePhysics` (`physics`). A run itself isn't stored: the same scene
+always simulates to the same frames.
+
+Schema 18 only added optional keys and two object kinds; files from schema 17 open unchanged, and Maquette 0.18 refuses
+schema 18.
+
 ## workspace.json
 
 How the project shows when it opens. It isn't the project (it's never undone and isn't in the journal); it's

@@ -175,8 +175,9 @@ public enum ParticleSimulator {
     public static let maxParticles = 2500
 
     /// Every live particle at `time` (timeline seconds). `emission(t)` scales the spawn rate at time t (0…1+);
-    /// `amount` scales the preset's rate.
-    public static func particles(_ recipe: ParticleRecipe, at time: Double, amount: Double = 1,
+    /// `amount` scales the preset's rate. `air` is the scene's wind in the emitter's space (particles drift with it
+    /// through their drag), `ground` the ground's height in that space (they land and stay there).
+    public static func particles(_ recipe: ParticleRecipe, at time: Double, amount: Double = 1, air: Vec3 = .zero, ground: Double? = nil,
                                  emission: (Double) -> Double = { _ in 1 }) -> [Particle] {
         let rate = max(recipe.rate * amount, 0)
         guard rate > 0, recipe.lifetime > 0 else { return [] }
@@ -188,7 +189,7 @@ public enum ParticleSimulator {
             let count = min(Int(rate.rounded()), maxParticles)
             result.reserveCapacity(count)
             for index in 0 ..< count {
-                if let particle = particle(recipe, index: index, birth: recipe.burstTime, at: time) { result.append(particle) }
+                if let particle = particle(recipe, index: index, birth: recipe.burstTime, at: time, air: air, ground: ground) { result.append(particle) }
             }
             return result
         }
@@ -202,12 +203,12 @@ public enum ParticleSimulator {
             // Emission below 1 thins the stream deterministically (the same particles skip every time).
             let strength = emission(birth)
             if strength < 1, unit(recipe.seed, index, 9) >= strength { continue }
-            if let particle = particle(recipe, index: index, birth: birth, at: time) { result.append(particle) }
+            if let particle = particle(recipe, index: index, birth: birth, at: time, air: air, ground: ground) { result.append(particle) }
         }
         return result
     }
 
-    static func particle(_ recipe: ParticleRecipe, index: Int, birth: Double, at time: Double) -> Particle? {
+    static func particle(_ recipe: ParticleRecipe, index: Int, birth: Double, at time: Double, air: Vec3 = .zero, ground: Double? = nil) -> Particle? {
         let seed = recipe.seed
         let lifetime = recipe.lifetime * (0.7 + 0.6 * unit(seed, index, 1))
         let age = time - birth
@@ -226,19 +227,23 @@ public enum ParticleSimulator {
         if recipe.preset == .rain || recipe.preset == .snow { direction = Vec3(direction.x, -direction.y, direction.z) }
         let speed = recipe.speed * (0.6 + 0.8 * unit(seed, index, 7))
         let v0 = direction * speed
-        // Ballistic motion with linear drag, in closed form.
-        let k = recipe.drag
+        // Ballistic motion with linear drag, in closed form; in a wind the air itself moves, so the drag pulls toward it.
+        let k = air == .zero ? recipe.drag : max(recipe.drag, 0.6)
         let g = Vec3(0, recipe.gravity, 0)
-        let position: Vec3
-        let velocity: Vec3
+        var position: Vec3
+        var velocity: Vec3
         if k > 1e-6 {
             let decay = exp(-k * age)
-            let terminal = g / k
+            let terminal = g / k + air
             position = origin + terminal * age + (v0 - terminal) * ((1 - decay) / k)
             velocity = terminal + (v0 - terminal) * decay
         } else {
             position = origin + v0 * age + g * (0.5 * age * age)
             velocity = v0 + g * age
+        }
+        if let ground, position.y < ground {
+            position.y = ground
+            velocity = .zero
         }
         // Swirl: a per-particle lissajous drift that grows with age.
         var swirl = Vec3.zero

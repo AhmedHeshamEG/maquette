@@ -179,6 +179,7 @@ extension EditorModel {
         }
         items.append(HmmHoldMenu.Item("Array", systemName: "square.grid.3x3", children: arrayItems(ids)))
         items.append(HmmHoldMenu.Item("To the ground", systemName: "arrow.down.to.line", action: on(ids) { $0.dropSelectionToGround() }))
+        items.append(HmmHoldMenu.Item("Settle", systemName: "cube.transparent", action: on(ids) { $0.settleSelection() }))
         if objects.count == 1, case .primitive = objects[0].kind {
             items.append(HmmHoldMenu.Item("Swap for a model…", systemName: "arrow.triangle.swap", action: on(ids) { $0.beginSwap() }))
         }

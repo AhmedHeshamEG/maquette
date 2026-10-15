@@ -68,6 +68,8 @@ struct GLTFSceneWriter {
     var cameras: [[String: Any]] = []
     var lights: [[String: Any]] = []
     var roots: [Int] = []
+    /// Collision shapes of real things (`OMI_physics_shape`), by index.
+    var physicsShapes: [[String: Any]] = []
     /// Node index of each exported object, and the transform above it when its parent isn't exported.
     var nodeOf: [ObjectID: Int] = [:]
     var rootFrames: [ObjectID: Transform] = [:]
@@ -96,7 +98,11 @@ struct GLTFSceneWriter {
         ]
         var extras: [String: Any] = ["id": id.raw, "kind": object.kind.typeName]
         let skin = skinned(object)
-        if skin == nil, let mesh = addMesh(for: object) { node["mesh"] = mesh }
+        if skin == nil, let mesh = addMesh(for: object) {
+            node["mesh"] = mesh
+            addCollider(for: id, mesh: mesh, to: &node)
+        }
+        addBody(object, to: &node)
         switch object.kind {
         case .camera:
             node["camera"] = addCamera(object)
@@ -121,7 +127,7 @@ struct GLTFSceneWriter {
     /// Construction lines, kept measurements, marks on the frame and effects stay in Maquette.
     static func exports(_ kind: ObjectKind) -> Bool {
         switch kind {
-        case .overlay, .particles, .sketch, .dimension: false
+        case .overlay, .particles, .sketch, .dimension, .force, .fluid: false
         default: true
         }
     }
@@ -416,9 +422,19 @@ struct GLTFSceneWriter {
         if !cameras.isEmpty { json["cameras"] = cameras }
         if !animations.isEmpty { json["animations"] = animations }
         if !skins.isEmpty { json["skins"] = skins }
+        var extensions: [String: Any] = [:]
+        var used: [String] = []
         if !lights.isEmpty {
-            json["extensions"] = ["KHR_lights_punctual": ["lights": lights]]
-            json["extensionsUsed"] = ["KHR_lights_punctual"]
+            extensions["KHR_lights_punctual"] = ["lights": lights]
+            used.append("KHR_lights_punctual")
+        }
+        if !physicsShapes.isEmpty {
+            extensions["OMI_physics_shape"] = ["shapes": physicsShapes]
+            used += ["OMI_physics_body", "OMI_physics_shape"]
+        }
+        if !extensions.isEmpty {
+            json["extensions"] = extensions
+            json["extensionsUsed"] = used
         }
         return GLBContainer.pack(json: json, binary: binary)
     }

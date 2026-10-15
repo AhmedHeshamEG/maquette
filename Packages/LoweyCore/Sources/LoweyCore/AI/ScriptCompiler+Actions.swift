@@ -58,6 +58,7 @@ extension ScriptState {
         "duration": { try $0.length($1) },
         "model": { try $0.model($1) },
         "paint": { try $0.paint($1) },
+        "physics": { try $0.physics($1) },
         "profile": { try $0.profile($1) },
         "command": { try $0.rawCommand($1) }
     ]

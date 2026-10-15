@@ -48,6 +48,7 @@ public final class StageView: MTKView {
     private var modelOverlay: [EditorOverlay] = []
     /// Marks that stay whatever the tool: kept dimensions, the printer's build volume.
     private var precisionOverlay: [EditorOverlay] = []
+    private var physicsOverlay: [EditorOverlay] = []
     /// The see-through sheet under the Pencil while a drawing tool is in the hand.
     private var sheetOverlay: [EditorOverlay] = []
     /// What the hovering Pencil is over, lit (U5); drawn above the sheet, under the model's marks.
@@ -300,6 +301,13 @@ public final class StageView: MTKView {
         redraw()
     }
 
+    /// Physics marks: joints, speed and force arrows, a centre of mass over its footprint.
+    public func showPhysicsOverlay(_ overlays: [EditorOverlay]) {
+        guard overlays != physicsOverlay else { return }
+        physicsOverlay = overlays
+        redraw()
+    }
+
     /// The sheet the Pencil draws on (its fill and border), drawn under every other mark; empty hides it.
     public func showSheet(_ overlays: [EditorOverlay]) {
         guard overlays != sheetOverlay else { return }
@@ -339,7 +347,7 @@ public final class StageView: MTKView {
         if let pivot = gizmoPivot { scene.gizmo = (gizmoMode, pivot, gizmoScale) }
         scene.guide = guide
         scene.strokePreview = strokePreview
-        scene.modelOverlay = sheetOverlay + hoverOverlay + precisionOverlay + modelOverlay
+        scene.modelOverlay = sheetOverlay + hoverOverlay + precisionOverlay + physicsOverlay + modelOverlay
         scene.section = section
         scene.pointer = pointer
         scene.pixelsPerPoint = Double(contentScaleFactor)

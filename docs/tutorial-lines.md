@@ -3,6 +3,23 @@
 One line per feature for the person it serves (`studio-h/USERS.md`), in Hesham's voice, for the YouTube lessons the
 Learn place links to (CONTEXT §8). A phase adds the lines of what it built; M16 records them.
 
+## 0.19 (P1): physics
+
+- **The curious teenager:** "Pick anything, open Real, choose what it's made of. Press play: it falls with the weight of
+  a real one. Wood and steel land together, Galileo was right."
+- **The curious teenager:** "Make a glass real and drop it. Glass breaks. Pour water into another one: Model, Add, Pour
+  water, above the glass."
+- **The engineering student:** "Select two things, Join them: a hinge, a slider, a spring, a rope. Give the hinge a motor
+  and it turns. Show the forces to see the arrows."
+- **The engineering student:** "Does it stand? Your tower's centre of mass, a plumb line, and the footprint it stands on.
+  Green stands, red tips."
+- **The architecture student:** "Look, World, Real sun: your city, your date. Switch on the shadow study and the
+  timeline runs the day: play it for the professor."
+- **The sculptor:** "Make your rigged creature real and it falls like a ragdoll. Keep it, and the fall is keys you can
+  fix by hand."
+- **Everyone:** "Behind the scene's name: gravity (try the Moon), wind, when things start to move. Hold a thing for
+  Settle: it lies down the way it would."
+
 ## 0.18 (U7): texture
 
 - **The texture artist:** "Layers paint more than colour: tap Roughness and paint where it's matte, Metal where it

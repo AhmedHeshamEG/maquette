@@ -10,6 +10,8 @@ public struct AnimatedScene: Sendable {
     public var camera: ObjectID?
     /// Local joint transforms per character, in skeleton order.
     public var poses: [ObjectID: [Transform]]
+    /// A physics run's bent surfaces and fluids at this moment (`PhysicsPlayback`).
+    public var simulated: SimulatedShapes = .none
 }
 
 /// Evaluates timelines. Pure and deterministic: the same document and time always give the same
@@ -26,9 +28,16 @@ public enum Animator {
     /// Evaluates `document` at `time`. `rigs` supplies skeletons and clips for characters.
     /// `overrides` are live values (a slider or your face being performed) applied on top of the keys, before
     /// behaviours, clips and faces — so a performed face moves the character's eyes and mouth like keyed values do.
-    /// `live` is what those values were a moment ago, for things that follow through (dangling bones).
+    /// `live` is what those values were a moment ago, for things that follow through (dangling bones). `physics` is a
+    /// run of the scene's physics: real things' places and ragdolls' turns arrive like live values (live ones win).
     public static func evaluate(_ document: Document, at time: Double, rigs libraryRigs: [AssetID: RigAsset] = [:],
-                                overrides: [ObjectID: [PropertyKey: PropertyValue]] = [:], live: LivePast? = nil) -> AnimatedScene {
+                                overrides given: [ObjectID: [PropertyKey: PropertyValue]] = [:], live: LivePast? = nil,
+                                physics: PhysicsFrames? = nil) -> AnimatedScene {
+        var overrides = given
+        if let physics, time >= physics.start {
+            let simulated = PhysicsPlayback.overrides(physics, scene: keyedScene(document, at: time), at: time)
+            overrides = simulated.merging(given) { simulated, live in simulated.merging(live) { _, value in value } }
+        }
         let timeline = document.scene.timeline
         // Built-in humanoid clips play on any humanoid (built characters and imported rigs).
         let rigs = timeline.clipTracks.isEmpty ? libraryRigs : libraryRigs.merging(BuiltinClips.rigs) { library, _ in library }
@@ -56,7 +65,11 @@ public enum Animator {
         let camera = timeline.cutCamera(at: time).flatMap { scene.objects[$0] != nil ? $0 : nil }
             ?? scene.activeCamera.flatMap { scene.objects[$0] != nil ? $0 : nil }
         StickToCamera.apply(to: &scene, camera: camera, animated: &animated)
-        return AnimatedScene(time: time, scene: scene, animated: animated, camera: camera, poses: state.poses)
+        let shapes = physics.map { PhysicsPlayback.apply($0, to: &scene, at: time, animated: &animated) } ?? .none
+        RealSunPlayback.apply(to: &scene, project: document.project, time: time)
+        var result = AnimatedScene(time: time, scene: scene, animated: animated, camera: camera, poses: state.poses)
+        result.simulated = shapes
+        return result
     }
 
     /// Keys, live values, behaviours, clips, joints turned by hand, then the head and hand channels on skeletons.

@@ -4,6 +4,11 @@ Shapr3D's ease, Procreate's feel, Dreams' animation and ToonSquid's rigging, in 
 or art degree. Build a set like Lego, drop in characters, direct them with a camera, sync them to your voice, and
 export the video. By **studio h.**; the continuation of 3D-lowey 2.0. All rights reserved (see [LICENSE](LICENSE)).
 
+**0.19** (phase P1): **physics**. Say what a thing is made of and press play: it falls, collides, swings on joints,
+flops as a ragdoll, drapes as cloth, wobbles as jelly or breaks like glass, with its real weight (Jolt Physics, the same
+run on the stage and in the export). Forces, wind, small-scale water, smoke and fire; Keep it turns a run into keys;
+Settle, Does it stand?, speed and force arrows; the real sun of a place and date, and shadow studies.
+
 **0.18** (phase U7): **texture**. Layers that paint colour, roughness, metal, glow, bumps and fur, with masks and
 fills; Procreate's colour picker with materials to drop onto anything; our own procedural materials and a Material
 Studio; automatic wear, decals, mirrored painting, the faces brush, seams, a flat view, normals baked from a sculpt, fur
@@ -210,6 +215,7 @@ Nothing needs a Mac: GitHub Actions builds, tests and packages everything.
 ```
 Packages/LoweyCore      pure Swift: model, commands, timeline, geometry, modelling, characters, glTF, Scene Scripts, samples
 Packages/Manifold       Manifold (Apache-2.0) vendored for booleans, behind a small C face
+Packages/Jolt           Jolt Physics (MIT) vendored for physics, behind a small C face
 Packages/LoweyEngine    LoweyRender 2 (Metal), stage view, import, export, overlays, audio, face, scripting, benchmark
 Packages/LoweyFeatures  the SwiftUI editor (Workspace shared, one folder per feature, Shell composes them)
 Packages/HmmKit         hmm-kit (git subtree): design system, commands, documents, bridge, diagnostics, media…

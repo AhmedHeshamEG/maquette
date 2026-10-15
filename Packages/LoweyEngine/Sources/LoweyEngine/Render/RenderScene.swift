@@ -58,6 +58,8 @@ public struct RenderInput {
     public var paintFile: @Sendable (String) -> Data? = { _ in nil }
     /// Cast ▸ Rig ▸ Paint weights: one rigged object drawn in the colours of one joint's weight (stage only).
     public var weightView: WeightView?
+    /// A physics run at this moment: cloth and jelly's bent surfaces and fluids (`AnimatedScene.simulated`).
+    public var simulated: SimulatedShapes = .none
 
     public init(document: Document, time: Double = 0, poses: [ObjectID: [LoweyCore.Transform]] = [:], selection: Set<ObjectID> = [],
                 hidden: ObjectID? = nil, showsHelpers: Bool = false, mediaImage: @escaping (String) -> CGImage? = { _ in nil },
