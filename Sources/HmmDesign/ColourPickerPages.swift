@@ -163,7 +163,9 @@
                     Text("Hex").font(.hmm(.caption)).frame(width: 74, alignment: .leading)
                     TextField("#RRGGBB", text: $hex)
                         .font(.hmm(.body).monospaced())
+                    #if os(iOS)
                         .textInputAutocapitalization(.characters)
+                    #endif
                         .autocorrectionDisabled()
                         .onSubmit {
                             if let typed = HmmColour(hex: hex) {
