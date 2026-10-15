@@ -117,6 +117,14 @@ verbs = {
                 {"target": tgt, "region": n, "op": {"enum": ["sweep", "revolve", "loft"]}, "path": {"type": "array", "items": v3},
                  "closed": b, "axis": {"type": "object", "properties": {"point": v3, "direction": v3}}, "degrees": n, "through": tgt},
                 ["target", "op"]),
+    "paint": ("U7's texturing on one thing: a fill layer of a colour, a material or wear; a decal; whole faces; the layers; "
+              "a mask; mirrored strokes; the texture's size; hand-marked seams; normals baked from a detailed copy; fur.",
+              {"target": tgt, "op": {"enum": ["color", "material", "wear", "decal", "faces", "layers", "mask", "mirror", "size", "seams",
+                                              "bakeNormals", "fur"]},
+               "color": s, "material": s, "scale": n, "kind": {"enum": ["dirt", "edges"]}, "amount": n, "picture": s, "at": point,
+               "facing": v3, "size": n, "opacity": n, "layer": n, "on": b, "axis": {"enum": ["x", "y", "z"]},
+               "pixels": {"enum": [512, 1024, 2048, 4096]}, "edges": {"type": "array", "items": {"type": "array", "items": v3}},
+               "from": tgt, "length": n, "density": n, "style": {"enum": ["shells", "cards"]}, "droop": n}, ["target", "op"]),
     "command": ("A raw EditCommand.", {"command": ref("command")}, ["command"]),
 }
 

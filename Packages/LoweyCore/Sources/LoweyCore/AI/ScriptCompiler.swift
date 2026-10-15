@@ -14,12 +14,23 @@ public struct ScriptContext: Sendable {
     /// Where new things go when no position is given (the middle of the view).
     public var focus: Vec3
     public var ids: IDFactory
+    /// Reads a file of the project's assets (`paint/…`, `materials/…`): what `paint` needs to change paint already there.
+    public var file: @Sendable (String) -> Data?
+    /// Writes a picture as PNG (the app compresses; tests store).
+    public var encodePNG: @Sendable (RGBAImage) -> Data
+    /// The device's materials, which `paint`'s `material` names.
+    public var materials: MaterialLibrary
 
-    public init(library: LibraryManifest = LibraryManifest(), now: Double = 0, focus: Vec3 = .zero, ids: IDFactory = .random) {
+    public init(library: LibraryManifest = LibraryManifest(), now: Double = 0, focus: Vec3 = .zero, ids: IDFactory = .random,
+                file: @escaping @Sendable (String) -> Data? = { _ in nil }, encodePNG: @escaping @Sendable (RGBAImage) -> Data = PNGCodec.encode,
+                materials: MaterialLibrary = .standard) {
         self.library = library
         self.now = now
         self.focus = focus
         self.ids = ids
+        self.file = file
+        self.encodePNG = encodePNG
+        self.materials = materials
     }
 }
 
@@ -32,6 +43,9 @@ public struct ScriptResult: Sendable {
     public var created: [String: ObjectID]
     /// The document after the script (for previews).
     public var document: Document
+    /// Files the command names that aren't in the project yet (paint tiles, unwraps): written under assets before it's
+    /// performed.
+    public var files: [String: Data] = [:]
 }
 
 public struct ScriptError: Error, Equatable, CustomStringConvertible {
@@ -63,7 +77,7 @@ public enum ScriptCompiler {
             }
         }
         let command: EditCommand? = state.commands.isEmpty ? nil : .batch(script.title, state.commands)
-        return ScriptResult(command: command, report: state.report, created: state.created, document: state.document)
+        return ScriptResult(command: command, report: state.report, created: state.created, document: state.document, files: state.files)
     }
 
     /// Compiles and describes the change without applying it (the AI proposes, you decide).
@@ -139,6 +153,8 @@ struct ScriptState {
     var report: [String] = []
     var created: [String: ObjectID] = [:]
     var operations: Operations
+    /// Files made by the script (paint), by asset key.
+    var files: [String: Data] = [:]
 
     init(document: Document, context: ScriptContext) {
         self.document = document
