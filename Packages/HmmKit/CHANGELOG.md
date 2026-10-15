@@ -3,6 +3,17 @@
 All notable changes to hmm-kit. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the
 project uses [Semantic Versioning](https://semver.org/).
 
+## [0.10.0] - 2026-10-15
+
+Built with Maquette 0.18.
+
+### Added
+- **HmmDesign**: the colour picker (`HmmColourPicker`, Procreate's): the colour in hand and the one before it, the
+  scene's palette and the colours used lately, a Disc (hue round the ring, saturation across the disc, brightness on
+  its slider), Values (HSB, RGB, hex) and saved Palettes, and an app's own extra page. Its maths is pure and tested:
+  `HmmColour` (sRGB with hex), `HmmHSB`, `HmmColourDisc`, `HmmColourHistory`, `HmmPalette`, `HmmColourMemory` (kept
+  in `UserDefaults`). Swatches can be dragged out as their hex.
+
 ## [0.9.0] - 2026-10-13
 
 Built with Maquette 0.15.
