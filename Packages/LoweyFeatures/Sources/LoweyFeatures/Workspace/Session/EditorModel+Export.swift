@@ -123,6 +123,8 @@ extension EditorModel {
         }
         exporter.stillImage = { name in UIImage(contentsOfFile: assets.appendingPathComponent(name).path)?.cgImage }
         exporter.paintFile = paintFiles
+        // A finished run for this scene is reused; otherwise the export makes the same one before its first frame.
+        exporter.builder.physics = physicsRun.frames
         let gpuInBackground = BackgroundExport.backgroundGPU
         exporter.canRender = { gpuInBackground || UIApplication.shared.applicationState != .background }
         return exporter
@@ -179,7 +181,12 @@ extension EditorModel {
         let name = ProjectStore.sanitize(ids.flatMap { $0.count == 1 ? displayed.scene.objects[$0[0]]?.name : nil } ?? baseScene.name)
         // The scene as edited for the timeline's keys (glTF, Blender); as shown for the rest.
         let edited = format == .glb || format == .blender || format == .fbx
-        let source = edited ? baseScene : displayed.scene
+        // Physics leaves as keys (a run is always baked into the file); a run still being made is waited for.
+        if edited, let frames = physicsRun.frames, !frames.isComplete {
+            app.show("The physics run is still being worked out; export again in a moment")
+            return []
+        }
+        let source = edited ? physicsRun.frames.map { PhysicsKeep.baked($0, into: session.document).scene } ?? baseScene : displayed.scene
         let files = ModelExport.files(format, ids: ids, scene: source, look: look, preset: lookPreset, catalog: library.catalog, models: library.models,
                                       name: name, paintFile: paintFiles, poses: edited ? [:] : displayed.poses, colors: precision.paintColors)
         guard !files.isEmpty else {

@@ -58,6 +58,21 @@ struct ModelAddPage: View {
                     }
                 }
             }
+            PanelSection("Forces & fluids") {
+                TileGrid {
+                    ForEach(ForceRecipe.Kind.allCases, id: \.self) { kind in
+                        TileButton(title: kind.title, systemName: kind.systemImage, identifier: "add-force-\(kind.rawValue)") {
+                            place { editor.addForce(kind) }
+                        }
+                    }
+                    ForEach(FluidRecipe.Kind.allCases, id: \.self) { kind in
+                        TileButton(title: Self.fluidTitle(kind), systemName: kind.systemImage, identifier: "add-fluid-\(kind.rawValue)") {
+                            place { editor.addFluid(kind) }
+                        }
+                    }
+                }
+                Hint("Fans and pulls push real things; water, smoke and fire fill a room-sized box around them.")
+            }
         }
         .fileImporter(isPresented: $importingMedia, allowedContentTypes: [.image, .movie]) { result in
             if case let .success(url) = result {
@@ -70,6 +85,16 @@ struct ModelAddPage: View {
     private func place(_ add: () -> Void) {
         add()
         editor.openPanel = nil
+    }
+
+    /// Water and flames say what they are, so they don't read as the particle Smoke and Fire above them.
+    static func fluidTitle(_ kind: FluidRecipe.Kind) -> String {
+        switch kind {
+        case .pour: String(localized: "Pour water")
+        case .splash: String(localized: "Splash")
+        case .smoke: String(localized: "Billowing smoke")
+        case .fire: String(localized: "Flames")
+        }
     }
 
     static func icon(for shape: PrimitiveShape) -> String {

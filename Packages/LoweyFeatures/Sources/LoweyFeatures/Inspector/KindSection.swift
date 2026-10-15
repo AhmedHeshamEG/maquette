@@ -15,6 +15,8 @@ struct KindSection: View {
         case let .overlay(recipe): OverlaySection(editor: editor, object: object, recipe: recipe)
         case let .particles(recipe): ParticleSection(editor: editor, object: object, recipe: recipe)
         case let .asset(id): DetailSection(editor: editor, asset: id)
+        case let .force(recipe): ForceSection(editor: editor, object: object, recipe: recipe)
+        case let .fluid(recipe): FluidSection(editor: editor, object: object, recipe: recipe)
         default: EmptyView()
         }
     }

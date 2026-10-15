@@ -48,7 +48,7 @@ extension EditorModel {
     /// Evaluates the timeline at the playhead and redraws the stage.
     func refreshDisplay(_ changes: ChangeSet? = nil) {
         var animated = Animator.evaluate(restingRigTarget(historyPreview ?? session.document), at: time, rigs: libraryRigs(),
-                                         overrides: propertyOverride, live: livePast())
+                                         overrides: propertyOverride, live: livePast(), physics: historyPreview == nil ? physicsRun.frames : nil)
         applyPerformOverrides(&animated)
         for (id, kind) in kindOverride where animated.scene.objects[id] != nil {
             animated.scene.objects[id]?.kind = kind
@@ -58,7 +58,11 @@ extension EditorModel {
         }
         displayed = animated
         previousAnimated = animated.animated
-        if changes != nil { overlayCache = StageOverlayCache() }
+        if changes != nil {
+            overlayCache = StageOverlayCache()
+            schedulePhysics()
+        }
+        if physicsRun.frames != nil || physicsRun.stability != nil || !(baseScene.physics?.joints.isEmpty ?? true) { refreshPhysicsOverlay() }
         stage?.redraw()
         // While playing, panels refresh a few times a second, not every frame.
         let now = CACurrentMediaTime()
@@ -174,7 +178,7 @@ extension EditorModel {
 
     private func tick(_ delta: Double) {
         let range = playRange
-        var next = audioPlayback.currentTime ?? time + delta
+        var next = physicsHold(audioPlayback.currentTime ?? time + delta)
         if next > range.end {
             if isRecordingVoice {
                 stopVoiceRecording()

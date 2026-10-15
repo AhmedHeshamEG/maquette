@@ -81,6 +81,14 @@ public struct LoweyMenuCommands: Commands {
             Button("Mirror Paint") { stageEditor?.togglePaintMirror() }.keyboardShortcut("m", modifiers: [.command, .control])
             Button("Fill Faces") { stageEditor?.toggleFacesBrush() }.keyboardShortcut("f", modifiers: [.command, .option, .shift])
         }
+        CommandMenu("Physics") {
+            Button("Make Real") { stageEditor?.makeReal() }.keyboardShortcut("j", modifiers: [.command, .shift])
+            Button("Not Real") { stageEditor?.makeUnreal() }.keyboardShortcut("j", modifiers: [.command, .option])
+            Button("Settle") { stageEditor?.settleSelection() }.keyboardShortcut("j", modifiers: .command)
+            Button("Does It Stand?") { stageEditor?.checkStands() }.keyboardShortcut("u", modifiers: [.command, .option])
+            Button("Keep the Run as Keys") { stageEditor?.keepRun() }.keyboardShortcut("k", modifiers: [.command, .shift])
+            Button("Show Speed and Forces") { stageEditor.map { $0.physicsRun.showsArrows.toggle(); $0.refreshPhysicsOverlay() } }
+        }
         CommandMenu("Scene") {
             Button("Frame Selection") { editor?.frameSelection() }.keyboardShortcut("f", modifiers: .command)
             Button("Director View") { editor.map { $0.setDirectorView(!$0.directorView) } }.keyboardShortcut("d", modifiers: [.command, .option])
