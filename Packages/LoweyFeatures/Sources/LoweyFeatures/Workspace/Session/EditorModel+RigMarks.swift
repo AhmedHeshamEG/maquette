@@ -24,7 +24,8 @@ extension EditorModel {
             app.show(String.LocalizationValue(blocker))
             return
         }
-        if let rig = object.rig, rig.standard == .humanoid {
+        // A made person keeps its dots (K1); a person rigged by its fourteen dots opens on them.
+        if let rig = object.rig, rig.standard == .humanoid, object[.characterStart] == nil {
             startPersonRig(id)
             return
         }

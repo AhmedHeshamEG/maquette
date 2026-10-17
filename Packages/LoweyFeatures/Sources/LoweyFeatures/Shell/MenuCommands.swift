@@ -89,6 +89,21 @@ public struct LoweyMenuCommands: Commands {
             Button("Keep the Run as Keys") { stageEditor?.keepRun() }.keyboardShortcut("k", modifiers: [.command, .shift])
             Button("Show Speed and Forces") { stageEditor.map { $0.physicsRun.showsArrows.toggle(); $0.refreshPhysicsOverlay() } }
         }
+        CommandMenu("Character") {
+            Button("New Character…") {
+                editor?.libraryPage = .characters
+                editor?.openPanel = .library
+            }
+            .keyboardShortcut("c", modifiers: [.command, .shift])
+            Button("New Person") { editor?.newCharacter(.person) }.keyboardShortcut("p", modifiers: [.command, .option])
+            Button("New Four-Legged") { editor?.newCharacter(.fourLegs) }
+            Button("New Creature from Nothing") { editor?.newCharacter(.nothing) }
+            Divider()
+            Button(editor?.maker.symmetric == false ? "Mirror Parts" : "Stop Mirroring Parts") { editor?.maker.symmetric.toggle() }
+            Button("Rig It Again") { editor.map { editor in editor.makerCharacter.map { editor.rigAgain($0, gesture: nil) } } }
+                .disabled(editor?.makerCharacter == nil)
+            Button("Export for Games…") { editor?.sheet = .gameExport }.keyboardShortcut("e", modifiers: [.command, .shift])
+        }
         CommandMenu("Scene") {
             Button("Frame Selection") { editor?.frameSelection() }.keyboardShortcut("f", modifiers: .command)
             Button("Director View") { editor.map { $0.setDirectorView(!$0.directorView) } }.keyboardShortcut("d", modifiers: [.command, .option])

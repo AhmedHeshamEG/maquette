@@ -49,18 +49,24 @@ struct LibraryBrowser: View {
             if page == .motion, !isSwapping {
                 MotionBrowser(editor: editor, query: query)
             } else if page == .things, query.isEmpty, !isSwapping {
-                CharacterRow(editor: editor)
                 KitBrowser(editor: editor, selectedSet: $kitSet, expanded: $expanded)
-            } else if page == .rigs, results.isEmpty {
-                HmmEmptyState("figure.stand", title: query.isEmpty ? "No rigs yet" : "No rig called “\(query)”",
-                              message: "Rig something, then Save to library from its menu: it lands here with its bones.",
-                              actionTitle: "Import models") { importing = true }
+            } else if page == .characters, results.isEmpty {
+                if query.isEmpty {
+                    CharacterRow(editor: editor)
+                    Text("Rigged things you save to the library land here too, with their bones.")
+                        .font(.hmm(.footnote)).foregroundStyle(theme.text2)
+                } else {
+                    HmmEmptyState("figure.stand", title: "No character called “\(query)”",
+                                  message: "Make one with New, or rig something and Save to library from its menu.",
+                                  actionTitle: "Import models") { importing = true }
+                }
             } else if results.isEmpty {
                 HmmEmptyState(query.isEmpty ? "shippingbox" : "questionmark.folder",
                               title: query.isEmpty ? "Your library is empty" : "Nothing called “\(query)” yet",
                               message: "Import USDZ, glTF, GLB or OBJ models (a whole folder works), or build something and Save to library.",
                               actionTitle: "Import models") { importing = true }
             } else {
+                if page == .characters, query.isEmpty, !isSwapping { CharacterRow(editor: editor) }
                 LazyVGrid(columns: [GridItem(.adaptive(minimum: 104), spacing: HmmSpacing.s)], spacing: HmmSpacing.s) {
                     ForEach(results) { item in
                         LibraryTile(item: item, thumbnail: library.thumbnail(for: item))
@@ -112,9 +118,9 @@ struct LibraryBrowser: View {
 
     private var results: [LibraryItem] {
         // Searching Things looks through everything, the Kit included.
-        var items = LibrarySearch.search(query, in: library.manifest, filter: page == .things || page == .rigs ? .all : filter)
-        // Rigs: everything with a skeleton, the Kit's characters included.
-        if page == .rigs { return items.filter(LibraryModel.isRigged) }
+        var items = LibrarySearch.search(query, in: library.manifest, filter: page == .things || page == .characters ? .all : filter)
+        // Characters: everything with a skeleton, the Kit's characters included.
+        if page == .characters { return items.filter(LibraryModel.isRigged) }
         // Yours holds your own things; the Kit is on Things (a favourite or a recent Kit model still shows).
         if page == .yours, !isSwapping, filter == .all || filter == .models { items = items.filter { !$0.isKit } }
         guard isSwapping else { return items }

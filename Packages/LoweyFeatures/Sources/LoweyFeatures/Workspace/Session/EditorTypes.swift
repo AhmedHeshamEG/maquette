@@ -116,17 +116,18 @@ public enum ModelPage: String, CaseIterable, Identifiable, Sendable {
     }
 }
 
-/// The Library's pages: Things (the characters, the Kit) and Yours (what you imported, built and saved).
+/// The Library's pages (CONTEXT §10.11): Things (the Kit by set), Characters (make one, the ready-made ones, everything
+/// with a skeleton), Motion, and Yours (what you imported, built and saved).
 public enum LibraryPage: String, CaseIterable, Identifiable, Sendable {
-    case things, motion, rigs, yours
+    case things, characters, motion, yours
 
     public var id: String { rawValue }
 
     public var title: String {
         switch self {
         case .things: "Things"
+        case .characters: "Characters"
         case .motion: "Motion"
-        case .rigs: "Rigs"
         case .yours: "Yours"
         }
     }
@@ -134,8 +135,8 @@ public enum LibraryPage: String, CaseIterable, Identifiable, Sendable {
     public var systemImage: String {
         switch self {
         case .things: "shippingbox"
+        case .characters: "figure.stand"
         case .motion: "figure.run"
-        case .rigs: "figure.stand"
         case .yours: "person.crop.square"
         }
     }
@@ -144,6 +145,8 @@ public enum LibraryPage: String, CaseIterable, Identifiable, Sendable {
 /// Sheets over the editor (one at a time).
 public enum EditorSheet: String, Identifiable, Sendable {
     case export, audio, transcript, scripts, bridge, blobBuilder, characterBuilder, settings, diagnostics, gestures, timelineSettings, learn
+    /// A made character for games: engines, sprite sheets, turnaround (K1).
+    case gameExport
     /// The brush library (and Brush Studio) for the drawing tool in `EditorModel.brushTool`.
     case brushes
 

@@ -112,7 +112,7 @@ public enum ActOut {
     /// own). One undo step.
     public static func keys(_ frames: [Frame], rig: ObjectRig, character: SceneObject, from start: Double, mirrored: Bool, timeline: Timeline,
                             ids: inout IDFactory) -> EditCommand? {
-        let frames = (mirrored ? frames.map(\.mirrored) : frames).filter { $0.joints[.leftHip] != nil && $0.joints[.rightHip] != nil }
+        let frames = facingFront((mirrored ? frames.map(\.mirrored) : frames).filter { $0.joints[.leftHip] != nil && $0.joints[.rightHip] != nil })
         guard let first = frames.first, rig.standard == .humanoid else { return nil }
         var tracks: [String: [Keyframe]] = [:]
         var positions: [Keyframe] = []
@@ -141,6 +141,18 @@ public enum ActOut {
         var edits: [TrackEdit] = tracks.keys.sorted().map { replaced(.boneTurn($0), with: tracks[$0] ?? []) }
         if positions.count > 1 { edits.append(replaced(.position, with: positions)) }
         return edits.isEmpty ? nil : .batch("Act it out", [.setTracks(edits)])
+    }
+
+    /// The frames turned about the vertical so the person starts facing the way the character does (the pose reader's
+    /// own frame doesn't matter: the first frame's hips run across from right to left, +x).
+    static func facingFront(_ frames: [Frame]) -> [Frame] {
+        guard let first = frames.first, let left = first.joints[.leftHip], let right = first.joints[.rightHip] else { return frames }
+        let across = Vec3(left.x - right.x, 0, left.z - right.z)
+        guard across.length > 1e-6 else { return frames }
+        let turn = Quat.rotation(from: across, to: .unitX)
+        return frames.map { frame in
+            Frame(time: frame.time, joints: frame.joints.mapValues { turn.act($0) })
+        }
     }
 
     /// The character's leg length over the person's.

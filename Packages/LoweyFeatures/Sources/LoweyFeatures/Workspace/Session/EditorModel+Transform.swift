@@ -26,6 +26,8 @@ extension EditorModel {
             let correction = snapCorrection(for: bounds)
             if correction.lengthSquared > 1e-10 { perform(operations.translate(selection, by: correction, in: scene), coalesceKey: gesture) }
         }
+        // A made character's parts moved by hand: it rigs itself again, in the same step (K1).
+        rigMovedParts(gesture: gesture)
         endGesture()
     }
 

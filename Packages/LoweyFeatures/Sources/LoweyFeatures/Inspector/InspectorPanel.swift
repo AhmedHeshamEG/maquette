@@ -57,6 +57,8 @@ struct InspectorPanel: View {
     private func single(_ object: SceneObject) -> some View {
         if object.kind.hasSurface { ColourRow(editor: editor, object: object) }
         KindSection(editor: editor, object: object)
+        // A made character's parts and face, or "Give it parts" for any thing (K1).
+        CharacterSection(editor: editor, object: object)
         MakeItMove(editor: editor)
         SelectionActions(editor: editor)
         VStack(alignment: .leading, spacing: 0) {
