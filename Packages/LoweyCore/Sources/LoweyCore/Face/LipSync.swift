@@ -86,8 +86,8 @@ public final class Phonemizer: @unchecked Sendable {
         return map
     }
 
-    /// Mouth shapes of one word, with a duration weight each (vowels get more time).
-    public func visemes(for word: String, language: String) -> [(Viseme, Double)] {
+    /// Mouth shapes of one word (the 14 of `MouthShape`), with a duration weight each (vowels get more time).
+    public func shapes(for word: String, language: String) -> [(MouthShape, Double)] {
         let clean = word.lowercased().trimmingCharacters(in: .punctuationCharacters.union(.symbols).union(.whitespaces))
         guard !clean.isEmpty else { return [] }
         if language.hasPrefix("ar") || clean.unicodeScalars.contains(where: { (0x0600 ... 0x06FF).contains($0.value) }) {
@@ -99,82 +99,74 @@ public final class Phonemizer: @unchecked Sendable {
         return Self.englishRules(clean)
     }
 
-    static func decode(_ entry: Substring) -> [(Viseme, Double)] {
+    /// The same as the nine Rhubarb shapes (swap sets drawn before 0.20, Blobs, the jaw and width keys).
+    public func visemes(for word: String, language: String) -> [(Viseme, Double)] {
+        shapes(for: word, language: language).map { ($0.0.viseme, $0.1) }
+    }
+
+    static func decode(_ entry: Substring) -> [(MouthShape, Double)] {
         entry.compactMap { character in
-            let vowel = character.isLowercase
-            guard let viseme = Viseme(rawValue: character.uppercased()) else { return nil }
-            return (viseme, vowel ? 1.4 : (viseme == .A ? 0.7 : 0.8))
+            guard let shape = MouthShape(letter: character) else { return nil }
+            return (shape, character.isLowercase ? 1.4 : (shape == .m ? 0.7 : 0.8))
         }
     }
 
     /// Rough English letter-to-sound for words the dictionary doesn't know.
-    static func englishRules(_ word: String) -> [(Viseme, Double)] {
+    static func englishRules(_ word: String) -> [(MouthShape, Double)] {
         let letters = Array(word.lowercased())
-        var result: [(Viseme, Double)] = []
+        var result: [(MouthShape, Double)] = []
         var index = 0
-        func vowel(_ viseme: Viseme) { result.append((viseme, 1.4)) }
-        func consonant(_ viseme: Viseme) { result.append((viseme, viseme == .A ? 0.7 : 0.8)) }
+        func vowel(_ shape: MouthShape) { result.append((shape, 1.4)) }
+        func consonant(_ shape: MouthShape) { result.append((shape, shape == .m ? 0.7 : 0.8)) }
         while index < letters.count {
-            let c = letters[index]
             let next = index + 1 < letters.count ? letters[index + 1] : " "
-            switch (c, next) {
-            case ("t", "h"), ("s", "h"), ("c", "h"), ("g", "h"):
-                consonant(.B)
+            if let pair = Self.pairs["\(letters[index])\(next)"] {
+                pair.vowel ? vowel(pair.shape) : consonant(pair.shape)
                 index += 2
                 continue
-            case ("p", "h"):
-                consonant(.G)
-                index += 2
-                continue
-            case ("o", "o"), ("o", "u"), ("o", "w"):
-                vowel(.F)
-                index += 2
-                continue
-            case ("e", "e"), ("e", "a"), ("i", "e"):
-                vowel(.B)
-                index += 2
-                continue
-            case ("a", "i"), ("a", "y"):
-                vowel(.C)
-                index += 2
-                continue
-            default:
-                break
             }
+            let c = letters[index]
             switch c {
-            case "a": vowel(.C)
-            case "e": if index < letters.count - 1 || letters.count <= 2 { vowel(.C) } // silent final e
-            case "i", "y": vowel(.B)
-            case "o": vowel(.E)
-            case "u": vowel(.F)
-            case "m", "b", "p": consonant(.A)
-            case "f", "v": consonant(.G)
-            case "l": consonant(.H)
-            case "w": consonant(.F)
-            case "r": consonant(.B)
-            case "h": consonant(.C)
-            default: if c.isLetter { consonant(.B) }
+            case "a": vowel(.ah)
+            case "e": if index < letters.count - 1 || letters.count <= 2 { vowel(.ee) } // silent final e
+            case "i", "y": vowel(.ee)
+            case "o": vowel(.oh)
+            case "u": vowel(.uh)
+            default: if let shape = Self.consonants[c] { consonant(shape) } else if c.isLetter { consonant(.d) }
             }
             index += 1
         }
         return result
     }
 
+    /// Two letters that make one sound.
+    static let pairs: [String: (shape: MouthShape, vowel: Bool)] = [
+        "th": (.d, false), "sh": (.s, false), "ch": (.s, false), "gh": (.d, false), "ph": (.f, false),
+        "oo": (.wOo, true), "ou": (.wOo, true), "ow": (.oh, true), "ee": (.ee, true), "ea": (.ee, true), "ie": (.ee, true),
+        "ai": (.ee, true), "ay": (.ee, true)
+    ]
+
+    static let consonants: [Character: MouthShape] = [
+        "m": .m, "b": .m, "p": .m, "f": .f, "v": .f, "l": .l, "w": .wOo, "r": .r, "s": .s, "z": .s, "c": .s, "j": .s, "x": .s, "h": .uh
+    ]
+
     /// Italian is (nearly) spelled as spoken.
-    static func italian(_ word: String) -> [(Viseme, Double)] {
-        var result: [(Viseme, Double)] = []
+    static func italian(_ word: String) -> [(MouthShape, Double)] {
+        var result: [(MouthShape, Double)] = []
         for c in word.lowercased().folding(options: .diacriticInsensitive, locale: nil) {
             switch c {
-            case "a": result.append((.D, 1.4))
-            case "e": result.append((.C, 1.4))
-            case "i": result.append((.B, 1.3))
-            case "o": result.append((.E, 1.4))
-            case "u": result.append((.F, 1.4))
-            case "m", "b", "p": result.append((.A, 0.7))
-            case "f", "v": result.append((.G, 0.8))
-            case "l": result.append((.H, 0.8))
+            case "a": result.append((.ah, 1.4))
+            case "e": result.append((.ee, 1.4))
+            case "i": result.append((.ee, 1.3))
+            case "o": result.append((.oh, 1.4))
+            case "u": result.append((.wOo, 1.4))
+            case "m", "b", "p": result.append((.m, 0.7))
+            case "f", "v": result.append((.f, 0.8))
+            case "l": result.append((.l, 0.8))
+            case "r": result.append((.r, 0.8))
+            case "s", "z", "c": result.append((.s, 0.8))
             case "h": continue
-            default: if c.isLetter { result.append((.B, 0.8)) }
+            default: if c.isLetter { result.append((.d, 0.8)) }
             }
         }
         return result
@@ -182,12 +174,11 @@ public final class Phonemizer: @unchecked Sendable {
 
     /// Arabic letters → mouth shapes. Short vowels are rarely written, so an open vowel is assumed after a
     /// consonant that isn't followed by a long vowel (it keeps the mouth moving like speech).
-    static func arabic(_ word: String) -> [(Viseme, Double)] {
-        let longVowels: [Character: Viseme] = ["ا": .D, "آ": .D, "ى": .D, "و": .F, "ي": .B]
-        let marks: [Character: Viseme] = ["َ": .C, "ُ": .F, "ِ": .B]
-        let lips: Set<Character> = ["ب", "م"]
-        var result: [(Viseme, Double)] = []
+    static func arabic(_ word: String) -> [(MouthShape, Double)] {
+        let longVowels: [Character: MouthShape] = ["ا": .ah, "آ": .ah, "ى": .ah, "و": .wOo, "ي": .ee]
+        let marks: [Character: MouthShape] = ["َ": .uh, "ُ": .wOo, "ِ": .ee]
         let letters = Array(word)
+        var result: [(MouthShape, Double)] = []
         for (index, c) in letters.enumerated() {
             if let mark = marks[c] {
                 result.append((mark, 1.2))
@@ -198,23 +189,16 @@ public final class Phonemizer: @unchecked Sendable {
                 result.append((vowel, 1.5))
                 continue
             }
-            let viseme: Viseme = if lips.contains(c) {
-                .A
-            } else if c == "ف" {
-                .G
-            } else if c == "ل" {
-                .H
-            } else if c == "و" {
-                .F
-            } else {
-                .B
-            }
-            result.append((viseme, 0.8))
+            result.append((Self.arabicConsonants[c] ?? .d, 0.8))
             let next = index + 1 < letters.count ? letters[index + 1] : nil
-            if let next, longVowels[next] == nil, marks[next] == nil, index + 1 < letters.count - 1 { result.append((.C, 0.9)) }
+            if let next, longVowels[next] == nil, marks[next] == nil, index + 1 < letters.count - 1 { result.append((.uh, 0.9)) }
         }
         return result
     }
+
+    static let arabicConsonants: [Character: MouthShape] = [
+        "ب": .m, "م": .m, "ف": .f, "ل": .l, "و": .wOo, "ر": .r, "س": .s, "ص": .s, "ز": .s, "ش": .s, "ج": .s
+    ]
 
     static func spelledNumber(_ digits: String) -> String {
         let names = ["zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine"]
@@ -226,7 +210,16 @@ public final class Phonemizer: @unchecked Sendable {
 public enum LipSync {
     public struct Shape: Hashable, Sendable {
         public var time: Double
-        public var viseme: Viseme
+        /// One of the 14 shapes (Character Animator's set).
+        public var mouth: MouthShape
+
+        public init(time: Double, mouth: MouthShape) {
+            self.time = time
+            self.mouth = mouth
+        }
+
+        /// The nearest of the nine Rhubarb shapes.
+        public var viseme: Viseme { mouth.viseme }
     }
 
     /// Mouth shapes over time for `words`. Words the phonemizer can't read fall back to `loudness`
@@ -236,7 +229,7 @@ public enum LipSync {
         var result: [Shape] = []
         for (index, word) in words.enumerated() {
             let duration = max(word.end - word.start, 0.04)
-            var parts = phonemizer.visemes(for: word.text, language: language)
+            var parts = phonemizer.shapes(for: word.text, language: language)
             if parts.isEmpty {
                 parts = loudnessShapes(from: word.start, to: word.end, loudness: loudness, fps: fps)
             }
@@ -245,18 +238,18 @@ public enum LipSync {
             if parts.count > maxShapes { parts = thin(parts, to: maxShapes) }
             let total = parts.reduce(0) { $0 + $1.1 }
             var time = word.start
-            for (viseme, weight) in parts {
-                if result.last?.viseme != viseme { result.append(Shape(time: time, viseme: viseme)) }
+            for (shape, weight) in parts {
+                if result.last?.mouth != shape { result.append(Shape(time: time, mouth: shape)) }
                 time += duration * weight / max(total, 1e-9)
             }
             // Rest in pauses (not between words spoken together).
             let nextStart = index + 1 < words.count ? words[index + 1].start : .infinity
-            if nextStart - word.end > 0.18 { result.append(Shape(time: word.end, viseme: .X)) }
+            if nextStart - word.end > 0.18 { result.append(Shape(time: word.end, mouth: .neutral)) }
         }
         return result
     }
 
-    static func thin(_ parts: [(Viseme, Double)], to count: Int) -> [(Viseme, Double)] {
+    static func thin<T>(_ parts: [(T, Double)], to count: Int) -> [(T, Double)] {
         var parts = parts
         while parts.count > count {
             let index = parts.indices.min { parts[$0].1 < parts[$1].1 } ?? 0
@@ -268,36 +261,37 @@ public enum LipSync {
     }
 
     /// Open/closed from the voice's loudness (the fallback for words without known sounds).
-    static func loudnessShapes(from start: Double, to end: Double, loudness: [Double], fps: Int) -> [(Viseme, Double)] {
-        guard !loudness.isEmpty, fps > 0 else { return [(.C, 1), (.B, 1)] }
+    static func loudnessShapes(from start: Double, to end: Double, loudness: [Double], fps: Int) -> [(MouthShape, Double)] {
+        guard !loudness.isEmpty, fps > 0 else { return [(.uh, 1), (.d, 1)] }
         let first = max(Int(start * Double(fps)), 0)
         let last = min(Int(end * Double(fps)), loudness.count - 1)
-        guard last >= first else { return [(.C, 1)] }
+        guard last >= first else { return [(.uh, 1)] }
         return (first ... last).map { frame in
             let level = loudness[frame]
-            let viseme: Viseme = level > 0.65 ? .D : (level > 0.35 ? .C : (level > 0.12 ? .B : .A))
-            return (viseme, 1)
+            let shape: MouthShape = level > 0.65 ? .ah : (level > 0.35 ? .uh : (level > 0.12 ? .d : .m))
+            return (shape, 1)
         }
     }
 
-    /// Keys on `character`: `mouth` (stepped shapes) plus `jawOpen` and `mouthWide` (eased) — replacing keys of those
-    /// properties inside the spoken range. One command, one undo step.
+    /// Keys on `character`: `mouthShape` (the 14, stepped), `mouth` (the nine, stepped) and `jawOpen` and `mouthWide`
+    /// (eased), replacing keys of those properties inside the spoken range. One command, one undo step.
     public static func keys(_ shapes: [Shape], character: ObjectID, range: TimeRange, timeline: Timeline, ids: inout IDFactory) -> EditCommand? {
         guard !shapes.isEmpty else { return nil }
         var edits: [TrackEdit] = []
-        let plan: [(PropertyKey, (Viseme) -> PropertyValue, Easing)] = [
-            (.mouth, { .enumeration($0.rawValue) }, .step),
-            (.jawOpen, { .float($0.jaw) }, .easeInOut),
-            (.mouthWide, { .float($0.width) }, .easeInOut)
+        let plan: [(PropertyKey, (MouthShape) -> PropertyValue, Easing)] = [
+            (.mouthShape, { .enumeration($0.rawValue) }, .step),
+            (.mouth, { .enumeration($0.viseme.rawValue) }, .step),
+            (.jawOpen, { .float($0.viseme.jaw) }, .easeInOut),
+            (.mouthWide, { .float($0.viseme.width) }, .easeInOut)
         ]
         for (property, value, easing) in plan {
             var track = timeline.track(for: character, property) ?? Track(id: ids.next(), target: character, property: property)
             track.removeKeys(in: range)
             for shape in shapes where range.contains(shape.time, tolerance: 1e-6) {
-                track.setKey(Keyframe(time: shape.time, value: value(shape.viseme), easing: easing))
+                track.setKey(Keyframe(time: shape.time, value: value(shape.mouth), easing: easing))
             }
             // Rest after the last word.
-            track.setKey(Keyframe(time: range.end, value: value(.X), easing: easing))
+            track.setKey(Keyframe(time: range.end, value: value(.neutral), easing: easing))
             edits.append(TrackEdit(track))
         }
         return .batch("Lip sync", [.setTracks(edits)])

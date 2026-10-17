@@ -1,9 +1,10 @@
 """Builds Packages/LoweyCore/Sources/LoweyCore/Resources/visemes.txt from the CMU Pronouncing Dictionary.
 
-Each line: `word visemes` — one character per phoneme, Rhubarb / Preston Blair mouth shapes:
-  A closed (M B P)      B teeth (most consonants, EE)   C open (EH, AE, AH)   D wide (AA, AY, AW)
-  E rounded (AO, ER)    F puckered (OO, OW, W)          G lip bite (F, V)     H tongue (L)
-Vowels are lower-case (they get more time than consonants when a word is spread over its duration).
+Each line: `word shapes` - one letter per phoneme, the 14 mouth shapes of Adobe Character Animator's set (MouthShape):
+  a Ah (AA AE AW AY)   e Ee (IY IH EY EH)   o Oh (AO OW OY)   u Uh (AH UH, and HH)   w W-Oo (UW W)   r R (ER R)
+  m M (M B P)          f F (F V)            l L (L)           s S (S Z SH ZH CH JH)  d D (D T N K G NG Y TH DH)
+Vowels are lower-case, consonants upper-case (vowels get more time when a word is spread over its duration). The nine
+Rhubarb shapes (Viseme) are read from these (MouthShape.viseme).
 
 Usage: python Tools/make_visemes.py cmudict.dict
 CMUdict: https://github.com/cmusphinx/cmudict (BSD 2-clause, see THIRD_PARTY.md).
@@ -12,13 +13,13 @@ import re
 import sys
 
 VOWELS = {
-    "AA": "d", "AE": "c", "AH": "c", "AO": "e", "AW": "d", "AY": "d", "EH": "c", "ER": "e", "EY": "c",
-    "IH": "b", "IY": "b", "OW": "f", "OY": "e", "UH": "f", "UW": "f",
+    "AA": "a", "AE": "a", "AH": "u", "AO": "o", "AW": "a", "AY": "a", "EH": "e", "ER": "r", "EY": "e",
+    "IH": "e", "IY": "e", "OW": "o", "OY": "o", "UH": "u", "UW": "w",
 }
 CONSONANTS = {
-    "B": "A", "M": "A", "P": "A", "F": "G", "V": "G", "L": "H", "W": "F", "R": "B",
-    "CH": "B", "JH": "B", "SH": "B", "ZH": "B", "D": "B", "T": "B", "N": "B", "S": "B", "Z": "B",
-    "K": "B", "G": "B", "NG": "B", "HH": "C", "Y": "B", "TH": "B", "DH": "B",
+    "B": "M", "M": "M", "P": "M", "F": "F", "V": "F", "L": "L", "W": "W", "R": "R",
+    "CH": "S", "JH": "S", "SH": "S", "ZH": "S", "S": "S", "Z": "S",
+    "D": "D", "T": "D", "N": "D", "K": "D", "G": "D", "NG": "D", "Y": "D", "TH": "D", "DH": "D", "HH": "U",
 }
 
 
@@ -36,7 +37,7 @@ def main(path, out):
             visemes = []
             for phone in phones:
                 base = re.sub(r"\d", "", phone)
-                visemes.append(VOWELS.get(base) or CONSONANTS.get(base) or "B")
+                visemes.append(VOWELS.get(base) or CONSONANTS.get(base) or "D")
             seen.add(word)
             lines.append(f"{word} {''.join(visemes)}")
     lines.sort()

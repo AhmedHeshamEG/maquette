@@ -74,7 +74,7 @@ public extension EditCommand {
             document.scene.timeline = timeline
             return (.setTimeline(old), ChangeSet(objects: Set(timeline.tracks.map(\.target) + old.tracks.map(\.target)), scene: true))
 
-        case .setShadowPaint, .setPaint, .paintTiles, .setRig, .setShaping, .setModelHistory, .setPhysics, .setScenePhysics:
+        case .setShadowPaint, .setPaint, .paintTiles, .setRig, .setShaping, .setModelHistory, .setPhysics, .setScenePhysics, .setPart:
             return try applyPaint(to: &document)
 
         case let .setCustomLooks(looks):
@@ -122,6 +122,9 @@ public extension EditCommand {
         case let .setPhysics(id, physics):
             let old = try Self.replaceField(\.physics, of: id, to: physics, in: &document)
             return (.setPhysics(id, old), ChangeSet(objects: [id]))
+        case let .setPart(id, part):
+            let old = try Self.replaceField(\.part, of: id, to: part, in: &document)
+            return (.setPart(id, old), ChangeSet(objects: [id]))
         case let .setScenePhysics(physics):
             let old = document.scene.physics
             document.scene.physics = physics

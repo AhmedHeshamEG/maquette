@@ -72,7 +72,7 @@ extension EditorModel {
         live.voiceOn = false
         live.meter.level = 0
         if let target = faceTarget {
-            for key in [PropertyKey.mouth, .jawOpen, .mouthWide] where !faceActive || key == .mouth {
+            for key in [PropertyKey.mouth, .mouthShape, .jawOpen, .mouthWide] where !faceActive || key == .mouth || key == .mouthShape {
                 propertyOverride[target]?[key] = nil
             }
         }
