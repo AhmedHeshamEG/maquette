@@ -3,6 +3,14 @@
 One task per feature for the two test weeks (between M14 and M16), written for its person in `studio-h/USERS.md`. A
 task says what to make, never which buttons to press; the tester says where they got stuck.
 
+## 0.20 (K1): characters
+
+- **The indie game developer:** a floating eye creature and a four-legged dog for a Godot game, both lip-syncing one line,
+  the dog's walk in an 8-direction pixel-art sprite sheet and the eye as a GLB that opens in Godot.
+- **The explainer maker:** a blob scientist with drawn brows saying the first line of a script, the brows going angry on
+  one word, then a person acting out a wave you filmed of yourself.
+- **The curious teenager:** a teapot with arms and eyes that waves at the keeper at the foot of the Keeper's Tower.
+
 ## 0.19 (P1): physics
 
 - **The curious teenager:** a wooden crate and a steel ball dropped from the top of the Keeper's Tower, landing at the

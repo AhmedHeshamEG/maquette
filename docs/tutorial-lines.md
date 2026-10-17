@@ -3,6 +3,18 @@
 One line per feature for the person it serves (`studio-h/USERS.md`), in Hesham's voice, for the YouTube lessons the
 Learn place links to (CONTEXT §8). A phase adds the lines of what it built; M16 records them.
 
+## 0.20 (K1): characters
+
+- **The indie game developer:** "Library, Characters, New, Nothing. Tap Eyes: one big eye. Tap Mouth. It's rigged
+  already. For games, Godot: it lands in your project with its clips and its face."
+- **The explainer maker:** "New, Person. Face: tap Oh, Ee, Surprised to see them. Then Say a line, or lip sync your
+  voiceover: fourteen mouths, chosen for you."
+- **The Procreate person:** "Draw a mouth on the face with the Pencil, tap it, Make it a part, as the Oh. Your own
+  drawing, in its place, every time it says Oh."
+- **Everyone:** "Proportions: drag the head up to make it bigger, a foot down for longer legs. The feet stay on the
+  ground."
+- **Everyone:** "Act it out: film yourself, and the character copies you."
+
 ## 0.19 (P1): physics
 
 - **The curious teenager:** "Pick anything, open Real, choose what it's made of. Press play: it falls with the weight of

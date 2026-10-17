@@ -541,6 +541,33 @@ always simulates to the same frames.
 Schema 18 only added optional keys and two object kinds; files from schema 17 open unchanged, and Maquette 0.18 refuses
 schema 18.
 
+## Characters (schema 19)
+
+A part of a made character carries `part` (absent: a plain thing):
+
+```json
+"part": {"job": "arm", "side": "left", "style": "tube", "segment": 1, "limb": "2",
+         "states": {"oh": {"open": 1.1, "wide": 0, "round": 0.8, "smile": 0, "lift": 0, "tilt": 0, "squash": 0}},
+         "shows": "oh"}
+```
+
+`job`: head, eye, brow, mouth, nose, ear, hair, body, arm, leg, tail, wing, extra. `side`: left, right or middle
+(absent: middle). `style`: a style of the part set, or `drawn`, `modelled`, `thing` (a thing given parts became the
+body). `segment`: the piece of a hinged part, from 0 at the top (absent: 0). `limb`: which one when there are several
+(`front`, `back`, `2`…; absent: the first). `states`: the face states the person changed, as bends of the part (absent:
+the job's defaults). `shows`: present on a drawing of one face state, which shows in its part's place while that state is
+on.
+
+A made character is a group with the property `characterStart` (`person`, `fourLegs`, `wings`, `blob`, `nothing`). Its
+rig is an ordinary rig (U4's marks), its pieces ride their joints with `attachBone`. Characters carry two more keyable
+properties: `mouthShape` (one of `neutral`, `ah`, `d`, `ee`, `f`, `l`, `m`, `oh`, `r`, `s`, `uh`, `wOo`, `smile`,
+`surprised`; stepped) and `browState` (`neutral`, `up`, `angry`, `sad`; stepped).
+
+The command `setPart` (`id`, `part`).
+
+Schema 19 only added optional keys; files from schema 18 open unchanged, and Maquette 0.19 refuses schema 19.
+
+
 ## workspace.json
 
 How the project shows when it opens. It isn't the project (it's never undone and isn't in the journal); it's

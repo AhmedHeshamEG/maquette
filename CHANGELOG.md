@@ -3,6 +3,36 @@
 All notable changes. 1.x grew in four phases (v0.1 → v1.4); 2.0 is the remaster, released as betas first. Maquette
 continues from 2.0 and numbers its phases again from 0.1 (each phase bumps the minor version until 1.0).
 
+## [0.20] — Maquette — characters (phase K1)
+
+Make a character with your own hands, any anatomy, game-ready.
+
+- **Library ▸ Characters ▸ New**: start from a Person, Four legs, Wings, a Blob or Nothing. The character lands where new
+  things land, its panel open. (The Library's Rigs page is now Characters: New, the ready-made Blob, Me and Puppet, and
+  everything with a skeleton.)
+- **Parts**, every one optional and repeatable: head, eyes, brows, mouth, nose, ears, hair, body, arms, legs, tail,
+  wings, extras, each in a few styles from our own set (hold a part for its styles); Mirrored makes pairs. Draw a part
+  with the Pencil or model it, then **Make it a part**. **Give it parts** puts eyes on a rock and hands on a teapot.
+- **It rigs itself**: a person gets the humanoid joints and plays every humanoid clip; four legs and wings get their
+  animal joints; a bodyless creature gets one. Moving a part by hand rigs it again.
+- **Faces**: Character Animator's **14 mouth shapes**, brows up, angry and sad, eyes open and blink, each made by bending
+  the part and changeable (Bend it), or **drawn** (Make it a part ▸ the Oh). Lip sync from words reaches 12 of the 14;
+  the live voice and face capture drive them on any creature. **Say a line**: type it and the character says it from the
+  playhead, with no voice.
+- **Proportions** by dragging handles on the stage (the head, the feet, the hands, the waist) or typing metres; longer
+  legs keep the feet on the ground.
+- **Act it out**: film yourself or pick a video and the character copies your body (Apple's on-device body pose; nothing
+  leaves the iPad), as in a mirror or not.
+- **For games**: a GLB for **Godot, Unity or Unreal** with the skeleton named for that engine's humanoid retargeting,
+  the face as **blend shapes**, **named clips** (its own and the ten humanoid ones), **LODs**, a **collision capsule**,
+  in real metres; **sprite sheets** from 4 or 8 directions with their JSON and a Godot SpriteFrames, in **pixel art** if
+  you like; a **turnaround** sheet.
+- The menu bar's **Character** menu (⇧⌘C, ⌥⌘P, ⇧⌘E).
+- **The bridge**: the `character` verb makes characters (new, add, style, remove, assign, state, proportion, say, rig).
+- **Fixed**: the view turned at a different speed in some places (the stage in portrait or a narrow window, the Director
+  view, the view cube); one rate now everywhere.
+- Projects move to **schema 19**; 0.19 refuses them with its usual message.
+
 ## [0.19] — Maquette — physics (phase P1)
 
 Rigorous physics without an engineering degree: say what a thing is made of and press play.

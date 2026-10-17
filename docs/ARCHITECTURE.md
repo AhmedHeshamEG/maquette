@@ -43,7 +43,7 @@ flowchart TD
 
 | Module | Imports | What it holds | Tests |
 |---|---|---|---|
-| **LoweyCore** | Foundation, hmm-kit's Commands / Documents / Transcript / Brush (re-exported), Manifold, XAtlas | The document model, commands with exact inverses, the session (undo, coalescing), timeline and easing, animator and behaviours, geometry and meshers, modelling (editable meshes, sketches, push/pull, booleans), the brush library and brush import (the engine's arithmetic is hmm-kit's `HmmBrush` since 0.9), paint (layers, tiles, unwraps, compositing, carrying paint to a new shape, painted exports), the glTF reader, rigs and retargeting, the one skeleton system (drawn
+| **LoweyCore** | Foundation, hmm-kit's Commands / Documents / Transcript / Brush (re-exported), Manifold, XAtlas | The document model, commands with exact inverses, the session (undo, coalescing), timeline and easing, animator and behaviours, geometry and meshers, modelling (editable meshes, sketches, push/pull, booleans), the brush library and brush import (the engine's arithmetic is hmm-kit's `HmmBrush` since 0.9), the character maker (parts, the self-rig, face states, proportions, acting out), paint (layers, tiles, unwraps, compositing, carrying paint to a new shape, painted exports), the glTF reader, rigs and retargeting, the one skeleton system (drawn
 rigs, bone heat, IK chains, the person rig), blob and puppet characters, Scene Script compiler, Looks as data, samples (Enigma, Welcome island, Night Market) | Linux (`swift:6.1`), coverage gate |
 | **Manifold** (`Packages/Manifold`) | the C++ standard library | Manifold 3.5.4 (Apache-2.0) as a C++17 target, single-threaded, and `ManifoldBridge.h`: boolean and validate in plain C, so Swift needs no C++ interop. `VENDORED.md` says how to update it | Linux and the iPad simulator (its own tests; LoweyCore's boolean tests) |
 | **InstantMeshes** (`Packages/InstantMeshes`) | the C++ standard library | Instant Meshes (BSD-3-Clause) with the Eigen 3.4.0 headers it includes (MPL-2.0, scalar) and a stand-in for the TBB it calls, and `InstantMeshesBridge.h`: remesh into quads in plain C (`VENDORED.md`) | Linux (its own tests; LoweyCore's `QuadRemeshTests`, the U6 SPIKE in a release build) |
@@ -582,6 +582,54 @@ flowchart LR
   `Inspector/RealSection` (+ `RealSeveral`, `JointRows`, `RealNumbers`), `Inspector/EffectSections` (forces, fluids),
   `Scene/ScenePhysicsSection`, `Look/RealSunSection`, the Physics menu in `Shell/MenuCommands`. Playback holds at the edge
   of the run (`physicsHold`).
+
+## Characters (0.20)
+
+```mermaid
+flowchart LR
+    New[Library ▸ Characters ▸ New<br/>EditorModel+Maker] --> Start[CharacterMaker.start<br/>a group of parts]
+    Add[Parts in the panel<br/>CharacterSection] --> Parts[CharacterMaker.add · restyle · remove · assign]
+    Start & Parts --> Anat[CharacterAnatomy<br/>parts by job, in the character's space]
+    Anat --> Rig[CharacterAutoRig<br/>dots by job → RigMarks.rig + RigidParts]
+    Rig --> Cmd[one batch: the change + setRig + attachBone]
+    Prop[Proportion handles / numbers] --> PC[CharacterProportions.change] --> Cmd
+    Lip[LipSync · Say a line · live voice · face] --> Ch[mouthShape · browState · blinks]
+    Ch --> FS[FaceStates.apply<br/>Animator: bends → SimulatedShapes]
+    Act[Act it out<br/>BodyPoseReader (Vision 3D)] --> AO[ActOut.keys<br/>bone.joint turns + travel]
+    Cmd --> Out[GameCharacterExport · CharacterPictures<br/>SpriteSheet · PixelArt]
+```
+
+- **Core `Character/Maker/`**: `CharacterPart` (job, side, style, piece, limb, changed face states, `shows` for a state's
+  drawing) on `SceneObject.part`, with `CharacterStart` and the `characterStart`, `mouthShape`, `browState` keys;
+  `PartShapes` (lathe, capsule, ellipsoid, soft block, prism, slab) and `PartSet` (every job's styles, colours, pupils,
+  where the next piece hangs); `PartPlacement` (where a part goes on a head, a body or in the air); `CharacterMaker` (the
+  starts, `Builder`, `savable` meshes) with `+Parts` (adding to a character or wrapping any thing), `+Placing` (limbs and
+  single parts on the anatomy) and `+Edit` (restyle, remove, assign, face states); `CharacterAnatomy` (a character's
+  pieces with their bounds, in its space); `CharacterAutoRig` (the dots by job, the humanoid standard, `command` and
+  `rigging(after:)`: a change and its rig in one batch); `CharacterProportions` (measures and changes); `FaceStates`
+  (`MouthShape`, `BrowState`, `FaceBend`, the states of each job and their defaults, the active state from a character's
+  channels) and `FaceStates+Apply` (the Animator's step after `FaceRig`: bent shapes and drawn states); `ActOut` (body
+  joints, frames, the pose retargeted bone by bone, keys). Commands: `setPart`.
+- **Core `Face/`**: the Phonemizer reads the 14 shapes from `visemes.txt` (built by `Tools/make_visemes.py`, one letter a
+  shape) and its rules; `LipSync` keys `mouthShape` beside `mouth`; `LipSync+Line` (`timedLine`, `line`).
+- **Core `Interop/GameCharacterExport`** (+`Clips`): `GameEngine` (joint names per engine), pieces in the rig's space with
+  their joint and face blend shapes, clips sampled through the Animator, and `GLTFSceneWriter.addGameCharacter` (joints,
+  one skinned body mesh and its LODs, a mesh per face part with `targets`, the clips with `weights` channels, the OMI
+  capsule). **Core `Export/`**: `SpriteSheet` (directions, packing, the JSON, the Godot `.tres`, turnarounds, `blit`) and
+  `PixelArt`.
+- **Core `AI/ScriptCompiler+Character`**: the `character` verb's `op`s (the old puppet recipe still works without one).
+- **Engine**: `Face/BodyPoseReader` (a video's frames through `VNDetectHumanBodyPose3DRequest`, off the main thread) and
+  `Export/CharacterPictures` (the character alone, a flat camera per direction, clear background, the stage's renderer).
+- **Features**: `Workspace/Session/EditorModel+Maker` (new, add, restyle, remove, make it a part, face previews as live
+  values, proportions, rigging again after parts move: `finishTransform` calls `rigMovedParts`, say a line, act it out,
+  the proportion handles' points) and `+MakerExport` (the GLB, sprite sheets, turnarounds into renders); `MakerTypes`
+  (`MakerState`, `SpriteSettings`); views `Inspector/CharacterSection` (with `MakeItAPart`), `CharacterFaceSection` (and
+  `CharacterProportionsSection`, `SayLineSection`), `ActOutSection` (Photos, `CameraRecorder`), `ProportionHandles` (in
+  `EditorScreen`), `Export/GameExportSheet` (`EditorSheet.gameExport`); `Library/LibraryPanel`'s `CharacterRow` (New and
+  Ready-made on the Characters page); the menu bar's Character menu.
+- **CI**: `CharacterMakerTests`, `CharacterGameTests` (writes `characters/person.glb` and `sprites/dog.*`);
+  `Tools/godot/check_humanoid.gd` and `check_sprites.gd` in the Godot job; `AppUITests/CharacterTests` (the eye creature
+  and the dog in under three minutes).
 
 ## LoweyRender 2
 

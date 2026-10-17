@@ -4,6 +4,13 @@ Shapr3D's ease, Procreate's feel, Dreams' animation and ToonSquid's rigging, in 
 or art degree. Build a set like Lego, drop in characters, direct them with a camera, sync them to your voice, and
 export the video. By **studio h.**; the continuation of 3D-lowey 2.0. All rights reserved (see [LICENSE](LICENSE)).
 
+**0.20** (phase K1): **characters**. Library ▸ Characters ▸ New: start from a person, four legs, wings, a blob or
+nothing and add parts (eyes, brows, a mouth, ears, hair, arms, legs, a tail, wings, extras) picked from our own set,
+drawn or modelled, on a character or on any thing. It rigs itself. Faces with Character Animator's 14 mouths and four
+brows that lip sync and face capture drive, a typed line to say, proportions by dragging, and act it out with the
+camera. For games: a GLB named for Godot, Unity or Unreal with blend shapes, named clips, LODs and a capsule; sprite
+sheets from 4 or 8 directions, pixel art, turnarounds.
+
 **0.19** (phase P1): **physics**. Say what a thing is made of and press play: it falls, collides, swings on joints,
 flops as a ragdoll, drapes as cloth, wobbles as jelly or breaks like glass, with its real weight (Jolt Physics, the same
 run on the stage and in the export). Forces, wind, small-scale water, smoke and fire; Keep it turns a run into keys;
