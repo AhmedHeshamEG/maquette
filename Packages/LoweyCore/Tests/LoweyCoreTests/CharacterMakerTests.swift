@@ -242,4 +242,28 @@ final class CharacterMakerTests: XCTestCase {
         XCTAssertEqual(acted.scene.timeline.track(for: root, .boneTurn("leftUpperArm"))?.keyframes.count, 10)
         XCTAssertNotNil(acted.scene.timeline.track(for: root, .position))
     }
+
+    func testTheBridgeMakesACharacter() throws {
+        var context = ScriptContext(ids: .sequential("b"))
+        context.mesh = { _ in nil }
+        let actions = """
+        {"do": "character", "op": "new", "start": "nothing", "name": "Peeper"},
+         {"do": "character", "op": "add", "target": "Peeper", "part": "eye"},
+         {"do": "character", "op": "add", "target": "Peeper", "part": "mouth", "style": "grin"},
+         {"do": "character", "op": "say", "target": "Peeper", "line": "Look at me!", "at": 0.5},
+         {"do": "character", "op": "new", "start": "fourLegs", "name": "Biscuit", "at": [2, 0, 0]},
+         {"do": "character", "op": "proportion", "target": "Biscuit", "measure": "legs", "by": 1.2},
+         {"do": "character", "op": "state", "target": "Mouth", "state": "oh", "bend": {"open": 1.4}}
+        """
+        let script = try LoweyJSON.decode(SceneScript.self, from: Data("{\"version\": 3, \"title\": \"T\", \"actions\": [\(actions)]}".utf8))
+        let result = try ScriptCompiler.compile(script, document: makeDocument(), context: context)
+        let applied = try assertReverts(try XCTUnwrap(result.command), on: makeDocument())
+        let peeper = try XCTUnwrap(applied.scene.objects.values.first { $0.name == "Peeper" })
+        XCTAssertEqual(peeper.rig?.skeleton.names, [RigMarks.rootName], "rigged by itself")
+        XCTAssertNotNil(applied.scene.timeline.track(for: peeper.id, .mouthShape))
+        let biscuit = try XCTUnwrap(applied.scene.objects.values.first { $0.name == "Biscuit" })
+        XCTAssertTrue(biscuit.rig?.skeleton.names.contains("frontLeftLeg") ?? false)
+        XCTAssertEqual(lowest(biscuit.id, in: applied.scene), 0, accuracy: 0.02)
+        XCTAssertEqual(applied.scene.objects.values.first { $0.part?.job == .mouth && $0.part?.style == "grin" }?.part?.states["oh"]?.open, 1.4)
+    }
 }

@@ -102,7 +102,12 @@ extension ScriptState {
         try insert(object, action: action, verb: "Add \(preset.title.lowercased())")
     }
 
+    /// A puppet from a recipe, or (with “op”) the character maker (`ScriptCompiler+Character`).
     mutating func character(_ action: JSONValue) throws {
+        if action["op"] != nil {
+            try characterMaker(action)
+            return
+        }
         var recipe = CharacterRecipe()
         if let raw = action["recipe"] { recipe = try LoweyJSON.decode(CharacterRecipe.self, from: LoweyJSON.encode(raw)) }
         if let given = string(action, "name") { recipe.name = given }

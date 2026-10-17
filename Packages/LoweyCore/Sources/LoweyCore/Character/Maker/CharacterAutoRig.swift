@@ -149,6 +149,25 @@ public enum CharacterAutoRig {
         return trunk.min { $0.position.distance(to: top) < $1.position.distance(to: top) }?.name
     }
 
+    /// The command that rigs a made character as its parts stand now: the skeleton, and each piece riding its joint (nil
+    /// when it isn't a made character). Poses keyed on joints that are gone are left alone (they do nothing).
+    public static func command(_ root: ObjectID, in scene: Scene,
+                               shapeBounds: (SceneObject) -> Bounds? = CharacterAnatomy.coreBounds) -> EditCommand? {
+        guard scene.objects[root]?[.characterStart] != nil, let anatomy = CharacterAnatomy(root, in: scene, shapeBounds: shapeBounds) else { return nil }
+        let rig = rig(marks(anatomy))
+        var commands: [EditCommand] = [.setRig(root, rig)]
+        let binding = RigidParts.binding(root, rig: rig, in: scene)
+        if !binding.isEmpty { commands.append(.setProperties(binding)) }
+        return .batch("Rig \(scene.objects[root]?.name ?? "character")", commands)
+    }
+
+    /// A change to a made character, then its rig built again from the parts it leaves (one undo step).
+    public static func rigging(after change: EditCommand, root: ObjectID, in document: Document, label: String) -> EditCommand {
+        var working = document
+        guard (try? change.apply(to: &working)) != nil, let rig = command(root, in: working.scene) else { return change }
+        return .batch(label, [change, rig])
+    }
+
     /// The rig the marks make, a person's marked humanoid so its clips play.
     public static func rig(_ marks: [RigMark]) -> ObjectRig {
         var rig = RigMarks.rig(marks, surface: [])
