@@ -127,6 +127,8 @@ public indirect enum EditCommand: Hashable, Sendable {
     case setPhysics(ObjectID, ObjectPhysics?)
     /// The scene's gravity, wind, ground and joints (nil: the defaults, no joints).
     case setScenePhysics(ScenePhysics?)
+    /// Makes a thing a part of a made character, changes its job or face states, or makes it a plain thing again (nil).
+    case setPart(ObjectID, CharacterPart?)
     /// Replace the project's own Looks ("My Look").
     case setCustomLooks([LookPreset])
     /// The project's brushes (`ProjectInfo.brushes`): a stroke's first use of a brush adds its frozen copy.
@@ -175,6 +177,7 @@ public indirect enum EditCommand: Hashable, Sendable {
         case .setModelHistory: return "Shape"
         case let .setPhysics(_, physics): return physics == nil ? "Not real" : "Real"
         case .setScenePhysics: return "Physics"
+        case .setPart: return "Character"
         case .setCustomLooks: return "Edit looks"
         case .setBrushes: return "Draw"
         case let .setFlipbooks(edits): return edits.allSatisfy { $0.track == nil } ? "Delete flipbook" : "Draw"

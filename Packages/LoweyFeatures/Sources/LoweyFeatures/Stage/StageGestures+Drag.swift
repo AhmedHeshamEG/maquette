@@ -72,11 +72,6 @@ extension StageGestures {
         return rise
     }
 
-    /// Degrees the view turns per point of a one-finger drag: 180 across the stage's width.
-    static func orbitDegrees(perPoint width: Double) -> Double {
-        180 / max(width, 320)
-    }
-
     /// While frames are drawn, a finger's flick turns the frame instead of the view (the turn it began is put back).
     private func flickedFrame(_ recognizer: UIPanGestureRecognizer, editor: EditorModel, stage: StageView) -> Bool {
         guard editor.tool == .flipbook, !panTouchIsPencil, let start = panStart else { return false }
@@ -156,8 +151,8 @@ extension StageGestures {
         switch drag {
         case .orbit:
             var viewpoint = stage.viewpoint
-            // A fixed turn per screen width (U5: one feel): half a turn across the stage, on any iPad.
-            let degreesPerPoint = Self.orbitDegrees(perPoint: Double(stage.bounds.width)) * navigationSpeed
+            // One rate for every tool (U5, K1 0.1): half a turn across the screen's long side, on any iPad.
+            let degreesPerPoint = editor.orbitDegreesPerPoint
             viewpoint.yaw -= Double(translation.x) * degreesPerPoint
             viewpoint.pitch += Double(translation.y) * degreesPerPoint
             stage.setViewpoint(viewpoint)
@@ -194,8 +189,8 @@ extension StageGestures {
             editor.performMove(by: delta)
             drag = .perform(planeY: planeY, last: hit)
         case .aimCamera:
-            editor.aimCamera(pan: -Double(translation.x) * 0.15 * navigationSpeed, tilt: -Double(translation.y) * 0.15 * navigationSpeed,
-                             gesture: gestureKey)
+            let rate = editor.orbitDegreesPerPoint
+            editor.aimCamera(pan: -Double(translation.x) * rate, tilt: -Double(translation.y) * rate, gesture: gestureKey)
         case let .moveOverlay(id, last):
             editor.moveOverlay(id, by: CGSize(width: point.x - last.x, height: point.y - last.y), gesture: gestureKey)
             drag = .moveOverlay(id, last: point)

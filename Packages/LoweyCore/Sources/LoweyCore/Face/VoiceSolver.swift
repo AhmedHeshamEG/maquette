@@ -120,7 +120,8 @@ public struct VoiceSolver: Sendable {
 
     /// The channels a mouth sets on a character.
     public static func channels(_ mouth: Mouth) -> [PropertyKey: PropertyValue] {
-        [.mouth: .enumeration(mouth.viseme.rawValue), .jawOpen: .float(mouth.jaw), .mouthWide: .float(mouth.wide)]
+        [.mouth: .enumeration(mouth.viseme.rawValue), .mouthShape: .enumeration(MouthShape(mouth.viseme).rawValue), .jawOpen: .float(mouth.jaw),
+         .mouthWide: .float(mouth.wide)]
     }
 }
 

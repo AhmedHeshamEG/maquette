@@ -234,6 +234,8 @@ public struct SceneObject: Codable, Hashable, Sendable, Identifiable {
     public var modelHistory: ModelHistory?
     /// Real: a material, a mass, and a part in the scene's simulation (nil = none; `ObjectPhysics`).
     public var physics: ObjectPhysics?
+    /// A part of a made character: its job, side and face states (nil = not a part; `CharacterPart`).
+    public var part: CharacterPart?
 
     public init(
         id: ObjectID,

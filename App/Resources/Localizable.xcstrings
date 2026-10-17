@@ -49,6 +49,22 @@
         }
       }
     },
+    "%@ copies %lld frames of you": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$@ copia %2$lld fotogrammi di te"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$@ ينسخ %2$lld إطارًا من حركتك"
+          }
+        }
+      }
+    },
     "%@ goes off at %@": {
       "localizations": {
         "it": {
@@ -77,6 +93,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "%@ طبقة تعبئة: أضف لها قناعًا وارسم على القناع"
+          }
+        }
+      }
+    },
+    "%@ is here. Its parts are in its panel": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ è qui. Le sue parti sono nel suo pannello"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ هنا. أجزاؤه في لوحته"
           }
         }
       }
@@ -141,6 +173,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "%1$@ ليس صوتًا يستطيع %2$@ قراءته"
+          }
+        }
+      }
+    },
+    "%@ needs a rig first: Rig ▸ pins and dots, or make it in Characters ▸ New": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ ha prima bisogno di uno scheletro: Rig ▸ spilli e punti, oppure crealo in Personaggi ▸ Nuovo"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "يحتاج %@ إلى هيكل أولًا: الهيكل ▸ الدبابيس والنقاط، أو اصنعه من الشخصيات ▸ جديد"
           }
         }
       }
@@ -657,6 +705,22 @@
         }
       }
     },
+    "4 directions": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "4 direzioni"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "4 اتجاهات"
+          }
+        }
+      }
+    },
     "5 cm shapes on a 1 cm grid, close up.": {
       "localizations": {
         "it": {
@@ -685,6 +749,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "50 سم"
+          }
+        }
+      }
+    },
+    "8 directions": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "8 direzioni"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "8 اتجاهات"
           }
         }
       }
@@ -1437,6 +1517,22 @@
         }
       }
     },
+    "Add a mouth, brows or eyes: they get their faces here.": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aggiungi una bocca, sopracciglia o occhi: qui prendono le loro espressioni."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "أضف فمًا أو حاجبين أو عينين: تظهر تعابيرها هنا."
+          }
+        }
+      }
+    },
     "Add a picture": {
       "localizations": {
         "it": {
@@ -1501,6 +1597,22 @@
         }
       }
     },
+    "Add as…": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aggiungi come…"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "أضف بشكل…"
+          }
+        }
+      }
+    },
     "Add Dirt": {
       "localizations": {
         "it": {
@@ -1513,6 +1625,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "أضف أوساخًا"
+          }
+        }
+      }
+    },
+    "Add its first part from its panel: an eye makes a creature": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aggiungi la prima parte dal suo pannello: un occhio fa una creatura"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "أضف أول جزء من لوحته: عين واحدة تصنع مخلوقًا"
           }
         }
       }
@@ -1657,6 +1785,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "بعد: %lld"
+          }
+        }
+      }
+    },
+    "Ah": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ah"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "آه"
           }
         }
       }
@@ -2441,6 +2585,22 @@
         }
       }
     },
+    "Arms": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Braccia"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الذراعان"
+          }
+        }
+      }
+    },
     "Around": {
       "localizations": {
         "it": {
@@ -2501,6 +2661,38 @@
           "stringUnit": {
             "state": "translated",
             "value": "سهم"
+          }
+        }
+      }
+    },
+    "As in a mirror": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Come allo specchio"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "كما في المرآة"
+          }
+        }
+      }
+    },
+    "As it came": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Com'era"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "كما كان"
           }
         }
       }
@@ -3161,6 +3353,22 @@
         }
       }
     },
+    "Body": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Corpo"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الجسم"
+          }
+        }
+      }
+    },
     "Boil": {
       "localizations": {
         "it": {
@@ -3445,6 +3653,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "شعيرات"
+          }
+        }
+      }
+    },
+    "Brows": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sopracciglia"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الحاجبان"
           }
         }
       }
@@ -5461,6 +5685,22 @@
         }
       }
     },
+    "Couldn't save the file: %@": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Impossibile salvare il file: %@"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تعذّر حفظ الملف: %@"
+          }
+        }
+      }
+    },
     "Couldn't save the fill: %@": {
       "localizations": {
         "paint-it": {
@@ -6609,6 +6849,22 @@
         }
       }
     },
+    "Directions": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Direzioni"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الاتجاهات"
+          }
+        }
+      }
+    },
     "Director View": {
       "localizations": {
         "it": {
@@ -7273,6 +7529,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "اسحب المقبض لتحني الشيء أو تلويه أو تستدقه أو تنفخه"
+          }
+        }
+      }
+    },
+    "Drag to change it": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Trascina per cambiarlo"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "اسحب لتغييره"
           }
         }
       }
@@ -8077,6 +8349,22 @@
         }
       }
     },
+    "Ears": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Orecchie"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الأذنان"
+          }
+        }
+      }
+    },
     "Earth": {
       "localizations": {
         "it": {
@@ -8365,6 +8653,22 @@
         }
       }
     },
+    "Ee": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ee"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "إي"
+          }
+        }
+      }
+    },
     "Effects": {
       "localizations": {
         "it": {
@@ -8505,6 +8809,38 @@
           "stringUnit": {
             "state": "translated",
             "value": "ينتهي هنا"
+          }
+        }
+      }
+    },
+    "Engine": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Motore"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "المحرّك"
+          }
+        }
+      }
+    },
+    "Engines, sprite sheets, turnaround…": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Motori, sprite sheet, turnaround…"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "المحرّكات، أوراق الرسوم، الدوران الكامل…"
           }
         }
       }
@@ -8829,6 +9165,38 @@
         }
       }
     },
+    "Export for Games…": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Esporta per i giochi…"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تصدير للألعاب…"
+          }
+        }
+      }
+    },
+    "Export GLB": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Esporta GLB"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تصدير GLB"
+          }
+        }
+      }
+    },
     "Export it from Actions ▸ Export ▸ 3D model as STL or 3MF: millimetres, standing on the bed.": {
       "localizations": {
         "it": {
@@ -8861,6 +9229,22 @@
         }
       }
     },
+    "Export sprite sheet": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Esporta lo sprite sheet"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تصدير ورقة الرسوم"
+          }
+        }
+      }
+    },
     "Export stopped": {
       "localizations": {
         "it": {
@@ -8873,6 +9257,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "توقف التصدير"
+          }
+        }
+      }
+    },
+    "Export turnaround": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Esporta il turnaround"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تصدير الدوران الكامل"
           }
         }
       }
@@ -9049,6 +9449,22 @@
         }
       }
     },
+    "Eyes": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Occhi"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "العينان"
+          }
+        }
+      }
+    },
     "Face capture failed: %@": {
       "localizations": {
         "it": {
@@ -9093,6 +9509,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "مواجهة لي"
+          }
+        }
+      }
+    },
+    "Face part": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Parte del viso"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "جزء الوجه"
           }
         }
       }
@@ -9517,6 +9949,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "يملأ الشيء الذي تلوّنه"
+          }
+        }
+      }
+    },
+    "Film yourself": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Filmati"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "صوّر نفسك"
           }
         }
       }
@@ -10289,6 +10737,22 @@
         }
       }
     },
+    "For an engine": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Per un motore"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "لمحرّك ألعاب"
+          }
+        }
+      }
+    },
     "For flipbooks": {
       "localizations": {
         "it": {
@@ -10301,6 +10765,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "للفليب بوك"
+          }
+        }
+      }
+    },
+    "For games": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Per i giochi"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "للألعاب"
           }
         }
       }
@@ -10621,6 +11101,22 @@
         }
       }
     },
+    "Frame size": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dimensione del fotogramma"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "حجم الإطار"
+          }
+        }
+      }
+    },
     "Frame the selection": {
       "localizations": {
         "it": {
@@ -10729,6 +11225,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "من %@"
+          }
+        }
+      }
+    },
+    "From a video": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Da un video"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "من فيديو"
           }
         }
       }
@@ -11125,6 +11637,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "اذهب إلى بدايتها"
+          }
+        }
+      }
+    },
+    "Godot": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Godot"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Godot"
           }
         }
       }
@@ -11529,6 +12057,22 @@
         }
       }
     },
+    "Hair": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Capelli"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الشعر"
+          }
+        }
+      }
+    },
     "Hair cards": {
       "localizations": {
         "it": {
@@ -11637,6 +12181,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "تظليل بالخطوط"
+          }
+        }
+      }
+    },
+    "Head": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Testa"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الرأس"
           }
         }
       }
@@ -13885,6 +14445,22 @@
         }
       }
     },
+    "Legs": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gambe"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الساقان"
+          }
+        }
+      }
+    },
     "Length": {
       "localizations": {
         "it": {
@@ -14909,6 +15485,22 @@
         }
       }
     },
+    "Make it the %@": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fallo diventare: %@"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "اجعله: %@"
+          }
+        }
+      }
+    },
     "Make keyframes": {
       "localizations": {
         "it": {
@@ -14921,6 +15513,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "إنشاء إطارات مفتاحية"
+          }
+        }
+      }
+    },
+    "Make one with New, or rig something and Save to library from its menu.": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Creane uno con Nuovo, oppure dai uno scheletro a qualcosa e scegli Salva nella libreria dal suo menu."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "اصنع واحدة من جديد، أو أعطِ شيئًا هيكلًا واختر حفظ في المكتبة من قائمته."
           }
         }
       }
@@ -15573,6 +16181,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "اعكس الضربات"
+          }
+        }
+      }
+    },
+    "Mirrored": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Specchiate"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "متناظرة"
           }
         }
       }
@@ -16449,6 +17073,22 @@
         }
       }
     },
+    "Neutral": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Neutra"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "محايد"
+          }
+        }
+      }
+    },
     "New": {
       "localizations": {
         "it": {
@@ -16465,6 +17105,22 @@
         }
       }
     },
+    "New %@": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nuovo: %@"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "جديد: %@"
+          }
+        }
+      }
+    },
     "New camera from this view": {
       "localizations": {
         "it": {
@@ -16477,6 +17133,38 @@
           "stringUnit": {
             "state": "translated",
             "value": "كاميرا جديدة من هذا العرض"
+          }
+        }
+      }
+    },
+    "New Character…": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nuovo personaggio…"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "شخصية جديدة…"
+          }
+        }
+      }
+    },
+    "New Creature from Nothing": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nuova creatura dal nulla"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "مخلوق جديد من لا شيء"
           }
         }
       }
@@ -16529,6 +17217,22 @@
         }
       }
     },
+    "New Four-Legged": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nuovo quadrupede"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "رباعي أرجل جديد"
+          }
+        }
+      }
+    },
     "New Monitor Window": {
       "localizations": {
         "it": {
@@ -16557,6 +17261,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "لوحة ألوان جديدة"
+          }
+        }
+      }
+    },
+    "New Person": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nuova persona"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "شخص جديد"
           }
         }
       }
@@ -16765,6 +17485,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "بلا انحناء"
+          }
+        }
+      }
+    },
+    "No character called “%@”": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nessun personaggio chiamato “%@”"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "لا توجد شخصية باسم “%@”"
           }
         }
       }
@@ -17005,6 +17741,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "الشمال يشير إلى"
+          }
+        }
+      }
+    },
+    "Nose": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Naso"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الأنف"
           }
         }
       }
@@ -17389,6 +18141,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "إزاحة"
+          }
+        }
+      }
+    },
+    "Oh": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Oh"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "أوه"
           }
         }
       }
@@ -18189,6 +18957,22 @@
         }
       }
     },
+    "Or the drawing of one face:": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Oppure il disegno di un'espressione:"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "أو رسم تعبير واحد:"
+          }
+        }
+      }
+    },
     "Orbit": {
       "localizations": {
         "it": {
@@ -18785,6 +19569,22 @@
         }
       }
     },
+    "Parts": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Parti"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الأجزاء"
+          }
+        }
+      }
+    },
     "Paste": {
       "localizations": {
         "it": {
@@ -19213,6 +20013,54 @@
         }
       }
     },
+    "Pick a character": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Scegli un personaggio"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "اختر شخصية"
+          }
+        }
+      }
+    },
+    "Pick a character first": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Prima scegli un personaggio"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "اختر شخصية أولًا"
+          }
+        }
+      }
+    },
+    "Pick a character or a thing first": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Prima scegli un personaggio o un oggetto"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "اختر شخصية أو شيئًا أولًا"
+          }
+        }
+      }
+    },
     "Pick a colour": {
       "localizations": {
         "it": {
@@ -19553,6 +20401,38 @@
           "stringUnit": {
             "state": "translated",
             "value": "المحور إلى المنتصف"
+          }
+        }
+      }
+    },
+    "Pixel art": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pixel art"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "فن البكسل"
+          }
+        }
+      }
+    },
+    "Pixels tall": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pixel di altezza"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الارتفاع بالبكسل"
           }
         }
       }
@@ -20509,6 +21389,22 @@
         }
       }
     },
+    "Put it on a character first": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Prima mettilo su un personaggio"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ضعه على شخصية أولًا"
+          }
+        }
+      }
+    },
     "Put the panel back": {
       "localizations": {
         "it": {
@@ -20777,6 +21673,22 @@
         }
       }
     },
+    "Reading your moves…": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Leggo i tuoi movimenti…"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "أقرأ حركاتك…"
+          }
+        }
+      }
+    },
     "Ready": {
       "localizations": {
         "it": {
@@ -20805,6 +21717,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "جاهز للطباعة"
+          }
+        }
+      }
+    },
+    "Ready-made": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Già pronti"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "جاهزة"
           }
         }
       }
@@ -21825,6 +22753,22 @@
         }
       }
     },
+    "Rig It Again": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rifai lo scheletro"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "أعد بناء الهيكل"
+          }
+        }
+      }
+    },
     "Rig open, the camera at eye level.": {
       "localizations": {
         "it": {
@@ -21885,6 +22829,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "بهيكل عظمي"
+          }
+        }
+      }
+    },
+    "Rigged things you save to the library land here too, with their bones.": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Anche le cose con uno scheletro che salvi nella libreria arrivano qui, con le loro ossa."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الأشياء ذات الهياكل التي تحفظها في المكتبة تصل إلى هنا أيضًا، بعظامها."
           }
         }
       }
@@ -22753,6 +23713,22 @@
         }
       }
     },
+    "Say it": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dillo"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "قُلها"
+          }
+        }
+      }
+    },
     "Scale": {
       "localizations": {
         "it": {
@@ -23341,6 +24317,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "اختر الكاميرا والموضوع (موضوعان للقطة ثنائية أو من فوق الكتف)."
+          }
+        }
+      }
+    },
+    "Select the character to export, then come back.": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Seleziona il personaggio da esportare, poi torna qui."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "اختر الشخصية المراد تصديرها، ثم عُد."
           }
         }
       }
@@ -24845,6 +25837,22 @@
         }
       }
     },
+    "Smile": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sorriso"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ابتسامة"
+          }
+        }
+      }
+    },
     "Smoke": {
       "localizations": {
         "it": {
@@ -25805,6 +26813,22 @@
         }
       }
     },
+    "Sprite sheet": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sprite sheet"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ورقة الرسوم"
+          }
+        }
+      }
+    },
     "Square": {
       "localizations": {
         "it": {
@@ -25945,6 +26969,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "البصمات في كل خطوة: %lld"
+          }
+        }
+      }
+    },
+    "Stand back so your whole body shows, head to feet.": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Allontanati perché si veda tutto il corpo, dalla testa ai piedi."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ابتعد ليظهر جسمك كله، من الرأس إلى القدمين."
           }
         }
       }
@@ -26685,6 +27725,22 @@
         }
       }
     },
+    "Surprised": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sorpreso"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "متفاجئ"
+          }
+        }
+      }
+    },
     "Swap": {
       "localizations": {
         "it": {
@@ -26941,6 +27997,22 @@
         }
       }
     },
+    "Tail": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Coda"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الذيل"
+          }
+        }
+      }
+    },
     "Take %lld recorded. Earlier takes are kept": {
       "localizations": {
         "it": {
@@ -26953,6 +28025,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "سُجّلت اللقطة %lld. اللقطات السابقة محفوظة"
+          }
+        }
+      }
+    },
+    "Take it away": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Toglila"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "أزِله"
           }
         }
       }
@@ -28777,6 +29865,22 @@
         }
       }
     },
+    "The sprite sheet couldn't be drawn: %@": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Impossibile disegnare lo sprite sheet: %@"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تعذّر رسم ورقة الرسوم: %@"
+          }
+        }
+      }
+    },
     "The stage now adapts its resolution to stay smooth.": {
       "localizations": {
         "it": {
@@ -28949,6 +30053,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "الجولة تستغرق دقيقة على مشروع حقيقي: كل خطوة تنتظر حتى تنفذها."
+          }
+        }
+      }
+    },
+    "The turnaround couldn't be drawn: %@": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Impossibile disegnare il turnaround: %@"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تعذّر رسم الدوران الكامل: %@"
           }
         }
       }
@@ -30725,6 +31845,22 @@
         }
       }
     },
+    "Turnaround": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Turnaround"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الدوران الكامل"
+          }
+        }
+      }
+    },
     "Turns a sculpt into clean quads. Copyright (c) 2015 Wenzel Jakob, Daniele Panozzo, Marco Tarini and Olga ": {
       "localizations": {
         "it": {
@@ -30965,6 +32101,22 @@
         }
       }
     },
+    "Uh": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Uh"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "آ"
+          }
+        }
+      }
+    },
     "Under": {
       "localizations": {
         "it": {
@@ -31141,6 +32293,22 @@
         }
       }
     },
+    "Unity": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Unity"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Unity"
+          }
+        }
+      }
+    },
     "Unlink": {
       "localizations": {
         "it": {
@@ -31201,6 +32369,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "فك الحزمة"
+          }
+        }
+      }
+    },
+    "Unreal": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Unreal"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Unreal"
           }
         }
       }
@@ -31605,6 +32789,38 @@
         }
       }
     },
+    "W-Oo": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "W-Oo"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "و-وو"
+          }
+        }
+      }
+    },
+    "Waist": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vita"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الخصر"
+          }
+        }
+      }
+    },
     "Walk in place (a path moves it)": {
       "localizations": {
         "it": {
@@ -31777,6 +32993,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "حواف مبللة"
+          }
+        }
+      }
+    },
+    "What does it say?": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Che cosa dice?"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ماذا تقول؟"
           }
         }
       }

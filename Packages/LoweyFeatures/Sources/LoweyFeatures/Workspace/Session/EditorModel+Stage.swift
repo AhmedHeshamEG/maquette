@@ -219,6 +219,12 @@ extension EditorModel {
         HmmHaptics.play(.selection)
     }
 
+    /// Degrees the view turns per point of a drag, the same for every tool and every place that turns it.
+    var orbitDegreesPerPoint: Double {
+        let screen = stage?.window?.windowScene?.screen.bounds.size ?? stage?.bounds.size ?? CGSize(width: 1180, height: 820)
+        return AppSettings.orbitDegreesPerPoint(screenLongSide: Double(max(screen.width, screen.height)))
+    }
+
     /// Turns the view by a drag on the view cube.
     func turnView(byYaw yaw: Double, pitch: Double) {
         guard let stage else { return }

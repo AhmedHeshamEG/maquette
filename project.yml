@@ -94,7 +94,7 @@ targets:
         HmmHeld: $(MAQUETTE_HELD)
         LoweyBackgroundBridge: true
         NSPhotoLibraryAddUsageDescription: "Maquette saves the videos and stills you export to your photo library."
-        NSCameraUsageDescription: "Maquette uses the camera to follow the iPad when it acts as a film camera, and the front camera to read your face for character performances."
+        NSCameraUsageDescription: "Maquette uses the camera to follow the iPad when it acts as a film camera, the front camera to read your face for character performances, and to film you acting so a character can copy your moves. Nothing leaves your iPad."
         NSMicrophoneUsageDescription: "Maquette records your voiceover so your animation can be timed to your words."
         NSLocalNetworkUsageDescription: "Maquette talks to your paired laptop (AI bridge, files) and your iPhone (face capture) on your local network only."
         NSBonjourServices:

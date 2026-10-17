@@ -2,8 +2,9 @@ import HmmDesign
 import LoweyCore
 import SwiftUI
 
-/// The Library (top left): everything ready to place. **Things**: the characters (a Blob, Me, a Puppet) and the Kit by
-/// set. **Motion**: poses, clips and loops to drop on anything with joints. **Rigs**: everything with a skeleton.
+/// The Library (top left): everything ready to place. **Things**: the Kit by set. **Characters**: make one (New), the
+/// ready-made ones (a Blob, Me, a Puppet) and everything with a skeleton. **Motion**: poses, clips and loops to drop on
+/// anything with joints.
 /// **Yours**: what you imported, built and saved, your favourites and what you used last. One search across them.
 /// Tap to place, drag onto the stage, touch and hold for the item's menu. While swapping a shape for a model, a tap
 /// swaps it.
@@ -41,13 +42,23 @@ struct LibraryPanel: View {
     }
 }
 
-/// Things' first row: the ready-made characters. A Blob is built in its own sheet; Me lands at once; a Puppet is
-/// built from parts.
+/// The Characters page's first rows (K1): New, from a start (the maker on the stage), and the ready-made ones. A Blob is
+/// built in its own sheet; Me lands at once; a Puppet is built from parts.
 struct CharacterRow: View {
     let editor: EditorModel
 
     var body: some View {
-        PanelSection("Characters") {
+        PanelSection("New") {
+            TileGrid {
+                ForEach(CharacterStart.allCases) { start in
+                    TileButton(title: start.title, systemName: start.systemImage, identifier: "new-character-\(start.rawValue)") {
+                        editor.openPanel = nil
+                        editor.newCharacter(start)
+                    }
+                }
+            }
+        }
+        PanelSection("Ready-made") {
             TileGrid {
                 TileButton(title: "Blob", systemName: "face.smiling", identifier: "add-blob") { openSheet(.blobBuilder) }
                 TileButton(title: "Me", systemName: "person.crop.circle", identifier: "add-me") {

@@ -29,6 +29,7 @@ struct EditorSheets: ViewModifier {
         case .learn: LearnSheet(app: editor.app).presentationDetents([.large])
         case .timelineSettings: TimelineSettingsSheet(editor: editor).presentationDetents([.medium])
         case .brushes: BrushLibrarySheet(editor: editor).presentationDetents([.large])
+        case .gameExport: GameExportSheet(editor: editor).presentationDetents([.medium, .large])
         }
     }
 }

@@ -56,7 +56,9 @@ struct ViewCube: View {
             .onChanged { value in
                 let delta = CGSize(width: value.translation.width - dragged.width, height: value.translation.height - dragged.height)
                 dragged = value.translation
-                editor.turnView(byYaw: -Double(delta.width) * 1.2, pitch: Double(delta.height) * 1.2)
+                // The stage's own rate: a drag on the cube turns the view as far as the same drag on the stage.
+                let rate = editor.orbitDegreesPerPoint
+                editor.turnView(byYaw: -Double(delta.width) * rate, pitch: Double(delta.height) * rate)
             }
             .onEnded { _ in dragged = .zero }
     }

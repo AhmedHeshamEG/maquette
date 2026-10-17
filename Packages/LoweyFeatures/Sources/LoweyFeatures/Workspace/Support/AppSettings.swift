@@ -44,6 +44,13 @@ public enum AppSettings {
         clamped(UserDefaults.standard.object(forKey: navigationSpeed) as? Double ?? 1, to: navigationSpeedRange)
     }
 
+    /// Degrees the view turns per point a finger drags, wherever it turns (the stage, the Director view's camera, the view
+    /// cube): half a turn across the screen's long side, times the navigation speed. The screen and not the stage's frame,
+    /// so turning the iPad, a narrower window or the tool in the hand never changes it (one sensitivity everywhere).
+    public static func orbitDegreesPerPoint(screenLongSide: Double) -> Double {
+        180 / max(screenLongSide, 568) * navigationFactor
+    }
+
     public static var joystickFactor: Double {
         clamped(UserDefaults.standard.object(forKey: joystickSpeed) as? Double ?? 1, to: joystickSpeedRange)
     }

@@ -51,7 +51,9 @@ public enum ProjectHistory {
         // 16 → 17 only adds optional paint fields (maps, fills, mirror, normals, seams) and tile changes' optional map.
         16: { $0 },
         // 17 → 18 only adds the optional physics fields and the `setPhysics` and `setScenePhysics` commands.
-        17: { $0 }
+        17: { $0 },
+        // 18 → 19 only adds the optional part field and the `setPart` command.
+        18: { $0 }
     ]
     /// The first schema journals were written with (Maquette 0.1).
     public static let firstJournalSchema = 4
