@@ -45,7 +45,13 @@ public enum CharacterAutoRig {
                      RigMark(name: "spine", kind: .dot, position: Vec3(x, body.min.y + body.size.y * 0.45, z), parent: "hips", thickness: width),
                      RigMark(name: "chest", kind: .dot, position: Vec3(x, body.min.y + body.size.y * 0.78, z), parent: "spine", thickness: width)]
         if let head {
-            marks.append(RigMark(name: "neck", kind: .dot, position: Vec3(head.center.x, head.min.y, head.center.z), parent: "chest", thickness: head.size.x * 0.4))
+            marks.append(RigMark(
+                name: "neck",
+                kind: .dot,
+                position: Vec3(head.center.x, head.min.y, head.center.z),
+                parent: "chest",
+                thickness: head.size.x * 0.4
+            ))
             marks.append(RigMark(name: "head", kind: .dot, position: Vec3(head.center.x, head.min.y + head.size.y * 0.3, head.center.z), parent: "neck",
                                  thickness: head.size.x))
         }

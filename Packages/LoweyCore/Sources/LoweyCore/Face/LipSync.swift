@@ -121,7 +121,7 @@ public final class Phonemizer: @unchecked Sendable {
         while index < letters.count {
             let next = index + 1 < letters.count ? letters[index + 1] : " "
             if let pair = Self.pairs["\(letters[index])\(next)"] {
-                pair.vowel ? vowel(pair.shape) : consonant(pair.shape)
+                if pair.vowel { vowel(pair.shape) } else { consonant(pair.shape) }
                 index += 2
                 continue
             }

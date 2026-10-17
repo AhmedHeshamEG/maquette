@@ -79,7 +79,8 @@ struct CharacterFaceSection: View {
                             var changed = bend
                             changed[keyPath: dial.1] = value
                             editor.setFaceBend(state, changed, gesture: "face-\(state)")
-                        }), in: dial.2) { editing in if !editing { editor.endGesture() } }
+                        }), in: dial.2, onEditingChanged: { editing in if !editing { editor.endGesture() } })
+                            .accessibilityLabel(Text(dial.0))
                     }
                 }
                 HmmPillButton("As it came", systemName: "arrow.uturn.backward") { editor.setFaceBend(state, nil) }
@@ -107,7 +108,7 @@ struct CharacterProportionsSection: View {
                         let now = measures[measure] ?? 1
                         guard now > 1e-6 else { return }
                         editor.changeProportion(measure, by: typed * editor.units.metres / now, gesture: gesture)
-                    }), scrub: HmmScrub(fine: 0.5, range: 0.01 ... 1_000), format: { editor.units.format($0 * editor.units.metres, symbol: false) },
+                    }), scrub: HmmScrub(fine: 0.5, range: 0.01 ... 1000), format: { editor.units.format($0 * editor.units.metres, symbol: false) },
                     parse: { editor.parseLength($0).map { $0 / editor.units.metres } }, onEditingChanged: { editing in
                         if !editing, let root = editor.makerCharacter {
                             editor.rigAgain(root, gesture: gesture)

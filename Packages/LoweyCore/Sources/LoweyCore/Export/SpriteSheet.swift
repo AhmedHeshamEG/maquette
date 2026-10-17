@@ -138,7 +138,8 @@ public extension RGBAImage {
                 for channel in 0 ..< 4 {
                     let over = Int(image.pixels[source + channel])
                     let under = Int(pixels[target + channel])
-                    pixels[target + channel] = UInt8(channel == 3 ? min(255, alpha + under * (255 - alpha) / 255) : (over * alpha + under * (255 - alpha)) / 255)
+                    pixels[target + channel] =
+                        UInt8(channel == 3 ? min(255, alpha + under * (255 - alpha) / 255) : (over * alpha + under * (255 - alpha)) / 255)
                 }
             }
         }

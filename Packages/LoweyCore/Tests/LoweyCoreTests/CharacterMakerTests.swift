@@ -100,7 +100,7 @@ final class CharacterMakerTests: XCTestCase {
         let shapes = try XCTUnwrap(talking.scene.timeline.track(for: root, .mouthShape))
         XCTAssertGreaterThan(Set(shapes.keyframes.map(\.value)).count, 4, "several of the 14 shapes")
         let open = shapes.keyframes.first { $0.value != .enumeration("neutral") && $0.value != .enumeration("m") }
-        let evaluated = Animator.evaluate(talking, at: try XCTUnwrap(open).time + 0.01)
+        let evaluated = try Animator.evaluate(talking, at: XCTUnwrap(open).time + 0.01)
         XCTAssertNotNil(evaluated.simulated.meshes[mouth.made[0]], "the mouth shows its state, bent")
         let end = try XCTUnwrap(shapes.keyframes.last).time
         XCTAssertNil(Animator.evaluate(talking, at: end + 0.5).simulated.meshes[mouth.made[0]], "at rest the mouth is as made")
@@ -143,13 +143,13 @@ final class CharacterMakerTests: XCTestCase {
         let before = CharacterProportions.measure(anatomy)
         let command = try XCTUnwrap(CharacterProportions.change(.legs, by: 1.5, anatomy: anatomy, scene: document.scene))
         let after = try assertReverts(command, on: document)
-        let measured = CharacterProportions.measure(try XCTUnwrap(CharacterAnatomy(root, in: after.scene)))
+        let measured = try CharacterProportions.measure(XCTUnwrap(CharacterAnatomy(root, in: after.scene)))
         XCTAssertEqual(lowest(root, in: after.scene), 0, accuracy: 0.02, "the feet stay on the ground")
         XCTAssertGreaterThan(try XCTUnwrap(measured[.legs]), try XCTUnwrap(before[.legs]) * 1.3)
         XCTAssertGreaterThan(try XCTUnwrap(measured[.height]), try XCTUnwrap(before[.height]))
         let head = try XCTUnwrap(CharacterProportions.change(.head, by: 1.25, anatomy: anatomy, scene: document.scene))
         let bigger = try assertReverts(head, on: document)
-        XCTAssertEqual(CharacterProportions.measure(try XCTUnwrap(CharacterAnatomy(root, in: bigger.scene)))[.head] ?? 0,
+        XCTAssertEqual(try CharacterProportions.measure(XCTUnwrap(CharacterAnatomy(root, in: bigger.scene)))[.head] ?? 0,
                        (before[.head] ?? 0) * 1.25, accuracy: 1e-6)
     }
 
@@ -257,7 +257,7 @@ final class CharacterMakerTests: XCTestCase {
         """
         let script = try LoweyJSON.decode(SceneScript.self, from: Data("{\"version\": 3, \"title\": \"T\", \"actions\": [\(actions)]}".utf8))
         let result = try ScriptCompiler.compile(script, document: makeDocument(), context: context)
-        let applied = try assertReverts(try XCTUnwrap(result.command), on: makeDocument())
+        let applied = try assertReverts(XCTUnwrap(result.command), on: makeDocument())
         let peeper = try XCTUnwrap(applied.scene.objects.values.first { $0.name == "Peeper" })
         XCTAssertEqual(peeper.rig?.skeleton.names, [RigMarks.rootName], "rigged by itself")
         XCTAssertNotNil(applied.scene.timeline.track(for: peeper.id, .mouthShape))

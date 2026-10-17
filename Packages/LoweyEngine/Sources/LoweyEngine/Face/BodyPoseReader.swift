@@ -32,7 +32,7 @@ public enum BodyPoseReader {
         let asset = AVURLAsset(url: url)
         guard let track = try await asset.loadTracks(withMediaType: .video).first else { throw Failure.noVideo }
         let duration = try await asset.load(.duration).seconds
-        let orientation = Self.orientation(try await track.load(.preferredTransform))
+        let orientation = try await Self.orientation(track.load(.preferredTransform))
         let reader = try AVAssetReader(asset: asset)
         let output = AVAssetReaderTrackOutput(track: track, outputSettings: [kCVPixelBufferPixelFormatTypeKey as String: kCVPixelFormatType_32BGRA])
         output.alwaysCopiesSampleData = false
@@ -69,10 +69,10 @@ public enum BodyPoseReader {
 
     static var names: [(VNHumanBodyPose3DObservation.JointName, ActOut.BodyJoint)] {
         [
-        (.root, .root), (.spine, .spine), (.centerShoulder, .centerShoulder), (.centerHead, .centerHead), (.topHead, .topHead),
-        (.leftShoulder, .leftShoulder), (.leftElbow, .leftElbow), (.leftWrist, .leftWrist), (.leftHip, .leftHip), (.leftKnee, .leftKnee),
-        (.leftAnkle, .leftAnkle), (.rightShoulder, .rightShoulder), (.rightElbow, .rightElbow), (.rightWrist, .rightWrist), (.rightHip, .rightHip),
-        (.rightKnee, .rightKnee), (.rightAnkle, .rightAnkle)
+            (.root, .root), (.spine, .spine), (.centerShoulder, .centerShoulder), (.centerHead, .centerHead), (.topHead, .topHead),
+            (.leftShoulder, .leftShoulder), (.leftElbow, .leftElbow), (.leftWrist, .leftWrist), (.leftHip, .leftHip), (.leftKnee, .leftKnee),
+            (.leftAnkle, .leftAnkle), (.rightShoulder, .rightShoulder), (.rightElbow, .rightElbow), (.rightWrist, .rightWrist), (.rightHip, .rightHip),
+            (.rightKnee, .rightKnee), (.rightAnkle, .rightAnkle)
         ]
     }
 

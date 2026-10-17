@@ -28,7 +28,7 @@ extension ScriptState {
     mutating func characterNew(_ action: JSONValue) throws {
         let start = string(action, "start").flatMap { CharacterStart(rawValue: $0) } ?? .person
         let name = ObjectFactory.uniqueName(string(action, "name") ?? start.title, in: scene)
-        let fragment = CharacterMaker.start(start, name: name, at: try point(action["at"]) ?? context.focus, ids: &context.ids)
+        let fragment = try CharacterMaker.start(start, name: name, at: point(action["at"]) ?? context.focus, ids: &context.ids)
         let root = fragment.roots[0]
         let insert = EditCommand.insert(fragment, parent: nil, index: nil)
         try run(CharacterAutoRig.rigging(after: insert, root: root, in: document, label: "New \(start.title.lowercased())"),
@@ -38,7 +38,8 @@ extension ScriptState {
 
     /// A part job by name ("eye", "eyes", "legs"…).
     func partJob(_ action: JSONValue, _ key: String = "part") throws -> CharacterPart.Job {
-        guard let word = string(action, key)?.lowercased() else { throw fail("needs “\(key)”: \(CharacterPart.Job.allCases.map(\.rawValue).joined(separator: ", "))") }
+        guard let word = string(action, key)?.lowercased()
+        else { throw fail("needs “\(key)”: \(CharacterPart.Job.allCases.map(\.rawValue).joined(separator: ", "))") }
         let singular = word.hasSuffix("s") && CharacterPart.Job(rawValue: String(word.dropLast())) != nil ? String(word.dropLast()) : word
         guard let job = CharacterPart.Job(rawValue: singular) ?? (singular == "extras" ? .extra : nil) else {
             throw fail("unknown part “\(word)” (\(CharacterPart.Job.allCases.map(\.rawValue).joined(separator: ", ")))")
@@ -47,7 +48,7 @@ extension ScriptState {
     }
 
     mutating func characterAdd(_ action: JSONValue) throws {
-        let target = try self.target(action["target"] ?? action["character"])
+        let target = try target(action["target"] ?? action["character"])
         let job = try partJob(action)
         let style = string(action, "style")
         if let style, !PartSet.styles(for: job).contains(where: { $0.name == style }) {

@@ -40,7 +40,7 @@ public enum PartSet {
     /// The colour a part of a job starts with.
     public static func colour(for job: CharacterPart.Job, style: String) -> RGBA {
         switch job {
-        case .eye: style == "dot" ? RGBA.hex("#1E1A1C") : RGBA.hex("#F7F4EE")
+        case .eye: RGBA.hex(style == "dot" ? "#1E1A1C" : "#F7F4EE")
         case .brow, .mouth: RGBA.hex("#2A1616")
         case .hair: RGBA.hex("#3B2A20")
         case .extra:
@@ -50,7 +50,7 @@ public enum PartSet {
             case "bow": RGBA.hex("#E4572E")
             default: RGBA.hex("#F1E3C8")
             }
-        case .wing: style == "bug" ? RGBA.hex("#CFE8F2") : RGBA.hex("#F1E3C8")
+        case .wing: RGBA.hex(style == "bug" ? "#CFE8F2" : "#F1E3C8")
         default: RGBA.hex("#F2A65A")
         }
     }

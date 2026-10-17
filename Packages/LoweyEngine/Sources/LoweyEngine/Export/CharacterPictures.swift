@@ -89,7 +89,7 @@ public final class CharacterPictures {
             input.simulated = animated.simulated
             let camera = RenderCamera(viewpoint: Self.viewpoint(root, in: animated.scene, bounds: bounds, direction: direction, pitch: pitch))
             let request = FrameRequest(input: input, camera: camera, frameIndex: index, transparent: true)
-            images.append(try Self.rgba(await renderer.image(request, width: size, height: size)))
+            try await images.append(Self.rgba(renderer.image(request, width: size, height: size)))
         }
         return images
     }
@@ -125,7 +125,11 @@ public final class CharacterPictures {
         var bytes = [UInt8](repeating: 0, count: width * height * 4)
         guard let context = CGContext(data: &bytes, width: width, height: height, bitsPerComponent: 8, bytesPerRow: width * 4,
                                       space: CGColorSpace(name: CGColorSpace.sRGB) ?? CGColorSpaceCreateDeviceRGB(),
-                                      bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue) else { return RGBAImage(width: width, height: height, pixels: bytes) }
+                                      bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue) else { return RGBAImage(
+            width: width,
+            height: height,
+            pixels: bytes
+        ) }
         context.draw(image, in: CGRect(x: 0, y: 0, width: width, height: height))
         for index in 0 ..< width * height {
             let alpha = Int(bytes[index * 4 + 3])

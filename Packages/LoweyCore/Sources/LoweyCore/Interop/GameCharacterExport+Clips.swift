@@ -10,7 +10,10 @@ extension GameCharacterExport {
         let timeline = document.scene.timeline
         // Its own animation on the timeline: keys on it (turns, lip sync) and its clips, as one "Timeline" clip.
         let keyed = timeline.tracks.filter { $0.target == root && ($0.property.boneJoint != nil || $0.property == .mouthShape || $0.property == .mouth) }
-        let ranges = keyed.compactMap(\.timeRange) + timeline.clipTracks.filter { $0.target == root }.flatMap { $0.segments.map { TimeRange(start: $0.start, end: $0.end) } }
+        let ranges = keyed.compactMap(\.timeRange) + timeline.clipTracks.filter { $0.target == root }.flatMap { $0.segments.map { TimeRange(
+            start: $0.start,
+            end: $0.end
+        ) } }
         if let start = ranges.map(\.start).min(), let end = ranges.map(\.end).max(), end - start > 1e-3 {
             result.append(sample("Timeline", root: root, rig: rig, document: document, pieces: pieces, from: start, to: end, fps: fps))
         }
@@ -37,7 +40,11 @@ extension GameCharacterExport {
         for frame in 0 ... frames {
             let time = min(start + Double(frame) / fps, end)
             let shown = Animator.evaluate(document, at: time)
-            let pose = shown.poses[root] ?? RigPoses.posed(rig.skeleton.restPose, skeleton: rig.skeleton, by: shown.scene.objects[root] ?? SceneObject(id: root, name: "", kind: .group))
+            let pose = shown.poses[root] ?? RigPoses.posed(
+                rig.skeleton.restPose,
+                skeleton: rig.skeleton,
+                by: shown.scene.objects[root] ?? SceneObject(id: root, name: "", kind: .group)
+            )
             clip.times.append(time - start)
             clip.poses.append(pose.count == rig.skeleton.joints.count ? pose : rig.skeleton.restPose)
             guard let character = shown.scene.objects[root] else { continue }

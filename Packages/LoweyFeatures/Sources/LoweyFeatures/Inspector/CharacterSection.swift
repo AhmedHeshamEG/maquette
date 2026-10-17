@@ -50,9 +50,13 @@ struct CharacterSection: View {
             TileGrid(minimum: 64) {
                 ForEach(CharacterPart.Job.allCases) { job in
                     TileButton(title: job.title, systemName: job.systemImage, identifier: "add-part-\(job.rawValue)") { editor.addPart(job) }
-                        .hmmHoldMenu(HmmHoldMenu(extras: [HmmHoldMenu.Item("Add as…", systemName: "square.grid.2x2", children: PartSet.styles(for: job).map { style in
-                            HmmHoldMenu.Item(style.title, id: style.id, systemName: job.systemImage) { editor.addPart(job, style: style.name) }
-                        })]))
+                        .hmmHoldMenu(HmmHoldMenu(extras: [HmmHoldMenu.Item(
+                            "Add as…",
+                            systemName: "square.grid.2x2",
+                            children: PartSet.styles(for: job).map { style in
+                                HmmHoldMenu.Item(style.title, id: style.id, systemName: job.systemImage) { editor.addPart(job, style: style.name) }
+                            }
+                        )]))
                 }
             }
         }

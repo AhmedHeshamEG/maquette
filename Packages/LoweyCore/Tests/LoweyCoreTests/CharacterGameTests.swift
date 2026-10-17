@@ -52,7 +52,7 @@ final class CharacterGameTests: XCTestCase {
         XCTAssertEqual(((shapes?["shapes"] as? [[String: Any]])?.first)?["type"] as? String, "capsule")
         try write(glb, "characters", "person.glb")
         // Unreal: the mannequin's names, from a root bone on the ground.
-        let unreal = try PhysicsExportTests.glbJSON(try XCTUnwrap(GameCharacterExport.glb(root, document: document, options: .init(engine: .unreal))))
+        let unreal = try PhysicsExportTests.glbJSON(XCTUnwrap(GameCharacterExport.glb(root, document: document, options: .init(engine: .unreal))))
         let unrealNames = Set((unreal["nodes"] as? [[String: Any]] ?? []).compactMap { $0["name"] as? String })
         XCTAssertTrue(["root", "pelvis", "spine_01", "upperarm_l", "calf_r", "ball_l"].allSatisfy(unrealNames.contains))
     }
