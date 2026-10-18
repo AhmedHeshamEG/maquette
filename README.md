@@ -205,7 +205,7 @@ will export.
 The bridge is **off** until you turn it on, answers only on your local network, and lets in only laptops you pair.
 
 ```powershell
-pip install "git+https://github.com/AhmedHeshamEG/3D-lowey#subdirectory=Tools/lowey"
+pip install "git+https://github.com/AhmedHeshamEG/maquette#subdirectory=Tools/lowey"
 # On the iPad: Actions ▸ AI & laptop ▸ turn the bridge on ▸ Pair a laptop (shows a one-time code)
 hmm-bridge pair 123456
 claude mcp add lowey -- hmm-bridge mcp

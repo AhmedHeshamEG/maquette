@@ -10,7 +10,7 @@ One Python package (Python 3.10+, the official MCP Python SDK 2.x), one command:
 The 1.x names, `lowey-mcp` and `lowey-link`, still work.
 
 ```powershell
-pip install "git+https://github.com/AhmedHeshamEG/3D-lowey#subdirectory=Tools/lowey"
+pip install "git+https://github.com/AhmedHeshamEG/maquette#subdirectory=Tools/lowey"
 # or, from a checkout:  cd Tools/lowey; pip install -e .
 # On the iPad: Actions ▸ AI & laptop (⇧⌘B) ▸ turn the bridge on ▸ Pair a laptop. It shows a one-time 6-digit code.
 hmm-bridge pair 123456                 # finds the iPad on your Wi-Fi by itself (Bonjour) and keeps a token
