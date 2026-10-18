@@ -17,13 +17,15 @@ struct TimelineRowView: View {
             HStack(spacing: 0) {
                 ObjectLabel(editor: editor, id: id, entry: entry)
                 ZStack(alignment: .leading) {
+                    FrameCells(editor: editor, layout: layout, width: width)
+                    if editor.timelineStyle == .motion, entry?.isGroup != true { MotionLane(editor: editor, layout: layout, id: id, width: width) }
                     Spans(editor: editor, layout: layout, ids: layout.members(of: id), width: width)
                     KeyLane(editor: editor, layout: layout, tracks: editor.timeline.tracks.filter { layout.members(of: id).contains($0.target) },
                             width: width, color: entry?.isGroup == true ? theme.accent.opacity(0.6) : theme.accent)
                     if editor.selection.contains(id) { AnimationGrip(editor: editor, layout: layout, id: id, width: width) }
                 }
             }
-            .frame(height: TimelineLayout.rowHeight)
+            .frame(height: layout.height(of: row))
             .background(editor.selection.contains(id) ? theme.accent.opacity(0.08) : (entry?.isGroup == true ? theme.text.opacity(0.03) : .clear))
         case let .track(trackID):
             if let track = editor.timeline.track(trackID) {
@@ -32,7 +34,10 @@ struct TimelineRowView: View {
                         .font(.hmm(.caption)).foregroundStyle(theme.text2).lineLimit(1)
                         .padding(.leading, 30)
                         .frame(width: TimelineLayout.labelWidth, alignment: .leading)
-                    KeyLane(editor: editor, layout: layout, tracks: [track], width: width, color: TimelineLayout.color(for: track.property))
+                    ZStack(alignment: .leading) {
+                        FrameCells(editor: editor, layout: layout, width: width)
+                        KeyLane(editor: editor, layout: layout, tracks: [track], width: width, color: TimelineLayout.color(for: track.property))
+                    }
                 }
                 .frame(height: TimelineLayout.rowHeight - 4)
             }
@@ -79,7 +84,14 @@ private struct ObjectLabel: View {
             .buttonStyle(.plain)
             .disabled(!(isGroup || hasTracks))
             .accessibilityLabel(isOpen ? "Fold \(object?.name ?? "")" : "Unfold \(object?.name ?? "")")
-            if isGroup { Image(systemName: "folder.fill").font(.system(size: 11)).foregroundStyle(theme.accent.opacity(0.85)) }
+            if isGroup {
+                Image(systemName: "folder.fill").font(.system(size: 11)).foregroundStyle(theme.accent.opacity(0.85))
+            } else if editor.timelineStyle == .motion, let object {
+                // The thing's own icon in its own colour (A1: the timeline shows motion, thing by thing).
+                Image(systemName: object.kind.symbolName).font(.system(size: 12, weight: .semibold))
+                    .foregroundStyle(editor.rowColour(of: id))
+                    .frame(width: 18)
+            }
             Text(object?.name ?? "?").font(.hmm(.footnote, weight: editor.selection.contains(id) ? .semibold : .regular)).lineLimit(1)
             Spacer(minLength: 0)
         }
@@ -209,7 +221,7 @@ struct AnimationGrip: View {
                 endHandle(at: start + delta, span: end - start, cycle: cycle, ids: ids)
             }
         }
-        .frame(width: width, height: TimelineLayout.rowHeight, alignment: .bottomLeading)
+        .frame(width: width, height: layout.height(of: .object(id)), alignment: .bottomLeading)
         .clipped()
     }
 

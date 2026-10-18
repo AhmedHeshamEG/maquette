@@ -86,12 +86,6 @@ extension EditorModel {
     }
 
     /// Animate: the whole timeline (again: it goes back to the transport).
-    func toggleAnimate() {
-        HmmHaptics.play(.selection)
-        openPanel = nil
-        timelinePresence = timelinePresence == .full ? .transport : .full
-    }
-
     /// The divider was dragged to a new height (points).
     func setTimelineHeight(_ height: Double) {
         let range = ProjectWorkspace.timelineHeightRange

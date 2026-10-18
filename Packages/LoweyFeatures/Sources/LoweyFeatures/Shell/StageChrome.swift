@@ -99,7 +99,7 @@ struct StageChrome: View {
                 editor.toggleDraw()
             },
             item(.rig, "figure.arms.open", "Rig", on: editor.tool == .rig),
-            HmmClusterItem(id: "animate", systemName: "figure.walk.motion", label: "Animate", isOn: editor.timelinePresence == .full) {
+            HmmClusterItem(id: "animate", systemName: "figure.walk.motion", label: "Animate", isOn: editor.animatesNow, accent: editor.animatesNow) {
                 editor.toggleAnimate()
             }
         ], resting: editor.clustersResting) { editor.wakeClusters() }

@@ -300,11 +300,7 @@ final class StageGestures: NSObject, UIGestureRecognizerDelegate {
         let point = recognizer.location(in: stage)
         editor.showChrome()
         editor.wakeClusters()
-        if editor.eyedropping {
-            editor.eyedrop(at: point)
-            editor.finishEyedrop(commit: editor.eyedropperLoupe != nil)
-            return
-        }
+        if tapTakenFirst(at: point, editor: editor, stage: stage) { return }
         if !editor.pickActive, !editor.tool.paints, let overlay = editor.overlayHit(at: point) {
             editor.select(overlay)
             return
@@ -345,6 +341,17 @@ final class StageGestures: NSObject, UIGestureRecognizerDelegate {
         // Picking a part clicks in the Pencil Pro (U5).
         if picked != nil, let stage = self.stage { HmmPencilHaptics.snapped(at: point, in: stage) }
         editor.refreshGuide()
+    }
+
+    /// The eyedropper's tap, and Animate ▸ Look at / Pick up's (A1: the tap names what's looked at or who holds).
+    private func tapTakenFirst(at point: CGPoint, editor: EditorModel, stage: StageView) -> Bool {
+        if editor.eyedropping {
+            editor.eyedrop(at: point)
+            editor.finishEyedrop(commit: editor.eyedropperLoupe != nil)
+            return true
+        }
+        guard editor.animatesNow, editor.animate.verb != nil, editor.animate.verb != .path else { return false }
+        return editor.animateTap(at: point, picked: stage.pickObject(at: point))
     }
 
     /// Touch and hold with a tool other than Select: while drawing, a finger on a thing is the eyedropper (U5);

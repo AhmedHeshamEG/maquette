@@ -117,13 +117,18 @@ struct ToolOptionsBar: View {
                 if editor.tool == .flipbook { FrameStrip(editor: editor) }
                 DrawBar(editor: editor)
             }
+        } else if editor.animatesNow {
+            VStack(spacing: HmmSpacing.xs) {
+                if editor.tool == .select { TriggerDeckBar(editor: editor) }
+                AnimateBar(editor: editor)
+            }
         } else {
             switch editor.tool {
             case .scatter: ScatterOptionsBar(editor: editor)
             case .model: ModelOptionsBar(editor: editor)
             case .rig: RigOptionsBar(editor: editor)
             case .select: TriggerDeckBar(editor: editor)
-            case .lasso, .ink, .draw, .flipbook, .shadowBrush, .paint: EmptyView()
+            case .lasso, .ink, .draw, .flipbook, .shadowBrush, .paint, .animate: EmptyView()
             }
         }
     }

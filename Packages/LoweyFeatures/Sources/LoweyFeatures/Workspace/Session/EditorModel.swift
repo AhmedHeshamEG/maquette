@@ -205,6 +205,8 @@ final class EditorModel {
     var time: Double = 0
     var isPlaying = false
     var timelineMode: TimelineMode = .keyframe
+    /// Animate (A1): the bar, the verb in the hand, drawn paths, the ghosts, the timeline's style; its working state.
+    var animate = AnimateState()
     /// In Keyframe mode, edits become keys at the playhead.
     /// Keys add themselves to animated things in Keys (`keyed`); off only while placing (a crowd's jitter isn't motion).
     var autoKey = true
@@ -405,14 +407,6 @@ final class EditorModel {
         stage?.frameSource = nil
     }
 
-    func bumpDisplayRevision() {
-        displayRevision &+= 1
-    }
-
-    func trail(_ entry: String) {
-        debugTrail = Array((debugTrail + [entry]).suffix(12))
-    }
-
     // MARK: Perform / undo / redo
 
     /// Applies a command (the only way the document changes).
@@ -483,11 +477,6 @@ final class EditorModel {
         refreshPrecisionOverlay()
         journalChanged()
         app.bridge.notify("scene", ["revision": String(session.revision)])
-    }
-
-    /// Back from the background: the video frames and stage pick up where they were.
-    func resumeFromBackground() {
-        stage?.redraw()
     }
 }
 
