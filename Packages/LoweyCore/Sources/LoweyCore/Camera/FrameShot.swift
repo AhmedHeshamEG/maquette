@@ -146,6 +146,10 @@ public enum FrameShot {
             let away = (shoulder - aim).normalized
             position = shoulder + away * max(other.bounds.size.length * 0.35, 0.3) + Vec3(0, 0.05, 0)
         }
+        // Never under the floor the subject stands on: a low angle on a low, wide thing (a car) pulled the camera back far
+        // enough to sink it, and the shot became a dark silhouette. The lens keeps a quarter of the subject's height, at
+        // most 30 cm, above that floor and looks up from there.
+        position.y = max(position.y, subject.bounds.min.y + min(max(height * 0.25, 0.02), 0.3))
         let rotation = aimed(from: position, at: aim, frameX: composition.frameX, halfHorizontal: halfH)
         return ShotSolution(position: position, rotation: rotation, fieldOfView: fieldOfView, focusDistance: (aim - position).length)
     }

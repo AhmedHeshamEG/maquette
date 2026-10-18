@@ -107,6 +107,15 @@ final class EngineGeometryTests: XCTestCase {
         }
     }
 
+    func testALowAngleOnALowWideThingStaysAboveTheFloor() {
+        let car = ShotSubject(bounds: Bounds(min: Vec3(-2.2, 0, -0.9), max: Vec3(2.2, 1.1, 0.9)))
+        let shot = FrameShot.solve(car, type: .wide, composition: .lowAngle)
+        XCTAssertGreaterThanOrEqual(shot.position.y, 0.27, "a quarter of its height above the ground, not under it")
+        let middle = project(car.bounds.center, shot)
+        XCTAssertLessThan(abs(middle.y), 1, "the car is in the frame")
+        XCTAssertGreaterThan(middle.z, 0)
+    }
+
     func testThirdsPutTheSubjectOffCentre() {
         let right = FrameShot.solve(person, type: .medium, composition: .rightThird)
         let left = FrameShot.solve(person, type: .medium, composition: .leftThird)
