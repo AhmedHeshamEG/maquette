@@ -8,8 +8,8 @@ project uses [Semantic Versioning](https://semver.org/).
 Built with Maquette 0.21.
 
 ### Added
-- **HmmMedia**: `VideoEncoder.canEncode(_:)` says whether this device writes a codec (ProRes 4444 needs a media engine
-  some iPads don't have), so an app offers only what it can make.
+- **HmmMedia**: `VideoEncoder.canEncode(_:)` says whether this device really writes a codec (it encodes two small frames:
+  ProRes 4444 needs a media engine some iPads don't have), so an app offers only what it can make.
 
 ## [0.10.0] - 2026-10-15
 
