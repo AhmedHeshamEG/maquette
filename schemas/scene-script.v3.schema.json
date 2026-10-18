@@ -769,6 +769,7 @@
             "add",
             "array",
             "blob",
+            "boolean",
             "camera",
             "cameraMove",
             "captions",
@@ -804,6 +805,7 @@
             "scaleTo",
             "scatter",
             "set",
+            "sketch",
             "text",
             "transcript",
             "transform"
@@ -969,6 +971,38 @@
                 "type": "object"
               }
             }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "do": {
+                "const": "boolean"
+              }
+            }
+          },
+          "then": {
+            "description": "Combines shapes into the target (it keeps its name, look and place; the others are used up): subtract cuts wheel arches and windows, union joins, intersect keeps the overlap.",
+            "properties": {
+              "op": {
+                "enum": [
+                  "union",
+                  "subtract",
+                  "intersect"
+                ]
+              },
+              "target": {
+                "$ref": "#/$defs/target"
+              },
+              "with": {
+                "$ref": "#/$defs/target"
+              }
+            },
+            "required": [
+              "op",
+              "target",
+              "with"
+            ]
           }
         },
         {
@@ -2704,7 +2738,7 @@
             }
           },
           "then": {
-            "description": "A sketch region made into a solid: swept along a path, revolved around an axis or lofted through others.",
+            "description": "A sketch region made into a solid: pulled out of its plane (a negative distance cuts into the thing it was drawn on), swept along a path, revolved around an axis or lofted through others.",
             "properties": {
               "target": {
                 "$ref": "#/$defs/target"
@@ -2714,10 +2748,14 @@
               },
               "op": {
                 "enum": [
+                  "pull",
                   "sweep",
                   "revolve",
                   "loft"
                 ]
+              },
+              "distance": {
+                "type": "number"
               },
               "path": {
                 "type": "array",
@@ -2909,6 +2947,70 @@
             "required": [
               "target",
               "property"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "do": {
+                "const": "sketch"
+              }
+            }
+          },
+          "then": {
+            "description": "Construction curves on a plane (xy facing front, xz the ground, yz the side, or an origin and a normal) or on the face of a thing; closed curves make the areas profile uses. Points are metres on the plane.",
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "plane": {
+                "anyOf": [
+                  {
+                    "enum": [
+                      "xy",
+                      "xz",
+                      "yz"
+                    ]
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "origin": {
+                        "$ref": "#/$defs/vec3"
+                      },
+                      "normal": {
+                        "$ref": "#/$defs/vec3"
+                      }
+                    }
+                  }
+                ]
+              },
+              "at": {
+                "$ref": "#/$defs/point"
+              },
+              "on": {
+                "$ref": "#/$defs/target"
+              },
+              "face": {
+                "enum": [
+                  "top",
+                  "bottom",
+                  "front",
+                  "back",
+                  "left",
+                  "right"
+                ]
+              },
+              "curves": {
+                "type": "array",
+                "items": {
+                  "type": "object"
+                }
+              }
+            },
+            "required": [
+              "curves"
             ]
           }
         },

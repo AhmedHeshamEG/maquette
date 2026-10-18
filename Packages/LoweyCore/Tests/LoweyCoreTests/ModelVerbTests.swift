@@ -121,8 +121,42 @@ final class ModelVerbTests: XCTestCase {
         XCTAssertThrowsError(try run(#"{"do": "model", "target": "Box", "op": "step", "step": 1, "value": 1}"#))
     }
 
+    func testASketchFromAScriptPullsRevolvesAndCuts() throws {
+        // A body of revolution: a profile on the side plane, turned about the up axis.
+        let vase = try run(#"""
+        {"do": "sketch", "name": "Side", "plane": "xy", "at": [5, 0, 0], "curves": [{"polyline": [[0.1, 0], [0.4, 0], [0.3, 1], [0.1, 1]], "closed": true}]},
+        {"do": "profile", "target": "Side", "op": "revolve", "axis": {"point": [5, 0, 0], "direction": [0, 1, 0]}}
+        """#)
+        let made = vase.document.scene.objects.values.filter { if case .mesh = $0.kind { $0.id != "box" } else { false } }
+        XCTAssertEqual(made.count, 1, "the revolve made a solid")
+        XCTAssertTrue(vase.report.contains { $0.contains("1 closed area") }, "\(vase.report)")
+        // Pulled from empty space into a new solid.
+        let slab = try run(#"{"do": "sketch", "name": "Floor", "plane": "xz", "at": [0, 3, 0], "curves": [{"rectangle": [[0, 0], [2, 1]]}]},"#
+            + #"{"do": "profile", "target": "Floor", "op": "pull", "distance": 0.2}"#)
+        XCTAssertTrue(slab.report.contains("Pull 0.2 m"))
+        // Drawn on the box's top face and cut in: a pocket, the box keeps its name.
+        let pocket = try run(#"{"do": "sketch", "name": "Hole", "on": "Box", "face": "top", "curves": [{"circle": {"center": [0, 0], "radius": 0.2}}]},"#
+            + #"{"do": "profile", "target": "Hole", "op": "pull", "distance": -0.3}"#)
+        XCTAssertGreaterThan(try mesh(pocket, "box").faces.count, 6, "the pocket's walls are in the box")
+        XCTAssertThrowsError(try run(#"{"do": "sketch", "curves": [{"triangle": []}]}"#)) { error in
+            XCTAssertTrue("\(error)".contains("curve 1 is one of"), "\(error)")
+        }
+    }
+
+    func testABooleanCutsOneThingOutOfAnother() throws {
+        let result = try run(#"""
+        {"do": "add", "shape": "cylinder", "name": "Arch", "at": [0, 0, 0.5], "size": [0.4, 2, 0.4], "onGround": false},
+        {"do": "boolean", "op": "subtract", "target": "Box", "with": "Arch"}
+        """#)
+        let scene = result.document.scene
+        XCTAssertNil(scene.objects.values.first { $0.name == "Arch" }, "the cutter is used up")
+        XCTAssertGreaterThan(try mesh(result, "box").faces.count, 6)
+        XCTAssertThrowsError(try run(#"{"do": "boolean", "op": "carve", "target": "Box", "with": "Cube"}"#))
+    }
+
     func testTheReferenceShowsTheNewVerbs() {
         XCTAssertTrue(ScriptReference.text.contains(#""do":"model""#))
         XCTAssertTrue(ScriptReference.text.contains(#""do":"profile""#))
+        XCTAssertTrue(ScriptReference.text.contains(#""do":"sketch""#) && ScriptReference.text.contains(#""do":"boolean""#))
     }
 }

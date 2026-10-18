@@ -125,10 +125,21 @@ verbs = {
                "distance": n, "along": {"enum": ["x", "y", "z"]}, "cuts": n, "normal": v3, "faces": n, "quadsOnly": b,
                "to": {"enum": ["middle", "base"]}, "length": n,
                "step": n, "number": {"anyOf": [s, n]}, "value": n}, ["target", "op"]),
-    "profile": ("A sketch region made into a solid: swept along a path, revolved around an axis or lofted through others.",
-                {"target": tgt, "region": n, "op": {"enum": ["sweep", "revolve", "loft"]}, "path": {"type": "array", "items": v3},
-                 "closed": b, "axis": {"type": "object", "properties": {"point": v3, "direction": v3}}, "degrees": n, "through": tgt},
+    "profile": ("A sketch region made into a solid: pulled out of its plane (a negative distance cuts into the thing it was "
+                "drawn on), swept along a path, revolved around an axis or lofted through others.",
+                {"target": tgt, "region": n, "op": {"enum": ["pull", "sweep", "revolve", "loft"]}, "distance": n,
+                 "path": {"type": "array", "items": v3}, "closed": b,
+                 "axis": {"type": "object", "properties": {"point": v3, "direction": v3}}, "degrees": n, "through": tgt},
                 ["target", "op"]),
+    "sketch": ("Construction curves on a plane (xy facing front, xz the ground, yz the side, or an origin and a normal) or on "
+               "the face of a thing; closed curves make the areas profile uses. Points are metres on the plane.",
+               {"name": s, "plane": {"anyOf": [{"enum": ["xy", "xz", "yz"]},
+                                              {"type": "object", "properties": {"origin": v3, "normal": v3}}]},
+                "at": point, "on": tgt, "face": {"enum": ["top", "bottom", "front", "back", "left", "right"]},
+                "curves": {"type": "array", "items": {"type": "object"}}}, ["curves"]),
+    "boolean": ("Combines shapes into the target (it keeps its name, look and place; the others are used up): subtract cuts "
+                "wheel arches and windows, union joins, intersect keeps the overlap.",
+                {"op": {"enum": ["union", "subtract", "intersect"]}, "target": tgt, "with": tgt}, ["op", "target", "with"]),
     "paint": ("U7's texturing on one thing: a fill layer of a colour, a material or wear; a decal; whole faces; the layers; "
               "a mask; mirrored strokes; the texture's size; hand-marked seams; normals baked from a detailed copy; fur.",
               {"target": tgt, "op": {"enum": ["color", "material", "wear", "decal", "faces", "layers", "mask", "mirror", "size", "seams",

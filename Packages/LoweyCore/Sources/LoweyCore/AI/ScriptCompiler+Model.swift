@@ -201,13 +201,18 @@ extension ScriptState {
 
     // MARK: Profiles
 
-    /// `{"do": "profile", "target": "Sketch", "region": 0, "op": "sweep" | "revolve" | "loft", …}`.
+    /// `{"do": "profile", "target": "Sketch", "region": 0, "op": "pull" | "sweep" | "revolve" | "loft", …}`.
     mutating func profile(_ action: JSONValue) throws {
         let sketch = try target(action["target"])
         let region = Int(number(action, "region") ?? 0)
         var ids = context.ids
         defer { context.ids = ids }
         switch string(action, "op") {
+        case "pull":
+            // Out of its face (or empty space) by a positive distance; a negative one cuts into the thing it was drawn on.
+            guard let distance = number(action, "distance"), abs(distance) > 1e-9 else { throw fail("pull needs “distance” (m; negative cuts in)") }
+            try run(ModelingOperations.pull(sketch: sketch, region: region, distance: distance, in: scene, ids: &ids),
+                    label: distance > 0 ? "Pull \(Self.short(distance)) m" : "Cut \(Self.short(-distance)) m")
         case "sweep":
             guard let path = action["path"]?.arrayValue?.compactMap({ vec3($0) }), path.count >= 2 else { throw fail("sweep needs “path”: points") }
             try run(ModelingOperations.sweep(sketch: sketch, region: region, along: path, closed: bool(action, "closed") ?? false, in: scene, ids: &ids),
@@ -223,7 +228,7 @@ extension ScriptState {
             let profiles = [(sketch, region)] + others.map { ($0, 0) }
             try run(ModelingOperations.loft(profiles, in: scene, ids: &ids), label: "Loft")
         default:
-            throw fail("profile needs “op”: sweep, revolve or loft")
+            throw fail("profile needs “op”: pull, sweep, revolve or loft")
         }
     }
 }

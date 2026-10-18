@@ -42,7 +42,10 @@ public enum ScriptReference {
     {"do":"model","target":"Sculpt","op":"cleanUp","faces":2000}   (even quads)   {"op":"knife","point":[0,0.5,0],"normal":[0,1,0]}
     {"do":"model","target":"Chair","op":"linkedCopy","offset":[1,0,0]}   {"op":"pivot","to":"base"}   {"op":"size","axis":"y","length":0.04}
     {"do":"model","target":"Block","op":"steps"}   (lists its modelling steps)   {"op":"step","step":1,"number":"diameter","value":0.008}   (H1: later steps replay)
-    {"do":"profile","target":"Sketch","region":0,"op":"revolve","axis":{"point":[0,0,0],"direction":[0,1,0]}}   ("sweep" with "path", "loft" with "through")
+    {"do":"sketch","name":"Side","plane":"xy","at":[0,0,0],"curves":[{"polyline":[[0,0],[0.4,0],[0.3,1]],"closed":true},{"circle":{"center":[0,0.5],"radius":0.1}}]}
+        (plane: xy facing front, xz the ground, yz the side, or {origin, normal}; or "on":"Box","face":"top"; curves: line, rectangle, circle, arc [start, through, end], polyline, spline)
+    {"do":"profile","target":"Sketch","region":0,"op":"revolve","axis":{"point":[0,0,0],"direction":[0,1,0]}}   ("pull" with "distance", negative cuts in; "sweep" with "path", "loft" with "through")
+    {"do":"boolean","op":"subtract|union|intersect","target":"Body","with":["Arch front","Arch back"]}   (cut-outs: wheel arches, windows; the others are used up)
 
     Texture (U7; each a layer or a setting, one step each)
     {"do":"paint","target":"Crate","op":"material","material":"oak|steel|gold|brick|stone|fabric|…","scale":0.2}   {"op":"color","color":"#B5512E"}
