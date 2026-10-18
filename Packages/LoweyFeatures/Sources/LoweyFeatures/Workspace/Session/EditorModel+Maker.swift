@@ -230,8 +230,8 @@ struct ProportionHandle: Identifiable {
 extension EditorModel {
     /// Where the proportion handles stand on the screen, while Proportions is open.
     var proportionHandles: [ProportionHandle] {
-        guard maker.proportions, let root = makerCharacter, let stage, let anatomy = CharacterAnatomy(root, in: baseScene, shapeBounds: { self.makerBounds($0) })
-        else { return [] }
+        guard maker.proportions, let root = makerCharacter, let stage,
+              let anatomy = CharacterAnatomy(root, in: baseScene, shapeBounds: { self.makerBounds($0) }) else { return [] }
         let world = baseScene.worldTransform(of: root)
         func screen(_ point: Vec3) -> CGPoint? { stage.screenPoint(of: world.apply(to: point)) }
         var handles: [ProportionHandle] = []
