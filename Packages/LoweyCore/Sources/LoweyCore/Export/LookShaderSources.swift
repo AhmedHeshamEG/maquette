@@ -33,38 +33,7 @@ enum GodotLookShader {
         uniform bool faceted = \(look.faceted);
         uniform bool clay = \(look.clay);
 
-        vec3 rgb_to_hsv(vec3 c) {
-            vec4 k = vec4(0.0, -1.0 / 3.0, 2.0 / 3.0, -1.0);
-            vec4 p = mix(vec4(c.bg, k.wz), vec4(c.gb, k.xy), step(c.b, c.g));
-            vec4 q = mix(vec4(p.xyw, c.r), vec4(c.r, p.yzx), step(p.x, c.r));
-            float d = q.x - min(q.w, q.y);
-            return vec3(abs(q.z + (q.w - q.y) / (6.0 * d + 1e-10)), d / (q.x + 1e-10), q.x);
-        }
-
-        vec3 hsv_to_rgb(vec3 c) {
-            vec3 p = abs(fract(c.xxx + vec3(1.0, 2.0 / 3.0, 1.0 / 3.0)) * 6.0 - 3.0);
-            return c.z * mix(vec3(1.0), clamp(p - 1.0, 0.0, 1.0), c.y);
-        }
-
-        // The shadow's colour: the same hue turned toward the sky's, darker and a little richer.
-        vec3 shadow_color(vec3 base) {
-            vec3 hsv = rgb_to_hsv(max(base, vec3(0.0)));
-            vec3 sky = rgb_to_hsv(max(shadow_tint.rgb, vec3(0.0001)));
-            float delta = sky.x - hsv.x;
-            delta -= round(delta);
-            hsv.x = fract(hsv.x + delta * shadow_hue_shift * clamp(sky.y * 1.5, 0.0, 1.0));
-            hsv.y = clamp(hsv.y + shadow_saturation * (1.0 - hsv.y), 0.0, 1.0);
-            hsv.z = hsv.z * (1.0 - shadow_value);
-            return hsv_to_rgb(hsv);
-        }
-
-        float band(float x) {
-            float lit = smoothstep(threshold - edge_softness, threshold + edge_softness, x);
-            if (bands > 2) {
-                return lit * mix(0.62, 1.0, smoothstep(mid_threshold - edge_softness, mid_threshold + edge_softness, x));
-            }
-            return lit;
-        }
+        \(helpers)
 
         void fragment() {
             ALBEDO = albedo.rgb * texture(albedo_texture, UV).rgb * COLOR.rgb;
@@ -95,6 +64,42 @@ enum GodotLookShader {
 
         """
     }
+
+    /// Colour turned in HSV, the shadow's colour and the bands (the Look's own recipe, as in the app's shader).
+    static let helpers = """
+    vec3 rgb_to_hsv(vec3 c) {
+        vec4 k = vec4(0.0, -1.0 / 3.0, 2.0 / 3.0, -1.0);
+        vec4 p = mix(vec4(c.bg, k.wz), vec4(c.gb, k.xy), step(c.b, c.g));
+        vec4 q = mix(vec4(p.xyw, c.r), vec4(c.r, p.yzx), step(p.x, c.r));
+        float d = q.x - min(q.w, q.y);
+        return vec3(abs(q.z + (q.w - q.y) / (6.0 * d + 1e-10)), d / (q.x + 1e-10), q.x);
+    }
+
+    vec3 hsv_to_rgb(vec3 c) {
+        vec3 p = abs(fract(c.xxx + vec3(1.0, 2.0 / 3.0, 1.0 / 3.0)) * 6.0 - 3.0);
+        return c.z * mix(vec3(1.0), clamp(p - 1.0, 0.0, 1.0), c.y);
+    }
+
+    // The shadow's colour: the same hue turned toward the sky's, darker and a little richer.
+    vec3 shadow_color(vec3 base) {
+        vec3 hsv = rgb_to_hsv(max(base, vec3(0.0)));
+        vec3 sky = rgb_to_hsv(max(shadow_tint.rgb, vec3(0.0001)));
+        float delta = sky.x - hsv.x;
+        delta -= round(delta);
+        hsv.x = fract(hsv.x + delta * shadow_hue_shift * clamp(sky.y * 1.5, 0.0, 1.0));
+        hsv.y = clamp(hsv.y + shadow_saturation * (1.0 - hsv.y), 0.0, 1.0);
+        hsv.z = hsv.z * (1.0 - shadow_value);
+        return hsv_to_rgb(hsv);
+    }
+
+    float band(float x) {
+        float lit = smoothstep(threshold - edge_softness, threshold + edge_softness, x);
+        if (bands > 2) {
+            return lit * mix(0.62, 1.0, smoothstep(mid_threshold - edge_softness, mid_threshold + edge_softness, x));
+        }
+        return lit;
+    }
+    """
 
     static func outline(_ look: LookShaderNumbers, name: String) -> String {
         let color = look.lineColor

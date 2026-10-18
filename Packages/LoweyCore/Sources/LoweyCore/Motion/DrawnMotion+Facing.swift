@@ -16,8 +16,8 @@ extension DrawnMotion {
         // Before it first moves it already faces the way it will go; after a stop it keeps the last heading.
         let firstMoving = forwards.firstIndex { $0 != nil }
         guard let firstMoving else { return frames.map { _ in .identity } }
-        for index in forwards.indices {
-            if forwards[index] == nil { forwards[index] = index < firstMoving ? forwards[firstMoving] : forwards[index - 1] }
+        for index in forwards.indices where forwards[index] == nil {
+            forwards[index] = index < firstMoving ? forwards[firstMoving] : forwards[index - 1]
         }
         let lean = options.banks ? (options.upright ? uprightLean : 1) : 0
         let limit = tan(maxBank * .pi / 180)
@@ -82,16 +82,16 @@ extension DrawnMotion {
 
 // MARK: Changing a drawn motion
 
-extension DrawnMotion {
+public extension DrawnMotion {
     /// The stretch a thing's motion covers: its first position key to its last.
-    public static func span(of id: ObjectID, in timeline: Timeline) -> TimeRange? {
+    static func span(of id: ObjectID, in timeline: Timeline) -> TimeRange? {
         guard let keys = timeline.track(for: id, .position)?.keyframes, let first = keys.first, let last = keys.last,
               last.time > first.time else { return nil }
         return TimeRange(start: first.time, end: last.time)
     }
 
     /// The motion's keys (position and rotation inside its span), for retiming them together.
-    static func spanKeys(of id: ObjectID, in timeline: Timeline) -> (TimeRange, [KeyRef])? {
+    internal static func spanKeys(of id: ObjectID, in timeline: Timeline) -> (TimeRange, [KeyRef])? {
         guard let span = span(of: id, in: timeline) else { return nil }
         let tracks = [PropertyKey.position, .rotation].compactMap { timeline.track(for: id, $0) }
         let keys = tracks.flatMap { track in
@@ -101,7 +101,7 @@ extension DrawnMotion {
     }
 
     /// The whole motion played in `duration` seconds (its first key stays where it is).
-    public static func retiming(_ id: ObjectID, to duration: Double, in timeline: Timeline) -> EditCommand? {
+    static func retiming(_ id: ObjectID, to duration: Double, in timeline: Timeline) -> EditCommand? {
         guard duration > 0.05, let (span, keys) = spanKeys(of: id, in: timeline), abs(span.duration - duration) > 1e-6 else { return nil }
         guard let command = KeyOperations().stretch(keys, to: TimeRange(start: span.start, end: span.start + duration), in: timeline)
         else { return nil }
@@ -109,7 +109,7 @@ extension DrawnMotion {
     }
 
     /// The same path at one steady speed: each key's moment moved to where it lies along the way (a stop disappears).
-    public static func evenSpeed(_ id: ObjectID, in timeline: Timeline) -> EditCommand? {
+    static func evenSpeed(_ id: ObjectID, in timeline: Timeline) -> EditCommand? {
         guard let (span, keys) = spanKeys(of: id, in: timeline), let track = timeline.track(for: id, .position) else { return nil }
         let steps = max(Int(span.duration * 120), 2)
         var travelled = [0.0]
@@ -132,7 +132,7 @@ extension DrawnMotion {
     }
 
     /// Turns the thing's front a quarter turn at a time through the whole motion (for a model whose front isn't +Z).
-    public static func turningFront(_ id: ObjectID, quarterTurns: Int, in timeline: Timeline) -> EditCommand? {
+    static func turningFront(_ id: ObjectID, quarterTurns: Int, in timeline: Timeline) -> EditCommand? {
         guard quarterTurns % 4 != 0, var track = timeline.track(for: id, .rotation), let span = span(of: id, in: timeline) else { return nil }
         let turn = Quat(angle: Double(quarterTurns) * .pi / 2, axis: .unitY)
         track.setKeys(track.keyframes.map { key in

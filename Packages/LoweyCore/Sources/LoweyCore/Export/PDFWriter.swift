@@ -70,7 +70,7 @@ public struct PDFWriter: Sendable {
             let images = pictures.enumerated().map { "/Im\($0.offset) \($0.element) 0 R" }.joined(separator: " ")
             let resources = "<< /Font << /F1 \(regular) 0 R /F2 \(bold) 0 R >> /XObject << \(images) >> >>"
             kids.append(add(Data("<< /Type /Page /Parent \(pagesObject) 0 R /MediaBox [0 0 \(Self.n(page.width)) \(Self.n(page.height))] "
-                .utf8) + Data("/Resources \(resources) /Contents \(content) 0 R >>".utf8)))
+                    .utf8) + Data("/Resources \(resources) /Contents \(content) 0 R >>".utf8)))
         }
         objects[catalog - 1] = Data("<< /Type /Catalog /Pages \(pagesObject) 0 R >>".utf8)
         objects[pagesObject - 1] = Data("<< /Type /Pages /Kids [\(kids.map { "\($0) 0 R" }.joined(separator: " "))] /Count \(kids.count) >>".utf8)

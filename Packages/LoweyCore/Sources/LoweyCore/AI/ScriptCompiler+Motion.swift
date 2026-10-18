@@ -57,7 +57,7 @@ extension ScriptState {
         let start = try time(action["at"])
         let options = DrawnMotion.Options(facesTheWay: bool(action, "facesTheWay") ?? true, banks: bool(action, "banks") ?? true,
                                           upright: bool(action, "upright") ?? isCharacter(id))
-        let command = DrawnMotion.keys(try pathSamples(action), object: id, in: document, from: start, options: options, ids: &context.ids)
+        let command = try DrawnMotion.keys(pathSamples(action), object: id, in: document, from: start, options: options, ids: &context.ids)
         guard let command else { throw fail("the path is too short to move along") }
         try run(command, label: "\(scene.objects[id]?.name ?? "It") follows a path from \(format(start))")
     }

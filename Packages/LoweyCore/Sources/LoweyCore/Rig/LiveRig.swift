@@ -156,7 +156,7 @@ public enum LiveRig {
             let moved = now.apply(to: rest.inverseApply(to: inRig)).scaled(by: toObject)
             let turn = (now.rotation * rest.rotation.inverse).normalized
             guard !moved.isApproximately(shown.transform.position, tolerance: 1e-12) || !turn.isApproximately(.identity, tolerance: 1e-12)
-                  || restScene != nil else { continue }
+                || restScene != nil else { continue }
             state.scene.objects[id]?.transform.position = moved
             state.scene.objects[id]?.transform.rotation = (turn * part.transform.rotation).normalized
             state.animated.insert(id)

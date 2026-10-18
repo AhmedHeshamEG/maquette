@@ -244,7 +244,7 @@ struct LiquidSolver {
     func look() -> PhysicsFrames.FluidLook {
         let litres = Double(positions.count) * Double(spacing * spacing * spacing) * 1000
         return PhysicsFrames.FluidLook(surface: positions.isEmpty ? nil : FluidSurface.mesh(positions, spacing: Double(spacing), detail: detail),
-                                     amount: litres)
+                                       amount: litres)
     }
 }
 

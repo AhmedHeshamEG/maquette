@@ -333,7 +333,7 @@ extension AnimateTests {
 
     func testAnyPropertyCanStartATrackAtThePlayhead() throws {
         let document = makeDocument()
-        let choices = PropertyAnimation.choices(for: try XCTUnwrap(document.scene.objects["c"]), in: document.scene)
+        let choices = try PropertyAnimation.choices(for: XCTUnwrap(document.scene.objects["c"]), in: document.scene)
         XCTAssertEqual(choices.prefix(3).map(\.key), [.position, .rotation, .scale])
         XCTAssertTrue(choices.contains { $0.key == .emissiveIntensity && $0.title == "Glow" })
         XCTAssertFalse(choices.contains { $0.key == .lightIntensity }, "a cylinder has no light")
@@ -342,7 +342,7 @@ extension AnimateTests {
         XCTAssertTrue(PropertyAnimation.choices(for: light, in: document.scene).contains { $0.key == .lightIntensity })
         var ids = IDFactory.sequential("p")
         let command = try XCTUnwrap(PropertyAnimation.key(.emissiveIntensity, of: "c", at: 1.5, shown: document.scene,
-                                                         timeline: document.scene.timeline, ids: &ids))
+                                                          timeline: document.scene.timeline, ids: &ids))
         let keyed = try assertReverts(command, on: document)
         let track = try XCTUnwrap(keyed.scene.timeline.track(for: "c", .emissiveIntensity))
         XCTAssertEqual(track.keyframes.map(\.time), [1.5], "one key, holding the value it has")

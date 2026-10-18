@@ -22,16 +22,15 @@ public enum LookShaderExport {
     public static func files(_ preset: LookPreset, engine: Engine, author: String? = nil) -> [(name: String, data: Data)] {
         let stem = "maquette_" + slug(preset.name)
         let numbers = LookShaderNumbers(preset)
-        var files: [(String, String)]
-        switch engine {
+        var files: [(String, String)] = switch engine {
         case .godot:
-            files = [
+            [
                 ("\(stem).gdshader", GodotLookShader.surface(numbers, name: preset.name)),
                 ("\(stem)_outline.gdshader", GodotLookShader.outline(numbers, name: preset.name)),
                 ("\(stem).tres", GodotLookShader.material(numbers, stem: stem))
             ]
         case .unity:
-            files = [("\(stem).shader", UnityLookShader.shader(numbers, name: preset.name))]
+            [("\(stem).shader", UnityLookShader.shader(numbers, name: preset.name))]
         }
         files.append(("LICENSE.txt", ExportLicence.text(for: "the \(preset.name) Look's shader files", author: author)))
         files.append(("README.txt", readMe(preset.name, engine: engine, stem: stem)))
