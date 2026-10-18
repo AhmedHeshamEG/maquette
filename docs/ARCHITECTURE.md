@@ -43,13 +43,13 @@ flowchart TD
 
 | Module | Imports | What it holds | Tests |
 |---|---|---|---|
-| **LoweyCore** | Foundation, hmm-kit's Commands / Documents / Transcript / Brush (re-exported), Manifold, XAtlas | The document model, commands with exact inverses, the session (undo, coalescing), timeline and easing, animator and behaviours, geometry and meshers, modelling (editable meshes, sketches, push/pull, booleans), the brush library and brush import (the engine's arithmetic is hmm-kit's `HmmBrush` since 0.9), the character maker (parts, the self-rig, face states, proportions, acting out), paint (layers, tiles, unwraps, compositing, carrying paint to a new shape, painted exports), the glTF reader, rigs and retargeting, the one skeleton system (drawn
+| **LoweyCore** | Foundation, hmm-kit's Commands / Documents / Transcript / Brush (re-exported), Manifold, XAtlas | The document model, commands with exact inverses, the session (undo, coalescing), timeline and easing, animator and behaviours, geometry and meshers, modelling (editable meshes, sketches, push/pull, booleans), the brush library and brush import (the engine's arithmetic is hmm-kit's `HmmBrush` since 0.9), the character maker (parts, the self-rig, face states, proportions, acting out), drawn motion, holds and looks, Paper (PDF) and Looks as engine shaders, paint (layers, tiles, unwraps, compositing, carrying paint to a new shape, painted exports), the glTF reader, rigs and retargeting, the one skeleton system (drawn
 rigs, bone heat, IK chains, the person rig), blob and puppet characters, Scene Script compiler, Looks as data, samples (Enigma, Welcome island, Night Market) | Linux (`swift:6.1`), coverage gate |
 | **Manifold** (`Packages/Manifold`) | the C++ standard library | Manifold 3.5.4 (Apache-2.0) as a C++17 target, single-threaded, and `ManifoldBridge.h`: boolean and validate in plain C, so Swift needs no C++ interop. `VENDORED.md` says how to update it | Linux and the iPad simulator (its own tests; LoweyCore's boolean tests) |
 | **InstantMeshes** (`Packages/InstantMeshes`) | the C++ standard library | Instant Meshes (BSD-3-Clause) with the Eigen 3.4.0 headers it includes (MPL-2.0, scalar) and a stand-in for the TBB it calls, and `InstantMeshesBridge.h`: remesh into quads in plain C (`VENDORED.md`) | Linux (its own tests; LoweyCore's `QuadRemeshTests`, the U6 SPIKE in a release build) |
 | **Jolt** (`Packages/Jolt`) | the C++ standard library | Jolt Physics 5.6.0 (MIT) without its GPU compute, single-threaded and cross-platform deterministic, and `JoltBridge.h`: rigid bodies, joints and soft bodies in plain C (`VENDORED.md`) | Linux (its own tests and the 500-body SPIKE in a release build; LoweyCore's physics tests) and the iPad simulator (the app build) |
 | **XAtlas** (`Packages/XAtlas`) | the C++ standard library | xatlas (MIT) as a single-threaded C++ target and `XAtlasBridge.h`: unwrap in plain C (`VENDORED.md`) | Linux (its own tests; LoweyCore's paint tests) |
-| **LoweyEngine** | Core, Metal, AVFoundation, Vision, ARKit, JavaScriptCore, hmm-kit's Media / Diagnostics / Perception / Transcript / BrushRender (re-exported) | LoweyRender 2 (with the brush engine's stamps, painted layers and drawn rigs skinned on the GPU), the shot builder, the stage view (`StageView`), model loading and caching, export sessions and presets, overlays and captions, the Night Market benchmark, face capture, the JavaScript runner | iPad simulator: golden images, export, picking, skinning |
+| **LoweyEngine** | Core, Metal, AVFoundation, Vision, ARKit, JavaScriptCore, hmm-kit's Media / Diagnostics / Perception / Transcript / BrushRender (re-exported) | LoweyRender 2 (with the brush engine's stamps, painted layers and drawn rigs skinned on the GPU), the shot builder, the stage view (`StageView`), model loading and caching, export sessions and presets (formats first, Final, render passes), overlays and captions, the Night Market benchmark, face capture, the JavaScript runner | iPad simulator: golden images, export, picking, skinning |
 | **LoweyFeatures** | Core, Engine, SwiftUI, hmm-kit's Design / Bridge / Documents / Diagnostics / Board / BoardUI | The editor. `Workspace/` is shared by every feature (app and editor models, the session API, controls); each other folder is one feature's views; `Shell/` composes them | iPad simulator: bridge security, editor flows |
 | **App** | Features, ActivityKit, BackgroundTasks | `LoweyApp`, the export Live Activity, the widget extension | UI smoke tests |
 
@@ -630,6 +630,44 @@ flowchart LR
 - **CI**: `CharacterMakerTests`, `CharacterGameTests` (writes `characters/person.glb` and `sprites/dog.*`);
   `Tools/godot/check_humanoid.gd` and `check_sprites.gd` in the Godot job; `AppUITests/CharacterTests` (the eye creature
   and the dog in under three minutes).
+
+## Animate and export (0.21)
+
+```mermaid
+flowchart LR
+    Pencil[StageGestures+Motion<br/>samples with their times] --> Draw[EditorModel+Animate<br/>surface under the tip, once a frame]
+    Draw --> DM[DrawnMotion.keys<br/>Core: frames, time-synchronous simplify, facing, banking]
+    DM --> Keys[setTracks / setTimeline]
+    Tap[Look at · Pick up taps<br/>EditorModel+AnimatePick] --> Ops[LookAtOperations · HoldOperations]
+    Ops --> Cmd[setProperties / setTracks / setHolds]
+    Keys & Cmd --> Anim[Animator: … carryParts → HoldPlayback → LookAt → carry again]
+    Anim --> Bake[MotionBake<br/>behaviours, holds, looks → keys for 3D files]
+```
+
+- **Core `Motion/`**: `DrawnMotion` (+`Facing`: frames by the drawing's clock, Douglas–Peucker in time, orientations from
+  the velocity and the turn's pull, span, retiming, even speed, turning the front), `Holds` (`Hold`, `HoldPlayback`:
+  holders first, put-down places from the scene posed at that moment; `HoldOperations`: pick up, hand off, put down, the
+  nearest joint), `LookAt` (`PropertyKey.lookAt`, head turns through `IKSolver.lookAt` with parts carried again by
+  `LiveRig.carryParts(only:from:)`, whole turns; `LookAtOperations`), `MotionBake`, `MotionCurve` (a row's curve) and
+  `PropertyAnimation` (what can be keyed; a key at the playhead). `Timeline.holds`, the `setHolds` command.
+  `KeyOperations.retimed` merges keys that land on one moment.
+- **Core `Export/`**: `PDFWriter` and `PaperLayout` (Paper), `LookShaderExport` with `LookShaderSources` (Godot and Unity
+  shaders from a `LookPreset`, `ExportLicence`), `ExportPrep` (what the 3D presets change). `Physics`: `PhysicsInput.
+  surfaceDetail` / `detailed(_:)`, `FluidSurface.mesh(detail:)`. `AI/ScriptCompiler+Motion`: the `motion` verb.
+- **Engine `Export/`**: `ExportPresets` (`ExportCategory` → `ExportFormat` → `ExportPreset`, `ModelPreset`,
+  `ExportSettings.final` and `only`), `ExportSession` (`frameBytes`: one draw, or Final's moments drawn larger,
+  downsampled and averaged), `FinalFrames` (moments, supersampling, vImage and vDSP, `PreviewQuality.final`),
+  `RenderPasses` (`LoweyRenderer.depthBuffer()` and `idBuffer()` after a draw: colour, alpha, depth, masks, `passes.json`),
+  `ModelExport.files(engine:)`.
+- **Features**: `Animate/AnimateBar` (`MotionPathChip`, `AnimatePropertiesPopover`), `Workspace/Session/AnimateTypes`
+  (`AnimateVerb`, `AnimateState`, `TimelineStyle`), `EditorModel+Animate` (the button, verbs, drawing a path, its chip's
+  actions), `+AnimatePick` (taps, properties), `+TimelineMotion` (curves and colours), `+MotionView` (ghosts while
+  scrubbing), `StageGestures+Motion`; `StageTool.animate` is Path in the hand. `Timeline/TimelineMotion` (`MotionLane`,
+  `FrameCells`); `TimelineLayout.height(of:)` follows the style. Export: `Export/ExportSheet` and `ExportOptions`,
+  `Workspace/Session/ExportTypes` (`ExportJob`), `EditorModel+Export` (one job: every scene, every shot, video, frames,
+  passes, pictures) and `+ExportFiles` (3D with its preset and the motion bake, the Look as a shader, Paper).
+- **CI**: the `look-shader` job renders the exported Ink material with `Tools/godot/render_look.gd` and compares it with
+  `Tools/godot/golden/ink-look.png` (`Tools/check_look_render.py`).
 
 ## LoweyRender 2
 

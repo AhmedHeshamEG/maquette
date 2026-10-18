@@ -3,6 +3,17 @@
 One task per feature for the two test weeks (between M14 and M16), written for its person in `studio-h/USERS.md`. A
 task says what to make, never which buttons to press; the tester says where they got stuck.
 
+## 0.21 (A1): animate & export
+
+- **The explainer maker:** a cart rolling down from the Keeper's Tower along a drawn path, slowing at the bottom, while the
+  keeper turns his head to watch it and then picks up the lamp from the table at the moment it stops.
+- **The indie game developer:** the Keeper's Tower in Godot with the Ink Look: the tower as glTF and the Look as a shader,
+  looking like it does on the iPad.
+- **The indie filmmaker:** the cart's run as ProRes 4444 with a transparent background and as render passes, composited
+  over a photo in a desktop editor.
+- **The flipbook animator:** a bouncing ball whose timing is fixed in the dope sheet, checked with the ghosts.
+- **Everyone:** the Keeper's Tower on an A4 page and nine frames of its shot on one sheet, as PDFs to print.
+
 ## 0.20 (K1): characters
 
 - **The indie game developer:** a floating eye creature and a four-legged dog for a Godot game, both lip-syncing one line,

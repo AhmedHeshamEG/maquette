@@ -38,6 +38,30 @@ Cast is gone (D-227): what said *Cast ▸ Voice & face*, *Triggers* and *Life* b
 button beside Record in the timeline's Perform; *Cast ▸ Rig* is Rig; *Make it part of* is in Rig. Everything below
 still works the same way.
 
+### Animate and export (0.21)
+
+- **Animate's bar** (D-411): Path · Look at · Pick up · Properties · Ghosts · Dope sheet, under the stage while Animate is
+  on (with the timeline). With no verb the Pencil picks, moves and poses, and keys add themselves. A making tool puts
+  Animate away. Keys: ⌥⌘4 Path, ⌃⌘L Look at, ⌃⌘P Pick up, ⌃⌘G Ghosts, ⌃⌘D the dope sheet (the Timeline menu).
+- **Path** (D-407 … D-410): with one thing selected, draw where it goes: keys from the playhead at the drawing's own
+  speed, on the surface under the line (else level with where it last stood), facing the way it goes and leaning into
+  turns (characters upright). The chip: Lasts (a number to drag or type), Even speed, Turn its front, Face the way it
+  goes, Lean into turns. The path's dots on the stage still reshape it.
+- **Look at** (D-416): tap the thing it watches (a character turns its head, the rest turns whole); a later tap switches
+  from the playhead over a quarter second; the empty ground stops it. **Pick up** (D-415): tap the hand (or the thing)
+  that takes it at the playhead; another holder later is a hand-off; the empty ground puts it down where it was left.
+- **Properties** (D-417): everything the selection can have keyed; a tap keys it at the playhead (a diamond marks what
+  moves).
+- **The timeline** (D-412 … D-414): Motion rows (46 pt, the thing's icon in its colour, a curve of how much it moves,
+  dots a frame), frames as cells when 9 pt wide; the Dope sheet style (every track under its thing). Ghosts: three
+  moments either side of the playhead while the ruler is dragged.
+- **Export** (D-418 … D-427): Video (MP4, HEVC, ProRes 4444 where the iPad writes it, GIF, PNG frames, Render passes,
+  Captions) · Picture (PNG, Render passes) · 3D (glTF for Godot / the web / Blender and 3D apps, FBX for Unity / Unreal,
+  USDZ, OBJ, STL, 3MF, Blender ▸ Render on a computer, Maps, the Look as a shader for Godot / Unity) · Paper (this frame on
+  A4, US Letter or A3; frames across the shot). Options: Final, Transparent background, Only the selection, Every scene,
+  Every shot, Only the loop, a glTF's painted colour, custom size, frame rate and quality.
+- **The bridge** (D-428): `motion` with `op` path, follow, lookAt, pickUp, putDown, letGo, evenSpeed, timing, front.
+
 ### Characters (0.20)
 
 - **Library ▸ Characters** (D-401): New (Person, Four legs, Wings, Blob, Nothing), Ready-made (Blob, Me, Puppet) and
@@ -678,4 +702,5 @@ sound-effects track with a synthesised CC0 foley set (whoosh, pop, impact, click
 Some things can only be checked on an iPad: the Night Market benchmark numbers · Pencil pressure on strokes and the
 Shadow Brush · Pencil Pro squeeze and roll · face capture (front camera) and the iPhone companion · the ARKit virtual
 camera · SpeechAnalyzer on a real voiceover (English, Italian, Arabic) · thermal behaviour during a 5-minute 4K
-export · iCloud sync between iPad and iPhone · pairing the bridge from a laptop.
+export · iCloud sync between iPad and iPhone · pairing the bridge from a laptop · drawing a path with the Pencil and
+its timing · a Final export and ProRes 4444 on the iPad · an export carrying on in the background.

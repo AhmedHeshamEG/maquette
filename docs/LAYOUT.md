@@ -89,7 +89,7 @@ when they disagree. In the App Store configuration the walk asserts every held r
 
 | Control | Walk |
 |---|---|
-| Export: the kind first (Video, Picture, 3D model), then its presets, the last used already picked; background export | `Actions › open-export` |
+| Export, formats first: Video · Picture · 3D · Paper, then the format, then its named presets (the last used picked); Final, transparency, only the selection, every scene or shot; background export | `Actions › open-export` |
 | Share the project file | `Actions › Project file` |
 | Monitor window (Stage Manager, external display) | `Actions › open-monitor` |
 | The Board: plan before building (below) | `Actions › open-board` |
@@ -233,9 +233,18 @@ you until a finger's tap places it, and reads as paper while you draw. Tap Draw 
 
 ### Animate
 
+Animate calls the timeline and its bar, under the stage (A1): six verbs. With none chosen the Pencil picks, moves and poses.
+
 | Control | Walk |
 |---|---|
 | The whole timeline | `Animate › timeline` |
+| Path: draw where the selected thing goes; it follows at the speed you drew, facing the way it goes | `[cube] Animate › animate-path` |
+| The path's chip: how long it lasts (drag or type), even speed, turn its front, face the way it goes, lean into turns | above the bar while Path is in the hand and the thing moves |
+| Look at: tap what the selected thing watches (the empty ground stops it) | `[cube] Animate › animate-lookAt` |
+| Pick up: tap the hand that takes it at the playhead (another hand later hands it on; the empty ground puts it down) | `[cube] Animate › animate-pickUp` |
+| Properties: key any property of the selection at the playhead | `[cube] Animate › animate-properties` |
+| Ghosts: where the selection was and will be, while the ruler is dragged | `[cube] Animate › animate-ghosts` |
+| The dope sheet (every property's keys under its thing), or back to the motion rows | `[cube] Animate › animate-dope-sheet` |
 
 ## The object panel (beside the selection)
 
@@ -314,6 +323,7 @@ titles are 3D text that sticks to the camera, screen effects are in Look ▸ Fin
 | Collapse to the slim transport | `[timeline] Collapse the timeline` |
 | Resize, or switch to the transport | `[timeline] timeline-divider` |
 | The ruler: drag to scrub; tap just beside the playhead to step a frame; flick left to go to the start | `[timeline] timeline-ruler` |
+| A thing's row (Motion): its icon in its colour and a curve of how much it moves; frames as cells when zoomed in; the dope sheet lists every property instead | the lanes |
 | A selected row's whole animation: drag the grip under it to slide it in time; drag the dot at its end to repeat it (the repeats show lighter) | under a selected animated row |
 | The grip's hold menu: loop forever or play once; save as a clip or a loop to the Library | touch and hold the grip |
 | A key's hold menu: copy, paste; feel (ease, snap, bounce, straight; the curve one step deeper), reverse, mirror; delete | touch and hold a key |

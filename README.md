@@ -4,6 +4,13 @@ Shapr3D's ease, Procreate's feel, Dreams' animation and ToonSquid's rigging, in 
 or art degree. Build a set like Lego, drop in characters, direct them with a camera, sync them to your voice, and
 export the video. By **studio h.**; the continuation of 3D-lowey 2.0. All rights reserved (see [LICENSE](LICENSE)).
 
+**0.21** (phase A1): **animate & export**. Animate has a bar: draw where a thing goes and it follows at the speed you
+drew, facing the way it goes and leaning into turns; look at things; pick up and hand off; key any property. The
+timeline shows motion (thick rows with a curve of each thing's movement, frames when zoomed in, the dope sheet) and ghosts
+while scrubbing. Export asks formats first (Video · Picture · 3D · Paper): ProRes 4444 with transparency, render passes,
+named presets (glTF for Godot, FBX for Unity or Unreal, 3MF for printing), PDFs, the Look as a Godot or Unity shader, and
+Final (motion blur, smoother edges, the best shadows and water).
+
 **0.20** (phase K1): **characters**. Library ▸ Characters ▸ New: start from a person, four legs, wings, a blob or
 nothing and add parts (eyes, brows, a mouth, ears, hair, arms, legs, a tail, wings, extras) picked from our own set,
 drawn or modelled, on a character or on any thing. It rigs itself. Faces with Character Animator's 14 mouths and four
@@ -220,7 +227,7 @@ is in [`skills/lowey`](skills/lowey). App Store builds ship without the bridge (
 Nothing needs a Mac: GitHub Actions builds, tests and packages everything.
 
 ```
-Packages/LoweyCore      pure Swift: model, commands, timeline, geometry, modelling, characters, glTF, Scene Scripts, samples
+Packages/LoweyCore      pure Swift: model, commands, timeline, motion, geometry, modelling, characters, glTF, PDF, Scene Scripts, samples
 Packages/Manifold       Manifold (Apache-2.0) vendored for booleans, behind a small C face
 Packages/Jolt           Jolt Physics (MIT) vendored for physics, behind a small C face
 Packages/LoweyEngine    LoweyRender 2 (Metal), stage view, import, export, overlays, audio, face, scripting, benchmark
