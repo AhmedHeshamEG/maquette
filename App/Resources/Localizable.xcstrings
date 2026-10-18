@@ -1,6 +1,22 @@
 {
   "sourceLanguage": "en",
   "strings": {
+    " · Final": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": " · Finale"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": " · نهائي"
+          }
+        }
+      }
+    },
     " · HEVC with alpha (.mov)": {
       "localizations": {
         "it": {
@@ -13,6 +29,22 @@
           "stringUnit": {
             "state": "translated",
             "value": " · HEVC مع شفافية (.mov)"
+          }
+        }
+      }
+    },
+    " · transparent": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": " · trasparente"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": " · شفاف"
           }
         }
       }
@@ -125,6 +157,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "%@ هنا. جرّب تعبيرًا أو مزامنة الشفاه"
+          }
+        }
+      }
+    },
+    "%@ is put down at %@": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$@ viene posato a %2$@"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "وُضع %1$@ عند %2$@"
           }
         }
       }
@@ -2741,6 +2789,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "المساعد على هذه الشبكة"
+          }
+        }
+      }
+    },
+    "At ": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A "
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "عند "
           }
         }
       }
@@ -7213,6 +7277,22 @@
         }
       }
     },
+    "Dope sheet": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dope sheet"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ورقة المفاتيح"
+          }
+        }
+      }
+    },
     "Dot": {
       "localizations": {
         "it": {
@@ -7773,6 +7853,38 @@
         }
       }
     },
+    "Draw a little longer: that was too short to move along": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Disegna un po' di più: era troppo corto per muoversi"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ارسم أطول قليلًا: كان أقصر من أن يُتبع"
+          }
+        }
+      }
+    },
+    "Draw a Path": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Disegna un percorso"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ارسم مسارًا"
+          }
+        }
+      }
+    },
     "Draw frame by frame": {
       "localizations": {
         "it": {
@@ -7929,6 +8041,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "ارسم لتجرّب المنحنى: عرض الخط بقدر الضغط الذي يصله."
+          }
+        }
+      }
+    },
+    "Draw where it goes. It follows at the speed you draw.": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Disegna dove va. Segue alla velocità con cui disegni."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ارسم أين يذهب. يتبعه بسرعة رسمك."
           }
         }
       }
@@ -8925,6 +9053,38 @@
         }
       }
     },
+    "Even Speed": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Velocità costante"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "سرعة ثابتة"
+          }
+        }
+      }
+    },
+    "Even speed": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Velocità costante"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "سرعة ثابتة"
+          }
+        }
+      }
+    },
     "Even, soft light from the front-left: explainers, clean product shots.": {
       "localizations": {
         "it": {
@@ -8953,6 +9113,38 @@
           "stringUnit": {
             "state": "translated",
             "value": "كل النقاط إلى مكانها"
+          }
+        }
+      }
+    },
+    "Every scene, one file each": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ogni scena, un file ciascuna"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "كل مشهد في ملف"
+          }
+        }
+      }
+    },
+    "Every shot, one file each": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ogni inquadratura, un file ciascuna"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "كل لقطة في ملف"
           }
         }
       }
@@ -9529,6 +9721,22 @@
         }
       }
     },
+    "Face the way it goes": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Guarda dove va"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "اتجه نحو مساره"
+          }
+        }
+      }
+    },
     "Face · %@": {
       "localizations": {
         "it": {
@@ -9981,6 +10189,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "التصفية"
+          }
+        }
+      }
+    },
+    "Final": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Finale"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "نهائي"
           }
         }
       }
@@ -11513,6 +11737,22 @@
         }
       }
     },
+    "Ghosts": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fantasmi"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "أشباح"
+          }
+        }
+      }
+    },
     "Give the character a Follow path behaviour first": {
       "localizations": {
         "it": {
@@ -12485,6 +12725,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "السجل والخطوات"
+          }
+        }
+      }
+    },
+    "Hold": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Presa"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "إمساك"
           }
         }
       }
@@ -13881,6 +14137,22 @@
         }
       }
     },
+    "Key %@": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chiave su %@"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "مفتاح لـ %@"
+          }
+        }
+      }
+    },
     "Key a move first: there's nothing to keep yet": {
       "localizations": {
         "it": {
@@ -13909,6 +14181,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "مفتاح عند %@ ثانية"
+          }
+        }
+      }
+    },
+    "Key at the playhead": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chiave alla testina"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "مفتاح عند رأس التشغيل"
           }
         }
       }
@@ -14297,6 +14585,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "يبسط النماذج لتُطلى. Copyright (c) 2018-2020 Jonathan Young; thekla_atlas copyright (c) 2013 Thekla, Inc "
+          }
+        }
+      }
+    },
+    "Lean into turns": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Piegati nelle curve"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "مِل في المنعطفات"
           }
         }
       }
@@ -15113,6 +15417,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "النظر إلى"
+          }
+        }
+      }
+    },
+    "Look At…": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Guarda…"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "انظر إلى…"
           }
         }
       }
@@ -16441,6 +16761,22 @@
         }
       }
     },
+    "Motion blur, the best shadows, water and edges. Slower; it carries on in the background.": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mosso, le ombre, l'acqua e i bordi migliori. Più lento; continua in background."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ضبابية الحركة وأفضل الظلال والماء والحواف. أبطأ؛ ويكمل في الخلفية."
+          }
+        }
+      }
+    },
     "Motion path": {
       "localizations": {
         "it": {
@@ -17457,6 +17793,22 @@
         }
       }
     },
+    "Nine frames across the shot, with their moments.": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nove fotogrammi lungo l'inquadratura, con i loro momenti."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تسعة إطارات عبر اللقطة مع لحظاتها."
+          }
+        }
+      }
+    },
     "No account, no tracking: nothing leaves this iPad unless you share it.": {
       "localizations": {
         "it": {
@@ -17917,6 +18269,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "لا شيء هنا بعد. ما تضيفه من النمذجة أو المكتبة يظهر هنا."
+          }
+        }
+      }
+    },
+    "Nothing holds %@ now": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ora niente tiene %@"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "لا شيء يمسك %@ الآن"
           }
         }
       }
@@ -18653,6 +19021,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "الحلقة فقط"
+          }
+        }
+      }
+    },
+    "Only the selection": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Solo la selezione"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "المحدد فقط"
           }
         }
       }
@@ -19681,6 +20065,22 @@
         }
       }
     },
+    "Path": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Percorso"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "مسار"
+          }
+        }
+      }
+    },
     "Pattern": {
       "localizations": {
         "it": {
@@ -20157,6 +20557,38 @@
         }
       }
     },
+    "Pick the one thing first, then tap": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Scegli prima l'oggetto, poi tocca"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "اختر الشيء أولًا ثم انقر"
+          }
+        }
+      }
+    },
+    "Pick the one thing first. %@": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Scegli prima l'oggetto. %@"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "اختر الشيء أولًا. %@"
+          }
+        }
+      }
+    },
     "Pick the similar ones": {
       "localizations": {
         "it": {
@@ -20173,6 +20605,22 @@
         }
       }
     },
+    "Pick the thing that moves, then draw where it goes": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Scegli cosa si muove, poi disegna dove va"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "اختر ما يتحرك ثم ارسم أين يذهب"
+          }
+        }
+      }
+    },
     "Pick two faces to bridge (touch and hold to add the second)": {
       "localizations": {
         "it": {
@@ -20185,6 +20633,38 @@
           "stringUnit": {
             "state": "translated",
             "value": "اختر وجهين لتصل بينهما بجسر (المس مطولًا لإضافة الثاني)"
+          }
+        }
+      }
+    },
+    "Pick up": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Prendi"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "التقط"
+          }
+        }
+      }
+    },
+    "Pick Up or Hand Off…": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Prendi o passa…"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "التقط أو سلّم…"
           }
         }
       }
@@ -21161,6 +21641,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "المشاريع: %lld · المكتبة: %lld نماذج، %lld تركيبات"
+          }
+        }
+      }
+    },
+    "Properties": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Proprietà"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الخصائص"
           }
         }
       }
@@ -28569,6 +29065,22 @@
         }
       }
     },
+    "Tap the hand that takes it, at the playhead. Tap the empty ground to put it down.": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tocca la mano che lo prende, alla testina. Tocca il terreno vuoto per posarlo."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "انقر اليد التي تأخذه عند رأس التشغيل. انقر الأرض الفارغة لوضعه."
+          }
+        }
+      }
+    },
     "Tap the joints of a drawing with the Pencil": {
       "localizations": {
         "it": {
@@ -28773,6 +29285,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "المس نقطتين: الزوايا والحواف تلتقط. المس الرقم لتحتفظ به على المشهد؛ يتحرك مع ما يقيسه."
+          }
+        }
+      }
+    },
+    "Tap what it looks at. Tap the empty ground and it stops looking.": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tocca cosa guarda. Tocca il terreno vuoto e smette di guardare."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "انقر ما ينظر إليه. انقر الأرض الفارغة فيتوقف عن النظر."
           }
         }
       }
@@ -29193,6 +29721,22 @@
         }
       }
     },
+    "The %@ Look, with LICENSE.txt: use it in anything, commercial included.": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Il Look %@, con LICENSE.txt: usalo in qualsiasi cosa, anche commerciale."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "مظهر %@ مع LICENSE.txt: استخدمه في أي شيء، حتى التجاري."
+          }
+        }
+      }
+    },
     "The %lld things inside it take turns": {
       "localizations": {
         "it": {
@@ -29397,6 +29941,38 @@
           "stringUnit": {
             "state": "translated",
             "value": "الإطار عند رأس التشغيل، عبر كاميرا اللقطة، كصورة PNG."
+          }
+        }
+      }
+    },
+    "The frame at the playhead, through the shot camera.": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Il fotogramma alla testina, dalla camera dell'inquadratura."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الإطار عند رأس التشغيل، عبر كاميرا اللقطة."
+          }
+        }
+      }
+    },
+    "The frame at the playhead.": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Il fotogramma alla testina."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الإطار عند رأس التشغيل."
           }
         }
       }
@@ -31637,6 +32213,22 @@
         }
       }
     },
+    "Transparent background": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sfondo trasparente"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "خلفية شفافة"
+          }
+        }
+      }
+    },
     "Triangle": {
       "localizations": {
         "it": {
@@ -31841,6 +32433,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "تدوير بخطوات"
+          }
+        }
+      }
+    },
+    "Turn its front": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gira il davanti"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "أدر واجهته"
           }
         }
       }
@@ -32309,6 +32917,22 @@
         }
       }
     },
+    "Unity (URP)": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Unity (URP)"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Unity (URP)"
+          }
+        }
+      }
+    },
     "Unlink": {
       "localizations": {
         "it": {
@@ -32449,6 +33073,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "تم تحديث “%@” في كل مكان"
+          }
+        }
+      }
+    },
+    "US Letter": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lettera USA"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "رسالة أمريكية"
           }
         }
       }
