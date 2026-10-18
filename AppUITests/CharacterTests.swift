@@ -22,9 +22,17 @@ final class CharacterTests: XCTestCase {
     private func tap(_ identifier: String, timeout: TimeInterval = 8) -> Bool {
         let target = element(identifier)
         guard target.waitForExistence(timeout: timeout) else { return false }
-        if !target.isHittable { app.swipeUp() }
+        reveal(target)
         target.tap()
         return true
+    }
+
+    /// Scrolls the object panel (not the stage) until the control can be tapped.
+    private func reveal(_ target: XCUIElement) {
+        let panel = element("inspector")
+        for _ in 0 ..< 6 where !target.isHittable && panel.exists {
+            panel.swipeUp()
+        }
     }
 
     private var trail: String { element("debug-trail").label }
@@ -59,9 +67,10 @@ final class CharacterTests: XCTestCase {
 
     /// Opens Say a line in the panel and says one.
     private func say(_ line: String) {
-        XCTAssertTrue(tap("character-say"))
         let field = element("say-line-text")
-        XCTAssertTrue(field.waitForExistence(timeout: 5))
+        if !field.exists { XCTAssertTrue(tap("character-say")) }
+        XCTAssertTrue(field.waitForExistence(timeout: 5), "Say a line opens its field")
+        reveal(field)
         field.tap()
         field.typeText(line)
         XCTAssertTrue(tap("say-line"))

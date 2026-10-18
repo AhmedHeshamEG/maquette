@@ -112,6 +112,7 @@ final class AtlasTests: XCTestCase {
 
     private func addBlob() {
         tap("Library")
+        tap("library-characters")
         tap("add-me")
     }
 
