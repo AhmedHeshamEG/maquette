@@ -53,6 +53,8 @@ jobs:
               - 'Packages/XAtlas/**'
               - 'Packages/InstantMeshes/**'
               - 'Packages/Jolt/**'
+              - 'Tools/godot/**'
+              - 'Tools/check_look_render.py'
               - '.swiftlint.yml'
               - '.swiftformat'
               - '.github/workflows/ci.yml'
@@ -225,6 +227,42 @@ jobs:
           ./Godot_v4.3-stable_linux.x86_64 --headless --path Tools/godot --script check_sprites.gd -- "$GITHUB_WORKSPACE/acceptance/sprites/dog.png" "$GITHUB_WORKSPACE/acceptance/sprites/dog.json" 2>&1 | tee godot-sprites.log
           grep -q "MAQUETTE GODOT SPRITES: .* every frame drawn" godot-sprites.log
           grep "MAQUETTE GODOT SPRITES" godot-sprites.log >> "$GITHUB_STEP_SUMMARY"
+
+  look-shader:
+    name: The Ink Look renders in Godot 4.3 from its exported shader (golden)
+    needs: core-tests
+    runs-on: ubuntu-latest
+    # The same Ubuntu and Mesa (llvmpipe) the golden was recorded with.
+    container: ubuntu:24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: acceptance
+          path: acceptance
+      - name: Godot, a virtual screen and software OpenGL
+        run: |
+          apt-get update
+          DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends xvfb xauth libgl1 libgl1-mesa-dri libglx-mesa0             libegl1 libxcursor1 libxinerama1 libxrandr2 libxi6 libfontconfig1 libasound2t64 libpulse0 curl unzip ca-certificates python3
+          curl -sSL -o godot.zip https://github.com/godotengine/godot/releases/download/4.3-stable/Godot_v4.3-stable_linux.x86_64.zip
+          unzip -q godot.zip
+      - name: Godot draws a sphere and a cube with the exported Ink material and its outline pass; the frame matches the golden
+        shell: bash
+        run: |
+          set -o pipefail
+          cp -r acceptance/look-shader Tools/godot/look
+          xvfb-run -a -s '-screen 0 1280x720x24' ./Godot_v4.3-stable_linux.x86_64 --rendering-method gl_compatibility             --rendering-driver opengl3 --resolution 1280x720 --path Tools/godot --script render_look.gd             -- res://look/maquette_ink.tres "$PWD/look-render.png" 2>&1 | tee godot-look.log
+          grep -q "MAQUETTE GODOT LOOK: rendered 1280x720" godot-look.log
+          python3 Tools/check_look_render.py look-render.png Tools/godot/golden/ink-look.png look-diff.png | tee -a "$GITHUB_STEP_SUMMARY"
+      - name: Keep the render and its difference
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: look-render
+          path: |
+            look-render.png
+            look-diff.png
+          retention-days: 7
 
   interop:
     name: Print files (slicer check) + Blender package + painted glTF (Blender ${{ matrix.blender }})
@@ -565,7 +603,7 @@ jobs:
 
   result:
     name: CI result
-    needs: [changes, lint, core-tests, interop, godot, tools, engine, features, app, appstore]
+    needs: [changes, lint, core-tests, interop, godot, look-shader, tools, engine, features, app, appstore]
     if: always()
     runs-on: ubuntu-latest
     steps:
