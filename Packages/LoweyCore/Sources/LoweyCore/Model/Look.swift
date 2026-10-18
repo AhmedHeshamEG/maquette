@@ -238,14 +238,21 @@ public struct Look: Codable, Hashable, Sendable {
         return look
     }
 
-    /// Applies a lighting preset: sun, sky, fog. Keeps palette, shading and ground color.
+    /// Applies a lighting preset: sun, sky, fog, and the mood's own ground unless the ground was changed by hand. Keeps
+    /// palette and shading. (Before 0.22 the ground was always kept, so a project made in Day and turned Dark studio kept
+    /// a green floor under a black sky.)
     public func applying(_ preset: LightingPreset) -> Look {
         var look = self
         let presetLook = MoodPresets.look(for: preset)
+        let untouched = ground.color == Ground().color || lightingPreset.map { ground.color == MoodPresets.look(for: $0).ground.color } == true
         look.lightingPreset = preset
         look.lighting = presetLook.lighting
         look.sky = presetLook.sky
         look.fog = presetLook.fog
+        if untouched {
+            look.ground.color = presetLook.ground.color
+            look.ground.visible = presetLook.ground.visible
+        }
         return look
     }
 }

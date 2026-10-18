@@ -188,6 +188,11 @@ final class ModelTests: XCTestCase {
         custom.palette = Palette(swatches: [])
         let night = custom.applying(.night)
         XCTAssertEqual(night.palette, custom.palette, "presets keep the palette")
+        XCTAssertEqual(Look.default.applying(.darkStudio).ground.color, RGBA.hex("#1A1B1F"), "a mood brings its own ground")
+        XCTAssertEqual(Look.default.applying(.night).applying(.darkStudio).ground.color, RGBA.hex("#1A1B1F"))
+        var painted = Look.default
+        painted.ground.color = RGBA.hex("#FF0000")
+        XCTAssertEqual(painted.applying(.darkStudio).ground.color, RGBA.hex("#FF0000"), "a ground changed by hand stays")
         XCTAssertEqual(night.lighting, MoodPresets.look(for: .night).lighting)
         XCTAssertEqual(night.sky.stars, MoodPresets.sky(for: .night).stars)
         let document = makeDocument()
