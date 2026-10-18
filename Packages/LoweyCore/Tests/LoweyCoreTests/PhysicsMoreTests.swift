@@ -206,3 +206,20 @@ final class PhysicsMoreTests: XCTestCase {
         XCTAssertGreaterThan(evening?.sunDirection.x ?? -1, 0)
     }
 }
+
+extension PhysicsMoreTests {
+    /// A1's Final: water's surface drawn twice as finely from the same drops, in a run of its own.
+    func testAFinalRunDrawsWatersSurfaceFinerFromTheSameDrops() throws {
+        let tap = SceneObject(id: "tap", name: "Tap", kind: .fluid(FluidRecipe(kind: .pour, box: Vec3(0.4, 0.5, 0.4), amount: 0.08, duration: 0.5)),
+                              transform: Transform(position: Vec3(0, 0.2, 0)))
+        let document = PhysicsTests.document([Self.glass(), tap], duration: 0.6)
+        let input = try PhysicsTests.input(document)
+        let final = input.detailed(2)
+        XCTAssertNotEqual(final.key, input.key, "a run of its own")
+        XCTAssertEqual(input.detailed(1).key, input.key, "the stage's key is unchanged")
+        let stage = try XCTUnwrap(PhysicsSimulator.run(input)?.frames.last?.fluids.first)
+        let best = try XCTUnwrap(PhysicsSimulator.run(final)?.frames.last?.fluids.first)
+        XCTAssertEqual(best.amount, stage.amount, accuracy: 1e-9, "the same drops")
+        XCTAssertGreaterThan(best.surface?.positions.count ?? 0, (stage.surface?.positions.count ?? 0) * 2, "a finer surface")
+    }
+}

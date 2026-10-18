@@ -17,6 +17,8 @@ public struct PhysicsInput: Sendable {
     public var start: Double
     public var frameCount: Int
     public var key: UInt64
+    /// How finely water's surface is drawn: 1 on the stage, 2 for a Final export (A1). The drops are the same.
+    public var surfaceDetail: Double = 1
 
     /// The things that take part, top-most first (a real group's parts ride inside it).
     public var bodies: [ObjectID] { Self.realThings(in: scene) }
@@ -146,7 +148,19 @@ public struct PhysicsInput: Sendable {
             }
         }
         addMeshesAndPaths(to: &hasher)
+        if surfaceDetail != 1 {
+            hasher.add("surface-detail")
+            hasher.add(surfaceDetail)
+        }
         return hasher.value
+    }
+
+    /// The same run with water's surface drawn `detail` times finer (its own key: a Final export makes its own run).
+    public func detailed(_ detail: Double) -> PhysicsInput {
+        var copy = self
+        copy.surfaceDetail = min(max(detail, 1), 3)
+        copy.key = copy.fingerprint()
+        return copy
     }
 
     private func addMeshesAndPaths(to hasher: inout StableHasher) {

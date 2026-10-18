@@ -76,7 +76,7 @@ extension PhysicsSimulator {
             let colliders = fluidColliders(around: FluidBox.make(recipe, at: place.position, ground: input.settings.ground), fine: recipe.kind.isLiquid)
             if recipe.kind.isLiquid {
                 liquids.append(LiquidSolver(recipe: recipe, emitter: place, colliders: colliders, ground: input.settings.ground,
-                                            gravity: input.settings.acceleration, fps: input.fps))
+                                            gravity: input.settings.acceleration, fps: input.fps, detail: input.surfaceDetail))
                 fluidSlots.append((liquids.count - 1, nil))
             } else {
                 smokes.append(SmokeSolver(recipe: recipe, emitter: place, colliders: colliders, fps: input.fps))
