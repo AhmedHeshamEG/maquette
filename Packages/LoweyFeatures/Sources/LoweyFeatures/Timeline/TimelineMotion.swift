@@ -14,22 +14,24 @@ struct MotionLane: View {
         let curve = editor.motionCurve(of: id)
         let colour = editor.rowColour(of: id)
         let fps = Double(max(editor.timeline.fps, 1))
+        let start = layout.visibleStart
+        let pps = layout.pps
+        let frames = FrameCells.showsFrames(pps: pps, fps: fps)
         Canvas { context, size in
             guard curve.count > 1 else { return }
-            let first = max(Int((layout.visibleStart * fps).rounded(.down)) - 1, 0)
-            let last = min(Int(((layout.visibleStart + Double(size.width) / layout.pps) * fps).rounded(.up)) + 1, curve.count - 1)
+            let first = max(Int((start * fps).rounded(.down)) - 1, 0)
+            let last = min(Int(((start + Double(size.width) / pps) * fps).rounded(.up)) + 1, curve.count - 1)
             guard last > first else { return }
             let top: CGFloat = 6
             let bottom = size.height - 8
-            func point(_ frame: Int) -> CGPoint {
-                CGPoint(x: layout.x(Double(frame) / fps), y: bottom - CGFloat(curve[frame]) * (bottom - top))
-            }
+            let x = { (frame: Int) in CGFloat((Double(frame) / fps - start) * pps) }
+            let point = { (frame: Int) in CGPoint(x: x(frame), y: bottom - CGFloat(curve[frame]) * (bottom - top)) }
             var area = Path()
-            area.move(to: CGPoint(x: layout.x(Double(first) / fps), y: bottom))
+            area.move(to: CGPoint(x: x(first), y: bottom))
             for frame in first ... last {
                 area.addLine(to: point(frame))
             }
-            area.addLine(to: CGPoint(x: layout.x(Double(last) / fps), y: bottom))
+            area.addLine(to: CGPoint(x: x(last), y: bottom))
             area.closeSubpath()
             context.fill(area, with: .color(colour.opacity(0.22)))
             var line = Path()
@@ -38,7 +40,7 @@ struct MotionLane: View {
                 line.addLine(to: point(frame))
             }
             context.stroke(line, with: .color(colour.opacity(0.75)), lineWidth: 1.5)
-            guard FrameCells.showsFrames(pps: layout.pps, fps: fps) else { return }
+            guard frames else { return }
             for frame in first ... last where curve[frame] > 0.001 {
                 let dot = point(frame)
                 context.fill(Path(ellipseIn: CGRect(x: dot.x - 2, y: dot.y - 2, width: 4, height: 4)), with: .color(colour))
@@ -63,16 +65,20 @@ struct FrameCells: View {
 
     var body: some View {
         let fps = Double(max(editor.timeline.fps, 1))
-        if Self.showsFrames(pps: layout.pps, fps: fps) {
+        let start = layout.visibleStart
+        let pps = layout.pps
+        let count = editor.timeline.frameCount
+        let shade = theme.text
+        if Self.showsFrames(pps: pps, fps: fps) {
             Canvas { context, size in
-                let first = max(Int((layout.visibleStart * fps).rounded(.down)), 0)
-                let last = min(Int(((layout.visibleStart + Double(size.width) / layout.pps) * fps).rounded(.up)), editor.timeline.frameCount)
+                let first = max(Int((start * fps).rounded(.down)), 0)
+                let last = min(Int(((start + Double(size.width) / pps) * fps).rounded(.up)), count)
                 guard last > first else { return }
-                let cell = CGFloat(layout.pps / fps)
+                let cell = CGFloat(pps / fps)
                 for frame in first ... last {
-                    let x = layout.x(Double(frame) / fps)
-                    if frame % 2 == 0 { context.fill(Path(CGRect(x: x, y: 0, width: cell, height: size.height)), with: .color(theme.text.opacity(0.025))) }
-                    context.fill(Path(CGRect(x: x, y: 0, width: 0.5, height: size.height)), with: .color(theme.text.opacity(0.07)))
+                    let x = CGFloat((Double(frame) / fps - start) * pps)
+                    if frame % 2 == 0 { context.fill(Path(CGRect(x: x, y: 0, width: cell, height: size.height)), with: .color(shade.opacity(0.025))) }
+                    context.fill(Path(CGRect(x: x, y: 0, width: 0.5, height: size.height)), with: .color(shade.opacity(0.07)))
                 }
             }
             .frame(width: width)

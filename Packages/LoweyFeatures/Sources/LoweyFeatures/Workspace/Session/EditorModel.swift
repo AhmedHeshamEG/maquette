@@ -481,6 +481,8 @@ final class EditorModel {
 }
 
 extension EditorModel {
+    func bumpDisplayRevision() { displayRevision &+= 1 }
+    func trail(_ entry: String) { debugTrail = Array((debugTrail + [entry]).suffix(12)) }
     var canUndo: Bool { session.canUndo }
     var canRedo: Bool { session.canRedo }
     var undoTitle: String { session.undoTitle }

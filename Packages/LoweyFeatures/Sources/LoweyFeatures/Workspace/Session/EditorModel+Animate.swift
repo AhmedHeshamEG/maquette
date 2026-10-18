@@ -47,11 +47,11 @@ extension EditorModel {
         set { motionCache.curves = newValue }
     }
 
-    /// Animate's button: the timeline and the bar come, or go.
+    /// Animate's button: the timeline and the bar come, or go (with the timeline folded away, it comes back first).
     func toggleAnimate() {
         HmmHaptics.play(.selection)
         openPanel = nil
-        if animatesNow {
+        if animatesNow, timelinePresence == .full {
             animate.isOn = false
             animate.verb = nil
             if tool == .animate { tool = .select }

@@ -157,14 +157,6 @@ extension EditorModel {
         return ScreenGuide(lines: lines, color: RGBA(0.45, 0.75, 1))
     }
 
-    func bumpDisplayRevision() {
-        displayRevision &+= 1
-    }
-
-    func trail(_ entry: String) {
-        debugTrail = Array((debugTrail + [entry]).suffix(12))
-    }
-
     /// Back from the background: the video frames and stage pick up where they were.
     func resumeFromBackground() {
         stage?.redraw()
