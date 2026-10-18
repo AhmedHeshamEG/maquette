@@ -78,6 +78,13 @@ public enum ScriptReference {
     {"do":"clip","character":"Me","clip":"Idle|Walk|Run|Talk|Wave|Point|Type|Nod|Shrug|Celebrate","at":0,"loop":true}
     {"do":"lipSync","character":"Me","words":"optional phrase"}
     {"do":"keys","target":"Paper","property":"scale","keys":[{"t":0,"value":[1,1,1]},{"t":{"word":"huge"},"value":[8,8,8],"easing":"easeInOut"}]}
+
+    Motion (A1; each one step)
+    {"do":"motion","op":"path","target":"Car","points":[[0,0,0],[3,0,2],[6,0,0]],"times":[0,1.2,2],"at":1}   ("speed":2 or "duration":3 instead of times; "facesTheWay":false, "banks":false)
+    {"do":"motion","op":"follow","target":"Bee","path":"Flight line","duration":4,"loop":true}   (a drawn line)
+    {"do":"motion","op":"lookAt","target":"Ada","at":"Ball"}   {"op":"lookAt","target":"Ada","at":"Door","from":3}   (from 3 s on)   {"at":"nothing"}
+    {"do":"motion","op":"pickUp","target":"Cup","by":"Ada","joint":"rightHand","at":2}   (a hand-off when someone holds it)   {"op":"putDown","target":"Cup","at":5}   {"op":"letGo","target":"Cup"}
+    {"do":"motion","op":"evenSpeed","target":"Car"}   {"op":"timing","target":"Car","duration":3}   {"op":"front","target":"Car","quarterTurns":1}
     {"do":"set","target":"Paper","property":"color|opacity|emissiveIntensity|stepping|accent|airborne|smear","value":"#F2E8D5","at":2}
     Easings: linear, easeIn, easeOut, easeInOut, backOut, bounce, elastic, step.
 

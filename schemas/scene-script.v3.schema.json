@@ -790,6 +790,7 @@
             "look",
             "marker",
             "model",
+            "motion",
             "overlay",
             "paint",
             "particles",
@@ -2042,6 +2043,98 @@
                 ]
               },
               "value": {
+                "type": "number"
+              }
+            },
+            "required": [
+              "target",
+              "op"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "do": {
+                "const": "motion"
+              }
+            }
+          },
+          "then": {
+            "description": "A1's motion: a path the thing follows at the line's own timing (\"times\" from the first point, else a steady \"speed\" or a \"duration\"), facing the way it goes and leaning into turns (characters stay upright); following a drawn line; looking at a thing (a character turns its head; \"from\" switches the look at a moment); picking up and handing off (\"by\" a thing or a skeleton's \"joint\"), putting down, letting go; even speed, the timing of a whole motion, and turning its front.",
+            "properties": {
+              "op": {
+                "enum": [
+                  "path",
+                  "follow",
+                  "lookAt",
+                  "pickUp",
+                  "putDown",
+                  "letGo",
+                  "evenSpeed",
+                  "timing",
+                  "front"
+                ]
+              },
+              "target": {
+                "$ref": "#/$defs/target"
+              },
+              "points": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/$defs/vec3"
+                }
+              },
+              "times": {
+                "type": "array",
+                "items": {
+                  "type": "number"
+                }
+              },
+              "speed": {
+                "type": "number"
+              },
+              "duration": {
+                "type": "number"
+              },
+              "at": {
+                "anyOf": [
+                  {
+                    "$ref": "#/$defs/time"
+                  },
+                  {
+                    "$ref": "#/$defs/target"
+                  }
+                ]
+              },
+              "from": {
+                "$ref": "#/$defs/time"
+              },
+              "facesTheWay": {
+                "type": "boolean"
+              },
+              "banks": {
+                "type": "boolean"
+              },
+              "upright": {
+                "type": "boolean"
+              },
+              "path": {
+                "$ref": "#/$defs/target"
+              },
+              "line": {
+                "$ref": "#/$defs/target"
+              },
+              "loop": {
+                "type": "boolean"
+              },
+              "by": {
+                "$ref": "#/$defs/target"
+              },
+              "joint": {
+                "type": "string"
+              },
+              "quarterTurns": {
                 "type": "number"
               }
             },
