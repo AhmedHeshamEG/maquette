@@ -50,6 +50,18 @@ final class ModelVerbTests: XCTestCase {
         XCTAssertNotNil(result.command, "the whole script is one step")
     }
 
+    func testACagePointOutOfRangeSaysWhichOnesExist() throws {
+        let cage = #"{"do": "model", "target": "Box", "op": "cage", "counts": [2, 2, 4]}"#
+        XCTAssertThrowsError(try run(cage + #", {"do": "model", "target": "Box", "op": "cage", "point": [0, 2, 3], "offset": [0, 1, 0]}"#)) { error in
+            XCTAssertTrue("\(error)".contains("[2, 2, 4] points per axis, so i, j, k are 0–1, 0–1, 0–3"), "\(error)")
+        }
+        // One axis too far used to land on another point ([2, 0, 0] is (0, 1, 0) in a 2-wide cage).
+        XCTAssertThrowsError(try run(cage + #", {"do": "model", "target": "Box", "op": "cage", "point": [2, 0, 0], "offset": [0, 1, 0]}"#))
+        let clamped = try run(#"{"do": "model", "target": "Box", "op": "cage", "counts": [3, 3, 5]}"#)
+        XCTAssertEqual(clamped.document.scene.objects["box"]?.shaping?.cage?.counts, [3, 3, 4])
+        XCTAssertTrue(clamped.report.contains("Cage points per axis are 2–4: [3, 3, 5] became [3, 3, 4]"), "\(clamped.report)")
+    }
+
     func testLoopCutKnifeAndHoles() throws {
         let cut = try run(#"{"do": "model", "target": "Box", "op": "loopCut", "along": "x", "cuts": 2}"#)
         XCTAssertEqual(try mesh(cut, "box").faces.count, 2 + 3 * 4)

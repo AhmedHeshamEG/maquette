@@ -37,7 +37,7 @@ public enum ScriptReference {
     {"do":"model","target":"Box","op":"pull","face":"top","distance":0.2}   {"do":"model","target":"Box","op":"loopCut","along":"x","cuts":2}
     {"do":"model","target":"Box","op":"smooth","levels":2}  ("subdivide" makes it real)   {"do":"model","target":"Box","op":"flat"}
     {"do":"model","target":"Tower","op":"bend","kind":"bend|twist|taper|bulge","amount":45,"axis":"y"}   (amount animates with "keys")
-    {"do":"model","target":"Box","op":"cage","counts":[3,3,3]}  then  {"op":"cage","point":[2,2,2],"offset":[0.3,0,0]}
+    {"do":"model","target":"Box","op":"cage","counts":[3,3,3]}  then  {"op":"cage","point":[2,2,2],"offset":[0.3,0,0]}   (counts: points per axis, 2–4; point: [i,j,k] from 0)
     {"do":"model","target":"Rock","op":"brush","brush":"grab|smooth|inflate","at":[0,1,0],"radius":0.3,"by":[0,0.2,0]}
     {"do":"model","target":"Sculpt","op":"cleanUp","faces":2000}   (even quads)   {"op":"knife","point":[0,0.5,0],"normal":[0,1,0]}
     {"do":"model","target":"Chair","op":"linkedCopy","offset":[1,0,0]}   {"op":"pivot","to":"base"}   {"op":"size","axis":"y","length":0.04}
