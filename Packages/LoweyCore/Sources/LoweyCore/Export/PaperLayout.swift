@@ -95,7 +95,7 @@ public enum PaperLayout {
     }
 
     /// "0:03.20": minutes, seconds and hundredths.
-    static func timecode(_ time: Double) -> String {
+    public static func timecode(_ time: Double) -> String {
         let hundredths = Int((max(time, 0) * 100).rounded())
         return String(format: "%d:%02d.%02d", hundredths / 6000, hundredths / 100 % 60, hundredths % 100)
     }

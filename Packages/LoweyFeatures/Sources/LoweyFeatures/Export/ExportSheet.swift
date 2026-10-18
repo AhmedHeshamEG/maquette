@@ -4,134 +4,121 @@ import LoweyCore
 import LoweyEngine
 import SwiftUI
 
-/// Export asks the kind first (CONTEXT §10.10): a Video, a Picture or a 3D model, then that kind's presets (YouTube
-/// 4K, 1080p, Shorts / Reels, Square, Transparent, a GIF loop, captions; a PNG still; glTF, USDZ, OBJ, STL, 3MF or a
-/// Blender package), the last one used already picked. It renders in the background with the stage still usable,
-/// carries on when you leave the app, and every video is checked before it counts as done.
+/// Export asks formats first (A1, CONTEXT §10.11): Video · Picture · 3D · Paper, then the format (MP4, ProRes 4444,
+/// render passes; glTF, FBX, 3MF; PDF…), then its named presets (glTF ▸ for Godot, FBX ▸ for Unity…), the last one
+/// used already picked. Final, transparency, only the selection and every scene or shot are options beside them. It
+/// renders in the background with the stage still usable, carries on when you leave the app, and every video is
+/// checked before it counts as done.
 struct ExportSheet: View {
     @Bindable var editor: EditorModel
-    @AppStorage("export.kind") private var kind = ExportKindChoice.video
-    @AppStorage("export.preset.video") private var lastVideo = ExportPreset.hd1080.rawValue
-    @AppStorage("export.preset.picture") private var lastPicture = ExportPreset.stillHD.rawValue
+    @AppStorage("export.category") private var category = ExportCategory.video
+    @AppStorage("export.format") private var lastFormat = ExportFormat.mp4.rawValue
+    @AppStorage("export.preset") private var lastPreset = ExportPreset.hd1080.rawValue
+    @State private var format: ExportFormat = .mp4
     @State private var preset: ExportPreset = .hd1080
-    @State private var custom = false
     @State private var settings = ExportPreset.hd1080.settings(range: TimeRange(start: 0, end: 1), fps: 30)
-    @State private var onlyLoop = false
+    @State private var options = ExportOptions()
     @State private var sharing: [URL] = []
     @Environment(\.hmmTheme) private var theme
 
     var body: some View {
         HmmSheet("Export") {
-            kinds
-            if kind != .model {
-                LazyVGrid(columns: [GridItem(.adaptive(minimum: 150), spacing: HmmSpacing.xs)], spacing: HmmSpacing.xs) {
-                    ForEach(kind.presets) { item in
-                        TileButton(title: item.title, systemName: item.systemImage, identifier: "export-\(item.rawValue)", isOn: preset == item) {
-                            choose(item)
-                        }
-                    }
+            categories
+            formats
+            Text(LocalizedStringKey(format.purpose)).font(.hmm(.footnote)).foregroundStyle(theme.text2)
+            LazyVGrid(columns: [GridItem(.adaptive(minimum: 150), spacing: HmmSpacing.xs)], spacing: HmmSpacing.xs) {
+                ForEach(format.presets) { item in
+                    TileButton(title: ExportPreset.title(of: item), systemName: ExportPreset.symbol(of: item), identifier: "export-\(item.rawValue)",
+                               isOn: preset == item) { choose(item) }
                 }
             }
-            if preset.kind == .model {
-                Picker("Format", selection: $editor.precision.exportFormat) {
-                    ForEach(ModelExportFormat.allCases.filter { $0 != .fbx || editor.canExportFBX }) { Text($0.title).tag($0) }
-                }
-                .pickerStyle(.segmented)
-                .accessibilityIdentifier("model-format")
-                if editor.precision.exportFormat == .glb {
-                    Picker("Painted colour", selection: $editor.precision.paintColors) {
-                        ForEach(PaintColorOutput.allCases, id: \.self) { Text(LocalizedStringKey($0.title)).tag($0) }
-                    }
-                    .pickerStyle(.segmented)
-                    .accessibilityIdentifier("model-colours")
-                }
+            if let note = ExportPreset.note(of: preset) {
+                Text(LocalizedStringKey(note)).font(.hmm(.footnote)).foregroundStyle(theme.text2).accessibilityIdentifier("export-note")
             }
-            if preset.kind == .video || preset.kind == .gif {
-                Toggle("Custom size, frame rate and quality", isOn: $custom)
-                if custom { customControls }
-                if editor.timeline.loop != nil { Toggle("Only the loop", isOn: $onlyLoop) }
-            }
+            ExportOptionsView(editor: editor, preset: preset, settings: $settings, options: $options)
             Text(LocalizedStringKey(summary)).font(.hmm(.footnote)).foregroundStyle(theme.text2)
             progressOrStart
             results
         }
-        .onAppear { choose(remembered(for: kind)) }
-        .onChange(of: kind) { _, newKind in choose(remembered(for: newKind)) }
-        .onChange(of: onlyLoop) { _, _ in settings.range = range }
+        .onAppear { open(category, remembered: true) }
+        .onChange(of: options.onlyLoop) { _, _ in settings.range = range }
         .sheet(isPresented: Binding(get: { !sharing.isEmpty }, set: { if !$0 { sharing = [] } })) { ShareSheet(items: sharing) }
     }
 
     private var range: TimeRange {
-        onlyLoop ? (editor.timeline.loop ?? TimeRange(start: 0, end: editor.timeline.duration)) : TimeRange(start: 0, end: editor.timeline.duration)
+        options.onlyLoop ? (editor.timeline.loop ?? TimeRange(start: 0, end: editor.timeline.duration)) : TimeRange(start: 0, end: editor.timeline.duration)
     }
 
-    /// Video, Picture, 3D model: the first choice.
-    private var kinds: some View {
+    /// Video, Picture, 3D, Paper: the first choice.
+    private var categories: some View {
         HStack(spacing: HmmSpacing.xs) {
-            ForEach(ExportKindChoice.allCases) { item in
-                ChoiceChip(title: item.title, systemName: item.systemImage, isOn: kind == item) {
-                    withHmmAnimation(.snappy) { kind = item }
+            ForEach(ExportCategory.allCases) { item in
+                ChoiceChip(title: item.title, systemName: item.systemImage, isOn: category == item) {
+                    withHmmAnimation(.snappy) { open(item, remembered: false) }
                 }
                 .accessibilityIdentifier("export-kind-\(item.rawValue)")
             }
         }
     }
 
-    /// The kind's last preset, or its first.
-    private func remembered(for kind: ExportKindChoice) -> ExportPreset {
-        switch kind {
-        case .video: ExportPreset(rawValue: lastVideo).flatMap { kind.presets.contains($0) ? $0 : nil } ?? .hd1080
-        case .picture: ExportPreset(rawValue: lastPicture).flatMap { kind.presets.contains($0) ? $0 : nil } ?? .stillHD
-        case .model: .model3D
+    /// The category's formats this iPad can write (ProRes needs its media engine; FBX a rigged thing; maps paint).
+    private var formats: some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: HmmSpacing.xs) {
+                ForEach(available(category)) { item in
+                    ChoiceChip(title: item.title, systemName: nil, isOn: format == item) {
+                        withHmmAnimation(.snappy) { pick(item) }
+                    }
+                    .accessibilityIdentifier("export-format-\(item.rawValue)")
+                }
+            }
         }
+    }
+
+    private func available(_ category: ExportCategory) -> [ExportFormat] {
+        category.formats.filter { item in
+            switch item {
+            case .prores: ExportCapabilities.proRes
+            case .fbx: editor.canExportFBX
+            case .maps: editor.hasPaintedThings
+            case .captions: !editor.timeline.transcripts.isEmpty
+            default: true
+            }
+        }
+    }
+
+    /// Opens a category on its last format and preset (or its first).
+    private func open(_ item: ExportCategory, remembered: Bool) {
+        category = item
+        let formats = available(item)
+        let last = ExportFormat(rawValue: lastFormat).flatMap { formats.contains($0) ? $0 : nil }
+        pick(last ?? formats.first ?? .mp4)
+        if remembered, let saved = ExportPreset(rawValue: lastPreset), saved.format == format { choose(saved) }
+    }
+
+    private func pick(_ item: ExportFormat) {
+        format = item
+        lastFormat = item.rawValue
+        if let first = item.presets.first { choose(first) }
     }
 
     private func choose(_ item: ExportPreset) {
         preset = item
-        switch kind {
-        case .video: lastVideo = item.rawValue
-        case .picture: lastPicture = item.rawValue
-        case .model: break
-        }
+        lastPreset = item.rawValue
         settings = item.settings(range: range, fps: editor.timeline.fps)
-        settings.framing = item == .vertical ? .portrait : (item == .square ? .square : settings.framing)
-    }
-
-    private var customControls: some View {
-        VStack(alignment: .leading, spacing: HmmSpacing.s) {
-            Picker("Shape", selection: $settings.framing) {
-                ForEach(Framing.allCases) { Text($0.rawValue).tag($0) }
-            }
-            .pickerStyle(.segmented)
-            Picker("Size", selection: $settings.longSide) {
-                Text("720p").tag(1280)
-                Text("1080p").tag(1920)
-                Text("4K").tag(3840)
-            }
-            .pickerStyle(.segmented)
-            Picker("Frame rate", selection: $settings.fps) {
-                ForEach(ExportSettings.frameRates, id: \.self) { Text("\($0) fps").tag($0) }
-            }
-            .pickerStyle(.segmented)
-            if !settings.transparent {
-                Picker("Codec", selection: $settings.codec) {
-                    Text("H.264").tag(VideoCodecKind.h264)
-                    Text("HEVC").tag(VideoCodecKind.hevc)
-                }
-                .pickerStyle(.segmented)
-            }
-            LabeledSlider(title: "Quality", value: settings.quality, range: 0.1 ... 1, format: NumberFormat.percent) { settings.quality = $0 }
-        }
+        options.transparent = settings.transparent
     }
 
     private var summary: String {
         switch preset.kind {
-        case .video, .gif:
+        case .video, .gif, .frames, .passes:
             let size = settings.size
             return "\(size.width) × \(size.height) · \(settings.fps) fps · \(NumberFormat.short(settings.range.duration)) s · \(settings.frameCount) frames"
-                + (settings.transparent ? " · HEVC with alpha (.mov)" : "")
-        case .still: return "The frame at the playhead, through the shot camera, as a PNG."
-        case .model: return (editor.selection.isEmpty ? "The whole scene. " : "The selection. ") + editor.precision.exportFormat.purpose
+                + (settings.transparent ? " · transparent" : "") + (settings.final ? " · Final" : "")
+        case .still, .stillPasses: return "The frame at the playhead, through the shot camera."
+        case .model: return (options.onlySelection ? "The selection. " : "The whole scene. ") + (format.modelFormat?.purpose ?? "")
+        case .lookShader: return "The \(editor.lookPreset.name) Look, with LICENSE.txt: use it in anything, commercial included."
+        case .paper: return preset.paper?.frames == true ? "Nine frames across the shot, with their moments." : "The frame at the playhead."
         case .captions: return "Subtitles (.srt and .vtt) from the transcript."
         }
     }
@@ -151,15 +138,11 @@ struct ExportSheet: View {
             .accessibilityElement(children: .contain)
             .accessibilityIdentifier("export-progress")
         } else {
-            HStack(spacing: HmmSpacing.xs) {
-                HmmPillButton("Export", systemName: "square.and.arrow.up", prominent: true) {
-                    editor.startExport(preset.kind, settings: settings, title: preset.title)
-                }
-                .accessibilityIdentifier("export-start")
-                if preset.kind == .video {
-                    HmmPillButton("PNG frames instead", systemName: "photo.stack") { editor.exportPNGSequence(settings) }
-                }
+            HmmPillButton("Export", systemName: "square.and.arrow.up", prominent: true) {
+                editor.startExport(options.job(preset, settings: settings))
             }
+            .keyboardShortcut(.defaultAction)
+            .accessibilityIdentifier("export-start")
         }
     }
 
@@ -180,34 +163,8 @@ struct ExportSheet: View {
     }
 }
 
-/// Export's first question: what kind of thing to make.
-enum ExportKindChoice: String, CaseIterable, Identifiable {
-    case video, picture, model
-
-    var id: String { rawValue }
-
-    var title: String {
-        switch self {
-        case .video: "Video"
-        case .picture: "Picture"
-        case .model: "3D model"
-        }
-    }
-
-    var systemImage: String {
-        switch self {
-        case .video: "film"
-        case .picture: "photo"
-        case .model: "cube"
-        }
-    }
-
-    /// The presets of this kind (a GIF and captions go with the video).
-    var presets: [ExportPreset] {
-        switch self {
-        case .video: [.hd1080, .youtube4K, .vertical, .square, .transparent, .gifLoop, .captions]
-        case .picture: [.stillHD, .still4K]
-        case .model: [.model3D]
-        }
-    }
+/// What this iPad can write, asked once.
+@MainActor
+enum ExportCapabilities {
+    static let proRes = VideoEncoder.canEncode(.prores4444)
 }
