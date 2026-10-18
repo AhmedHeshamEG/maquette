@@ -92,6 +92,7 @@ final class SmokeTests: XCTestCase {
         launch()
         newProject()
         tap("Library")
+        tap("library-characters")
         tap("add-me")
         shot("A Blob")
         tap("Animate")

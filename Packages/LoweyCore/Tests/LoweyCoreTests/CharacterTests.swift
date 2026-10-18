@@ -133,7 +133,7 @@ final class CharacterTests: XCTestCase {
         let shapes = LipSync.shapes(for: words, language: "en-US", loudness: Array(repeating: 0.8, count: 200), fps: 30)
         XCTAssertEqual(shapes.first?.time, 1)
         XCTAssertTrue(shapes.contains { $0.viseme == .X && abs($0.time - 1.9) < 1e-9 }, "rests in the pause")
-        XCTAssertTrue(zip(shapes, shapes.dropFirst()).allSatisfy { $0.time <= $1.time && $0.viseme != $1.viseme })
+        XCTAssertTrue(zip(shapes, shapes.dropFirst()).allSatisfy { $0.time <= $1.time && $0.mouth != $1.mouth })
         // Keys: one command, stepped mouth, reverts.
         let (document, root) = try characterDocument()
         var ids = IDFactory.sequential("k")
@@ -145,7 +145,8 @@ final class CharacterTests: XCTestCase {
         let evaluated = Animator.evaluate(synced, at: 1.05).scene
         XCTAssertNotEqual(evaluated.objects[root]?[.mouth], .enumeration("X"))
         XCTAssertNotNil(synced.scene.timeline.track(for: root, .jawOpen))
-        XCTAssertEqual(LipSync.thin([(.A, 1), (.B, 0.5), (.C, 1)], to: 2).count, 2)
+        XCTAssertEqual(LipSync.thin([(Viseme.A, 1.0), (.B, 0.5), (.C, 1.0)], to: 2).count, 2)
+        XCTAssertNotNil(synced.scene.timeline.track(for: root, .mouthShape), "the 14 shapes are keyed beside the nine")
         XCTAssertEqual(Viseme.D.jaw, 0.9)
     }
 

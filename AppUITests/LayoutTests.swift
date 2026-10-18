@@ -194,6 +194,7 @@ final class LayoutTests: XCTestCase {
             XCTAssertTrue(element("inspector").waitForExistence(timeout: 5), "a cube to inspect")
         case "blob":
             tap("Library")
+            tap("library-characters")
             tap("add-me")
         case "timeline":
             if !element("timeline").exists { tap("Animate") }

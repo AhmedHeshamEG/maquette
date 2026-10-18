@@ -26,6 +26,7 @@ reference and stays.
 | Rig, and bring your sculpt: pins and dots, Person / Chain / Four legs / Wings guessed from the shape, rigs you change any time, solid parts hinged, shapes cut finer to bend; motion saved to the Library and dropped anywhere, repeats by a motion's end, four feels; sculpts in painted and lightened with Detail, landing with Rig it; skinned glTF and our own FBX for game engines | **0.14.** D-259 … D-278. The Nomad fixture joins when Hesham exports one (D-275); Unity is a computer check (D-276). |
 | Draw again and one grammar (U5): one Draw where the brush decides (lines, paint, solids, shapes, shadow), zero setup (the surface, else the sheet facing you), the sheet as paper with a hold menu, strokes under the tip (a UI test), shapes in one drag pulled into solids, a tapped stroke's chip, flicked frames and onion skins on the timecode, every number a slider, two fingers on the view, press and carry, hover lighting, the lasso's three homes, the quick menu per tool, the eyedropper loupe, titles stuck to the camera, to the ground by the real shape | **0.15.** D-280 … D-300. Smudge on painted models comes with U7 Texture (D-283). |
 | Shape (U6): touch and drag with no modes (the Pencil lights the face, edge or corner of the selected shape; drag pulls, rounds, moves), the part's chip (inset, shell, bridge, knife, bevel, round, loop cut, merge, fill hole), Model's bar (Shape, Brush, Cage, Bend, Measure), Smooth and making it real, the smooth angle and flat shading, triangle count, clean topology (Instant Meshes), linked copies, the pivot, typed sides, sweep / revolve / loft, sketch rules with our own solver, the view cube, the bridge's `model` and `profile` | **0.16.** D-301 … D-325. Strokes on placed models need them painted first (D-318); the cage doesn't animate yet (D-317). |
+| Characters (K1): Characters ▸ New from five starts, parts with jobs from our own set (or drawn, or modelled) on a character or any thing, the rig built itself, 14 mouths and brows as bends, Say a line, proportions by handles, act it out, GLB for Godot / Unity / Unreal with blend shapes and named clips, sprite sheets, pixel art, turnarounds | **0.20.** D-386 … D-406. Rigid pieces (D-391); people act, animals don't yet (D-397). |
 | Texture (the full colour picker, layers, smudge on paint) | U7 |
 | Mechanisms + AR, web layer (held) | M12 |
 | Content and finish: the house kit, waiting designed, the Board's finish | M14 |
@@ -36,6 +37,31 @@ reference and stays.
 Cast is gone (D-227): what said *Cast ▸ Voice & face*, *Triggers* and *Life* below is the selected character's
 button beside Record in the timeline's Perform; *Cast ▸ Rig* is Rig; *Make it part of* is in Rig. Everything below
 still works the same way.
+
+### Characters (0.20)
+
+- **Library ▸ Characters** (D-401): New (Person, Four legs, Wings, Blob, Nothing), Ready-made (Blob, Me, Puppet) and
+  everything with a skeleton. A new character lands where new things land, selected, its panel open.
+- **Parts** (D-387 … D-389): the object panel's Parts: head, eyes, brows, mouth, nose, ears, hair, body, arms, legs, tail,
+  wings, extras; a tap adds one with its default style, a hold offers the others; Mirrored (on) makes paired parts a pair
+  and changes both sides; added again, another one. The picked part's styles and Take it away. Any thing's panel: Give it
+  parts (the thing becomes the body). A drawing or a modelled thing near a character: Make it a part (as a part, or as
+  the drawing of a face state).
+- **The rig** (D-390, D-391): built from the jobs with U4's dots as soon as the parts change, and again after parts are
+  moved by hand; a person's is the humanoid (every humanoid clip plays on it). The dots are editable in Rig.
+- **Face** (D-392 … D-394): the mouth's 14 shapes (Character Animator's), brows neutral/up/angry/sad, eyes open/blink;
+  tap one to see it, Bend it (open, wide, round, smile, lift, tilt, close), As it came. Lip sync, the live voice and face
+  capture drive them. **Say a line** (D-395): typed words from the playhead.
+- **Proportions** (D-396): height, head, body, waist, arms, legs in the project's units to drag or type; handles on the
+  stage while open; the feet stay on the ground.
+- **Act it out** (D-397), people: As in a mirror; Film yourself (the system camera) or From a video (Photos); progress;
+  keys from the playhead.
+- **For games** (D-398 … D-400): a sheet: For an engine (Godot, Unity, Unreal) ▸ Export GLB; Sprite sheet (4 or 8
+  directions, the motions: Still, Timeline, the humanoid clips; frame size; pixel art and its height) ▸ a zip of PNG, JSON
+  and a Godot SpriteFrames; Turnaround ▸ a PNG.
+- **The bridge** (D-402): `character` with `op` new, add, style, remove, assign, state, proportion, say, rig.
+- **Keys**: ⇧⌘C New Character…, ⌥⌘P New Person, ⇧⌘E Export for Games….
+- **Fixed** (D-386): one rate turns the view everywhere (the stage in any orientation, the Director view, the view cube).
 
 ### Physics (0.19)
 

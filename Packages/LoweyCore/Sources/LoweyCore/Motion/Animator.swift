@@ -53,6 +53,8 @@ public enum Animator {
         var scene = state.scene
         var animated = state.animated
         FaceRig.apply(to: &scene, base: document.scene, animated: &animated)
+        // Made characters' mouths and brows: their face states, bent or drawn.
+        let faces = FaceStates.apply(to: &scene, animated: &animated)
         // Blobs: their clips (dials, lift, lean), then the cartoon face (springy, squash & stretch, auto blink).
         var blobLive = overrides
         let rates = FrameRates(document)
@@ -65,7 +67,8 @@ public enum Animator {
         let camera = timeline.cutCamera(at: time).flatMap { scene.objects[$0] != nil ? $0 : nil }
             ?? scene.activeCamera.flatMap { scene.objects[$0] != nil ? $0 : nil }
         StickToCamera.apply(to: &scene, camera: camera, animated: &animated)
-        let shapes = physics.map { PhysicsPlayback.apply($0, to: &scene, at: time, animated: &animated) } ?? .none
+        var shapes = physics.map { PhysicsPlayback.apply($0, to: &scene, at: time, animated: &animated) } ?? .none
+        shapes.meshes.merge(faces) { run, _ in run }
         RealSunPlayback.apply(to: &scene, project: document.project, time: time)
         var result = AnimatedScene(time: time, scene: scene, animated: animated, camera: camera, poses: state.poses)
         result.simulated = shapes

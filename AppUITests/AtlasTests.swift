@@ -112,6 +112,7 @@ final class AtlasTests: XCTestCase {
 
     private func addBlob() {
         tap("Library")
+        tap("library-characters")
         tap("add-me")
     }
 
@@ -249,7 +250,7 @@ final class AtlasTests: XCTestCase {
             Page(name: "Rig, pins and dots", steps: ["Rig", "rig-marks"]),
             Page(name: "Rig as a person, guessed", steps: ["Rig", "rig-body-person"]),
             Page(name: "Library, Motion", steps: ["Library", "library-motion"]),
-            Page(name: "Library, Rigs", steps: ["Library", "library-rigs"])
+            Page(name: "Library, Characters", steps: ["Library", "library-characters"])
         ], from: .cube)
         fresh(.blob)
         open(Page(name: "Rig with a character", steps: ["Rig"], scrolls: 2))

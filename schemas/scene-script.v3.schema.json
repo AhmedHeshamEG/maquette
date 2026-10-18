@@ -1091,7 +1091,7 @@
             }
           },
           "then": {
-            "description": "A humanoid character.",
+            "description": "A humanoid puppet from a recipe; or, with \"op\", K1's character maker: \"new\" from a start (person, fourLegs, wings, blob, nothing), \"add\" a part to a character or any thing (paired parts mirrored unless symmetric is false), \"style\" (another of the part's set), \"remove\", \"assign\" (a thing becomes a part, or the drawing of a face state), \"state\" (bend a face state: open, wide, round, smile, lift, tilt, close; or reset), \"proportion\" (by a factor or to metres), \"say\" (lip sync a typed line), \"rig\". Changes to parts rig it again in the same step.",
             "properties": {
               "name": {
                 "type": "string"
@@ -1104,6 +1104,118 @@
               },
               "recipe": {
                 "type": "object"
+              },
+              "op": {
+                "enum": [
+                  "new",
+                  "add",
+                  "style",
+                  "remove",
+                  "assign",
+                  "state",
+                  "proportion",
+                  "say",
+                  "rig"
+                ]
+              },
+              "start": {
+                "enum": [
+                  "person",
+                  "fourLegs",
+                  "wings",
+                  "blob",
+                  "nothing"
+                ]
+              },
+              "target": {
+                "$ref": "#/$defs/target"
+              },
+              "character": {
+                "$ref": "#/$defs/target"
+              },
+              "part": {
+                "enum": [
+                  "head",
+                  "eye",
+                  "brow",
+                  "mouth",
+                  "nose",
+                  "ear",
+                  "hair",
+                  "body",
+                  "arm",
+                  "leg",
+                  "tail",
+                  "wing",
+                  "extra"
+                ]
+              },
+              "style": {
+                "type": "string"
+              },
+              "symmetric": {
+                "type": "boolean"
+              },
+              "side": {
+                "enum": [
+                  "left",
+                  "right",
+                  "middle"
+                ]
+              },
+              "state": {
+                "type": "string"
+              },
+              "bend": {
+                "type": "object",
+                "properties": {
+                  "open": {
+                    "type": "number"
+                  },
+                  "wide": {
+                    "type": "number"
+                  },
+                  "round": {
+                    "type": "number"
+                  },
+                  "smile": {
+                    "type": "number"
+                  },
+                  "lift": {
+                    "type": "number"
+                  },
+                  "tilt": {
+                    "type": "number"
+                  },
+                  "close": {
+                    "type": "number"
+                  }
+                }
+              },
+              "reset": {
+                "type": "boolean"
+              },
+              "measure": {
+                "enum": [
+                  "height",
+                  "head",
+                  "body",
+                  "waist",
+                  "arms",
+                  "legs"
+                ]
+              },
+              "by": {
+                "type": "number"
+              },
+              "to": {
+                "type": "number"
+              },
+              "line": {
+                "type": "string"
+              },
+              "language": {
+                "type": "string"
               }
             }
           }

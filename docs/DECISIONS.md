@@ -2552,3 +2552,123 @@ release build only, its bake time in CI's summary; 500 bodies take 2.1 ms a fram
 
 **D-385 — Translations still ride along.** The new strings were translated into Italian and Arabic for the catalog check
 (D-300, D-325, D-337, D-364).
+
+## Maquette 0.20 — K1, characters
+
+**D-386 — One view-turning rate (K1 0.1, device note).** Hesham: the view sometimes turned faster "in another mode".
+Three places turned it, each at its own rate: the stage's one-finger orbit at half a turn across *the stage view's*
+width (so it changed with the iPad's orientation and the window's size), the Director view's camera at a fixed 0.15° a
+point, and the view cube at 1.2° a point (eight times the stage, and deaf to the speed setting). All three now take one
+rate, `AppSettings.orbitDegreesPerPoint`: half a turn across the *screen's* long side, times Settings ▸ Speed. A twist
+stays one to one (it's direct manipulation, like the anchored pan). *Rejected:* a rate per tool (the law is one
+sensitivity everywhere, CONTEXT §10.11).
+
+**D-387 — A part is a thing with a job.** Parts are ordinary things (meshes from the set, drawings, anything modelled)
+with `SceneObject.part`: their job (head, eye, brow, mouth, nose, ear, hair, body, arm, leg, tail, wing, extra), side,
+style, piece and limb. Hinged parts are pieces (an arm is upper arm, forearm, hand), each a child of the character's
+group so it rides its own joint; face parts, ears and hair are children of the head. A made character is a group with
+`characterStart`. *Rejected:* a recipe rebuilt on every change (the Puppet's way: a part moved, painted or remodelled by
+hand would be undone by the next change).
+
+**D-388 — Our own part set.** Every part is built by our code in the house kit's look (chunky, softly rounded,
+toy-scale): heads round/oval/square/bean, eyes round/dot/sleepy/big (with pupils that look), brows line/thick/arched,
+mouths oval/grin/beak, noses button/long/snout, ears round/pointy/floppy/cat, hair short/spiky/tuft/long/mohawk, bodies
+bean/box/pear/round/long, arms tube/noodle/chunky, legs tube/stubby/paw/hoof, tails thin/bushy/fin, wings
+feather/bat/bug, extras horns/antennae/hat/glasses/bow. No Adobe puppets, no Mixamo (CONTEXT §10.11).
+
+**D-389 — Parts attach to any thing.** Adding a part to a thing that isn't a character makes the thing the body of a new
+character where it stands (a teapot gets hands, a rock gets eyes). Paired parts come as a mirrored pair while Mirrored is
+on; a part added again is another one (a third eye above, a second pair of arms lower down). On a creature with no head
+or body, the first eye is one big eye unless a style was picked.
+
+**D-390 — The rig builds itself from the jobs.** The maker places U4's dots where the parts hinge (`CharacterAutoRig`): a
+person gets the humanoid joints by their standard names (hips, spine, chest, neck, head, shoulders, upper and lower arms,
+hands, legs, feet, toes) and the humanoid standard, so every humanoid clip plays on it; four legs and wings get the names
+`BodyGuess` uses; a bodyless creature gets one joint. Every change to the parts (adding, restyling, removing, a
+proportion, a part moved by hand) rigs it again in the same undo step. A mark moved by hand in Rig holds until the parts
+change. *Rejected:* keeping hand-moved marks across part changes (which mark belongs to which new piece is a guess).
+
+**D-391 — Pieces ride their joints.** A made character's pieces are rigid: each rides one joint, a dot hinges two
+pieces (U4's groups). *Rejected:* one skinned mesh with bone heat (soft elbows, but the parts would stop being separate
+things to restyle, paint and remodel); a skin per part is in the backlog.
+
+**D-392 — Face states are bends of the part.** A state is a few numbers (open, wide, round, smile, lift, tilt, close) in
+the part's own size, applied to whatever mesh the part has, so it works on a drawn or modelled part too and survives
+remodelling. Only states the person changed are stored (`CharacterPart.states`). On the stage and in exports the bent
+shape arrives like a physics run's bent surface (`SimulatedShapes`). Engines get each state as a blend shape (the bend of
+the exported corners). *Rejected:* per-vertex offsets (they break when the part is remodelled).
+
+**D-393 — Fourteen mouths.** The mouth's states are Adobe Character Animator's 14 (neutral, ah, d, ee, f, l, m, oh, r,
+s, uh, w-oo, smile, surprised). The pronouncing dictionary is built again from CMUdict with one letter per shape, so lip
+sync reaches 12 of them from words (smile and surprised come from the face and from keys); the nine Rhubarb shapes are
+read from those, so Blobs, swap sets and the jaw keys work as before. Lip sync keys `mouthShape` beside `mouth`; the
+live voice sets it; face capture reads one from the jaw, width, smile and brows. A drawing made a state's drawing shows
+in its part's place while that state is on.
+
+**D-394 — Who moves which face part.** Eyes blink and their pupils look through the face rig (as before); mouths and
+brows bend through their face states, so a made mouth or brow has no face-rig role and the two never move it twice.
+
+**D-395 — Say a line.** Typed words are laid out from the playhead at about 150 words a minute (a long word longer, a
+breath at commas and full stops) and lip-synced, with no voice; the timeline grows to hold the line. A storyboard, a game
+clip or a recording planned for later gets a talking character now.
+
+**D-396 — Proportions change the parts as they stand.** Head bigger (its scale, the face with it), legs and arms longer
+(the upper pieces stretch, hands and feet keep their size, the pieces below follow), the body taller (what sits on it
+rises with the height it sits at), the waist narrower (limbs move in with its sides), the whole height. Longer legs lift
+everything by as much as their lowest point went down, so the feet stay on the ground. Handles on the stage (head, feet,
+hands, the waist's sides) while Proportions is open, and the measures in metres as numbers to drag or type; one drag is
+one undo step and the rig follows when it ends. With Mirrored off a limb's handle changes its own side.
+
+**D-397 — Act it out.** Film yourself (the system camera, front camera first) or pick a video; Apple's on-device 3D body
+pose (`VNDetectHumanBodyPose3DRequest`) reads every frame in the background with progress; each bone of the humanoid is
+turned to point where the person's matching bone points (the least twist from its parent), the hips take the person's
+facing and lean, and the character travels as the hips do, scaled by its leg length over theirs. The first frame is
+turned to face front, so the pose reader's own frame doesn't matter. As in a mirror is on by default. Keys land from the
+playhead and replace that stretch. People only. *Rejected:* streaming the live camera (a recording reads every frame
+reliably and is acted again by filming again); acting for four legs (it would need an animal pose model; backlog).
+
+**D-398 — Game outputs are GLB for all three engines.** Godot reads glTF natively, Unity through glTFast, Unreal through
+Interchange. The skeleton is named for the engine: Godot and Unity read the humanoid as "Hips", "LeftUpperArm"…
+(Godot's humanoid profile and Mecanim both map those); Unreal gets the mannequin's names ("pelvis", "upperarm_l",
+"calf_r", "ball_l"…) under a `root` bone on the ground. Each piece's corners follow its joint fully; mouths and brows are
+their own meshes on the same skin with their states as blend shapes (`extras.targetNames`); the clips are named: what the
+character does on the timeline ("Timeline": its keys, clips and lip sync as blend-shape weights) and, for a person, the
+ten humanoid clips. Lower-detail copies at a half and a quarter of the triangles are named `_LOD1` and `_LOD2`; a capsule
+around the standing character is an OMI collider; the top node carries its real size in metres. *Rejected:* FBX for
+characters (ours writes one skin, without blend shapes or several meshes).
+
+**D-399 — "Retargets in Godot", as CI checks it.** A made person's GLB opened in Godot 4.3: every bone Godot's humanoid
+profile needs is in the skeleton under the profile's name and hangs from the profile's parent, a `BoneMap` over
+`SkeletonProfileHumanoid` finds them all (21 mapped, the 17 needed), its named clips are there and Walk moves its bones,
+and its mouth has 13 blend shapes. Run locally in Docker before CI.
+
+**D-400 — Sprite sheets.** Frames are drawn by the stage's renderer in the scene's Look, from a flat camera at the
+character's height, on a clear background, the character alone; south looks at its face and east faces the picture's
+right. A cell is the largest frame, each frame sitting at its bottom middle. The JSON is Aseprite's hash form with a frame
+tag per strip ("walk_E"); a Godot SpriteFrames (`.tres`) comes with it; all three in a zip. CI packs frames from a tiny
+CPU test rasteriser and opens the sheet in Godot's AnimatedSprite2D (what's checked is the packing and the import).
+Pixel art: each pixel the colour most of its block has, up to 16 colours found in the frames (median cut), solid or
+clear, and a one-pixel outline. A turnaround is front, three-quarter, side and back on white.
+
+**D-401 — Homes.** The Library's Rigs page is now **Characters** (CONTEXT §10.11: Things · Characters · Motion · Yours): New
+(the five starts), Ready-made (Blob, Me, Puppet, moved from Things) and everything with a skeleton. The maker is the object
+panel's character section: the parts (a tap adds one, a hold offers its styles, Mirrored), the picked part's styles and
+Take it away, and one step deeper Face, Proportions, Say a line, Act it out (people) and For games (a sheet). Any thing's
+panel has Give it parts; a drawing or a modelled thing near a character has Make it a part. The menu bar's Character
+menu: ⇧⌘C New Character…, ⌥⌘P New Person, ⇧⌘E Export for Games…. The layout is still before 1.0; nothing else moved.
+
+**D-402 — The bridge.** The `character` verb gains `op`: new, add, style, remove, assign (a part, or a state's
+drawing), state (bend or reset), proportion (by a factor or to metres), say, rig; changes to parts rig it again in the
+same step. Game exports stay in the app (where a file goes is the person's choice). The lowey skill's characters module
+learns it.
+
+**D-403 — Schema 19.** Objects' optional `part`, the `setPart` command, the `characterStart`, `mouthShape` and
+`browState` properties. 0.19 refuses a schema-19 file with its usual message.
+
+**D-404 — Every tier.** Parts are a few hundred triangles each, so making, rigging and bending faces is light on any iPad.
+Sprite sheets and turnarounds are drawn off the stage with progress; reading a video runs in the background with progress.
+The device checklist times reading a ten-second video on the iPad.
+
+**D-405 — Translations still ride along.** The new strings were translated into Italian and Arabic for the catalog check.
+
+**D-406 — No kit change.** Nothing here is something Cutaway needs (its people are footage, not 3D characters).

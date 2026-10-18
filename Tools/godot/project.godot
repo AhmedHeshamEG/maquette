@@ -1,4 +1,4 @@
-; A project only so Godot can run Tools/godot/check_skin.gd headless on CI (the U4 game-engine check).
+; A project only so Godot can run the checks in Tools/godot headless on CI (U4's skins, P1's physics, K1's characters and sprites).
 config_version=5
 
 [application]

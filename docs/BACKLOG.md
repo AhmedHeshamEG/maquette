@@ -3,6 +3,24 @@
 What's known and not done yet, so nothing lives only in someone's head. What Maquette is: [SPEC.md](SPEC.md). The
 phase plan (the pass U1 … U5, M12, M14, M16, then 1.0) lives in studio-h's `PHASES.md`; ideas go to its `IDEAS.md`.
 
+## Left from K1 (Maquette 0.20)
+
+- [ ] The device checklist in the "Maquette 0.20 — K1" PR (orbit speed the same in every tool and orientation, the five
+      starts, parts and styles, face states and lip sync, proportion handles, acting out from the camera and a video,
+      the GLB opened in Godot or Unity, a sprite sheet, a turnaround; reading a ten-second video timed on the iPad).
+- [ ] Pieces are rigid: elbows and knees hinge, they don't bend softly (D-391). A skin per limb (bone heat on its own
+      pieces) is the next step.
+- [ ] A face state is changed with its dials; bending it on the stage with the surface brushes (grab on the shown state)
+      is to do (D-392).
+- [ ] Act it out is for people; four-legged acting needs an animal pose model (D-397).
+- [ ] Hands from Act it out: the wrists aim the forearms; fingers and hand turns aren't read (Vision gives none in 3D).
+- [ ] A mark moved by hand in Rig is replaced when the parts change and the character rigs itself again (D-390).
+- [ ] Sprite sheets cover the humanoid clips, the character's timeline and standing still; any motion from the Library
+      as a strip is to do.
+- [ ] Engines get GLB; an FBX with several meshes and blend shapes (for older Unity and Unreal pipelines) is to do (D-398).
+- [ ] A made character's parts are separate meshes in the stage's draw list; merging a character's pieces for drawing
+      (crowds of made characters) is to do.
+
 ## Left from P1 (Maquette 0.19)
 
 - [ ] The device checklist in the "Maquette 0.19 — P1" PR (the 500-body stack and a glass filling with water on Hesham's

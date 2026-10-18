@@ -120,13 +120,14 @@ Three short pages; the page is remembered.
 | Control | Walk |
 |---|---|
 | Search everything (the Kit, your models, builds, worlds, scripts) | `Library › library-search` |
-| Things: a Blob | `Library › library-things › add-blob` |
-| Things: Me | `Library › library-things › add-me` |
-| Things: a Puppet | `Library › library-things › add-character` |
 | Things: the Kit by set | `Library › library-things › kit-sets` |
+| Characters ▸ New: from a person, four legs, wings, a blob or nothing; the character lands with its panel open and rigs itself | `Library › library-characters › new-character-person` |
+| Characters: a Blob | `Library › library-characters › add-blob` |
+| Characters: Me | `Library › library-characters › add-me` |
+| Characters: a Puppet | `Library › library-characters › add-character` |
 | Motion: poses, clips and loops; tap one to drop it on the selected thing; hold for its menu | `Library › library-motion` |
 | A dropped motion plays where the joints match and says which it skipped; a motion's menu: rename, favourite, delete | tap or touch and hold a motion |
-| Rigs: everything with a skeleton (the Kit's people, rigged models, saved rigged builds) | `Library › library-rigs` |
+| Characters: everything with a skeleton (the Kit's people, rigged models, saved rigged builds) | `Library › library-characters` |
 | Yours: your models, builds, worlds, scripts, favourites, recent; import models (USDZ, glTF, GLB, OBJ, STL, 3MF) | `Library › library-yours › Import models` |
 | An item's menu (the hold menu): rename, favourite; replace with the selection (builds); delete | touch and hold an item |
 | Swap a shape for a model | the object's menu ▸ More ▸ Swap for a model… (the Library opens to swap) |
@@ -254,6 +255,14 @@ you until a finger's tap places it, and reads as paper while you draw. Tap Draw 
 | Look of this object: glow, smoothing, bevel; its own Look, line weight, rim light, accent, gloss | `[cube] object-look` |
 | Shape of this object: typed sides, Smooth, the smooth angle, triangles, clean up, holes, linked copies, the pivot | `[cube] object-shape` |
 | Real: a material in words, how it moves, its weight; joints; Settle, Does it stand?, Keep it; exact numbers deeper | `[cube] object-real` |
+| Give it parts: eyes, arms, a mouth… (the thing becomes the body of a character that rigs itself) | `[cube] character-give` |
+| A made character's parts: every job a tap away (hold one for its styles), Mirrored; the picked part's styles, Take it away | in the panel of a made character |
+| A made character: Face (the states of its mouth, brows and eyes; tap to see one, bend it one step deeper) | in the panel of a made character |
+| A made character: Proportions (each in metres; handles on the stage: head, feet, hands, waist) | in the panel of a made character |
+| A made character: Say a line (lip sync from typed words, from the playhead) | in the panel of a made character |
+| A made character: Act it out (film yourself or a video; the character copies the body), people only | in the panel of a made person |
+| A made character: For games (engines, sprite sheets, turnaround) | in the panel of a made character |
+| A drawing or a modelled thing near a character: Make it a part (or the drawing of a face state) | in the panel of a drawing |
 | More ways to move: once-moves' length, behaviours, animated on (ones…fours), physics, joints, paths, onion skin | `[cube] more-motion` |
 | Numbers: position, rotation, size | `[cube] transform-toggle` |
 | About this object | `[cube] inspector-more` |

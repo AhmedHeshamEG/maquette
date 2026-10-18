@@ -120,8 +120,8 @@ final class EditorModel {
     /// The squeeze menu, the edit bar, the colours a shortcut opened (`EditorModel+Hands`).
     var hands = HandsState()
     var animationView = AnimationViewSettings()
-    /// Strokes picked in the selected ink drawing (Ink ▸ Select strokes).
-    var inkStrokes: Set<Int> = []
+    var maker = MakerState() // the character maker on the stage (K1, `EditorModel+Maker`)
+    var inkStrokes: Set<Int> = [] // strokes picked in the selected ink drawing (Ink ▸ Select strokes)
     var scatter = ScatterPanelSettings()
     /// The Model tool on the stage (`EditorModel+Modeling`).
     var modeling = ModelingState() {

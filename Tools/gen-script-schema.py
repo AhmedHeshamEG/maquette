@@ -57,7 +57,19 @@ verbs = {
     "text": ("3D words.", {"text": s, "name": s, "at": point, "size": n, "style": s, "color": color, "glow": n}, ["text"]),
     "blob": ("A Blob character (a likeness or a recipe).", {"name": s, "likeness": s, "at": point, "facing": n, "label": s,
                                                            "recipe": {"type": "object"}}, []),
-    "character": ("A humanoid character.", {"name": s, "at": point, "facing": n, "recipe": {"type": "object"}}, []),
+    "character": ("A humanoid puppet from a recipe; or, with \"op\", K1's character maker: \"new\" from a start (person, fourLegs, "
+                  "wings, blob, nothing), \"add\" a part to a character or any thing (paired parts mirrored unless symmetric is false), "
+                  "\"style\" (another of the part's set), \"remove\", \"assign\" (a thing becomes a part, or the drawing of a face "
+                  "state), \"state\" (bend a face state: open, wide, round, smile, lift, tilt, close; or reset), \"proportion\" (by a "
+                  "factor or to metres), \"say\" (lip sync a typed line), \"rig\". Changes to parts rig it again in the same step.",
+                  {"name": s, "at": point, "facing": n, "recipe": {"type": "object"},
+                   "op": {"enum": ["new", "add", "style", "remove", "assign", "state", "proportion", "say", "rig"]},
+                   "start": {"enum": ["person", "fourLegs", "wings", "blob", "nothing"]}, "target": tgt, "character": tgt,
+                   "part": {"enum": ["head", "eye", "brow", "mouth", "nose", "ear", "hair", "body", "arm", "leg", "tail", "wing", "extra"]},
+                   "style": s, "symmetric": b, "side": {"enum": ["left", "right", "middle"]}, "state": s,
+                   "bend": {"type": "object", "properties": {k: n for k in ["open", "wide", "round", "smile", "lift", "tilt", "close"]}},
+                   "reset": b, "measure": {"enum": ["height", "head", "body", "waist", "arms", "legs"]}, "by": n, "to": n,
+                   "line": s, "language": s}, []),
     "particles": ("An emitter.", {"preset": s, "name": s, "at": point, "amount": n, "time": time}, ["preset"]),
     "light": ("A lamp.", {"type": {"enum": ["point", "spot", "sun"]}, "name": s, "at": point, "color": color, "intensity": n, "range": n}, []),
     "camera": ("A camera.", {"name": s, "from": point, "lookAt": point, "focalLength": n, "fov": n, "aperture": n, "active": b}, []),

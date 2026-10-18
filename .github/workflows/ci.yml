@@ -188,7 +188,7 @@ jobs:
           grep SPIKE spike-p1-core.txt >> "$GITHUB_STEP_SUMMARY"
 
   godot:
-    name: A rigged, animated glTF plays in Godot 4.3
+    name: Rigged, real and made characters play in Godot 4.3
     needs: core-tests
     runs-on: ubuntu-latest
     steps:
@@ -213,6 +213,18 @@ jobs:
           ./Godot_v4.3-stable_linux.x86_64 --headless --path Tools/godot --script check_physics.gd -- "$GITHUB_WORKSPACE/acceptance/physics/drop.glb" 2>&1 | tee godot-physics.log
           grep -q "MAQUETTE GODOT PHYSICS: .* animated" godot-physics.log
           grep "MAQUETTE GODOT PHYSICS" godot-physics.log >> "$GITHUB_STEP_SUMMARY"
+      - name: A made person maps onto Godot's humanoid profile, plays its named clips and carries its face as blend shapes (K1)
+        run: |
+          set -o pipefail
+          ./Godot_v4.3-stable_linux.x86_64 --headless --path Tools/godot --script check_humanoid.gd -- "$GITHUB_WORKSPACE/acceptance/characters/person.glb" 2>&1 | tee godot-humanoid.log
+          grep -q "MAQUETTE GODOT HUMANOID: .* blend shapes" godot-humanoid.log
+          grep "MAQUETTE GODOT HUMANOID" godot-humanoid.log >> "$GITHUB_STEP_SUMMARY"
+      - name: A dog's sprite sheet plays in an AnimatedSprite2D from four directions (K1)
+        run: |
+          set -o pipefail
+          ./Godot_v4.3-stable_linux.x86_64 --headless --path Tools/godot --script check_sprites.gd -- "$GITHUB_WORKSPACE/acceptance/sprites/dog.png" "$GITHUB_WORKSPACE/acceptance/sprites/dog.json" 2>&1 | tee godot-sprites.log
+          grep -q "MAQUETTE GODOT SPRITES: .* every frame drawn" godot-sprites.log
+          grep "MAQUETTE GODOT SPRITES" godot-sprites.log >> "$GITHUB_STEP_SUMMARY"
 
   interop:
     name: Print files (slicer check) + Blender package + painted glTF (Blender ${{ matrix.blender }})

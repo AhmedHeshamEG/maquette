@@ -141,6 +141,12 @@ struct EditorScreen: View {
                     .ignoresSafeArea(edges: [.top, .horizontal])
                     .environment(\.layoutDirection, .leftToRight)
             }
+            // A made character's proportion handles while Proportions is open (K1).
+            if editor.maker.proportions {
+                ProportionHandles(editor: editor)
+                    .ignoresSafeArea(edges: [.top, .horizontal])
+                    .environment(\.layoutDirection, .leftToRight)
+            }
             if editor.chromeHidden {
                 ChromeRestoreButton(editor: editor)
             } else {
