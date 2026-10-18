@@ -311,3 +311,41 @@ extension AnimateTests {
         """))
     }
 }
+
+// MARK: The timeline's rows and any property
+
+extension AnimateTests {
+    func testTheMotionCurveRisesWhereTheThingMovesFastest() throws {
+        var document = makeDocument()
+        document.scene.timeline.duration = 3
+        document.scene.timeline.tracks = [Track(id: "move", target: "c", property: .position, keyframes: [
+            Keyframe(time: 0, value: .vec3(.zero), easing: .linear), Keyframe(time: 1, value: .vec3(Vec3(1, 0, 0)), easing: .linear),
+            Keyframe(time: 2, value: .vec3(Vec3(4, 0, 0)), easing: .linear)
+        ])]
+        let curve = MotionCurve.amounts(of: "c", in: document)
+        XCTAssertEqual(curve.count, 91, "a value a frame for 3 s at 30 fps")
+        XCTAssertEqual(curve[15], 1.0 / 3, accuracy: 0.02, "a metre a second where the fastest is three")
+        XCTAssertEqual(curve[45], 1, accuracy: 0.02)
+        XCTAssertEqual(curve[80], 0, accuracy: 1e-9, "still after the last key")
+        XCTAssertTrue(MotionCurve.amounts(of: "a", in: document).isEmpty, "nothing moves a")
+        XCTAssertFalse(MotionCurve.amounts(of: "b", in: handScene()).isEmpty, "b moves with its parent")
+    }
+
+    func testAnyPropertyCanStartATrackAtThePlayhead() throws {
+        let document = makeDocument()
+        let choices = PropertyAnimation.choices(for: try XCTUnwrap(document.scene.objects["c"]), in: document.scene)
+        XCTAssertEqual(choices.prefix(3).map(\.key), [.position, .rotation, .scale])
+        XCTAssertTrue(choices.contains { $0.key == .emissiveIntensity && $0.title == "Glow" })
+        XCTAssertFalse(choices.contains { $0.key == .lightIntensity }, "a cylinder has no light")
+        var light = SceneObject(id: "l", name: "Lamp", kind: .light(.point))
+        light[.lightIntensity] = .float(2)
+        XCTAssertTrue(PropertyAnimation.choices(for: light, in: document.scene).contains { $0.key == .lightIntensity })
+        var ids = IDFactory.sequential("p")
+        let command = try XCTUnwrap(PropertyAnimation.key(.emissiveIntensity, of: "c", at: 1.5, shown: document.scene,
+                                                         timeline: document.scene.timeline, ids: &ids))
+        let keyed = try assertReverts(command, on: document)
+        let track = try XCTUnwrap(keyed.scene.timeline.track(for: "c", .emissiveIntensity))
+        XCTAssertEqual(track.keyframes.map(\.time), [1.5], "one key, holding the value it has")
+        XCTAssertNil(PropertyAnimation.key(.locked, of: "c", at: 0, shown: document.scene, timeline: document.scene.timeline, ids: &ids))
+    }
+}
