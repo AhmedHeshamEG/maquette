@@ -72,6 +72,16 @@
             writer.startSession(atSourceTime: .zero)
         }
 
+        /// Whether this device writes `codec` (ProRes needs a media engine some iPads and iPhones don't have): asks a
+        /// writer that is never started, so nothing is written.
+        public static func canEncode(_ codec: VideoCodecKind) -> Bool {
+            let url = FileManager.default.temporaryDirectory.appendingPathComponent("codec-check-\(UUID().uuidString).\(codec.fileExtension)")
+            defer { try? FileManager.default.removeItem(at: url) }
+            guard let writer = try? AVAssetWriter(outputURL: url, fileType: codec.hasAlpha ? .mov : .mp4) else { return false }
+            let settings = EncodeSettings(width: 1920, height: 1080, fps: 30, codec: codec)
+            return writer.canApply(outputSettings: videoSettings(settings), forMediaType: .video)
+        }
+
         private static func videoSettings(_ settings: EncodeSettings) -> [String: Any] {
             let codec: AVVideoCodecType = switch settings.codec {
             case .h264: .h264
