@@ -89,7 +89,7 @@ when they disagree. In the App Store configuration the walk asserts every held r
 
 | Control | Walk |
 |---|---|
-| Export, formats first: Video · Picture · 3D · Paper, then the format, then its named presets (the last used picked); Final, transparency, only the selection, every scene or shot; background export | `Actions › open-export` |
+| Export: Video · Picture · 3D · Paper, then the format, then its presets; Final and the options beside them | `Actions › open-export` |
 | Share the project file | `Actions › Project file` |
 | Monitor window (Stage Manager, external display) | `Actions › open-monitor` |
 | The Board: plan before building (below) | `Actions › open-board` |

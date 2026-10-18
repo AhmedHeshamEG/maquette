@@ -47,7 +47,7 @@ private let layoutWalkRows: [LayoutWalk.Row] = [
                    control: "Back to Home (the stage shrinks into its card)",
                    steps: ["Home"], held: ""),
     LayoutWalk.Row(home: "Actions", precondition: "",
-                   control: "Export, formats first: Video · Picture · 3D · Paper, then the format, then its named presets (the last used picked); Final, transparency, only the selection, every scene or shot; background export",
+                   control: "Export: Video · Picture · 3D · Paper, then the format, then its presets; Final and the options beside them",
                    steps: ["Actions", "open-export"], held: ""),
     LayoutWalk.Row(home: "Actions", precondition: "",
                    control: "Share the project file",
