@@ -42,13 +42,14 @@ extension BridgeModel {
     }
 
     private func statusResponse() -> HTTPResponse {
-        .json([
-            "app": AppIdentity.displayName,
-            "version": AppIdentity.shortVersion,
-            "project": app.editor?.document.project.name ?? "",
-            "scene": app.editor?.baseScene.name ?? "",
-            "autoApply": autoApplyThisSession ? "true" : "false"
-        ])
+        .json(StatusV1(app: AppIdentity.displayName, version: AppIdentity.shortVersion, project: app.editor?.document.project.name ?? "",
+                       scene: app.editor?.baseScene.name ?? "", autoApply: autoApplyThisSession))
+    }
+
+    /// Who said yes, in the reply's own words (the laptop shows it as it is).
+    static func appliedMessage(asked: Bool) -> String {
+        asked ? "Applied: Hesham said yes on the iPad (one undo step)"
+            : "Applied without asking: auto-apply is on for this session (one undo step)"
     }
 
     private func scene(_ editor: EditorModel, _ request: HTTPRequest) -> HTTPResponse {
@@ -79,7 +80,8 @@ extension BridgeModel {
         if ["1", "true", "yes"].contains(request.query["dryRun"]?.lowercased() ?? "") {
             return .json(ScriptReply(applied: false, preview: preview.lines, report: preview.report, created: [:], message: "dry run"))
         }
-        if !autoApplyThisSession {
+        let asks = !autoApplyThisSession
+        if asks {
             if UIApplication.shared.applicationState != .active { BridgeNotice.proposal(script.title) }
             guard await editor.propose(script, preview: preview, source: request.headers["x-lowey-client"] ?? "AI") else {
                 return .json(ScriptReply(applied: false, preview: preview.lines, report: preview.report, created: [:],
@@ -90,7 +92,7 @@ extension BridgeModel {
         case let .success(result):
             notify("scene")
             return .json(ScriptReply(applied: true, preview: preview.lines, report: result.report, created: result.created.mapValues(\.raw),
-                                     message: "Applied (one undo step)"))
+                                     message: Self.appliedMessage(asked: asks)))
         case let .failure(error):
             return .error(422, String(describing: error))
         }
@@ -210,6 +212,15 @@ extension BridgeModel {
         default: "application/octet-stream"
         }
     }
+}
+
+/// v1's status. `autoApply` was the string "false", which every client language reads as true.
+struct StatusV1: Encodable {
+    var app: String
+    var version: String
+    var project: String
+    var scene: String
+    var autoApply: Bool
 }
 
 struct ScriptReply: Codable {

@@ -76,7 +76,8 @@ class FakeBridge(BaseHTTPRequestHandler):
             dry = script.get("dry_run", False)
             return self.reply(200, {"proposal_id": "p-1" if dry else None, "applied": not dry,
                                     "diff": [f"Adds 1: {script['actions'][0].get('name', '?')}"], "report": ["did it"],
-                                    "observe": OBSERVE, "message": "dry run" if dry else "Applied (one undo step)"})
+                                    "observe": OBSERVE, "message": "dry run" if dry else "Applied: Hesham said yes on the iPad (one undo step)",
+                                    "approved_by": None if dry else "ipad"})
         if path == "/v2/observe":
             return self.reply(200, OBSERVE)
         if path == "/v2/contact_sheet":
@@ -86,7 +87,7 @@ class FakeBridge(BaseHTTPRequestHandler):
             request = json.loads(body)
             if request["action"] == "undo":
                 return self.reply(200, {"undone": request.get("steps", 1)})
-            return self.reply(200, {"applied": True, "diff": ["Adds 1: Paper"], "report": [], "observe": OBSERVE, "message": "Applied"})
+            return self.reply(200, {"applied": True, "diff": ["Adds 1: Paper"], "report": [], "observe": OBSERVE, "message": "Applied without asking: auto-apply is on for this session (one undo step)"})
         if path == "/v1/library/import":
             return self.reply(200, {"imported": "tree.glb"})
         if path == "/v2/media":
@@ -160,7 +161,7 @@ def test_the_sixteen_tools_go_through_the_bridge(bridge_host, monkeypatch, tmp_p
     # 4: build — one batch, the diff, and an observe of the result with its pictures
     reply = mcp_server.build([{"do": "add", "asset": "kit.office-desk", "name": "Desk"},
                               {"do": "place", "target": "Lamp", "relation": "on", "reference": "Desk"}], title="Desk", views=["camera", "top"])
-    assert reply[0].startswith("Applied.") and "Observe:" in reply[0] and len(reply) == 3
+    assert reply[0].startswith("Applied: Hesham said yes on the iPad") and "Observe:" in reply[0] and len(reply) == 3
     assert _sent()["actions"][1]["relation"] == "on" and _sent()["title"] == "Desk"
     assert RECEIVED[-1][3] == "Claude (hmm-bridge)"
     dry = mcp_server.build([{"do": "add", "name": "Paper"}], dry_run=True)
@@ -215,7 +216,7 @@ def test_the_sixteen_tools_go_through_the_bridge(bridge_host, monkeypatch, tmp_p
 
     # 16: commit and undo
     committed = mcp_server.commit(proposal_id="p-1")
-    assert committed[0].startswith("Applied.") and _sent() == {"action": "commit", "proposal_id": "p-1"}
+    assert committed[0].startswith("Applied without asking") and _sent() == {"action": "commit", "proposal_id": "p-1"}
     assert mcp_server.commit("undo", steps=2) == "Undone 2 step(s)." and _sent() == {"action": "undo", "steps": 2}
     assert mcp_server.commit().startswith("Error"), "commit needs a proposal id"
 

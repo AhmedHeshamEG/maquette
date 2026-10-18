@@ -105,7 +105,9 @@ extension BridgeModel {
     /// Shows the proposal (with a thumbnail of the result) and applies it if Hesham says yes; replies with an observe.
     private func propose(_ script: SceneScript, result: ScriptResult, preview: ScriptPreview, editor: EditorModel, source: String,
                          views: Set<ObserveView>, subject: String?) async -> HTTPResponse {
-        if !autoApplyThisSession {
+        // Read once: the switch can't change between asking and saying who said yes.
+        let asks = !autoApplyThisSession
+        if asks {
             if UIApplication.shared.applicationState != .active { BridgeNotice.proposal(script.title) }
             let thumbnail = await editor.previewThumbnail(of: result.document)
             guard await editor.propose(script, preview: preview, source: source, thumbnail: thumbnail) else {
@@ -118,7 +120,8 @@ extension BridgeModel {
             notify("scene")
             let observation = try? await editor.observe(views: views, subject: subject, longSide: 960)
             return .json(BuildReply(proposalId: nil, applied: true, diff: preview.lines, report: applied.report,
-                                    observe: observation.map(ObserveReply.init), message: "Applied (one undo step)"))
+                                    observe: observation.map(ObserveReply.init), message: Self.appliedMessage(asked: asks),
+                                    approvedBy: asks ? "ipad" : "autoApply"))
         case let .failure(error):
             return .error(422, String(describing: error))
         }
@@ -300,10 +303,13 @@ struct BuildReply: Encodable {
     var report: [String]
     var observe: ObserveReply?
     var message: String
+    /// Who said yes: "ipad" (the person tapped Apply) or "autoApply" (the session's switch); nil when nothing was applied.
+    var approvedBy: String?
 
     enum CodingKeys: String, CodingKey {
         case applied, diff, report, observe, message
         case proposalId = "proposal_id"
+        case approvedBy = "approved_by"
     }
 }
 

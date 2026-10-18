@@ -265,7 +265,9 @@ class Bridge:
 
 def describe_build(reply: dict) -> str:
     """A build reply in a few lines: applied or not, the diff, what the observe says (keeps tool results small)."""
-    lines = [("Applied. " if reply.get("applied") else "Not applied. ") + reply.get("message", "")]
+    message = reply.get("message", "")
+    # The iPad's own words say who said yes ("Applied: Hesham said yes on the iPad", "Applied without asking: …").
+    lines = [message if message.startswith(("Applied", "Not applied")) else ("Applied. " if reply.get("applied") else "Not applied. ") + message]
     if reply.get("proposal_id"):
         lines.append(f"proposal_id: {reply['proposal_id']}")
     lines += [f"- {line}" for line in reply.get("diff", [])]
