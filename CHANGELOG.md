@@ -3,6 +3,34 @@
 All notable changes. 1.x grew in four phases (v0.1 → v1.4); 2.0 is the remaster, released as betas first. Maquette
 continues from 2.0 and numbers its phases again from 0.1 (each phase bumps the minor version until 1.0).
 
+## [0.21] — Maquette — animate & export (phase A1)
+
+Draw how a thing moves, see the motion in the timeline, and export in the format a pro asks for.
+
+- **Animate has a bar**: Path · Look at · Pick up · Properties · Ghosts · Dope sheet. Animate still brings the timeline.
+- **Draw a motion** (Path): draw where the selected thing goes and it follows **at the speed you drew**, facing the way it
+  goes and leaning into its turns (a character stays upright). It rides the surfaces under the line, up a ramp, over a
+  table. The path's chip: how long it lasts (drag the number), **Even speed**, face the way it goes, lean into turns, turn
+  its front. The path stays editable by its dots, the keys by the timeline.
+- **The timeline shows motion**: thick rows with each thing's icon in its colour and a curve of how much it moves, frames as
+  cells when you zoom in, and the **dope sheet** (every property's keys under its thing). **Ghosts** of where the selection
+  was and will be while you scrub the ruler.
+- **Pick up and hand off** (Pick up): tap the hand that takes the selected thing at the playhead; another hand later hands
+  it on; the empty ground puts it down where it was left.
+- **Look at**: tap what the selected thing watches; a character turns its head, anything else turns whole; later taps
+  switch whom it watches from the playhead.
+- **Any property** (Properties): key anything the thing has (colours, glow, a light's strength, the lens…) at the playhead;
+  after that, changing it keys itself.
+- **Export, formats first**: Video · Picture · 3D · Paper, then the format, then its named presets. New: **ProRes 4444**
+  with transparency (on iPads that write it), **render passes** (colour, alpha, depth, a mask per thing), glTF ▸ **for
+  Godot** · for the web · for Blender, FBX ▸ **for Unity** · for Unreal, **Paper** (the frame on A4, Letter or A3, or frames
+  across the shot as a PDF), and **the Look as a shader** for Godot and Unity, with a licence to use it anywhere.
+- **Final**: motion blur, edges smoother than the preview's, the best shadows and the finest water, for the export that
+  matters. **Every scene** or **every shot** in one go, **only the selection**, a **transparent background**. Exports keep
+  going in the background as before. 3D files carry holds, looks and behaviours as keys.
+- **The bridge**: the `motion` verb (path, follow, lookAt, pickUp, putDown, letGo, evenSpeed, timing, front).
+- Projects move to **schema 20**; 0.20 refuses them with its usual message.
+
 ## [0.20] — Maquette — characters (phase K1)
 
 Make a character with your own hands, any anatomy, game-ready.

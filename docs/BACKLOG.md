@@ -3,6 +3,24 @@
 What's known and not done yet, so nothing lives only in someone's head. What Maquette is: [SPEC.md](SPEC.md). The
 phase plan (the pass U1 … U5, M12, M14, M16, then 1.0) lives in studio-h's `PHASES.md`; ideas go to its `IDEAS.md`.
 
+## Left from A1 (Maquette 0.21)
+
+- [ ] The device checklist in the "Maquette 0.21 — A1" PR (a path drawn with the Pencil and its timing, facing and
+      leaning, look at and pick up on a character, the dope sheet and ghosts, an export carrying on in the background, a
+      Final 1080p export and a passes export timed on the iPad, ProRes 4444 on Hesham's iPad, the Godot shader in a game).
+- [ ] The Unity URP shader is checked on a computer: Unity has no licence-free headless run (D-426).
+- [ ] Paper's text is Latin-1 (Helvetica, nothing embedded): names in Arabic or Japanese print as "?" (D-427). Embed a
+      font with the languages phase.
+- [ ] Ghosts while scrubbing show the selected thing only (D-414); ghosts of a character show its rig's pose, a held thing
+      rides along in them.
+- [ ] A drawn path lands on surfaces facing up; walls and ceilings aren't followed (D-408).
+- [ ] The motion curve in a row is from keys (and parents); holds, looks, behaviours and physics move things it doesn't
+      draw (D-412).
+- [ ] Final's motion blur averages moments (eight a frame): very fast things show steps; a velocity blur is the way past
+      it (D-422).
+- [ ] Every scene for 3D files: another scene's physics run is made only when it's opened (D-423).
+- [ ] An FBX in Unreal's own axes (Z up, centimetres) if a pipeline asks for it; the joint names are there (D-419).
+
 ## Left from K1 (Maquette 0.20)
 
 - [ ] The device checklist in the "Maquette 0.20 — K1" PR (orbit speed the same in every tool and orientation, the five

@@ -84,6 +84,8 @@ final class SmokeTests: XCTestCase {
         tap("camera-button")
         tap("Actions")
         tap("open-export")
+        tap("export-kind-video")
+        tap("export-format-mp4")
         XCTAssertTrue(app.descendants(matching: .any)["export-hd1080"].firstMatch.waitForExistence(timeout: 5))
         shot("Export")
     }

@@ -20,13 +20,16 @@ public enum ExportError: Error, Equatable, CustomStringConvertible {
     }
 }
 
-/// Renders a document frame by frame at a fixed timestep (never real time) into video, GIF, PNG stills or a PNG
-/// sequence. Same renderer, same `ShotBuilder` as the stage: the preview is the export. Every video is verified
-/// (duration, frame count, sound, size) before it counts as done.
+/// Renders a document frame by frame at a fixed timestep (never real time) into video, GIF, PNG stills, a PNG
+/// sequence or render passes. Same renderer, same `ShotBuilder` as the stage: the preview is the export. Every video
+/// is verified (duration, frame count, sound, size) before it counts as done. A Final session (A1) draws with the best
+/// shadows and the finest water, and each frame with motion blur and anti-aliasing (`FinalFrames`).
 @MainActor
 public final class ExportSession {
     public let builder: ShotBuilder
     let frames: FrameRenderer
+    /// Final: motion blur, supersampling, the best shadows and the finest water.
+    public let final: Bool
     private let videoFrames = VideoFrames(exact: true)
     private let logger = Logger(subsystem: "studio.h.maquette", category: "export")
     /// Where a project media file lives (videos on cards and overlays, Manim renders).
@@ -43,9 +46,10 @@ public final class ExportSession {
     public var canRender: () -> Bool = { true }
     public var onWaiting: (Bool) -> Void = { _ in }
 
-    public init(document: Document, catalog: AssetCatalog, device: RenderDevice, models: ModelLibrary = .shared) throws {
+    public init(document: Document, catalog: AssetCatalog, device: RenderDevice, models: ModelLibrary = .shared, final: Bool = false) throws {
         builder = ShotBuilder(document: document, catalog: catalog, models: models)
-        frames = try FrameRenderer(device: device, models: models)
+        frames = try FrameRenderer(device: device, models: models, quality: final ? .final : .full)
+        self.final = final
     }
 
     /// Loads every model the document uses (exports never show placeholders), then the whole physics run.
@@ -55,7 +59,7 @@ public final class ExportSession {
             _ = await builder.models.load(asset, catalog: builder.catalog)
         }
         await builder.models.waitUntilLoaded()
-        await preparePhysics(reusing: builder.physics)
+        await preparePhysics(reusing: builder.physics, detail: final ? 2 : 1)
     }
 
     /// Loads the exact pictures and video frames shown at `time` (never "the nearest one").
@@ -83,15 +87,13 @@ public final class ExportSession {
     /// One frame as an image (snapshots, stills, tests).
     public func image(at time: Double, framing: Framing, longSide: Int, transparent: Bool = false) async throws -> CGImage {
         await loadModels()
-        let size = framing.pixelSize(longSide: longSide)
-        let cgSize = CGSize(width: size.width, height: size.height)
-        await prepareMedia(at: time, size: cgSize, framing: framing)
-        let request = builder.request(at: time, framing: framing, size: cgSize, frameIndex: builder.timeline.frame(for: time),
-                                      transparent: transparent)
-        return try await frames.image(request, width: size.width, height: size.height)
+        var settings = ExportSettings(framing: framing, longSide: longSide, fps: builder.timeline.fps, codec: .h264,
+                                      range: TimeRange(start: time, end: time), transparent: transparent)
+        settings.final = final
+        return try await frameImage(at: time, settings: settings)
     }
 
-    /// A video: H.264 / HEVC .mp4, or HEVC with alpha .mov when transparent. Verified before it returns.
+    /// A video: H.264 / HEVC .mp4, or HEVC with alpha / ProRes 4444 .mov. Verified before it returns.
     public func video(_ settings: ExportSettings, audio: [Float]?, to url: URL, progress: @escaping (Double) -> Void) async throws -> URL {
         await loadModels()
         let size = settings.size
@@ -102,8 +104,11 @@ public final class ExportSession {
                 try await waitUntilRenderable()
                 let time = settings.range.start + Double(frame) / Double(settings.fps)
                 let buffer = try encoder.makePixelBuffer()
-                let request = try await frameRequest(at: time, settings: settings)
-                _ = try await frames.render(request, into: buffer)
+                if settings.final {
+                    try await FinalFrames.copy(frameBytes(at: time, settings: settings), width: size.width, height: size.height, into: buffer)
+                } else {
+                    _ = try await frames.render(frameRequest(at: time, settings: settings), into: buffer)
+                }
                 try await encoder.append(buffer, frame: frame)
                 progress(Double(frame + 1) / Double(settings.frameCount))
                 await Task.yield()
@@ -116,8 +121,10 @@ public final class ExportSession {
             encoder.cancel()
             throw error
         }
+        // ProRes 4444 always carries an alpha channel (opaque when the background is drawn).
         let expected = ExportExpectation(duration: Double(settings.frameCount) / Double(settings.fps), frameCount: settings.frameCount,
-                                         width: size.width, height: size.height, audio: !(audio ?? []).isEmpty, alpha: settings.transparent)
+                                         width: size.width, height: size.height, audio: !(audio ?? []).isEmpty,
+                                         alpha: settings.transparent || settings.codec == .prores4444)
         let problems = try await MediaInspector.verify(url, expected: expected)
         guard problems.isEmpty else { throw ExportError.verification(problems) }
         return url
@@ -126,14 +133,12 @@ public final class ExportSession {
     /// A short looping GIF.
     public func gif(_ settings: ExportSettings, to url: URL, progress: @escaping (Double) -> Void) async throws -> URL {
         await loadModels()
-        let size = settings.size
         let writer = try GIFWriter(url: url, frameCount: settings.frameCount, fps: settings.fps)
         for frame in 0 ..< settings.frameCount {
             try Task.checkCancellation()
             try await waitUntilRenderable()
             let time = settings.range.start + Double(frame) / Double(settings.fps)
-            let request = try await frameRequest(at: time, settings: settings)
-            try await writer.append(frames.image(request, width: size.width, height: size.height))
+            try await writer.append(frameImage(at: time, settings: settings))
             progress(Double(frame + 1) / Double(settings.frameCount))
         }
         try writer.finish()
@@ -148,28 +153,58 @@ public final class ExportSession {
         if let audio, !audio.isEmpty {
             try WAV.data(audio, channels: 2, sampleRate: 48000).write(to: folder.appendingPathComponent("soundtrack.wav"))
         }
-        let size = settings.size
         for frame in 0 ..< settings.frameCount {
             try Task.checkCancellation()
             try await waitUntilRenderable()
             let time = settings.range.start + Double(frame) / Double(settings.fps)
-            let request = try await frameRequest(at: time, settings: settings)
-            let image = try await frames.image(request, width: size.width, height: size.height)
+            let image = try await frameImage(at: time, settings: settings)
             try ImageWriters.writePNG(image, to: folder.appendingPathComponent(String(format: "frame_%05d.png", frame + 1)))
             progress(Double(frame + 1) / Double(settings.frameCount))
         }
         return folder
     }
 
-    private func frameRequest(at time: Double, settings: ExportSettings) async throws -> FrameRequest {
+    // MARK: Frames
+
+    /// The frame at `time` as BGRA bytes of the settings' size (top row first): one draw, or Final's moments, each
+    /// drawn larger and brought down, averaged.
+    func frameBytes(at time: Double, settings: ExportSettings) async throws -> [UInt8] {
+        let size = settings.size
+        guard settings.final else {
+            return try await frames.bytes(frameRequest(at: time, settings: settings), width: size.width, height: size.height)
+        }
+        let scale = FinalFrames.supersample(longSide: settings.longSide)
+        var large = settings
+        large.longSide = settings.longSide * scale
+        let largeSize = large.size
+        var sum = [Float](repeating: 0, count: size.width * size.height * 4)
+        let moments = FinalFrames.moments(at: time, fps: settings.fps)
+        for moment in moments {
+            try Task.checkCancellation()
+            let request = try await frameRequest(at: max(moment, 0), settings: large, frameIndex: builder.timeline.frame(for: time))
+            let bytes = try await frames.bytes(request, width: largeSize.width, height: largeSize.height)
+            FinalFrames.accumulate(FinalFrames.downsampled(bytes, width: largeSize.width, height: largeSize.height, to: size.width, size.height),
+                                   into: &sum)
+        }
+        return FinalFrames.average(sum, count: moments.count)
+    }
+
+    func frameImage(at time: Double, settings: ExportSettings) async throws -> CGImage {
+        let size = settings.size
+        return try await FrameRenderer.image(bgra: frameBytes(at: time, settings: settings), width: size.width, height: size.height,
+                                             transparent: settings.transparent)
+    }
+
+    /// The request for `time` (`frameIndex` keeps a Final frame's moments on one frame of stepping and boil).
+    func frameRequest(at time: Double, settings: ExportSettings, frameIndex: Int? = nil) async throws -> FrameRequest {
         let size = CGSize(width: settings.size.width, height: settings.size.height)
         await prepareMedia(at: time, size: size, framing: settings.framing)
-        return builder.request(at: time, framing: settings.framing, size: size, frameIndex: builder.timeline.frame(for: time),
+        return builder.request(at: time, framing: settings.framing, size: size, frameIndex: frameIndex ?? builder.timeline.frame(for: time),
                                transparent: settings.transparent)
     }
 
     /// Holds the export while the app can't use the GPU (it resumes by itself when the app is back in front).
-    private func waitUntilRenderable() async throws {
+    func waitUntilRenderable() async throws {
         guard !canRender() else { return }
         logger.notice("Export waiting: the app is not in front")
         onWaiting(true)

@@ -154,7 +154,16 @@ verbs = {
                  "at": point, "aim": v3, "reach": n, "box": v3, "amount": n, "duration": n, "color": s, "width": n,
                  "place": s, "latitude": n, "longitude": n, "utcOffset": n, "date": s, "hour": n, "north": n,
                  "study": {"anyOf": [{"type": "array", "items": n}, b]}, "off": b}, ["op"]),
-    "command": ("A raw EditCommand.", {"command": ref("command")}, ["command"]),
+    "motion": ("A1's motion: a path the thing follows at the line's own timing (\"times\" from the first point, else a "
+               "steady \"speed\" or a \"duration\"), facing the way it goes and leaning into turns (characters stay upright); "
+               "following a drawn line; looking at a thing (a character turns its head; \"from\" switches the look at a "
+               "moment); picking up and handing off (\"by\" a thing or a skeleton's \"joint\"), putting down, letting go; "
+               "even speed, the timing of a whole motion, and turning its front.",
+               {"op": {"enum": ["path", "follow", "lookAt", "pickUp", "putDown", "letGo", "evenSpeed", "timing", "front"]},
+                "target": tgt, "points": {"type": "array", "items": v3}, "times": {"type": "array", "items": n}, "speed": n,
+                "duration": n, "at": {"anyOf": [time, tgt]}, "from": time, "facesTheWay": b, "banks": b, "upright": b,
+                "path": tgt, "line": tgt, "loop": b, "by": tgt, "joint": s, "quarterTurns": n}, ["target", "op"]),
+    "command":("A raw EditCommand.", {"command": ref("command")}, ["command"]),
 }
 
 action = {

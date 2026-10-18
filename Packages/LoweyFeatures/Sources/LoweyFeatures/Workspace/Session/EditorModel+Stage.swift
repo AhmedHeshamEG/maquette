@@ -157,6 +157,11 @@ extension EditorModel {
         return ScreenGuide(lines: lines, color: RGBA(0.45, 0.75, 1))
     }
 
+    /// Back from the background: the video frames and stage pick up where they were.
+    func resumeFromBackground() {
+        stage?.redraw()
+    }
+
     func toolChanged(from oldTool: StageTool) {
         lastTool = oldTool
         lassoPoints = []
@@ -165,6 +170,11 @@ extension EditorModel {
         if tool == .shadowBrush { app.show("Paint on an object with the Pencil: shadows follow your strokes") }
         if tool != .ink { inkStrokes = [] }
         if tool != .rig, rigging.person != nil { rigging.person = nil }
+        // A making tool puts Animate away (its bar goes with it).
+        if tool != .select, tool != .animate, animate.isOn {
+            animate.isOn = false
+            animate.verb = nil
+        }
         // The object being rigged (or painted) stands in its rest pose while that tool is on, and goes back to its pose after.
         if tool == .rig || oldTool == .rig || tool == .paint || oldTool == .paint { refreshDisplay() }
         if tool == .paint { readyPaintTarget() }

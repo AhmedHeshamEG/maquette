@@ -59,7 +59,8 @@ public struct PhysicsSources: Sendable {
 public extension ExportSession {
     /// The whole physics run before the first frame (an export never shows a run still being made). A complete run the
     /// stage already made for the same scene is used as it is.
-    func preparePhysics(reusing known: PhysicsFrames? = nil) async {
+    /// `detail` 2 is a Final export's run: water's surface twice as fine (a run of its own, never the stage's).
+    func preparePhysics(reusing known: PhysicsFrames? = nil, detail: Double = 1) async {
         let document = builder.document
         guard PhysicsInput.hasPhysics(document.scene) else {
             builder.physics = nil
@@ -67,7 +68,8 @@ public extension ExportSession {
         }
         let sources = PhysicsSources.gather(document, catalog: builder.catalog, models: builder.models)
         let frames = await Task.detached(priority: .userInitiated) { () -> PhysicsFrames? in
-            guard let input = sources.input(document) else { return nil }
+            guard let made = sources.input(document) else { return nil }
+            let input = detail == 1 ? made : made.detailed(detail)
             if let known, known.isComplete, known.key == input.key { return known }
             return PhysicsSimulator.run(input)
         }.value

@@ -133,6 +133,20 @@ public struct LoweyMenuCommands: Commands {
             Button("Select All Keys") { editor?.selectKeys(.all) }.keyboardShortcut("a", modifiers: [.command, .option])
             Button("Keys After the Playhead") { editor?.selectKeys(.afterPlayhead) }.keyboardShortcut(.rightArrow, modifiers: [.command, .shift])
             Button("Keys at the Playhead") { editor?.selectKeys(.atPlayhead) }
+            Divider()
+            // Animate's bar (A1).
+            Button("Draw a Path") { animateVerb(.path) }.keyboardShortcut("4", modifiers: [.command, .option])
+            Button("Look At…") { animateVerb(.lookAt) }.keyboardShortcut("l", modifiers: [.command, .control])
+            Button("Pick Up or Hand Off…") { animateVerb(.pickUp) }.keyboardShortcut("p", modifiers: [.command, .control])
+            Button("Even Speed") { stageEditor?.evenSpeed() }.disabled(stageEditor?.motionDuration == nil)
+            Button(editor?.animate.ghosts == false ? "Show Ghosts While Scrubbing" : "Hide Ghosts While Scrubbing") { editor?.animate.ghosts.toggle() }
+                .keyboardShortcut("g", modifiers: [.command, .control])
+            Button(editor?.timelineStyle == .dopeSheet ? "Show Motion" : "Show the Dope Sheet") {
+                guard let editor = stageEditor else { return }
+                editor.timelineStyle = editor.timelineStyle == .dopeSheet ? .motion : .dopeSheet
+                editor.timelinePresence = .full
+            }
+            .keyboardShortcut("d", modifiers: [.command, .control])
         }
         // Live performance airs as 1.2 (held in App Store builds until then).
         if Held.isOn(.livePerformance) {
@@ -201,6 +215,13 @@ public struct LoweyMenuCommands: Commands {
         guard let editor = stageEditor else { return }
         editor.tool = tool
         if let panel { editor.openPanel = panel }
+    }
+
+    /// An Animate verb, opening Animate first.
+    private func animateVerb(_ verb: AnimateVerb) {
+        guard let editor = stageEditor else { return }
+        if !editor.animatesNow { editor.toggleAnimate() }
+        editor.chooseAnimateVerb(verb)
     }
 
     private func modelPage(_ page: ModelPage) {

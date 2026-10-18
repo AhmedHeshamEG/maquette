@@ -49,6 +49,8 @@ extension StageGestures {
             colourStroke(recognizer, editor: editor, stage: stage)
         case .rig:
             rigStroke(recognizer, editor: editor, stage: stage)
+        case .animate:
+            motionStroke(recognizer, editor: editor)
         case .ink where editor.ink.mode != .draw:
             inkEditStroke(recognizer, editor: editor, stage: stage)
         case .ink where reshapesPickedStroke(recognizer, editor: editor):

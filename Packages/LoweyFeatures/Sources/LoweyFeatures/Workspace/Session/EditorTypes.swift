@@ -24,6 +24,8 @@ public enum StageTool: String, CaseIterable, Identifiable, Sendable {
     case paint
     /// Rig: bones drawn through an object, weights painted, the person rig's dots (`RigSettings`).
     case rig
+    /// Animate ▸ Path (A1): the Pencil draws the way the selected thing goes.
+    case animate
 
     public var id: String { rawValue }
 
@@ -39,6 +41,7 @@ public enum StageTool: String, CaseIterable, Identifiable, Sendable {
         case .model: "Shape"
         case .paint: "Colour"
         case .rig: "Rig"
+        case .animate: "Path"
         }
     }
 
@@ -54,11 +57,14 @@ public enum StageTool: String, CaseIterable, Identifiable, Sendable {
         case .model: "cube.transparent"
         case .paint: "paintbrush.pointed"
         case .rig: "figure.walk.motion"
+        case .animate: "point.topleft.down.to.point.bottomright.curvepath"
         }
     }
 
     /// Tools where the Pencil (and, if allowed, a finger) paints instead of navigating.
-    public var paints: Bool { self == .ink || self == .draw || self == .shadowBrush || self == .flipbook || self == .paint || self == .rig }
+    public var paints: Bool {
+        self == .ink || self == .draw || self == .shadowBrush || self == .flipbook || self == .paint || self == .rig || self == .animate
+    }
 
     /// The Draw tools (top right: Draw).
     public var draws: Bool { self == .ink || self == .draw || self == .flipbook }

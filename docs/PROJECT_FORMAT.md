@@ -5,7 +5,7 @@ surface of that package: power users, scripts and MCP clients may **read** any o
 (the laptop bridge), so undo and the history journal stay true; a file changed behind the app's back is overwritten at
 the next checkpoint.
 
-Format version: package **2**, document schema **17** (`LoweySchema.currentVersion`), journal **1**.
+Format version: package **2**, document schema **20** (`LoweySchema.currentVersion`), journal **1**.
 
 ```
 My film.maquette/                 (3D-lowey's .lowey packages open too, and are upgraded in place)
@@ -566,6 +566,26 @@ properties: `mouthShape` (one of `neutral`, `ah`, `d`, `ee`, `f`, `l`, `m`, `oh`
 The command `setPart` (`id`, `part`).
 
 Schema 19 only added optional keys; files from schema 18 open unchanged, and Maquette 0.19 refuses schema 19.
+
+## Holds and looking (schema 20)
+
+A scene's timeline has `holds` (absent: nothing is held), who holds what from when:
+
+```json
+"holds": [{"id": "h1", "target": "<cup>", "start": 2.0, "holder": "<hand or character>", "joint": "rightHand",
+           "grip": {"position": [0, 0.05, 0.02], "rotation": [0, 0, 0, 1], "scale": [1, 1, 1]}},
+          {"id": "h2", "target": "<cup>", "start": 5.0}]
+```
+
+From `start` the `target` rides the `holder` (or the `joint` of the holder's skeleton) as `grip` places it, in the
+holder's (or joint's) space; the latest hold that has started wins. A hold without `holder` puts the thing down where
+its last holder had it at that moment. One journal command changes them: `setHolds` (`{"op": "setHolds", "holds": […]}`,
+the whole list).
+
+A thing can carry `lookAt`: the id of the thing it looks at (a string; keyable and stepped, `""` looks at nothing). A
+character turns its head toward it, anything else turns whole.
+
+Schema 20 only added optional keys; files from schema 19 open unchanged, and Maquette 0.20 refuses schema 20.
 
 
 ## workspace.json

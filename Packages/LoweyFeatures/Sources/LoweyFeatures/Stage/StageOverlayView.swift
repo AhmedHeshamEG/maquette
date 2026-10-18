@@ -34,6 +34,12 @@ struct StageOverlayView: View {
             }
             OverlaySelectionFrames(editor: editor)
             MotionPathMarks(editor: editor)
+            if editor.animate.drawing.count > 1 {
+                // Animate ▸ Path: the way being drawn, until its keys land (A1).
+                Path { path in path.addLines(editor.animate.drawing) }
+                    .stroke(theme.accent, style: StrokeStyle(lineWidth: 3, lineCap: .round, lineJoin: .round))
+                    .shadow(color: .black.opacity(0.35), radius: 1)
+            }
             IKHandleMarks(editor: editor)
             PickedStrokes(editor: editor)
             FlipbookOnionSkin(editor: editor)

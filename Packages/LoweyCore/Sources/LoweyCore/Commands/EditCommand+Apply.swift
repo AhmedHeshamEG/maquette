@@ -88,7 +88,7 @@ public extension EditCommand {
         case let .setTracks(edits):
             return try Self.applySetTracks(edits, in: &document)
 
-        case .setFlipbooks, .setTakes, .setSheets:
+        case .setFlipbooks, .setTakes, .setSheets, .setHolds:
             return applyListEdits(to: &document)
 
         case let .replaceScene(scene):
@@ -271,14 +271,21 @@ public extension EditCommand {
         return (.setTracks(inverse.reversed()), ChangeSet(objects: changed, scene: true))
     }
 
-    /// Flipbooks, takes and sheets: lists edited by id.
+    /// Flipbooks, takes and sheets: lists edited by id; holds, the scene's whole list.
     private func applyListEdits(to document: inout Document) -> Applied {
         switch self {
         case let .setFlipbooks(edits): Self.applySetFlipbooks(edits, in: &document)
         case let .setTakes(edits): Self.applySetTakes(edits, in: &document)
         case let .setSheets(edits): Self.applySetSheets(edits, in: &document)
+        case let .setHolds(holds): Self.applySetHolds(holds, in: &document)
         default: (self, ChangeSet())
         }
+    }
+
+    private static func applySetHolds(_ holds: [Hold], in document: inout Document) -> Applied {
+        let old = document.scene.timeline.holds
+        document.scene.timeline.holds = holds
+        return (.setHolds(old), ChangeSet(objects: Set((holds + old).map(\.target)), scene: true))
     }
 
     private static func applySetFlipbooks(_ edits: [FlipbookEdit], in document: inout Document) -> Applied {

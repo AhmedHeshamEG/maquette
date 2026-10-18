@@ -23,7 +23,11 @@ struct LiquidSolver {
 
     static let maxParticles = 5000
 
-    init(recipe: FluidRecipe, emitter: Transform, colliders: [FluidCollider], ground: Bool, gravity: Double, fps: Int) {
+    /// How finely the surface is drawn (1 on the stage, more for a Final export).
+    let detail: Double
+
+    init(recipe: FluidRecipe, emitter: Transform, colliders: [FluidCollider], ground: Bool, gravity: Double, fps: Int, detail: Double = 1) {
+        self.detail = detail
         self.recipe = recipe
         self.emitter = emitter
         box = FluidBox.make(recipe, at: emitter.position, ground: ground)
@@ -239,7 +243,8 @@ struct LiquidSolver {
     /// The water's surface and how much there is.
     func look() -> PhysicsFrames.FluidLook {
         let litres = Double(positions.count) * Double(spacing * spacing * spacing) * 1000
-        return PhysicsFrames.FluidLook(surface: positions.isEmpty ? nil : FluidSurface.mesh(positions, spacing: Double(spacing)), amount: litres)
+        return PhysicsFrames.FluidLook(surface: positions.isEmpty ? nil : FluidSurface.mesh(positions, spacing: Double(spacing), detail: detail),
+                                       amount: litres)
     }
 }
 

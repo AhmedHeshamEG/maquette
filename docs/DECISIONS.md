@@ -2672,3 +2672,138 @@ The device checklist times reading a ten-second video on the iPad.
 **D-405 — Translations still ride along.** The new strings were translated into Italian and Arabic for the catalog check.
 
 **D-406 — No kit change.** Nothing here is something Cutaway needs (its people are footage, not 3D characters).
+
+## Maquette 0.21 — A1, animate & export
+
+**D-407 — A drawn motion is keys, timed by the drawing.** Animate ▸ Path: the Pencil draws where the selected thing goes,
+and the stroke becomes position keys (and rotation keys while it faces the way) laid from the playhead. Each Pencil
+sample's own timestamp times them, so the thing moves at the speed it was drawn and the motion lasts as long as the
+drawing did. A time-synchronous Douglas–Peucker keeps a key wherever the line needs one to stay within 5 mm (or 0.2 % of
+its size) of where it was drawn *at that moment*, so at every drawn moment the thing is there within a frame (Core test).
+Keys of those properties already in the stretch go; the timeline grows to hold it. *Rejected:* a path object with its own
+timing curve (a second kind of motion beside keys, which the dope sheet, the graph, Keep it and every export speak);
+resampling to a steady speed (the drawing's timing is the point; Even speed is one tap away).
+
+**D-408 — Where a drawn path lands.** On the surface under the tip (picked once per frame of samples from the ID buffer,
+the moving thing's own surface ignored, only surfaces facing up), else on the level it last stood at; the pivot rides as
+high above that as it does when the stroke starts, so a car drives up a ramp and a bird keeps its height. *Rejected:* a
+ray per sample (a GPU round trip at 240 Hz); paths up walls (a path climbs ramps, not walls).
+
+**D-409 — Facing the way it goes, leaning into turns.** The front is +Z (the models' convention, as Follow path uses);
+the top leans toward the turn's centre by the turn's pull against gravity (a bike's lean, atan(v²/rg)), at most 35°;
+characters stay level and lean a third as much (a runner). Where it stops it keeps its heading; before it first moves it
+already faces the way it will go. Both are on by default, two switches on the path's chip. *Turn its front* adds a
+quarter turn to every rotation key, for a model whose front isn't +Z. *Rejected:* asking which way the front is first
+(a decision wall).
+
+**D-410 — Retiming by dragging.** The path's chip shows how long the motion lasts as a number pill: drag to stretch or
+squeeze it, tap to type. *Even speed* moves every key to where it lies along the way (a stop disappears). A key dragged in
+the timeline or a dot on the stage still retimes or reshapes one moment. *Rejected:* timing ticks along the path to drag
+(the timeline's job done a second way on the stage).
+
+**D-411 — Animate has a bar like every tool.** Path · Look at · Pick up · Properties · Ghosts · Dope sheet: six, the most a
+bar holds. Animate still calls the timeline. With no verb chosen the Pencil picks, moves and poses things and keys add
+themselves (U2). A making tool puts Animate away; the Animate button brings a folded timeline back before it puts Animate
+away. The verbs are also in the Timeline menu (⌥⌘4 Path, ⌃⌘L Look at, ⌃⌘P Pick up, ⌃⌘G Ghosts, ⌃⌘D the dope sheet).
+
+**D-412 — The timeline shows motion.** In the Motion style a thing's row is 46 pt, with its icon in its own colour and a
+filled curve of how much it moves at each frame (travel, turn and growth from its keys and its parents', scaled to its
+fastest moment), a dot a frame once frames are 9 pt wide. Zoomed that far every row shows its frames as cells (a hairline
+between them, every other faintly shaded). *Rejected:* a picture of the thing per frame (a render per cell; the curve says
+when it moves at a glance).
+
+**D-413 — The dope sheet is a style of the same timeline.** Every animated thing's tracks are listed under it, rows of
+30 pt, the same keys and gestures; Animate ▸ Dope sheet switches, remembered on the device. *Rejected:* a separate sheet
+(two places to edit the same keys).
+
+**D-414 — Ghosts while scrubbing.** Dragging the ruler shows the selected thing three moments either side, a fifth of a
+second apart, tinted as the onion skin is (red before, green after); on by default (Animate ▸ Ghosts). The selected thing's
+path is drawn whenever Select or Path is in the hand. *Rejected:* ghosts of everything that moves (clutter, and a render
+per ghost per thing).
+
+**D-415 — Pick-up and hand-off are holds.** From a moment a thing rides a holder (a thing, or a joint of a skinned rig: the
+nearest one, a hand when one is about as near) the way it sat then (its grip, in the holder's space). A hold by someone
+else is a hand-off; a hold with no holder puts it down where its last holder had it at that moment, worked out as it plays,
+so moving the hand later moves where the cup is left. Holders go first, so a tray carries its cups; picking up refuses a
+loop and a thing's own parts. Deleting either thing deletes its holds. *Rejected:* reparenting (it moves the thing in the
+outliner and loses where it was before and after); baking keys at the pick-up (moving the hand later would leave the cup
+behind).
+
+**D-416 — Look at is a property.** `lookAt` names a thing: a character turns its head (up to 70°, the neck's reach) and
+its face parts ride along; anything else turns whole and a camera points its lens. Keyed, a new target turns the look over
+a quarter of a second. From the bar the first tap sets it for the whole shot, a tap after the start switches from the
+playhead, a tap on the empty ground stops looking. *Rejected:* the Look at behaviour (it turns the whole character).
+
+**D-417 — Animate any property.** Animate ▸ Properties lists what the selection can have keyed (place, turn, size, shown,
+opacity, then its kind's: colours and finish, a light's, the lens, reveal, an emitter's rate, a face's channels), and one tap
+keys it at the playhead as it is; after that, changing it keys itself. *Rejected:* a key button beside every number of every
+panel (an advanced control beside each basic one).
+
+**D-418 — Export asks formats first.** Video · Picture · 3D · Paper, then the format (MP4, HEVC, ProRes 4444, GIF, PNG
+frames, Render passes, Captions; PNG, Render passes; glTF, FBX, USDZ, OBJ, STL, 3MF, Blender, Maps, the Look as a shader;
+PDF), then its named presets; the last format and preset are remembered. A format this iPad or scene can't make isn't
+shown (ProRes without the media engine, FBX without a rigged thing, Maps without paint, Captions without a transcript).
+
+**D-419 — A 3D preset is a real difference.** glTF ▸ for Godot leaves cameras and lights out (the engine brings its own)
+and keeps the colliders; for the web writes painted colour as vertex colours, no colliders; for Blender and 3D apps keeps
+everything. FBX ▸ for Unity names the joints for Unity's humanoid, for Unreal for the mannequin. Every animated format bakes
+behaviours, holds and looks into keys (`MotionBake`), as physics was. *Rejected:* an FBX in Unreal's Z-up axes (both engines
+turn a Y-up FBX on import; the joint names are what retargeting needs).
+
+**D-420 — ProRes 4444 where the iPad writes it.** Offered when the kit's `VideoEncoder.canEncode` says so (0.11): always a
+.mov with an alpha channel (opaque when the background is drawn), so its check expects alpha. Transparency on the other
+video formats picks HEVC with alpha.
+
+**D-421 — Render passes.** Colour (premultiplied, transparent), alpha (a grey matte), depth (16-bit grey: white near, black
+far or empty; near and far in metres set by the first frame and kept for the sequence) and masks (each thing a flat colour
+from its id, the same in every frame and export), with `passes.json` giving the depth's range and each mask colour's thing.
+Depth and masks are the renderer's own prepass, pixel for pixel; with Final the colour is Final's and the other passes come
+from a plain draw of the same moment. *Rejected:* EXR (no writer on iOS without a library; a 16-bit PNG opens everywhere);
+Cryptomatte (it needs EXR).
+
+**D-422 — Final.** Eight moments over half a frame (a 180° shutter) averaged: motion blur. Each drawn at twice the file's
+size up to 4K and brought down with a Lanczos filter (vImage): anti-aliasing past the preview's MSAA. The sun's shadow map at
+4096, twice the full preview's. Water's surface drawn twice as finely from the same drops (a run of its own,
+`PhysicsInput.surfaceDetail`). An option beside every preset that renders; slower, and it carries on in the background like
+any export. *Rejected:* velocity-buffer motion blur (the renderer has no per-object velocities; a pass to keep right forever).
+
+**D-423 — Every scene, every shot.** "Every scene, one file each" (Video, Picture, Paper: the open scene as it is, the others
+as last saved) and "Every shot, one file each" (the stretches between the timeline's camera cuts) are one job with one
+progress, in the background as before. "All clips" are the shots: a character's clips already leave together in the game GLB
+(D-398). *Rejected:* every scene for 3D files (another scene's physics run isn't made until it's opened).
+
+**D-424 — Only the selection, a transparent background.** Video, Picture and Paper draw only the selected things (and what
+they hang from); 3D files write only them, as before. Transparent background is a switch for everything that renders.
+
+**D-425 — Render on a computer.** The Blender package is Blender ▸ Render on a computer, and its row says Blender renders it
+close to the Look, never identical.
+
+**D-426 — The Look as a shader.** Godot gets `maquette_<look>.gdshader` (the bands in `light()`, so Godot's own lights and
+shadows drive it; the shadows' hue shift, the rim, stepped highlights; faceted and Clay variants),
+`maquette_<look>_outline.gdshader` (an inverted hull of constant width on screen) and a `.tres` material joining them by
+relative paths; Unity's URP gets one `.shader` with the lit pass (the main light and its shadows, the extra lights) and the
+outline pass. Both carry LICENSE.txt ("use them in anything, commercial included") and README.txt (what travels, and what
+stays: halftone, grain, misregistration, boiling lines, contact shading), zipped and named for the person ("Ink Look for
+Godot.zip"). CI renders the Ink material in Godot 4.3 (GL Compatibility on Mesa's llvmpipe, in the Ubuntu 24.04 container
+the golden was recorded in) and compares the frame with the golden: a mean of at most 3 levels, 98 % of pixels within 24.
+Unity has no licence-free headless run, so its shader is checked on a computer (backlog).
+
+**D-427 — Paper is our own PDF.** A pure-Swift writer (tested on Linux; JPEG pictures embedded as they are, Helvetica text,
+no fonts embedded): the frame at the playhead on A4, US Letter or A3 (turned to the picture), or nine frames across the shot
+on one sheet with their moments, the scene's name on top. Text outside Latin-1 prints as "?" (backlog: an embedded font).
+F1's storyboards build on it. *Rejected:* `UIGraphicsPDFRenderer` (UIKit only: untestable on Linux and of no use to the kit).
+
+**D-428 — The bridge's `motion`.** path (points with their times, or a speed or a duration), follow, lookAt (from a moment),
+pickUp (by a thing or a joint), putDown, letGo, evenSpeed, timing, front; the lowey skill has a motion module. Exports stay
+in the app: where a file goes is the person's choice (D-402).
+
+**D-429 — Schema 20.** Timelines' optional `holds`, the `setHolds` command, the `lookAt` property. 0.20 refuses a schema-20
+file with its usual message.
+
+**D-430 — Every tier.** Drawing a path looks at the ID buffer once a frame; the timeline's motion curves are keys only and
+kept per document revision; Final is export-only and the same picture on every iPad, slower on a smaller one. The device
+checklist times a Final 1080p export and a passes export on the iPad.
+
+**D-431 — Kit 0.11.** `VideoEncoder.canEncode(_:)`: Cutaway offers ProRes the same way.
+
+**D-432 — Translations still ride along.** The new strings were translated into Italian and Arabic for the catalog check.

@@ -5,14 +5,14 @@ import Foundation
 extension EditCommand: Codable {
     private enum Key: String, CodingKey {
         case op, fragment, parent, index, ids, entries, changes, id, name, kind, look, scope, camera, timeline, label, commands, tracks
-        case dabs, looks, flipbooks, scene, brushes, paint, tiles, rig, takes, sheets, shaping, modelHistory, physics, part
+        case dabs, looks, flipbooks, scene, brushes, paint, tiles, rig, takes, sheets, shaping, modelHistory, physics, part, holds
     }
 
     private enum Op: String, Codable {
         case insert, delete, restore, setProperties, rename, setKind, reparent, setLook, renameScene
         case setActiveCamera, setTimeline, setTracks, batch, setShadowPaint, setCustomLooks, setFlipbooks, replaceScene
         case setBrushes, setPaint, paintTiles, setRig, setTakes, setSheets, setShaping, setModelHistory, setPhysics, setScenePhysics
-        case setPart
+        case setPart, setHolds
     }
 
     public init(from decoder: Decoder) throws {
@@ -67,6 +67,8 @@ extension EditCommand: Codable {
             self = try .setScenePhysics(c.decodeIfPresent(ScenePhysics.self, forKey: .physics))
         case .setPart:
             self = try .setPart(c.decode(ObjectID.self, forKey: .id), c.decodeIfPresent(CharacterPart.self, forKey: .part))
+        case .setHolds:
+            self = try .setHolds(c.decode([Hold].self, forKey: .holds))
         case .setTakes:
             self = try .setTakes(c.decode([TakeEdit].self, forKey: .takes))
         case .setSheets:
@@ -139,7 +141,7 @@ extension EditCommand: Codable {
             try c.encode(label, forKey: .label)
             try c.encode(commands, forKey: .commands)
         case .setShadowPaint, .setCustomLooks, .setFlipbooks, .replaceScene, .setBrushes, .setRig, .setTakes, .setSheets, .setShaping,
-             .setModelHistory, .setPhysics, .setScenePhysics, .setPart:
+             .setModelHistory, .setPhysics, .setScenePhysics, .setPart, .setHolds:
             try encodeWholeValue(into: &c)
         case let .setPaint(id, paint):
             try c.encode(Op.setPaint, forKey: .op)
@@ -199,6 +201,9 @@ extension EditCommand: Codable {
             try c.encode(Op.setPart, forKey: .op)
             try c.encode(id, forKey: .id)
             try c.encodeIfPresent(part, forKey: .part)
+        case let .setHolds(holds):
+            try c.encode(Op.setHolds, forKey: .op)
+            try c.encode(holds, forKey: .holds)
         default:
             break
         }

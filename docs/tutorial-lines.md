@@ -3,6 +3,20 @@
 One line per feature for the person it serves (`studio-h/USERS.md`), in Hesham's voice, for the YouTube lessons the
 Learn place links to (CONTEXT §8). A phase adds the lines of what it built; M16 records them.
 
+## 0.21 (A1): animate & export
+
+- **The explainer maker:** "Pick the car, Animate, Path, and draw where it goes. Draw slow, it drives slow; speed up, it
+  speeds up. It turns into the corners by itself."
+- **The explainer maker:** "Look at: tap the ball, and her head follows it. Pick up: tap her hand at this moment, and the
+  cup goes with her."
+- **The flipbook animator:** "Drag the ruler: the ghosts show where it was and where it's going. Dope sheet: every key,
+  property by property."
+- **The indie game developer:** "Export, 3D, glTF, For Godot. Then The Look as a shader, For Godot: your game looks like
+  your Maquette scene."
+- **The indie filmmaker:** "Export, Video, Render passes: colour, alpha, depth and a mask for every thing, for your
+  compositor. Switch on Final for motion blur."
+- **Everyone:** "Properties: tap Glow and it's keyed. Change it later in the timeline, and it animates."
+
 ## 0.20 (K1): characters
 
 - **The indie game developer:** "Library, Characters, New, Nothing. Tap Eyes: one big eye. Tap Mouth. It's rigged

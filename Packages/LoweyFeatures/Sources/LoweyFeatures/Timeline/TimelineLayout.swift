@@ -10,6 +10,8 @@ import SwiftUI
 final class TimelineLayout {
     static let labelWidth: CGFloat = 150
     static let rowHeight: CGFloat = 30
+    /// A thing's row in the Motion style (A1): thick enough to show its motion.
+    static let motionRowHeight: CGFloat = 46
     static let rulerHeight: CGFloat = 30
     static let audioRowHeight: CGFloat = 38
     static let wordsRowHeight: CGFloat = 24
@@ -94,7 +96,8 @@ final class TimelineLayout {
         result += timeline.flipbooks.map { .flipbook($0.id) }
         for entry in outline {
             result.append(.object(entry.id))
-            if editor.expandedObjects.contains(entry.id) {
+            // The dope sheet lists every property's keys under its thing.
+            if editor.timelineStyle == .dopeSheet || editor.expandedObjects.contains(entry.id) {
                 result += timeline.tracks.filter { $0.target == entry.id }.map { .track($0.id) }
             }
         }
@@ -109,12 +112,13 @@ final class TimelineLayout {
         return Set(TimelineOutline.members(of: id, scene: editor.baseScene, animated: timeline.animatedObjects))
     }
 
-    static func height(of row: Row) -> CGFloat {
+    func height(of row: Row) -> CGFloat {
         switch row {
-        case .track: rowHeight - 4
-        case .audio: audioRowHeight
-        case .words, .effects: wordsRowHeight
-        case .object, .flipbook: rowHeight
+        case .track: Self.rowHeight - 4
+        case .audio: Self.audioRowHeight
+        case .words, .effects: Self.wordsRowHeight
+        case .object: editor.timelineStyle == .motion ? Self.motionRowHeight : Self.rowHeight
+        case .flipbook: Self.rowHeight
         }
     }
 
@@ -127,9 +131,9 @@ final class TimelineLayout {
             y += Self.rowHeight + 1
         }
         for row in rows {
-            let height = Self.height(of: row)
-            result.append((row, y, height))
-            y += height + 1
+            let tall = height(of: row)
+            result.append((row, y, tall))
+            y += tall + 1
         }
         return result
     }

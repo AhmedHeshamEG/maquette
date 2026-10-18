@@ -91,7 +91,7 @@ public extension KeyOperations {
         return move(keys, by: clamped, in: timeline)
     }
 
-    private func retimed(_ keys: [KeyRef], in timeline: Timeline, _ transform: (Double) -> Double) -> EditCommand? {
+    internal func retimed(_ keys: [KeyRef], in timeline: Timeline, _ transform: (Double) -> Double) -> EditCommand? {
         var edits: [TrackEdit] = []
         for track in timeline.tracks {
             let times = keys.filter { $0.track == track.id }.map(\.time)
@@ -103,10 +103,14 @@ public extension KeyOperations {
                 return copy
             }
             guard !changed.isEmpty else { continue }
+            // Keys that land on the same moment become one (the later one wins).
+            let landed = changed.enumerated().filter { index, key in
+                !changed[(index + 1)...].contains { abs($0.time - key.time) < 0.0005 }
+            }.map(\.element)
             var rest = track.keyframes.filter { !isSelected($0) }
-            rest.removeAll { key in changed.contains { abs($0.time - key.time) < 0.0005 } }
+            rest.removeAll { key in landed.contains { abs($0.time - key.time) < 0.0005 } }
             var copy = track
-            copy.setKeys(rest + changed)
+            copy.setKeys(rest + landed)
             edits.append(TrackEdit(copy))
         }
         return edits.isEmpty ? nil : .setTracks(edits)

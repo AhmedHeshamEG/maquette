@@ -5,12 +5,25 @@ import LoweyCore
 import LoweyEngine
 
 /// What the stage shows of the selection's animation: its motion path (the arc it travels, a dot per position key that
-/// can be dragged to reshape the arc) and the 3D onion skin (tinted ghosts of its neighbouring keyed poses).
+/// can be dragged to reshape the arc), the 3D onion skin (tinted ghosts of its neighbouring keyed poses) and, while the
+/// ruler is scrubbed, ghosts of where it was and will be (A1).
 extension EditorModel {
-    /// The single selected object whose path or ghosts are shown (select tool, not while performing).
+    /// The single selected object whose path or ghosts are shown (Select or Animate's Path, not while performing).
     private var motionSubject: ObjectID? {
-        guard tool == .select, performPhase == .idle, selection.count == 1, let id = selection.first else { return nil }
+        guard tool == .select || tool == .animate, performPhase == .idle, selection.count == 1, let id = selection.first else { return nil }
         return id
+    }
+
+    /// Ghosts while scrubbing: three moments either side, a fifth of a second apart.
+    static let ghostSpacing = 0.2
+    static let ghostCount = 3
+
+    /// The moments the scrubbing ghosts show, inside the timeline.
+    func scrubGhostTimes() -> (before: [Double], after: [Double]) {
+        let step = Self.ghostSpacing
+        let before = (1 ... Self.ghostCount).map { time - Double($0) * step }.filter { $0 >= 0 }
+        let after = (1 ... Self.ghostCount).map { time + Double($0) * step }.filter { $0 <= timeline.duration }
+        return (before, after)
     }
 
     /// The selection's motion path (cached until the document or the selection changes).
@@ -59,12 +72,13 @@ extension EditorModel {
 
     /// Ghosts of the selection at its neighbouring keys: earlier ones red, later ones green, fading with distance.
     func onionGhosts() -> [Ghost] {
-        guard animationView.onionSkin, let id = motionSubject else { return [] }
+        let scrubbing = animate.ghosts && scrubbingTimeline && timeline.animatedObjects.contains(motionSubject ?? ObjectID(raw: ""))
+        guard animationView.onionSkin || scrubbing, let id = motionSubject else { return [] }
         let key = MotionViewCache.GhostKey(revision: session.revision, object: id, frame: timeline.frame(for: time),
-                                           before: animationView.onionBefore, after: animationView.onionAfter)
+                                           before: scrubbing ? -1 : animationView.onionBefore, after: animationView.onionAfter)
         if motionCache.ghostKey == key { return motionCache.ghosts }
-        let times = MotionPath.neighbourKeyTimes(of: id, in: baseScene, around: time, before: animationView.onionBefore,
-                                                 after: animationView.onionAfter)
+        let times = scrubbing ? scrubGhostTimes() : MotionPath.neighbourKeyTimes(of: id, in: baseScene, around: time, before: animationView.onionBefore,
+                                                                                 after: animationView.onionAfter)
         let rigs = rigs()
         func ghosts(_ list: [Double], tint: RGBA) -> [Ghost] {
             list.enumerated().map { offset, moment in
@@ -103,6 +117,8 @@ struct MotionViewCache {
 
     var pathKey: PathKey?
     var path: MotionPath?
+    /// Each animated thing's motion curve for the timeline's rows (A1), by the document's revision.
+    var curves: (revision: Int, curves: [ObjectID: [Double]]) = (-1, [:])
     var ghostKey: GhostKey?
     var ghosts: [Ghost] = []
 }

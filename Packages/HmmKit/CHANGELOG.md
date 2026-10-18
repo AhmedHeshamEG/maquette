@@ -3,6 +3,14 @@
 All notable changes to hmm-kit. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the
 project uses [Semantic Versioning](https://semver.org/).
 
+## [0.11.0] - 2026-10-18
+
+Built with Maquette 0.21.
+
+### Added
+- **HmmMedia**: `VideoEncoder.canEncode(_:)` says whether this device really writes a codec (it encodes two small frames:
+  ProRes 4444 needs a media engine some iPads don't have), so an app offers only what it can make.
+
 ## [0.10.0] - 2026-10-15
 
 Built with Maquette 0.18.

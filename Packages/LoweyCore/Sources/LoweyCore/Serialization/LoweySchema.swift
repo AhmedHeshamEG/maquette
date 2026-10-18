@@ -62,7 +62,9 @@ public enum LoweySchema {
     ///     `realSun`.
     /// 19: Maquette 0.20's characters: objects' `part` (a made character's part: its job, side, style, pieces and face
     ///     states), the `setPart` command, the `characterStart`, `mouthShape` and `browState` properties.
-    public static let currentVersion = 19
+    /// 20: Maquette 0.21's animation: timelines' `holds` (pick-up, hand-off, put-down), the `setHolds` command, the
+    ///     `lookAt` property.
+    public static let currentVersion = 20
 
     public static let migrations: [Migration] = [
         Migration(kind: .scene, from: 0, transform: liftSceneV0),
@@ -136,7 +138,11 @@ public enum LoweySchema {
         // 18 → 19 adds optional character parts; nothing older changes shape.
         Migration(kind: .scene, from: 18) { $0 },
         Migration(kind: .project, from: 18) { $0 },
-        Migration(kind: .library, from: 18) { $0 }
+        Migration(kind: .library, from: 18) { $0 },
+        // 19 → 20 adds optional holds and a property; nothing older changes shape.
+        Migration(kind: .scene, from: 19) { $0 },
+        Migration(kind: .project, from: 19) { $0 },
+        Migration(kind: .library, from: 19) { $0 }
     ] + unchangedSince(.brushes) + unchangedSince(.materials)
 
     /// A file kind whose payload hasn't changed shape at any version: every step keeps it as it is (D-339; the

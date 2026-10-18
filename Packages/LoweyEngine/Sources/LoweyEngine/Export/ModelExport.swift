@@ -182,7 +182,8 @@ public enum ModelExport {
     public static func files(_ format: ModelExportFormat, ids: [ObjectID]?, scene: CoreScene, look: Look, preset: LookPreset,
                              catalog: AssetCatalog, models: ModelLibrary = .shared, name: String,
                              paintFile: @escaping (String) -> Data? = { _ in nil },
-                             poses: [ObjectID: [LoweyCore.Transform]] = [:], colors: PaintColorOutput = .texture) -> [(name: String, data: Data)] {
+                             poses: [ObjectID: [LoweyCore.Transform]] = [:], colors: PaintColorOutput = .texture,
+                             engine: GameEngine? = nil) -> [(name: String, data: Data)] {
         let parts: (SceneObject) -> [GLTFScene.LocalPart] = { localParts($0, look: look, catalog: catalog, models: models) }
         let paintOf: (SceneObject) -> PaintedExport? = {
             Self.painted($0, look: look, catalog: catalog, models: models, file: paintFile, pose: poses[$0.id], colors: colors)
@@ -202,7 +203,9 @@ public enum ModelExport {
             guard let object = candidates.compactMap({ scene.objects[$0] }).first(where: { skinnedOf($0) != nil }),
                   let skin = skinnedOf(object) else { return [] }
             let tracks = scene.timeline.tracks.filter { $0.target == object.id }
-            return [("\(name).fbx", FBXSkin.file(skin, name: object.name, tracks: tracks, fps: scene.timeline.fps))]
+            // FBX ▸ for Unity / for Unreal: the joints and their keys named for the engine's retargeting.
+            let (named, keys) = engine.map { ExportPrep.renamed(skin, tracks: tracks, for: $0) } ?? (skin, tracks)
+            return [("\(name).fbx", FBXSkin.file(named, name: object.name, tracks: keys, fps: scene.timeline.fps))]
         case .blender:
             let selected = ids.map { scene.restricted(to: $0) } ?? scene
             return [("\(name) for Blender.zip", BlenderPackage.archive(selected, look: look, preset: preset, parts: parts, painted: paintOf,

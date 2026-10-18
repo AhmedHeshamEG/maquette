@@ -163,6 +163,7 @@ public enum TimelineTools {
         result.behaviors.removeAll { objects.contains($0.target) }
         result.clipTracks.removeAll { objects.contains($0.target) }
         result.cuts.removeAll { objects.contains($0.camera) }
+        result.holds.removeAll { objects.contains($0.target) || $0.holder.map(objects.contains) == true }
         return result
     }
 

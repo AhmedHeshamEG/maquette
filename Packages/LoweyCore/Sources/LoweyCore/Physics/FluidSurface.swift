@@ -3,17 +3,20 @@ import Foundation
 /// The surface of water from its particles: a smooth blob field (each drop a soft ball about its spacing wide) cut at
 /// one level by marching tetrahedra, corners shared between neighbouring cells, normals from the faces around them.
 public enum FluidSurface {
-    public static func mesh(_ particles: [SIMD3<Float>], spacing: Double) -> MeshData {
+    /// `detail` 2 draws it twice as finely (a Final export): cells half a drop, eight times as many allowed.
+    public static func mesh(_ particles: [SIMD3<Float>], spacing: Double, detail: Double = 1) -> MeshData {
         guard !particles.isEmpty, let bounds = Bounds(points: particles.map { Vec3($0) }) else { return MeshData() }
         let radius = Float(spacing * 2)
         // A cell of about a drop, coarser when the water has spread wide: at most a quarter of a million cells.
         let padded = bounds.size + Vec3(spacing * 6, spacing * 6, spacing * 6)
-        let cell = Float(max(spacing, pow(padded.x * padded.y * padded.z / 250_000, 1.0 / 3.0)))
+        let budget = 250_000 * detail * detail * detail
+        let cell = Float(max(spacing / detail, pow(padded.x * padded.y * padded.z / budget, 1.0 / 3.0)))
+        let cap = Int(160 * detail)
         let origin = SIMD3<Float>(Float(bounds.min.x), Float(bounds.min.y), Float(bounds.min.z)) - SIMD3<Float>(repeating: radius + cell)
         let extent = SIMD3<Float>(Float(bounds.size.x), Float(bounds.size.y), Float(bounds.size.z)) + SIMD3<Float>(repeating: 2 * (radius + cell))
-        let nx = min(Int(extent.x / cell) + 2, 160)
-        let ny = min(Int(extent.y / cell) + 2, 160)
-        let nz = min(Int(extent.z / cell) + 2, 160)
+        let nx = min(Int(extent.x / cell) + 2, cap)
+        let ny = min(Int(extent.y / cell) + 2, cap)
+        let nz = min(Int(extent.z / cell) + 2, cap)
         let step = SIMD3<Float>(extent.x / Float(nx - 1), extent.y / Float(ny - 1), extent.z / Float(nz - 1))
         var field = [Float](repeating: 0, count: nx * ny * nz)
         let r2 = radius * radius

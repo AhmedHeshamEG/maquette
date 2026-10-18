@@ -38,7 +38,10 @@ struct TimelineRuler: View {
                 scrub(to: value.location.x)
             }
             .onEnded { value in
-                defer { press = nil }
+                defer {
+                    press = nil
+                    editor.endScrub()
+                }
                 // A flick to the left goes to the start.
                 if value.translation.width < -30, value.predictedEndTranslation.width < -width * 0.6 {
                     editor.pause()
@@ -58,6 +61,7 @@ struct TimelineRuler: View {
 
     private func scrub(to x: CGFloat) {
         editor.pause()
+        if !editor.scrubbingTimeline { editor.scrubbingTimeline = true }
         let before = editor.time
         editor.setTime(editor.wordSnapped(layout.time(at: x), tolerance: 8 / layout.pps))
         if editor.time != before { editor.audioPlayback.scrub(editor.timeline.audio, at: editor.time) }

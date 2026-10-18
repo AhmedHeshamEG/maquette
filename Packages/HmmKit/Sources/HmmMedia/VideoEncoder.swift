@@ -72,6 +72,24 @@
             writer.startSession(atSourceTime: .zero)
         }
 
+        /// Whether this device really writes `codec` (ProRes needs a media engine some iPads and iPhones don't have, and a
+        /// writer that says it can apply the settings may still fail on the first frame): writes two small frames to a
+        /// temporary file and throws it away. Ask once and keep the answer.
+        public static func canEncode(_ codec: VideoCodecKind) async -> Bool {
+            let url = FileManager.default.temporaryDirectory.appendingPathComponent("codec-check-\(UUID().uuidString).\(codec.fileExtension)")
+            defer { try? FileManager.default.removeItem(at: url) }
+            do {
+                let encoder = try VideoEncoder(url: url, settings: EncodeSettings(width: 64, height: 64, fps: 30, codec: codec))
+                for frame in 0 ..< 2 {
+                    try await encoder.append(encoder.makePixelBuffer(), frame: frame)
+                }
+                try await encoder.finish()
+                return true
+            } catch {
+                return false
+            }
+        }
+
         private static func videoSettings(_ settings: EncodeSettings) -> [String: Any] {
             let codec: AVVideoCodecType = switch settings.codec {
             case .h264: .h264

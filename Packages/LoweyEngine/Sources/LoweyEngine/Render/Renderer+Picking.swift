@@ -72,6 +72,28 @@ public extension LoweyRenderer {
         return (Array(UnsafeBufferPointer(start: pointer, count: targets.width * targets.height)), targets.width, targets.height)
     }
 
+    /// The last frame's depth per pixel (metres along the view, 0 where nothing was drawn) and its size, top row first:
+    /// the prepass's, at the frame's own resolution (A1's depth pass).
+    func depthBuffer() -> (depths: [Float], width: Int, height: Int)? {
+        guard let targets else { return nil }
+        let count = targets.width * targets.height
+        guard let buffer = device.device.makeBuffer(length: count * 8, options: .storageModeShared),
+              let commandBuffer = device.queue.makeCommandBuffer(), let blit = commandBuffer.makeBlitCommandEncoder() else { return nil }
+        let size = MTLSize(width: targets.width, height: targets.height, depth: 1)
+        blit.copy(from: targets.normalDepth, sourceSlice: 0, sourceLevel: 0, sourceOrigin: MTLOrigin(), sourceSize: size, to: buffer,
+                  destinationOffset: 0, destinationBytesPerRow: targets.width * 8, destinationBytesPerImage: count * 8)
+        blit.endEncoding()
+        commandBuffer.commit()
+        commandBuffer.waitUntilCompleted()
+        let values = buffer.contents().bindMemory(to: Float16.self, capacity: count * 4)
+        return ((0 ..< count).map { Float(values[$0 * 4 + 3]) }, targets.width, targets.height)
+    }
+
+    /// The thing a packed id in the last frame's ID buffer belongs to.
+    func object(forPacked packed: UInt32) -> ObjectID? {
+        lastScene?.objectID(forPacked: packed)
+    }
+
     /// The object indices whose pixels fall inside a screen polygon (lasso) in the last frame, by bounds centre.
     func visibleObjects() -> [ObjectID] {
         lastScene?.objectIDs ?? []
