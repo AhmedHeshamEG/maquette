@@ -37,7 +37,8 @@ final class AnimateExportTests: XCTestCase {
         GoldenImage().attach(final, name: "final-on")
         XCTAssertGreaterThan(partial(final), partial(plain) * 3, "the moving cube trails a soft edge across half a frame")
         XCTAssertEqual(FinalFrames.moments(at: 1, fps: 30).count, 8)
-        XCTAssertEqual(FinalFrames.moments(at: 1, fps: 30).first ?? 0, 1 - 0.25 / 30 + 0.5 / 30 / 8, accuracy: 1e-9)
+        // Half a frame (1/60 s) centred on the moment, eight samples in the middle of their slices.
+        XCTAssertEqual(FinalFrames.moments(at: 1, fps: 30).first ?? 0, 1 - 0.25 / 30 + 0.5 / 30 / 16, accuracy: 1e-9)
         XCTAssertEqual(FinalFrames.supersample(longSide: 1920), 2)
         XCTAssertEqual(FinalFrames.supersample(longSide: 3840), 1)
         // The still cube's middle is the same either way.
@@ -72,7 +73,8 @@ final class AnimateExportTests: XCTestCase {
     }
 
     func testProResCarriesTransparencyWhereTheDeviceWritesIt() async throws {
-        try XCTSkipUnless(VideoEncoder.canEncode(.prores4444), "this simulator writes no ProRes")
+        let writes = await VideoEncoder.canEncode(.prores4444)
+        try XCTSkipUnless(writes, "this simulator writes no ProRes")
         let session = try TestDocuments.session(scene())
         let settings = ExportSettings(framing: .landscape, longSide: 320, fps: 10, codec: .prores4444, range: TimeRange(start: 0, end: 0.5),
                                       transparent: true)

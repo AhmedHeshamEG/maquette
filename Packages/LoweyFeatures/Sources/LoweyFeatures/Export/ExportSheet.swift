@@ -19,6 +19,8 @@ struct ExportSheet: View {
     @State private var settings = ExportPreset.hd1080.settings(range: TimeRange(start: 0, end: 1), fps: 30)
     @State private var options = ExportOptions()
     @State private var sharing: [URL] = []
+    /// Whether this iPad writes ProRes (asked once, by writing two small frames).
+    @State private var proRes = false
     @Environment(\.hmmTheme) private var theme
 
     var body: some View {
@@ -41,6 +43,7 @@ struct ExportSheet: View {
             results
         }
         .onAppear { open(category, remembered: true) }
+        .task { proRes = await ExportCapabilities.proRes() }
         .onChange(of: options.onlyLoop) { _, _ in settings.range = range }
         .sheet(isPresented: Binding(get: { !sharing.isEmpty }, set: { if !$0 { sharing = [] } })) { ShareSheet(items: sharing) }
     }
@@ -78,7 +81,7 @@ struct ExportSheet: View {
     private func available(_ category: ExportCategory) -> [ExportFormat] {
         category.formats.filter { item in
             switch item {
-            case .prores: ExportCapabilities.proRes
+            case .prores: proRes
             case .fbx: editor.canExportFBX
             case .maps: editor.hasPaintedThings
             case .captions: !editor.timeline.transcripts.isEmpty
@@ -163,8 +166,15 @@ struct ExportSheet: View {
     }
 }
 
-/// What this iPad can write, asked once.
+/// What this iPad can write, asked once a launch.
 @MainActor
 enum ExportCapabilities {
-    static let proRes = VideoEncoder.canEncode(.prores4444)
+    private static var writesProRes: Bool?
+
+    static func proRes() async -> Bool {
+        if let writesProRes { return writesProRes }
+        let answer = await VideoEncoder.canEncode(.prores4444)
+        writesProRes = answer
+        return answer
+    }
 }

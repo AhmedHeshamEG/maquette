@@ -74,7 +74,9 @@ final class AnimateTests: XCTestCase {
         // Export: the kind, the format, the presets.
         XCTAssertTrue(tap("Actions"))
         XCTAssertTrue(tap("open-export"))
-        XCTAssertTrue(element("export-hd1080").waitForExistence(timeout: 5), "Video ▸ MP4 ▸ 1080p first")
+        XCTAssertTrue(tap("export-kind-video"))
+        XCTAssertTrue(tap("export-format-mp4"))
+        XCTAssertTrue(element("export-hd1080").waitForExistence(timeout: 5), "Video ▸ MP4 ▸ 1080p")
         XCTAssertTrue(tap("export-format-passes"))
         XCTAssertTrue(element("export-passes1080").waitForExistence(timeout: 3))
         XCTAssertTrue(element("export-final").exists, "Final is an option of what renders")

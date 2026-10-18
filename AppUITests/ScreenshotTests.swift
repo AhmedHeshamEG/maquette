@@ -59,6 +59,9 @@ final class ScreenshotTests: XCTestCase {
         tap("Library")
         tap("Actions")
         tap("open-export")
+        // The sheet opens on the last kind and format used: Video ▸ MP4 for the picture.
+        tap("export-kind-video")
+        tap("export-format-mp4")
         XCTAssertTrue(element("export-hd1080").waitForExistence(timeout: 10))
         settle()
         capture("AppStore-iPad-06-Export")
