@@ -140,9 +140,12 @@ public enum LiveRig {
 
     /// Children of a rigged object that name a joint (`attachBone`) move with it: an eye on a drawn head, a prop in a
     /// hand. Their own keys still place them; the bone carries the result.
-    static func carryParts(in state: inout Animator.Posed, rigs: [AssetID: RigAsset]) {
-        for (id, part) in state.scene.objects {
-            guard let name = part[.attachBone]?.stringValue, let parentID = part.parent, let parent = state.scene.objects[parentID],
+    /// `only` carries just the parts of those characters, from where `restScene` had them (a head turned to look again).
+    static func carryParts(in state: inout Animator.Posed, rigs: [AssetID: RigAsset], only: Set<ObjectID>? = nil, from restScene: Scene? = nil) {
+        for (id, shown) in state.scene.objects {
+            let part = restScene?.objects[id] ?? shown
+            guard let name = part[.attachBone]?.stringValue, let parentID = part.parent, only?.contains(parentID) != false,
+                  let parent = state.scene.objects[parentID],
                   let skeleton = parent.rig?.skeleton ?? parent.kind.assetID.flatMap({ rigs[$0]?.skeleton }),
                   let joint = skeleton.index(of: name), let pose = state.poses[parentID], pose.count == skeleton.joints.count else { continue }
             let rest = skeleton.modelRest[joint]
@@ -152,7 +155,8 @@ public enum LiveRig {
             let inRig = Vec3(part.transform.position.x / toObject.x, part.transform.position.y / toObject.y, part.transform.position.z / toObject.z)
             let moved = now.apply(to: rest.inverseApply(to: inRig)).scaled(by: toObject)
             let turn = (now.rotation * rest.rotation.inverse).normalized
-            guard !moved.isApproximately(part.transform.position, tolerance: 1e-12) || !turn.isApproximately(.identity, tolerance: 1e-12) else { continue }
+            guard !moved.isApproximately(shown.transform.position, tolerance: 1e-12) || !turn.isApproximately(.identity, tolerance: 1e-12)
+                  || restScene != nil else { continue }
             state.scene.objects[id]?.transform.position = moved
             state.scene.objects[id]?.transform.rotation = (turn * part.transform.rotation).normalized
             state.animated.insert(id)

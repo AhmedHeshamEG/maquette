@@ -329,6 +329,8 @@ public struct Timeline: Hashable, Sendable {
     public var flipbooks: [FlipbookTrack] = []
     /// Recorded performances, kept whole so the comp can be chosen again (`TakeComp`).
     public var takes: [Take] = []
+    /// Who holds what from when: pick-up, hand-off and put-down (`Hold`).
+    public var holds: [Hold] = []
 
     public init(
         fps: Int = 30, duration: Double = 10, stepping: Stepping = .onOnes, tracks: [Track] = [],
@@ -372,6 +374,7 @@ public struct Timeline: Hashable, Sendable {
         var result = Set(tracks.map(\.target))
         result.formUnion(behaviors.map(\.target))
         result.formUnion(clipTracks.map(\.target))
+        result.formUnion(holds.map(\.target))
         return result
     }
 
@@ -409,6 +412,9 @@ public struct Timeline: Hashable, Sendable {
         for effect in effects {
             end = max(end, effect.end)
         }
+        for hold in holds {
+            end = max(end, hold.start)
+        }
         for flipbook in flipbooks where !flipbook.loops {
             end = max(end, flipbook.end(fps: fps, sceneDuration: duration))
         }
@@ -431,7 +437,7 @@ public struct Timeline: Hashable, Sendable {
 
 extension Timeline: Codable {
     private enum CodingKeys: String, CodingKey {
-        case fps, duration, stepping, tracks, markers, loop, cuts, behaviors, clipTracks, audio, transcripts, effects, captions, flipbooks, takes
+        case fps, duration, stepping, tracks, markers, loop, cuts, behaviors, clipTracks, audio, transcripts, effects, captions, flipbooks, takes, holds
     }
 
     public init(from decoder: Decoder) throws {
@@ -451,6 +457,7 @@ extension Timeline: Codable {
         captions = try c.decodeIfPresent(CaptionSettings.self, forKey: .captions)
         flipbooks = try c.decodeIfPresent([FlipbookTrack].self, forKey: .flipbooks) ?? []
         takes = try c.decodeIfPresent([Take].self, forKey: .takes) ?? []
+        holds = try c.decodeIfPresent([Hold].self, forKey: .holds) ?? []
     }
 
     public func encode(to encoder: Encoder) throws {
@@ -470,5 +477,6 @@ extension Timeline: Codable {
         try c.encodeIfPresent(captions, forKey: .captions)
         if !flipbooks.isEmpty { try c.encode(flipbooks, forKey: .flipbooks) }
         if !takes.isEmpty { try c.encode(takes, forKey: .takes) }
+        if !holds.isEmpty { try c.encode(holds, forKey: .holds) }
     }
 }

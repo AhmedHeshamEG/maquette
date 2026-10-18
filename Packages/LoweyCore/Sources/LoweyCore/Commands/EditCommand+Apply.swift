@@ -91,6 +91,11 @@ public extension EditCommand {
         case .setFlipbooks, .setTakes, .setSheets:
             return applyListEdits(to: &document)
 
+        case let .setHolds(holds):
+            let old = document.scene.timeline.holds
+            document.scene.timeline.holds = holds
+            return (.setHolds(old), ChangeSet(objects: Set((holds + old).map(\.target)), scene: true))
+
         case let .replaceScene(scene):
             return Self.applyReplaceScene(scene, in: &document)
 

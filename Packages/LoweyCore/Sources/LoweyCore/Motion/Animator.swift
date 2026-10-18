@@ -45,8 +45,15 @@ public enum Animator {
         // Loose bones swing behind the pose; then the character breathes.
         Dangle.apply(to: &state, document: document, time: time, rigs: rigs, overrides: overrides, live: live)
         Idle.breathe(in: &state, time: time, rigs: rigs)
-        // Parts ride their bones; drawn puppets bend their strokes.
+        // Parts ride their bones; held things ride their holders; heads turn to what they look at (and carry their
+        // parts again); drawn puppets bend their strokes.
+        let beforeParts = LookAt.anyone(in: state.scene) ? state.scene : nil
         LiveRig.carryParts(in: &state, rigs: rigs)
+        HoldPlayback.apply(to: &state, document: document, time: time, rigs: rigs)
+        if let beforeParts {
+            let looked = LookAt.apply(to: &state, timeline: timeline, time: time, rigs: rigs)
+            if !looked.isEmpty { LiveRig.carryParts(in: &state, rigs: rigs, only: looked, from: beforeParts) }
+        }
         RigPoses.bend(&state.scene, poses: state.poses, animated: &state.animated)
         // Faces: blink, brows, look, mouth shapes (lip sync), head turns.
         Idle.blink(in: &state, timeline: timeline, time: time, overrides: overrides)
