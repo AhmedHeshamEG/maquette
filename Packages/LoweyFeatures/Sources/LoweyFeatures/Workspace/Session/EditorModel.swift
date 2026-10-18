@@ -107,7 +107,8 @@ final class EditorModel {
     /// The drawing tool the brush library chooses a brush for.
     var brushTool: BrushTool = .ink
     /// The drawing guide over the frame (flipbooks) and on the guide plane (ink); kept in `workspace.json`.
-    var frameGuide, planeGuide: DrawingGuide?
+    var frameGuide: DrawingGuide?
+    var planeGuide: DrawingGuide?
     @ObservationIgnored var strokesDrawn = 0
     /// A finger is held down while the Pencil works: the Snap magnet is the other way for that move.
     @ObservationIgnored var snapFlipped = false
@@ -119,8 +120,7 @@ final class EditorModel {
     /// The squeeze menu, the edit bar, the colours a shortcut opened (`EditorModel+Hands`).
     var hands = HandsState()
     var animationView = AnimationViewSettings()
-    /// The character maker on the stage (K1, `EditorModel+Maker`).
-    var maker = MakerState()
+    var maker = MakerState() // the character maker on the stage (K1, `EditorModel+Maker`)
     var inkStrokes: Set<Int> = [] // strokes picked in the selected ink drawing (Ink ▸ Select strokes)
     var scatter = ScatterPanelSettings()
     /// The Model tool on the stage (`EditorModel+Modeling`).

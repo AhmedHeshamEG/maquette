@@ -53,7 +53,7 @@ extension EditorModel {
         }
         var ids = IDFactory.random
         guard let change = CharacterMaker.add(job, style: style, to: target, symmetric: maker.symmetric, in: baseScene, ids: &ids,
-                                              shapeBounds: makerBounds) else { return }
+                                              shapeBounds: { self.makerBounds($0) }) else { return }
         let label = "Add \(job.title.lowercased())"
         if perform(CharacterAutoRig.rigging(after: change.command, root: change.root, in: document, label: label)) {
             if makerCharacter != change.root { select(change.root) }
@@ -137,7 +137,7 @@ extension EditorModel {
 
     /// Changes a measure by a factor; during a drag every step joins one undo step and the rig follows when it ends.
     func changeProportion(_ measure: CharacterProportions.Measure, by factor: Double, gesture: String?, side: CharacterPart.Side? = nil) {
-        guard let root = makerCharacter, let anatomy = CharacterAnatomy(root, in: baseScene, shapeBounds: makerBounds) else { return }
+        guard let root = makerCharacter, let anatomy = CharacterAnatomy(root, in: baseScene, shapeBounds: { self.makerBounds($0) }) else { return }
         perform(CharacterProportions.change(measure, by: factor, anatomy: anatomy, scene: baseScene, side: maker.symmetric ? nil : side),
                 coalesceKey: gesture)
         if gesture == nil { rigAgain(root, gesture: nil) }
@@ -145,13 +145,13 @@ extension EditorModel {
 
     /// The measures of the selected character, in metres.
     var proportions: [CharacterProportions.Measure: Double] {
-        guard let root = makerCharacter, let anatomy = CharacterAnatomy(root, in: baseScene, shapeBounds: makerBounds) else { return [:] }
+        guard let root = makerCharacter, let anatomy = CharacterAnatomy(root, in: baseScene, shapeBounds: { self.makerBounds($0) }) else { return [:] }
         return CharacterProportions.measure(anatomy, rootScale: baseScene.worldTransform(of: root).scale.y)
     }
 
     /// The rig built again from the parts as they stand (after a drag of parts or proportions).
     func rigAgain(_ root: ObjectID, gesture: String?) {
-        perform(CharacterAutoRig.command(root, in: baseScene, shapeBounds: makerBounds), coalesceKey: gesture)
+        perform(CharacterAutoRig.command(root, in: baseScene, shapeBounds: { self.makerBounds($0) }), coalesceKey: gesture)
     }
 
     /// After parts of a made character were moved, turned or sized by hand: it rigs itself again, in the same step.
@@ -230,7 +230,7 @@ struct ProportionHandle: Identifiable {
 extension EditorModel {
     /// Where the proportion handles stand on the screen, while Proportions is open.
     var proportionHandles: [ProportionHandle] {
-        guard maker.proportions, let root = makerCharacter, let stage, let anatomy = CharacterAnatomy(root, in: baseScene, shapeBounds: makerBounds)
+        guard maker.proportions, let root = makerCharacter, let stage, let anatomy = CharacterAnatomy(root, in: baseScene, shapeBounds: { self.makerBounds($0) })
         else { return [] }
         let world = baseScene.worldTransform(of: root)
         func screen(_ point: Vec3) -> CGPoint? { stage.screenPoint(of: world.apply(to: point)) }
