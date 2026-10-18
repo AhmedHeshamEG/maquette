@@ -205,6 +205,7 @@ extension ShotObserver {
             candidates.append((unit, triangles, world))
         }
         let solver = RelationSolver(scene: scene, library: library)
+        let attached = Self.attachedGrounding(candidates.map { ($0.id, $0.world) }, in: scene, solver: solver)
         let pixels = Double(raster.width * raster.height)
         var result: [Measured] = []
         for candidate in candidates {
@@ -216,7 +217,7 @@ extension ShotObserver {
             let extent = Self.extent(of: candidate.triangles, camera: camera)
             // Hidden behind something: still reported (visible 0), boxed where it would be.
             guard let box = visibleBox(raster, label: label) ?? extent.intersection(PerceptionRect(x: 0, y: 0, width: 1, height: 1)) else { continue }
-            let ground = solver.isGrounded(candidate.id)
+            let ground = attached[candidate.id] ?? solver.isGrounded(candidate.id)
             let character = CharacterOutline.isCharacter(candidate.id, in: scene)
             let size = candidate.world.size
             let isSet = !character && (Double(solo) / pixels > 0.4 || max(size.x, size.z) > 6)
