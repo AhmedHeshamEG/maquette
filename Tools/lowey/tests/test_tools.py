@@ -224,6 +224,30 @@ def test_the_sixteen_tools_go_through_the_bridge(bridge_host, monkeypatch, tmp_p
     assert "find_assets" in mcp_server.direct("A robot finds a question mark in a cave.")
 
 
+def test_pictures_come_back_through_the_mcp_protocol(bridge_host, monkeypatch):
+    """Over MCP, not as Python calls: words and pictures reach the client as content (SDK 2.x failed every picture tool)."""
+    monkeypatch.setenv("LOWEY_HOST", bridge_host)
+    monkeypatch.setenv("LOWEY_TOKEN", TOKEN)
+    import asyncio
+    import importlib
+
+    from lowey_tools import mcp_server
+    importlib.reload(mcp_server)
+
+    def call(name, arguments):
+        result = asyncio.run(mcp_server.mcp.call_tool(name, arguments))
+        content = getattr(result, "content", result)
+        content = content[0] if isinstance(content, tuple) else content
+        return [getattr(part, "type", None) for part in content]
+
+    assert call("find_assets", {"query": "desk", "thumbnails": 1}) == ["text", "image"]
+    assert call("build", {"actions": [{"do": "add", "name": "Paper"}], "views": ["camera", "top"]}) == ["text", "image", "image"]
+    assert call("observe", {"views": ["camera"]}) == ["text", "image"]
+    assert call("contact_sheet", {"frames": 6}) == ["text", "image"]
+    assert call("light", {"recipe": "golden-rim"})[0] == "text"
+    assert call("status", {}) == ["text"]
+
+
 def test_pair_with_only_the_code(bridge_host, monkeypatch):
     """`lowey-link pair 123456` finds the iPad itself (Bonjour); when nothing answers it says what to do."""
     from lowey_tools import client, link
