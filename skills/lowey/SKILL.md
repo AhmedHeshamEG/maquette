@@ -23,7 +23,7 @@ grounds things; you decide what the shot is, then check it with your own eyes (`
 5. **Critique** with the rubric (`modules/critique.md`): Read, Focus, Frame, Ground, Scale, Light, Clutter. The report
    already says pass/fail per line with a fix; look at the pictures too. Fix with targeted `build` / `frame_shot` /
    `light` calls. **Max 3 rounds**, then move on and note what's left.
-6. **Animate** (`modules/animation.md`, `characters.md`, `flipbook-fx.md`): `animate` intents on words, a camera move,
+6. **Animate** (`modules/animation.md`, `motion.md`, `characters.md`, `flipbook-fx.md`): `animate` intents on words, a path, a camera move,
    FX where they sell a moment → `contact_sheet` → critique Motion → fix. **Max 2 rounds.**
 7. **Present.** Per shot: the final frame, the contact sheet, and one line on what the shot does for its beat. One
    Proposal per shot (use `build` with many actions, or `dry_run` then `commit`).
@@ -40,6 +40,7 @@ grounds things; you decide what the shot is, then check it with your own eyes (`
 | characters, faces, acting, lip sync | `modules/characters.md` |
 | speed lines, impacts, sparkles, smears | `modules/flipbook-fx.md` |
 | falling, knocking over, joints, cloth, water, wind, the real sun | `modules/physics.md` |
+| a path to follow, looking at something, picking up and handing off | `modules/motion.md` |
 | "is it good?", fixing a shot | `modules/critique.md` |
 | photos, video, Manim graphs | `modules/media.md` |
 | which Look, colour, composition | `style/looks.md`, `style/color.md`, `style/composition.md` |
