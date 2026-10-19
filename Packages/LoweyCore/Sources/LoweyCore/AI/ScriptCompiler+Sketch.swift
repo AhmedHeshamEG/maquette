@@ -28,7 +28,9 @@ extension ScriptState {
         let others = try targets(action["with"]).filter { $0 != keeper }
         guard !others.isEmpty else { throw fail("boolean needs “with”: the things to \(name)") }
         for id in [keeper] + others where !(scene.objects[id].map(ModelingOperations.canModel) ?? false) {
-            throw fail("“\(scene.objects[id]?.name ?? id.raw)” can't be combined: only shapes and models made here can (make a placed model editable in the app)")
+            throw fail(
+                "“\(scene.objects[id]?.name ?? id.raw)” can't be combined: only shapes and models made here can (make a placed model editable in the app)"
+            )
         }
         try run(ModelingOperations.boolean([keeper] + others, operation, in: scene), label: operation.label)
     }

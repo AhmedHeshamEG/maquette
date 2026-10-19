@@ -18,7 +18,9 @@ extension ShotObserver {
             let group = solver.isGrounded(root)
             guard let base = members.map(\.world.min.y).min() else { continue }
             var reached = Set(members.filter { $0.world.min.y < base + 0.01 }.map(\.id))
-            for id in reached { result[id] = group }
+            for id in reached {
+                result[id] = group
+            }
             var frontier = Array(reached)
             while let current = frontier.popLast(), let box = members.first(where: { $0.id == current })?.world {
                 for other in members where !reached.contains(other.id) && touches(box, other.world, within: 0.02) {

@@ -28,7 +28,8 @@ relations = ["on", "beside_left", "beside_right", "in_front_of", "behind", "abov
              "around", "row", "grid", "scatter_in", "stack"]
 shot_types = ["extremeWide", "wide", "full", "medium", "closeUp", "extremeCloseUp", "overTheShoulder", "twoShot", "insert"]
 compositions = ["center", "leftThird", "rightThird", "lowAngle", "highAngle"]
-recipes = ["key-warm-world-cool", "noir-single-source", "golden-rim", "monitor-glow", "moonlit", "studio-soft"]
+recipes = ["three-point", "golden-hour", "moonlit", "neon", "key-warm-world-cool", "noir-single-source", "golden-rim", "monitor-glow",
+           "studio-soft"]
 intents = ["enter", "exit", "emphasise", "react", "walk_to", "look_at", "talk", "idle"]
 looks = ["ink", "comic", "sketch", "clay", "lowpoly"]
 fx = ["speedLines", "impactBurst", "sweatDrop", "sparkle", "smear"]
@@ -71,7 +72,9 @@ verbs = {
                    "reset": b, "measure": {"enum": ["height", "head", "body", "waist", "arms", "legs"]}, "by": n, "to": n,
                    "line": s, "language": s}, []),
     "particles": ("An emitter.", {"preset": s, "name": s, "at": point, "amount": n, "time": time}, ["preset"]),
-    "light": ("A lamp.", {"type": {"enum": ["point", "spot", "sun"]}, "name": s, "at": point, "color": color, "intensity": n, "range": n}, []),
+    "light": ("A light: a bulb (point), a spot, a sun, or a soft panel (a rectangle, \"size\" in metres) aimed at a thing.",
+              {"type": {"enum": ["point", "bulb", "spot", "sun", "panel"]}, "name": s, "at": point, "color": color, "intensity": n,
+               "range": n, "size": {"type": "array", "items": n}, "aim": point}, []),
     "camera": ("A camera.", {"name": s, "from": point, "lookAt": point, "focalLength": n, "fov": n, "aperture": n, "active": b}, []),
     "frameShot": ("The camera solver: shot type and composition on a subject (a new camera when \"camera\" doesn't exist).",
                   {"subject": tgt, "shotType": {"enum": shot_types}, "composition": {"enum": compositions}, "lens": n, "other": tgt,
@@ -174,6 +177,15 @@ verbs = {
                 "target": tgt, "points": {"type": "array", "items": v3}, "times": {"type": "array", "items": n}, "speed": n,
                 "duration": n, "at": {"anyOf": [time, tgt]}, "from": time, "facesTheWay": b, "banks": b, "upright": b,
                 "path": tgt, "line": tgt, "loop": b, "by": tgt, "joint": s, "quarterTurns": n}, ["target", "op"]),
+    "film": ("F1's film tools: a lens in millimetres on a camera body; the picture's shape; focus that follows a thing (a "
+             "later one pulls focus); a rig (dolly, crane, orbit, handheld) with its moves keyed; haze and god rays; turning "
+             "the HDRI; and the shots as a storyboard would list them.",
+             {"op": {"enum": ["lens", "frame", "focus", "rig", "air", "environment", "shots"]}, "camera": tgt, "mm": n,
+              "sensor": {"enum": ["fullFrame", "super35", "apsC", "microFourThirds", "super16", "phone", "largeFormat", "imax"]},
+              "aperture": n, "shape": {"enum": ["16:9", "2.39:1", "9:16", "4:5", "1:1"]}, "on": {"anyOf": [tgt, {"type": "null"}]},
+              "at": time, "kind": {"enum": ["none", "dolly", "crane", "orbit", "handheld"]}, "travel": n, "lift": n, "swing": n,
+              "arm": n, "shake": n, "keys": {"type": "object"}, "haze": n, "godRays": n, "color": color, "turn": n, "exposure": n,
+              "off": b}, ["op"]),
     "command":("A raw EditCommand.", {"command": ref("command")}, ["command"]),
 }
 

@@ -127,7 +127,13 @@ final class ModelVerbTests: XCTestCase {
         {"do": "sketch", "name": "Side", "plane": "xy", "at": [5, 0, 0], "curves": [{"polyline": [[0.1, 0], [0.4, 0], [0.3, 1], [0.1, 1]], "closed": true}]},
         {"do": "profile", "target": "Side", "op": "revolve", "axis": {"point": [5, 0, 0], "direction": [0, 1, 0]}}
         """#)
-        let made = vase.document.scene.objects.values.filter { if case .mesh = $0.kind { $0.id != "box" } else { false } }
+        let made = vase.document.scene.objects.values.filter {
+            if case .mesh = $0.kind {
+                $0.id != "box"
+            } else {
+                false
+            }
+        }
         XCTAssertEqual(made.count, 1, "the revolve made a solid")
         XCTAssertTrue(vase.report.contains { $0.contains("1 closed area") }, "\(vase.report)")
         // Pulled from empty space into a new solid.

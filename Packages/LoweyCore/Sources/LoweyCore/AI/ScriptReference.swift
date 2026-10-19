@@ -47,6 +47,15 @@ public enum ScriptReference {
     {"do":"profile","target":"Sketch","region":0,"op":"revolve","axis":{"point":[0,0,0],"direction":[0,1,0]}}   ("pull" with "distance", negative cuts in; "sweep" with "path", "loft" with "through")
     {"do":"boolean","op":"subtract|union|intersect","target":"Body","with":["Arch front","Arch back"]}   (cut-outs: wheel arches, windows; the others are used up)
 
+    Film (F1; "camera" defaults to the shot camera)
+    {"do":"light","type":"panel|bulb|spot|sun","name":"Window","at":[2,2,2],"size":[1.2,0.8],"aim":"Hero"}   (panel = a soft panel)
+    {"do":"lighting","recipe":"three-point|golden-hour|moonlit|neon|key-warm-world-cool|noir-single-source|golden-rim|monitor-glow|studio-soft","subject":"Hero"}
+    {"do":"film","op":"lens","camera":"Shot","mm":35,"sensor":"fullFrame|super35|apsC|microFourThirds|super16|phone|largeFormat|imax","aperture":2.8}
+    {"do":"film","op":"frame","shape":"16:9|2.39:1|9:16|4:5|1:1"}   (the Director view, Frame shot and every export)
+    {"do":"film","op":"focus","on":"Hero","at":{"word":"look"}}   (follows it; a later one pulls focus; "on":null = by distance)
+    {"do":"film","op":"rig","kind":"none|dolly|crane|orbit|handheld","travel":2,"lift":1.5,"swing":30,"arm":3,"shake":0.4,"keys":{"lift":[[0,0],[3,2]]}}
+    {"do":"film","op":"air","haze":0.4,"godRays":0.6,"color":"#FFD9A0"}   {"op":"environment","turn":40}  (an HDRI comes over add_media)   {"op":"shots"}
+
     Texture (U7; each a layer or a setting, one step each)
     {"do":"paint","target":"Crate","op":"material","material":"oak|steel|gold|brick|stone|fabric|…","scale":0.2}   {"op":"color","color":"#B5512E"}
     {"do":"paint","target":"Crate","op":"wear","kind":"dirt|edges","amount":0.6}   {"op":"mirror","axis":"x"}   {"op":"size","pixels":1024}

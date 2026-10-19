@@ -63,6 +63,7 @@ extension ScriptState {
         "profile": { try $0.profile($1) },
         "sketch": { try $0.sketch($1) },
         "boolean": { try $0.boolean($1) },
+        "film": { try $0.film($1) },
         "command": { try $0.rawCommand($1) }
     ]
 
