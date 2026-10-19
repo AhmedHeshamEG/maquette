@@ -67,12 +67,29 @@ public struct GalleryArrangement: Codable, Equatable, Sendable {
 
     public var schemaVersion: Int
     public var stacks: [GalleryStack]
+    /// The top level's order (and a stack's, until it has its own).
     public var sort: GallerySort
+    /// Each stack's own order, by stack id (a folder's name).
+    public var sorts: [String: GallerySort]
+    /// The stacks are folders on disk (GalleryFolders); stacks is their listing, not a record of its own.
+    public var usesFolders: Bool
 
-    public init(stacks: [GalleryStack] = [], sort: GallerySort = .recent) {
+    public init(stacks: [GalleryStack] = [], sort: GallerySort = .recent, sorts: [String: GallerySort] = [:], usesFolders: Bool = false) {
         schemaVersion = Self.schemaVersion
         self.stacks = stacks
         self.sort = sort
+        self.sorts = sorts
+        self.usesFolders = usesFolders
+    }
+
+    /// The order inside a stack (nil: the top level).
+    public func sort(in stackID: String?) -> GallerySort {
+        stackID.flatMap { sorts[$0] } ?? sort
+    }
+
+    /// Sets the order of the top level (nil) or of one stack.
+    public mutating func setSort(_ value: GallerySort, in stackID: String?) {
+        if let stackID { sorts[stackID] = value } else { sort = value }
     }
 
     // MARK: Changing stacks
@@ -141,7 +158,7 @@ public struct GalleryArrangement: Codable, Equatable, Sendable {
         }
         if let stackID {
             guard let stack = stacks.first(where: { $0.id == stackID }) else { return [] }
-            return sorted(stack.members.compactMap { byID[$0] }).map(GalleryEntry.item)
+            return sorted(stack.members.compactMap { byID[$0] }, by: sort(in: stackID)).map(GalleryEntry.item)
         }
         let stacked = Set(stacks.flatMap(\.members))
         let stackEntries = stacks.compactMap { stack -> GalleryEntry? in
@@ -152,14 +169,15 @@ public struct GalleryArrangement: Codable, Equatable, Sendable {
         return merged(stacks: stackEntries, items: loose)
     }
 
-    /// Documents in the arrangement's order.
-    public func sorted(_ items: [GalleryItem]) -> [GalleryItem] {
-        items.sorted { before(SortKey($0.name, $0.created, $0.modified), SortKey($1.name, $1.created, $1.modified)) }
+    /// Documents in the arrangement's order (the top level's, or order).
+    public func sorted(_ items: [GalleryItem], by order: GallerySort? = nil) -> [GalleryItem] {
+        let order = order ?? sort
+        return items.sorted { before(SortKey($0.name, $0.created, $0.modified), SortKey($1.name, $1.created, $1.modified), by: order) }
     }
 
     /// Stacks and loose documents interleaved by the same order (a stack sorts by its newest document).
     private func merged(stacks: [GalleryEntry], items: [GalleryEntry]) -> [GalleryEntry] {
-        (stacks + items).sorted { before(key($0), key($1)) }
+        (stacks + items).sorted { before(key($0), key($1), by: sort) }
     }
 
     private func sortedStacks(_ entries: [GalleryEntry]) -> [GalleryEntry] {
@@ -187,8 +205,8 @@ public struct GalleryArrangement: Codable, Equatable, Sendable {
         }
     }
 
-    private func before(_ lhs: SortKey, _ rhs: SortKey) -> Bool {
-        switch sort {
+    private func before(_ lhs: SortKey, _ rhs: SortKey, by order: GallerySort) -> Bool {
+        switch order {
         case .recent:
             if lhs.modified != rhs.modified { return lhs.modified > rhs.modified }
         case .created:
@@ -229,7 +247,7 @@ public struct GalleryArrangement: Codable, Equatable, Sendable {
     }
 
     private enum CodingKeys: String, CodingKey {
-        case schemaVersion, stacks, sort
+        case schemaVersion, stacks, sort, sorts, usesFolders
     }
 
     public init(from decoder: Decoder) throws {
@@ -237,5 +255,17 @@ public struct GalleryArrangement: Codable, Equatable, Sendable {
         schemaVersion = try container.decodeIfPresent(Int.self, forKey: .schemaVersion) ?? Self.schemaVersion
         stacks = try container.decodeIfPresent([GalleryStack].self, forKey: .stacks) ?? []
         sort = (try? container.decodeIfPresent(GallerySort.self, forKey: .sort)) ?? .recent
+        sorts = (try? container.decodeIfPresent([String: GallerySort].self, forKey: .sorts)) ?? [:]
+        usesFolders = (try? container.decodeIfPresent(Bool.self, forKey: .usesFolders)) ?? false
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(schemaVersion, forKey: .schemaVersion)
+        // Folders are the stacks once they're used: the listing isn't saved, it's read from disk.
+        try container.encode(usesFolders ? [] : stacks, forKey: .stacks)
+        try container.encode(sort, forKey: .sort)
+        if !sorts.isEmpty { try container.encode(sorts, forKey: .sorts) }
+        if usesFolders { try container.encode(true, forKey: .usesFolders) }
     }
 }
