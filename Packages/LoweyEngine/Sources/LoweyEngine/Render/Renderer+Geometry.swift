@@ -52,6 +52,7 @@ extension LoweyRenderer {
             frame.section = SIMD4<Float>(Float(section.normal.x), Float(section.normal.y), Float(section.normal.z), Float(section.offset))
         }
         if request.transparent || !look.ground.visible { frame.groundBounce.w = 0 }
+        frame.environment = Self.environmentUniform(look, loaded: !request.transparent && environmentTexture(request.input) != nil)
         return frame
     }
 
@@ -230,6 +231,7 @@ extension LoweyRenderer {
         // Sky first (never writes depth), then the ground, then objects.
         encoder.setDepthStencilState(device.pipelines.depthAlways)
         encoder.setRenderPipelineState(device.pipelines.sky)
+        encoder.setFragmentTexture(environmentCache?.texture ?? editorMeshes.white, index: 9)
         encoder.drawPrimitives(type: .triangle, vertexStart: 0, vertexCount: 3)
         encoder.setDepthStencilState(device.pipelines.depthWrite)
         var draws = 1

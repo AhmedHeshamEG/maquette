@@ -223,6 +223,14 @@ final class SceneCompiler {
             light.color = SIMD4<Float>(color * intensity, 2)
             light.direction = SIMD4<Float>(forward, 0)
             light.position.w = 1e6
+        case .area:
+            // Spread over its area, a panel is brighter than a bulb of the same strength to light as much.
+            let width = Float(object[.lightWidth]?.floatValue ?? 1) * Float(world.scale.x)
+            let height = Float(object[.lightHeight]?.floatValue ?? 0.6) * Float(world.scale.y)
+            light.color = SIMD4<Float>(color * intensity * 2.0, 3)
+            light.direction = SIMD4<Float>(forward, 0)
+            light.params = SIMD4<Float>(0, max(width, 0.02) / 2, max(height, 0.02) / 2, 0)
+            light.axis = SIMD4<Float>(world.rotation.act(.unitX).float3, 0)
         }
         return light
     }

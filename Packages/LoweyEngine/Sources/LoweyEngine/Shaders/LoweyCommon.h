@@ -59,6 +59,7 @@ struct FrameUniforms {
     float4 cascades;         // x = far of cascade 0, y = far of cascade 1, z = 1 / shadow map size, w = frame index
     float4 misc;             // x = light count, y = near plane, z = far plane, w = orthographic (1) or not
     float4 section;          // the stage's section view: xyz = normal, w = offset (normal · p > offset is cut); 0 = off
+    float4 environment;      // an HDRI behind everything: x = 1 when it shows, y = turn (rad), z = exposure multiplier
 };
 
 struct LookUniforms {
@@ -86,9 +87,10 @@ struct ObjectUniforms {
 
 struct LightData {
     float4 position;   // xyz world, w = range (m)
-    float4 color;      // linear rgb × intensity, w = type (0 point, 1 spot)
-    float4 direction;  // xyz spot direction, w = cos(outer angle)
-    float4 params;     // x = cos(inner angle)
+    float4 color;      // linear rgb × intensity, w = type (0 point, 1 spot, 2 directional, 3 soft panel)
+    float4 direction;  // xyz spot or panel direction (where it shines), w = cos(outer angle)
+    float4 params;     // x = cos(inner angle); panel: y = half width, z = half height (m)
+    float4 axis;       // panel: xyz = its right edge's direction
 };
 
 struct VertexIn {

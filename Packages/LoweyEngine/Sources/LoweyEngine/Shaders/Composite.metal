@@ -12,9 +12,34 @@ struct CompositeUniforms {
     float4 flashColor;   // rgb linear, w = speed-line seed
     float4 guides;       // x = show, y = mask aspect (w / h, 0 = none), z = thirds, w = safe areas
     float4 options;      // x = overlay present, y = premultiplied alpha output, z = opaque output, w = flipbook layers (1 multiply, 2 screen, 4 add, 8 normal)
+    float4 output;       // x = encoding (0 sRGB, 1 HLG in BT.2020, 2 Display P3), y = brightest highlight kept (× white)
+    float4 rotoscope;    // x = on, y = opacity, z = 1 over the scene (else behind it), w = the video's aspect (w / h)
 };
 
 constexpr sampler lw_compositeSampler(coord::normalized, address::clamp_to_edge, filter::linear);
+
+/// HLG's camera curve (BT.2100): scene light 0…1 to the signal.
+static inline float3 lw_hlg(float3 e) {
+    const float a = 0.17883277;
+    const float b = 0.28466892;
+    const float c = 0.55991073;
+    return select(a * log(max(12.0 * e - b, 1e-6)) + c, sqrt(3.0 * e), e <= 1.0 / 12.0);
+}
+
+/// The frame as its file wants it: sRGB; HDR (BT.2020 colour, HLG light, white at 75 % so highlights up to 3.78× white
+/// have room); or Display P3 (P3 colour, the sRGB curve).
+static inline float3 lw_encodeOutput(float3 linear, float4 output) {
+    if (output.x > 1.5) {
+        const float3x3 toP3 = float3x3(float3(0.8225, 0.0332, 0.0171), float3(0.1774, 0.9668, 0.0724), float3(0.0, 0.0, 0.9108));
+        return lw_linearToSrgb(saturate(toP3 * max(linear, 0.0)));
+    }
+    if (output.x > 0.5) {
+        const float3x3 to2020 = float3x3(float3(0.6274, 0.0691, 0.0164), float3(0.3293, 0.9195, 0.0880), float3(0.0433, 0.0114, 0.8956));
+        float3 wide = max(to2020 * clamp(linear, 0.0, max(output.y, 1.0)), 0.0);
+        return lw_hlg(saturate(wide * 0.2647));
+    }
+    return lw_linearToSrgb(saturate(linear));
+}
 
 static inline float2 lw_zoomed(float2 uv, float scale) {
     return (uv - 0.5) / scale + 0.5;
@@ -91,6 +116,38 @@ static inline float4 lw_screenEffects(float2 uv, texture2d<float, access::sample
     return color;
 }
 
+/// The frame the Director view shows (the whole view when there's no mask): lo and hi corners in 0…1.
+static inline float4 lw_frameRect(constant CompositeUniforms &u) {
+    float2 lo = float2(0.0);
+    float2 hi = float2(1.0);
+    if (u.guides.x > 0.5 && u.guides.y > 0.0) {
+        float frame = u.guides.y;
+        float view = u.size.x / u.size.y;
+        if (frame > view) {
+            lo.y = (1.0 - view / frame) * 0.5;
+            hi.y = 1.0 - lo.y;
+        } else {
+            lo.x = (1.0 - frame / view) * 0.5;
+            hi.x = 1.0 - lo.x;
+        }
+    }
+    return float4(lo, hi);
+}
+
+/// Rotoscoping (F1): the video's frame filling the shot's frame (cropped to cover it), behind what's drawn, or faintly
+/// over everything to trace what the scene hides.
+static inline float3 lw_rotoscope(float3 color, float2 uv, uint id, texture2d<float, access::sample> video, constant CompositeUniforms &u) {
+    float4 rect = lw_frameRect(u);
+    float2 inner = (uv - rect.xy) / (rect.zw - rect.xy);
+    if (any(inner < 0.0) || any(inner > 1.0)) { return color; }
+    float frame = (rect.z - rect.x) * u.size.x / max((rect.w - rect.y) * u.size.y, 1.0);
+    float scale = frame / max(u.rotoscope.w, 1e-3);
+    float2 cover = scale > 1.0 ? float2(1.0, 1.0 / scale) : float2(scale, 1.0);
+    float3 picture = lw_srgbToLinear(video.sample(lw_compositeSampler, 0.5 + (inner - 0.5) * cover).rgb);
+    if (u.rotoscope.z > 0.5) { return mix(color, picture, u.rotoscope.y * 0.6); }
+    return id == 0u ? mix(color, picture, u.rotoscope.y) : color;
+}
+
 static inline float3 lw_guides(float3 color, float2 pixel, constant CompositeUniforms &u) {
     float2 size = u.size.xy;
     float2 uv = pixel / size;
@@ -158,6 +215,8 @@ kernel void lw_composite(texture2d<float, access::sample> to [[texture(0)]],
                          texture2d<float, access::sample> screen [[texture(5)]],
                          texture2d<float, access::sample> add [[texture(6)]],
                          texture2d<float, access::sample> normal [[texture(7)]],
+                         texture2d<float, access::sample> video [[texture(8)]],
+                         texture2d<uint, access::read> ids [[texture(9)]],
                          constant CompositeUniforms &u [[buffer(0)]],
                          uint2 gid [[thread_position_in_grid]]) {
     if (gid.x >= uint(u.size.x) || gid.y >= uint(u.size.y)) { return; }
@@ -168,24 +227,32 @@ kernel void lw_composite(texture2d<float, access::sample> to [[texture(0)]],
         color = lw_flipbookLayers(color, uv, multiply, screen, add, layers);
     }
     if ((layers & 8u) != 0u) {
-        // Normal flipbooks: laid over the shot, under the overlays.
+        // Normal flipbooks: laid over the shot, under the overlays (only where they are, so HDR highlights stay).
         float4 layer = normal.sample(lw_compositeSampler, uv);
-        float3 below = lw_linearToSrgb(saturate(color.rgb));
-        color.rgb = lw_srgbToLinear(layer.rgb + below * (1.0 - layer.a));
-        color.a = layer.a + color.a * (1.0 - layer.a);
+        if (layer.a > 0.0) {
+            float3 below = lw_linearToSrgb(saturate(color.rgb));
+            color.rgb = lw_srgbToLinear(layer.rgb + below * (1.0 - layer.a));
+            color.a = layer.a + color.a * (1.0 - layer.a);
+        }
+    }
+    if (u.rotoscope.x > 0.5) {
+        uint id = ids.read(min(gid, uint2(ids.get_width() - 1, ids.get_height() - 1))).r;
+        color.rgb = lw_rotoscope(color.rgb, uv, lw_idObject(id), video, u);
     }
     if (u.options.x > 0.5) {
         // Overlays and captions: premultiplied sRGB drawn by Core Graphics.
         float4 layer = overlay.sample(lw_compositeSampler, uv);
-        float3 below = lw_linearToSrgb(saturate(color.rgb));
-        float3 composed = layer.rgb + below * (1.0 - layer.a);
-        color.rgb = lw_srgbToLinear(composed);
-        color.a = layer.a + color.a * (1.0 - layer.a);
+        if (layer.a > 0.0) {
+            float3 below = lw_linearToSrgb(saturate(color.rgb));
+            float3 composed = layer.rgb + below * (1.0 - layer.a);
+            color.rgb = lw_srgbToLinear(composed);
+            color.a = layer.a + color.a * (1.0 - layer.a);
+        }
     }
     if (u.guides.x > 0.5) {
         color.rgb = lw_guides(color.rgb, float2(gid) + 0.5, u);
     }
-    float3 encoded = lw_linearToSrgb(saturate(color.rgb));
+    float3 encoded = lw_encodeOutput(color.rgb, u.output);
     float alpha = u.options.z > 0.5 ? 1.0 : saturate(color.a);
     if (u.options.y > 0.5) { encoded *= alpha; }
     output.write(float4(encoded, alpha), gid);

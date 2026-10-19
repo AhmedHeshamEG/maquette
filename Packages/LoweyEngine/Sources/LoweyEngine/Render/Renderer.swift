@@ -28,6 +28,10 @@ public struct FrameRequest {
     public var guides: FramingGuides?
     /// The stroke being painted on a model (stage only).
     public var livePaint: LivePaint?
+    /// What the output's pixels hold (an HDR export writes half floats in HLG; a wide-colour still, Display P3).
+    public var encoding: FrameEncoding = .sRGB
+    /// The rotoscope's video frame under the playhead (stage only, F1).
+    public var rotoscope: RotoscopeFrame?
 
     public init(input: RenderInput, camera: RenderCamera, lens: CameraLens? = nil, screen: ScreenState = ScreenState(), frameIndex: Int = 0,
                 renderScale: Float = 1, transparent: Bool = false, overlay: CGImage? = nil, editor: EditorScene? = nil,
@@ -43,6 +47,29 @@ public struct FrameRequest {
         self.editor = editor
         self.guides = guides
     }
+}
+
+/// The rotoscope's picture for one frame of the stage (F1): behind what's drawn, or faintly over it.
+public struct RotoscopeFrame {
+    public var image: CGImage
+    public var opacity: Double
+    public var inFront: Bool
+
+    public init(image: CGImage, opacity: Double, inFront: Bool) {
+        self.image = image
+        self.opacity = opacity
+        self.inFront = inFront
+    }
+}
+
+/// How a frame's colour is written (F1).
+public enum FrameEncoding: Sendable, Equatable {
+    /// sRGB, highlights rolled off at white: the stage and every SDR file.
+    case sRGB
+    /// HDR: BT.2020 colour in HLG, highlights kept up to 3.78× white. The output is a half-float texture.
+    case hdr
+    /// Display P3 colour with the sRGB curve (16-bit stills).
+    case displayP3
 }
 
 /// Framing guides of the Director view: the delivery shape masked, thirds, safe areas.
@@ -98,6 +125,8 @@ public final class LoweyRenderer: SceneRendering {
     let paints: PaintTextures
     /// Flipbook layers by blend mode, and the scratch layer, at the output size.
     var flipbookTargets: [String: MTLTexture] = [:]
+    /// The HDRI behind the scene, read once per picture (`Renderer+Environment`).
+    var environmentCache: (key: String, texture: MTLTexture)?
     /// The last frame, for picking.
     private(set) var lastScene: RenderScene?
     private(set) var lastCamera: RenderCamera?

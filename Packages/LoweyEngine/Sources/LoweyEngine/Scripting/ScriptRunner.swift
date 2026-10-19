@@ -302,7 +302,7 @@ final class ScriptHost: @unchecked Sendable {
 
     private func light(_ args: [JSValue]) throws -> Any? {
         let typeName = args.first?.toString() ?? "point"
-        guard let type = LightType(rawValue: typeName) else { throw ScriptAPIError("unknown light \(typeName) (point, spot, directional)") }
+        guard let type = LightType(rawValue: typeName) else { throw ScriptAPIError("unknown light \(typeName) (point, spot, directional, area)") }
         let opts = options(args, 1)
         var factory = ObjectFactory(ids: ids)
         var object = factory.light(type, at: Self.vec3(opts["position"]) ?? Vec3(0, 2, 0))

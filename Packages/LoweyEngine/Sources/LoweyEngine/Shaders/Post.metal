@@ -11,6 +11,9 @@ struct PostUniforms {
     float4 texture;    // x = kind (0 none, 1 paper, 2 collage, 3 old film), y = strength, z = frame, w = unused
     float4 lens;       // x = CoC pixels per unit of |1/focus − 1/d|, y = 1/focus, z = max CoC (px), w = mode (0 off, 1 blur, 2 misregistration)
     float4 pixels;     // x = pixels per point (height / 1080), y = frame index, z = boil step, w = unused
+    float4 air;        // x = haze density (per metre), y = god rays, zw = the sun on the frame (0…1 from the top left)
+    float4 airColor;   // haze colour (linear), w = how much the sun faces the camera
+    float4 sunGlow;    // the sun's colour (linear), w = 1 for an HDR frame (highlights kept past white)
 };
 
 constexpr sampler lw_postSampler(coord::normalized, address::clamp_to_edge, filter::linear);
@@ -152,11 +155,40 @@ static inline float3 lw_grade(float3 color, constant PostUniforms &u, constant L
     return color;
 }
 
+/// Haze and god rays (F1): far things fade into the haze, which glows on the sun's side of the frame; shafts stream from
+/// the sun past whatever stands in front of the sky (screen space: rays from the sun's place on the frame).
+static inline float3 lw_air(float3 color, float2 uv, texture2d<float, access::sample> normalDepth, constant PostUniforms &u) {
+    float depth = normalDepth.sample(lw_pointSampler, uv).w;
+    bool sky = !(depth < 1e5);
+    float2 sun = u.air.zw;
+    float2 toSun = (sun - uv) * float2(u.size.x * u.size.w, 1.0);
+    float glow = exp(-dot(toSun, toSun) / 0.09) * u.airColor.w;
+    if (u.air.x > 0.0) {
+        float thickness = (1.0 - exp(-(sky ? 300.0 : depth) * u.air.x)) * (sky ? 0.55 : 1.0);
+        color = mix(color, u.airColor.rgb + u.sunGlow.rgb * glow * 0.6, thickness);
+    }
+    if (u.air.y > 0.0 && u.airColor.w > 0.0) {
+        float2 step = (sun - uv) / 24.0;
+        float2 p = uv;
+        float lit = 0.0;
+        float decay = 1.0;
+        for (int tap = 0; tap < 24; tap++) {
+            p += step;
+            if (any(p < 0.0) || any(p > 1.0)) { break; }
+            lit += (normalDepth.sample(lw_pointSampler, p).w < 1e5 ? 0.0 : 1.0) * decay;
+            decay *= 0.94;
+        }
+        color += u.sunGlow.rgb * (lit / 12.0) * u.air.y * u.airColor.w * (0.35 + glow) * 0.6;
+    }
+    return color;
+}
+
 kernel void lw_finish(texture2d<float, access::sample> source [[texture(0)]],
                       texture2d<float, access::sample> light [[texture(1)]],
                       texture2d<uint, access::read> ids [[texture(2)]],
                       texture2d<float, access::sample> bloom [[texture(3)]],
                       texture2d<float, access::write> output [[texture(4)]],
+                      texture2d<float, access::sample> normalDepth [[texture(5)]],
                       constant PostUniforms &u [[buffer(0)]],
                       constant LookUniforms *looks [[buffer(1)]],
                       uint2 gid [[thread_position_in_grid]]) {
@@ -188,8 +220,11 @@ kernel void lw_finish(texture2d<float, access::sample> source [[texture(0)]],
         float strokes = lw_hatch(float2(gid), darkness, max(look.comic.y, 3.0) * u.pixels.x, look.lineShape.w);
         color = mix(color, color * 0.45, strokes * darkness);
     }
+    if (u.air.x > 0.0 || u.air.y > 0.0) { color = lw_air(color, uv, normalDepth, u); }
     color += bloom.sample(lw_postSampler, uv).rgb * (u.bloom.x + u.bloom.z);
-    color = lw_softClip(color * u.grade.x);
+    // An HDR frame keeps its highlights past white (the encoder's HLG holds them); SDR rolls them off.
+    bool hdr = u.sunGlow.w > 0.5;
+    color = hdr ? clamp(color * u.grade.x, 0.0, 3.78) : lw_softClip(color * u.grade.x);
     color = lw_grade(color, u, look, accent);
     // Paper: faint grain and a warm tint (Comic's print, Sketch's sheet).
     if (look.finish.x > 0.0 || look.finish.y > 0.0) {
@@ -225,5 +260,5 @@ kernel void lw_finish(texture2d<float, access::sample> source [[texture(0)]],
         float noise = lw_hash(float2(gid) + u.pixels.y * 17.0) - 0.5;
         color = saturate(color + noise * u.film.y * 0.12);
     }
-    output.write(float4(saturate(color), sampled.a), gid);
+    output.write(float4(hdr ? clamp(color, 0.0, 3.78) : saturate(color), sampled.a), gid);
 }

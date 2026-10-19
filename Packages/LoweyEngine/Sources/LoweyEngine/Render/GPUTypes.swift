@@ -24,6 +24,8 @@ struct FrameUniforms {
     var misc = SIMD4<Float>.zero
     /// The section view (xyz normal, w offset); zero when off.
     var section = SIMD4<Float>.zero
+    /// An HDRI behind everything: x = 1 when it shows, y = its turn (radians), z = its exposure multiplier.
+    var environment = SIMD4<Float>.zero
 }
 
 struct LookUniforms: Equatable {
@@ -56,6 +58,8 @@ struct LightData {
     var color = SIMD4<Float>.zero
     var direction = SIMD4<Float>.zero
     var params = SIMD4<Float>.zero
+    /// A soft panel's right edge direction (xyz).
+    var axis = SIMD4<Float>.zero
 }
 
 struct AOParams {
@@ -78,6 +82,12 @@ struct PostUniforms {
     var texture = SIMD4<Float>.zero
     var lens = SIMD4<Float>.zero
     var pixels = SIMD4<Float>.zero
+    /// x = haze density (per metre), y = god rays, z, w = the sun on the frame (0…1 from the top left).
+    var air = SIMD4<Float>.zero
+    /// The haze's colour (linear), w = how much the sun faces the camera (0 behind it … 1 straight into it).
+    var airColor = SIMD4<Float>.zero
+    /// The sun's colour for its glow and rays (linear), w = 1 when the frame is HDR (highlights kept past white).
+    var sunGlow = SIMD4<Float>.zero
 }
 
 struct CompositeUniforms {
@@ -88,6 +98,10 @@ struct CompositeUniforms {
     var flashColor = SIMD4<Float>.zero
     var guides = SIMD4<Float>.zero
     var options = SIMD4<Float>.zero
+    /// x = the output's encoding (0 sRGB, 1 HDR: HLG in BT.2020, 2 Display P3), y = the brightest highlight kept (× white).
+    var output = SIMD4<Float>.zero
+    /// x = on, y = opacity, z = 1 over the scene, w = the video's aspect.
+    var rotoscope = SIMD4<Float>.zero
 }
 
 struct EditorUniforms {

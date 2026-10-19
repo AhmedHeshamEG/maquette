@@ -116,7 +116,22 @@ static inline float3 lw_localLights(SurfaceInput s, constant FrameUniforms &fram
         LightData light = lights[index];
         float3 direction;
         float falloff = 1.0;
-        if (light.color.w > 1.5) {
+        if (light.color.w > 2.5) {
+            // A soft panel: light from the nearest point of its rectangle, only out of its front, fading at the sides
+            // the way a softbox's spill does.
+            float3 forward = normalize(light.direction.xyz);
+            float3 right = normalize(light.axis.xyz);
+            float3 up = cross(forward, right);
+            float3 local = s.world - light.position.xyz;
+            float3 nearest = light.position.xyz + right * clamp(dot(local, right), -light.params.y, light.params.y)
+                + up * clamp(dot(local, up), -light.params.z, light.params.z);
+            float3 toLight = nearest - s.world;
+            float distance = length(toLight);
+            float range = max(light.position.w, 0.01);
+            if (distance > range || dot(local, forward) <= 0.0) { continue; }
+            direction = toLight / max(distance, 1e-4);
+            falloff = (1.0 - smoothstep(range * 0.35, range, distance)) * smoothstep(0.0, 0.35, dot(-direction, forward));
+        } else if (light.color.w > 1.5) {
             // Directional: a second sun without shadows.
             direction = -normalize(light.direction.xyz);
         } else {
@@ -466,11 +481,22 @@ vertex SkyVaryings lw_vertexSky(uint vertexID [[vertex_id]]) {
     return out;
 }
 
-fragment ShadeOut lw_shadeSky(SkyVaryings in [[stage_in]], constant FrameUniforms &frame [[buffer(LW_FRAME)]]) {
+constexpr sampler lw_environmentSampler(coord::normalized, address::repeat, filter::linear);
+
+fragment ShadeOut lw_shadeSky(SkyVaryings in [[stage_in]], constant FrameUniforms &frame [[buffer(LW_FRAME)]],
+                              texture2d<float> environment [[texture(9)]]) {
     float4 far = frame.inverseViewProjection * float4(in.ndc, 0.0, 1.0);
     float4 near = frame.inverseViewProjection * float4(in.ndc, 1.0, 1.0);
     float3 direction = normalize(far.xyz / far.w - near.xyz / near.w);
     float3 color = lw_skyColor(direction, frame);
+    if (frame.environment.x > 0.5) {
+        // The HDRI, turned around the up axis (the view turned back into the picture, as EnvironmentLight turns its sun
+        // out of it); its middle column looks down -z, as Blender lays a map out.
+        float turn = frame.environment.y;
+        float3 d = float3(direction.x * cos(turn) - direction.z * sin(turn), direction.y, direction.x * sin(turn) + direction.z * cos(turn));
+        float2 uv = float2(0.5 + atan2(d.x, -d.z) / (2.0 * M_PI_F), acos(clamp(d.y, -1.0, 1.0)) / M_PI_F);
+        color = environment.sample(lw_environmentSampler, uv).rgb * frame.environment.z;
+    }
     float density = frame.skyTop.w;
     if (density > 0.0 && direction.y > 0.0) {
         float3 cell = floor(direction * 420.0);
