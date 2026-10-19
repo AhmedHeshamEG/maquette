@@ -156,7 +156,10 @@ extension EditorModel {
     // MARK: Screen effects
 
     func addScreenEffect(_ kind: ScreenEffect.Kind) {
-        updateTimeline(kind.title) { $0.effects.append(ScreenEffect(id: UUID().uuidString.lowercased(), kind: kind, start: time)) }
+        var effect = ScreenEffect(id: UUID().uuidString.lowercased(), kind: kind, start: time)
+        // The drawn set (L2) aims at the selected thing and follows it; with nothing selected, at the frame's middle.
+        if kind.aims, let target = singleSelection?.id { effect.target = target }
+        updateTimeline(kind.title) { $0.effects.append(effect) }
         HmmHaptics.play(.commit)
     }
 

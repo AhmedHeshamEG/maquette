@@ -7,7 +7,7 @@
 
 #include "LoweyCommon.h"
 
-struct PaintUniforms {
+struct PaintedLookUniforms {
     float4 size;     // width, height, 1/width, 1/height
     float4 params;   // x = pixels per point (height / 1080), y = rings per sector (2 or 3), z = frame index, w = unused
 };
@@ -23,7 +23,7 @@ static inline uint lw_paintLook(texture2d<uint, access::read> ids, uint2 gid) {
 kernel void lw_paintTensor(texture2d<float, access::sample> source [[texture(0)]],
                            texture2d<uint, access::read> ids [[texture(1)]],
                            texture2d<float, access::write> tensor [[texture(2)]],
-                           constant PaintUniforms &u [[buffer(0)]],
+                           constant PaintedLookUniforms &u [[buffer(0)]],
                            constant LookUniforms *looks [[buffer(1)]],
                            uint2 gid [[thread_position_in_grid]]) {
     if (gid.x >= uint(u.size.x) || gid.y >= uint(u.size.y)) { return; }
@@ -48,7 +48,7 @@ kernel void lw_paintFilter(texture2d<float, access::sample> source [[texture(0)]
                            texture2d<float, access::sample> tensorTexture [[texture(1)]],
                            texture2d<uint, access::read> ids [[texture(2)]],
                            texture2d<float, access::write> output [[texture(3)]],
-                           constant PaintUniforms &u [[buffer(0)]],
+                           constant PaintedLookUniforms &u [[buffer(0)]],
                            constant LookUniforms *looks [[buffer(1)]],
                            uint2 gid [[thread_position_in_grid]]) {
     if (gid.x >= uint(u.size.x) || gid.y >= uint(u.size.y)) { return; }

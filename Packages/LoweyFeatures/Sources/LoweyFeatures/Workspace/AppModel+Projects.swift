@@ -13,11 +13,9 @@ extension AppModel {
             var look = Look.default.applying(mood)
             look.presetID = presetID
             let title = name.isEmpty ? String(localized: "Untitled") : name
-            let (url, document) = try projectStore.createProject(name: title, template: template, look: look)
-            if let stack {
-                gallery.add([document.project.id.raw], to: stack)
-                saveGallery()
-            }
+            var (url, _) = try projectStore.createProject(name: title, template: template, look: look)
+            // Made inside a stack, it's made in the stack's folder.
+            if let stack { url = try projectStore.folders.move(url, to: stack) }
             refreshProjects()
             open(url: url)
         } catch {
@@ -179,7 +177,9 @@ extension AppModel {
         case _ where ProjectLayout.isProject(url):
             importProjectFolder(url)
         case _ where ext == ProjectPackage.fileExtension || ProjectPackage.legacyExtensions.contains(ext):
-            importPackage(url)
+            openPackage(url)
+        case _ where LayeredImage.fileExtensions.contains(ext):
+            landDrawing(url)
         case _ where BrushFileImport.fileExtensions.contains(ext):
             Task { await importBrushes(url) }
         case "json" where editor != nil:
@@ -187,6 +187,24 @@ extension AppModel {
         default:
             landModels([url])
         }
+    }
+
+    /// A `.maquettepack` holds a project or library things (L2): what's inside decides where it goes.
+    func openPackage(_ url: URL) {
+        let access = url.startAccessingSecurityScopedResource()
+        let data = try? Data(contentsOf: url)
+        if access { url.stopAccessingSecurityScopedResource() }
+        if let data, LibraryPack.isLibraryPack(data) {
+            Task { await importLibraryPack(data) }
+        } else {
+            importPackage(url)
+        }
+    }
+
+    /// A layered drawing from elsewhere (L2) stands up as a diorama in the open project, or in a new one made for it.
+    func landDrawing(_ url: URL) {
+        if editor == nil { startProject() }
+        Task { await editor?.importDrawing(url) }
     }
 
     /// Model files from elsewhere (Open in, the share sheet, a drop on Home, Home's import) land on the stage: in the

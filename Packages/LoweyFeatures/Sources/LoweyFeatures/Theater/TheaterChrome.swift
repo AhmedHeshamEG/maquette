@@ -30,7 +30,7 @@ struct TheaterHeader: View {
             .frame(minHeight: 44)
             .accessibilityIdentifier("gallery-select")
             Menu {
-                Button("Import a project (.maquettepack)", systemImage: "square.and.arrow.down") { state.importing = true }
+                Button("Import a project, a pack or a drawing", systemImage: "square.and.arrow.down") { state.importing = true }
                 Button("Archive (\(app.archived.count))", systemImage: "archivebox") { state.showArchive = true }
                 Button("Learn", systemImage: "graduationcap") { app.showsLearn = true }
             } label: {
@@ -90,7 +90,10 @@ struct TheaterHeader: View {
 
     private var sortMenu: some View {
         Menu {
-            Picker("Sort by", selection: Binding(get: { app.gallery.sort }, set: { sort in withHmmAnimation(.standard) { app.setGallerySort(sort) } })) {
+            // Inside a stack, the stack's own order (L2).
+            Picker("Sort by", selection: Binding(get: { app.gallery.sort(in: state.openStack) }, set: { sort in
+                withHmmAnimation(.standard) { app.setGallerySort(sort, in: state.openStack) }
+            })) {
                 ForEach(GallerySort.allCases, id: \.self) { sort in
                     Text(LocalizedStringKey(sort.title)).tag(sort)
                 }
@@ -166,7 +169,12 @@ struct TheaterDialogs: ViewModifier {
             }
             .alert("Rename stack", isPresented: present($state.renamingStack)) {
                 TextField("Name", text: $state.nameText)
-                Button("Rename") { if let stack = state.renamingStack { app.renameStack(stack.id, to: state.nameText) } }
+                Button("Rename") {
+                    if let stack = state.renamingStack {
+                        let renamed = app.renameStack(stack.id, to: state.nameText)
+                        if state.openStack == stack.id { state.openStack = renamed }
+                    }
+                }
                 Button("Cancel", role: .cancel) {}
             }
             .alert("New stack", isPresented: present($state.naming)) {

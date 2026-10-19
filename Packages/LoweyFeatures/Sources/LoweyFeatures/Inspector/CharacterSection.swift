@@ -76,8 +76,15 @@ struct CharacterSection: View {
                     }
                 }
             }
-            HmmPillButton("Take it away", systemName: "minus.circle") { editor.removeSelectedPart() }
-                .accessibilityIdentifier("remove-part")
+            HStack(spacing: HmmSpacing.xs) {
+                HmmPillButton("Take it away", systemName: "minus.circle") { editor.removeSelectedPart() }
+                    .accessibilityIdentifier("remove-part")
+                // Kept in Yours (L2): it goes onto any character from Library ▸ Yours ▸ Parts.
+                if let id = editor.selectedPart?.id {
+                    HmmPillButton("Save to Yours", systemName: "tray.and.arrow.down") { Task { await editor.savePartToYours(id) } }
+                        .accessibilityIdentifier("part-save-yours")
+                }
+            }
         }
     }
 }

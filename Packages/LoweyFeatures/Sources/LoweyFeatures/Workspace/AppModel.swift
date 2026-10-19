@@ -31,6 +31,9 @@ public final class AppModel {
     var toast: HmmToastMessage?
     /// The 60-second tour (first launch, or Settings ▸ Take the tour).
     var showTour = false
+    /// The Samples stack's picture: the Keeper's Tower, drawn once (L2); bumped when its turntable is ready.
+    var samplesStill: UIImage?
+    var samplesRevision = 0
     /// Settings from the Theater (the editor opens them as one of its sheets).
     var showsSettings = false
     /// Learn over Home (the tour, the gestures, the instructions switch).
@@ -84,9 +87,11 @@ public final class AppModel {
         if projects.isEmpty, wantsSamples {
             createIslandSample(open: false)
             createEnigmaSample(open: false)
+            createTowerSample(open: false)
             showTour = !AppIdentity.isUITesting || AppIdentity.isTestingTour
         }
         refreshArchived()
+        Task { await drawSamplesCard() }
         if !showTour { await restoreSession() }
         if !AppIdentity.isUITesting, !AppIdentity.isHostingTests { bridge.restoreIfWanted() }
     }
@@ -228,11 +233,7 @@ public final class AppModel {
 
     func refreshProjects() {
         projects = projectStore.listProjects()
-        gallery = GalleryArrangement.load(from: projectStore.root)
-        let ids = Set(projects.map(\.id.raw))
-        let before = gallery
-        gallery.prune(keeping: ids)
-        if gallery != before { saveGallery() }
+        refreshGallery()
     }
 
     /// Writes the gallery's arrangement (a failure only costs the arrangement, never a project).

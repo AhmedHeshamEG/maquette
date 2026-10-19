@@ -118,8 +118,8 @@ struct CompositeUniforms {
     var drawnSpread = SIMD4<Float>.zero
 }
 
-/// The paint pass (L2): the frame's size, pixels per point, how many rings each sector samples.
-struct PaintUniforms {
+/// The painted Looks' pass (L2): the frame's size, pixels per point, how many rings each sector samples.
+struct PaintedLookUniforms {
     var size = SIMD4<Float>.zero
     /// x = pixels per point (height / 1080), y = rings (2 or 3), z = frame index, w = unused.
     var params = SIMD4<Float>.zero

@@ -167,12 +167,12 @@ final class LibraryModel {
         }
     }
 
-    private func storeThumbnail(_ image: CGImage, named name: String) {
+    func storeThumbnail(_ image: CGImage, named name: String) {
         if let png = UIImage(cgImage: image).pngData() { try? store.writeThumbnail(png, named: name) }
         thumbnails[name] = UIImage(cgImage: image)
     }
 
-    private func renderThumbnail(of fragment: SceneFragment, named name: String) async {
+    func renderThumbnail(of fragment: SceneFragment, named name: String) async {
         do {
             let image = try await thumbnailer.portrait(of: fragment, catalog: catalog, models: models)
             storeThumbnail(image, named: name)

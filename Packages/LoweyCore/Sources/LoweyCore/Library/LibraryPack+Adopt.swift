@@ -53,7 +53,7 @@ public extension LibraryPack {
                 if library.motions.contains(where: { $0.id == motion.id }) { motion.id = newID() }
                 library.motions.insert(motion, at: 0)
                 id = motion.id
-            case var .thing(prefab, assets):
+            case .thing(var prefab, let assets):
                 if library.prefab(prefab.id) != nil { prefab.id = PrefabID(raw: newID()) }
                 for asset in assets where asset.kit == nil && library.asset(asset.id) == nil {
                     library.assets.append(asset)

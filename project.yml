@@ -143,6 +143,17 @@ targets:
             UTTypeConformsTo: [public.data]
             UTTypeTagSpecification:
               public.filename-extension: [abr]
+          # Layered drawings that stand up as dioramas (L2): Procreate's own files and Photoshop's large documents.
+          - UTTypeIdentifier: studio.h.maquette.import.procreate
+            UTTypeDescription: Procreate drawing
+            UTTypeConformsTo: [public.data, public.archive]
+            UTTypeTagSpecification:
+              public.filename-extension: [procreate]
+          - UTTypeIdentifier: studio.h.maquette.import.psb
+            UTTypeDescription: Photoshop large document
+            UTTypeConformsTo: [public.data, public.image]
+            UTTypeTagSpecification:
+              public.filename-extension: [psb]
         UTExportedTypeDeclarations:
           - UTTypeIdentifier: studio.h.maquette.project
             UTTypeDescription: Maquette project
@@ -150,7 +161,7 @@ targets:
             UTTypeTagSpecification:
               public.filename-extension: [maquette]
           - UTTypeIdentifier: studio.h.maquette.pack
-            UTTypeDescription: Maquette project file
+            UTTypeDescription: Maquette pack
             UTTypeConformsTo: [public.data, public.archive]
             UTTypeTagSpecification:
               public.filename-extension: [maquettepack]
@@ -193,6 +204,13 @@ targets:
               - studio.h.maquette.import.procreate-brushset
               - studio.h.maquette.import.procreate-brush
               - studio.h.maquette.import.photoshop-brushes
+          - CFBundleTypeName: Layered drawing
+            CFBundleTypeRole: Viewer
+            LSHandlerRank: Alternate
+            LSItemContentTypes:
+              - com.adobe.photoshop-image
+              - studio.h.maquette.import.psb
+              - studio.h.maquette.import.procreate
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: studio.h.maquette

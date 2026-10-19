@@ -75,12 +75,13 @@ final class LookSwatches {
     private var images: [String: UIImage] = [:]
     private let thumbnailer = Thumbnailer()
 
-    func swatch(_ preset: LookPreset, mood: LightingPreset) async -> UIImage? {
-        let key = "\(preset.hashValue)-\(mood.rawValue)"
+    /// `width` × `height` pixels (a card's by default; the Look Studio asks for a bigger one).
+    func swatch(_ preset: LookPreset, mood: LightingPreset, width: Int = 208, height: Int = 136) async -> UIImage? {
+        let key = "\(preset.hashValue)-\(mood.rawValue)-\(width)"
         if let cached = images[key] { return cached }
         var look = MoodPresets.look(for: mood)
         look.presetID = preset.id
-        guard let image = try? await thumbnailer.lookSwatch(look, customLooks: preset.isBuiltIn ? [] : [preset], width: 208, height: 136) else {
+        guard let image = try? await thumbnailer.lookSwatch(look, customLooks: preset.isBuiltIn ? [] : [preset], width: width, height: height) else {
             return nil
         }
         let made = UIImage(cgImage: image)

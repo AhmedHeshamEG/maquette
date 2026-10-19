@@ -65,6 +65,16 @@ final class MaterialModel {
         return id
     }
 
+    /// A pack's materials taken in (L2): the library with them added, and their pictures filed under their keys.
+    func adopt(_ adopted: MaterialLibrary, pictures: [String: Data]) {
+        for (_, png) in pictures {
+            _ = try? store.store(image: png)
+        }
+        let added = adopted.own.map(\.id).filter { library.materials[$0] == nil }
+        library = adopted
+        changed(added.first ?? "")
+    }
+
     private func changed(_ id: String) {
         previews[id] = nil
         revision += 1

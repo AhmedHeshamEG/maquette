@@ -88,11 +88,11 @@ extension LoweyRenderer {
     func encodePaint(_ encoder: MTLComputeCommandEncoder, looks: inout [LookUniforms], size: SIMD4<Float>, frame: Int,
                      targets: FrameTargets) -> MTLTexture {
         guard LookResolver.paints(looks), let paint = targets.paintTargets(device: device) else { return targets.lined }
-        var uniforms = PaintUniforms(size: size, params: SIMD4<Float>(size.y / 1080, quality.tier == .a ? 3 : 2, Float(frame), 0))
+        var uniforms = PaintedLookUniforms(size: size, params: SIMD4<Float>(size.y / 1080, quality.tier == .a ? 3 : 2, Float(frame), 0))
         encoder.setTexture(targets.lined, index: 0)
         encoder.setTexture(targets.ids, index: 1)
         encoder.setTexture(paint.tensor, index: 2)
-        encoder.setBytes(&uniforms, length: MemoryLayout<PaintUniforms>.stride, index: 0)
+        encoder.setBytes(&uniforms, length: MemoryLayout<PaintedLookUniforms>.stride, index: 0)
         encoder.setBytes(&looks, length: MemoryLayout<LookUniforms>.stride * looks.count, index: 1)
         dispatch(encoder, device.pipelines.paintTensor, width: targets.width, height: targets.height)
         encoder.setTexture(targets.lined, index: 0)
