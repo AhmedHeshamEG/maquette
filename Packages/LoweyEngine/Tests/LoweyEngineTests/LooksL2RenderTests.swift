@@ -50,7 +50,9 @@ final class LooksL2RenderTests: XCTestCase {
             document.project.look.post = post
             let image = try await frame(document, at: 0.1)
             attach(image, "l2-finish-\(name)")
-            XCTAssertGreaterThan(ImageChecks.difference(image, plain), 0.002, "the \(name) finish changes the picture")
+            // Boil only moves the lines (a pixel or so at this size); the rest change the whole picture.
+            let least = name == "boil" ? 0.0003 : 0.002
+            XCTAssertGreaterThan(ImageChecks.difference(image, plain), least, "the \(name) finish changes the picture")
         }
     }
 

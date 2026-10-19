@@ -74,7 +74,7 @@ public extension LookPreset {
         shading: ShadingParams(bands: 3, threshold: 0.5, midThreshold: 0.76, edgeSoftness: 0.035, shadowHueShift: 0.3, shadowValue: 0.3,
                                shadowSaturation: 0.1, contactShading: 0.6, rim: 0.2, specular: 0.25, bloom: 0.15),
         lines: LineParams(width: 1.2, darken: 0.65, boil: 0.1),
-        finish: LookFinish(paperGrain: 0.55, paperTint: 0.05, saturation: -0.12, lift: 0.04),
+        finish: LookFinish(paperGrain: 0.55, paperTint: 0.05, saturation: -0.12),
         paint: PaintStyle(strokes: 0.6, size: 6, wetEdges: 0.25, granulation: 0.2)
     )
 
