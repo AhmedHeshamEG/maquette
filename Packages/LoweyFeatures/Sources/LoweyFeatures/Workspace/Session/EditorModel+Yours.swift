@@ -75,7 +75,7 @@ extension EditorModel {
     /// character rigs itself again; with no character selected it lands as a thing, to make a part later.
     func addSavedPart(_ saved: SavedPart) {
         var ids = IDFactory.random
-        var (fragment, _) = ObjectFactory.reidentified(saved.fragment, ids: &ids)
+        var (fragment, _) = FragmentTools.reidentified(saved.fragment, ids: &ids)
         guard let root = fragment.roots.first, let index = fragment.objects.firstIndex(where: { $0.id == root }) else { return }
         guard let character = makerCharacter else {
             fragment.objects[index].transform.position = dropPoint()

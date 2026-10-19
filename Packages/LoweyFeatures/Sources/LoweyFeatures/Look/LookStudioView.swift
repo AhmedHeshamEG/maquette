@@ -208,9 +208,8 @@ struct LookStudioPageView: View {
 
     private var tintAmount: (get: (LookPreset) -> Double, set: (inout LookPreset, Double) -> Void) {
         ({ $0.shading.shadowTint?.a ?? 0 }, { preset, value in
-            var tint = preset.shading.shadowTint ?? RGBA(0.62, 0.58, 0.82)
-            tint.a = value
-            preset.shading.shadowTint = value > 0.001 ? tint : nil
+            let tint = preset.shading.shadowTint ?? RGBA(0.62, 0.58, 0.82)
+            preset.shading.shadowTint = value > 0.001 ? RGBA(tint.r, tint.g, tint.b, value) : nil
         })
     }
 

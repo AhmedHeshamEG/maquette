@@ -116,9 +116,8 @@ struct EffectStudioPageView: View {
             change { saved in
                 guard saved.recipe.colors.indices.contains(index) else { return }
                 let alpha = saved.recipe.colors[index].a
-                var colour = RGBA(value)
-                colour.a = alpha
-                saved.recipe.colors[index] = colour
+                let colour = RGBA(value)
+                saved.recipe.colors[index] = RGBA(colour.r, colour.g, colour.b, alpha)
             }
         }), supportsOpacity: false)
     }

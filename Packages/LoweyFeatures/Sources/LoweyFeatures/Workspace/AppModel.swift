@@ -19,7 +19,7 @@ public final class AppModel {
     let brushes: BrushModel
     /// The material library (U7): the built-ins, the person's own, imported PBR sets.
     let materials: MaterialModel
-    private(set) var projects: [ProjectSummary] = []
+    var projects: [ProjectSummary] = []
     private(set) var archived: [ProjectSummary] = []
     /// Bumped when a project's card is drawn again, so its still and turntable reload. Cards load their own pictures
     /// when they come on screen (`cardImage`), and read the turntable a frame at a time while they're visible.
