@@ -338,7 +338,7 @@ private let layoutWalkRows: [LayoutWalk.Row] = [
                    control: "The Snap magnet: everything that snaps, on or off (a finger held down while the Pencil works flips it for that move)",
                    steps: ["snap-magnet"], held: ""),
     LayoutWalk.Row(home: "The bottom row", precondition: "",
-                   control: "The camera button: tap to look through (again: the next, then back); hold for a new camera from this view, or Lens and frame… (⌥⌘L, F1)",
+                   control: "The camera button: tap to look through (again: the next, then back); hold for a new camera, or Lens and frame… (⌥⌘L)",
                    steps: ["camera-button"], held: ""),
     LayoutWalk.Row(home: "The bottom row", precondition: "",
                    control: "The joystick, on or off (on by default)",

@@ -309,7 +309,7 @@ Animate calls the timeline and its bar, under the stage (A1): six verbs. With no
 | Views (top, front, side; perspective or orthographic), when Settings ▸ Stage hides the view cube | in the cube's place |
 | The Snap magnet: everything that snaps, on or off (a finger held down while the Pencil works flips it for that move) | `snap-magnet` |
 | The magnet's details: the grid and its size, corners and middles, edges, faces, objects, the ground, turning in steps, how near | touch and hold the magnet |
-| The camera button: tap to look through (again: the next, then back); hold for a new camera from this view, or Lens and frame… (⌥⌘L, F1) | `camera-button` |
+| The camera button: tap to look through (again: the next, then back); hold for a new camera, or Lens and frame… (⌥⌘L) | `camera-button` |
 | The joystick, on or off (on by default) | `joystick-toggle` |
 | The tool's bar (Draw, Model, Rig, scatter) | below the stage while that tool is on |
 | The trigger deck: the selected character's triggers under the fingers *(held: 1.2)* | below the stage with Select in the hand while the timeline is in Perform |

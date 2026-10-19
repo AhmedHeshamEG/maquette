@@ -1,6 +1,7 @@
 import HmmDesign
 import LoweyCore
 import SwiftUI
+import UniformTypeIdentifiers
 
 /// Look ▸ World (F1): an HDRI as the world's sky and light, and the air (haze, god rays).
 struct AirSection: View {
