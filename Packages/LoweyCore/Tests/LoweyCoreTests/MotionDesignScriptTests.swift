@@ -45,7 +45,7 @@ final class MotionDesignScriptTests: XCTestCase {
         XCTAssertEqual(gear[.effectStrength], .float(0), "a sound-driven ripple starts from nothing")
         let links = result.document.scene.timeline.links
         XCTAssertEqual(links.map(\.channel), [.turnY, .effect])
-        XCTAssertEqual(links.last?.driver, .sound("music", .beat))
+        XCTAssertEqual(links.last?.driver, .sound(clip: "music", feature: .beat))
         XCTAssertEqual(links.last?.amount, 1)
         let off = try script(#"{"do": "design", "op": "link", "target": "Other", "off": true}"#, on: result.document)
         XCTAssertEqual(off.document.scene.timeline.links.count, 1)

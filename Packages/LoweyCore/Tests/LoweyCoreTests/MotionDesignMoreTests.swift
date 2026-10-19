@@ -24,7 +24,7 @@ final class MotionDesignMoreTests: XCTestCase {
     func testAGearTurnsItsNeighbourTheOtherWayAtHalfSpeedPastHalfATurn() throws {
         var document = Base.document([Base.cube("a"), Base.cube("b", at: Vec3(2, 0, 0))], duration: 10)
         document.scene.timeline.behaviors = [Behavior(id: "spin", target: "a", kind: .spin(degreesPerSecond: 90, axis: .y))]
-        document.scene.timeline.links = [MotionLink(id: "l", target: "b", channel: .turnY, driver: .thing("a", .turnY), amount: -0.5)]
+        document.scene.timeline.links = [MotionLink(id: "l", target: "b", channel: .turnY, driver: .thing(id: "a", channel: .turnY), amount: -0.5)]
         for (time, expected) in [(1.0, -45.0), (3.0, -135.0), (5.0, -225.0)] {
             let b = try XCTUnwrap(Animator.evaluate(document, at: time).scene.objects["b"])
             // −225° is the same turn as 135°: compare the turns, not the numbers.
@@ -38,7 +38,7 @@ final class MotionDesignMoreTests: XCTestCase {
         document.scene.timeline.tracks = [Track(id: "t", target: "a", property: .position,
                                                 keyframes: [Keyframe(time: 0, value: .vec3(.zero), easing: .linear),
                                                             Keyframe(time: 2, value: .vec3(Vec3(0, 2, 0)), easing: .linear)])]
-        document.scene.timeline.links = [MotionLink(id: "l", target: "b", channel: .size, driver: .thing("a", .moveY), amount: 0.5, delay: 1)]
+        document.scene.timeline.links = [MotionLink(id: "l", target: "b", channel: .size, driver: .thing(id: "a", channel: .moveY), amount: 0.5, delay: 1)]
         let b = try XCTUnwrap(Animator.evaluate(document, at: 2).scene.objects["b"])
         // a rose 1 m by 1 s (the link waits a second): b grows by half of that.
         XCTAssertEqual(b.transform.scale.y, 1.5, accuracy: 1e-9)
@@ -50,7 +50,7 @@ final class MotionDesignMoreTests: XCTestCase {
         var clip = Self.music()
         clip.fadeOut = 1
         document.scene.timeline.audio = [clip]
-        document.scene.timeline.links = [MotionLink(id: "l", target: "c", channel: .moveY, driver: .sound("music", .loudness), amount: 2)]
+        document.scene.timeline.links = [MotionLink(id: "l", target: "c", channel: .moveY, driver: .sound(clip: "music", feature: .loudness), amount: 2)]
         func height(_ time: Double) -> Double { Animator.evaluate(document, at: time).scene.objects["c"]?.transform.position.y ?? -1 }
         XCTAssertEqual(height(0), 0, accuracy: 1e-6)
         XCTAssertEqual(height(2), 2 * (2 * 60.0 / 239), accuracy: 0.02)
@@ -179,7 +179,7 @@ final class MotionDesignMoreTests: XCTestCase {
         clip.levels?.beats = stride(from: 0.0, to: 8, by: 0.5).map(\.self)
         clip.levels?.loudness = Array(repeating: 200, count: 480)
         document.scene.timeline.audio = [clip]
-        document.scene.timeline.links = [MotionLink(id: "l", target: made.root, channel: .effect, driver: .sound("music", .beat), amount: 1)]
+        document.scene.timeline.links = [MotionLink(id: "l", target: made.root, channel: .effect, driver: .sound(clip: "music", feature: .beat), amount: 1)]
         document.scene.timeline.behaviors = [Behavior(id: "spin", target: made.root, kind: .spin(degreesPerSecond: 70, axis: .y))]
         let range = TimeRange(start: 0, end: 4)
         XCTAssertFalse(LoopCheck.seams(document, range: range).isEmpty, "the spin and the ripple don't fit four seconds yet")
@@ -199,7 +199,7 @@ final class MotionDesignMoreTests: XCTestCase {
                                                        effects: [CloneEffect.starting(.push, id: "e", size: 1)]),
                                   letters: TextAnimator.starting(.wave, at: 1))
         _ = try assertReverts(.setMotionDesign("c", design), on: document)
-        let link = MotionLink(id: "l", target: "c", channel: .glow, driver: .sound("music", .bass), amount: 3)
+        let link = MotionLink(id: "l", target: "c", channel: .glow, driver: .sound(clip: "music", feature: .bass), amount: 3)
         _ = try assertReverts(.setLinks([link]), on: document)
         var saved = document
         saved.scene.objects["c"]?.motionDesign = design

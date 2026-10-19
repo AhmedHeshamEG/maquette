@@ -163,14 +163,14 @@ extension ScriptState {
                 throw fail("no sound “\(sound)” on the timeline (\(timeline.audio.map(\.name).joined(separator: ", ")))")
             }
             let feature = string(action, "feature").flatMap(MotionLink.SoundFeature.init(rawValue:)) ?? .beat
-            return .sound(clip.id, feature)
+            return .sound(clip: clip.id, feature: feature)
         }
         let from = try target(action["from"])
         let fromChannel = string(action, "fromChannel").flatMap(MotionLink.Channel.init(rawValue:)) ?? .turnY
         guard MotionLink.Channel.motion.contains(fromChannel) else {
             throw fail("fromChannel is one of \(MotionLink.Channel.motion.map(\.rawValue).joined(separator: ", "))")
         }
-        return .thing(from, fromChannel)
+        return .thing(id: from, channel: fromChannel)
     }
 
     /// `{"op": "morph", "target": "Cube", "into": "Ball", "at": 1, "duration": 1}`: the cube becomes the ball's shape over

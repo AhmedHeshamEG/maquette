@@ -20,7 +20,7 @@ extension EditorModel {
             return app.show("It can't drive itself. Tap another thing", kind: .error)
         }
         let mapping = preset.mapping
-        let link = MotionLink(id: ObjectID.make().raw, target: target, channel: mapping.channel, driver: .thing(driver, mapping.from),
+        let link = MotionLink(id: ObjectID.make().raw, target: target, channel: mapping.channel, driver: .thing(id: driver, channel: mapping.from),
                               amount: mapping.amount)
         perform(.setLinks(timeline.links + [link]))
         HmmHaptics.play(.commit)
@@ -58,7 +58,13 @@ extension EditorModel {
     /// measured first (in the background); the link arrives with the measure, as one step.
     func linkToSound(_ clipID: String, feature: MotionLink.SoundFeature, channel: MotionLink.Channel) {
         guard let id = singleSelection?.id, let clip = timeline.audio.first(where: { $0.id == clipID }) else { return }
-        let link = MotionLink(id: ObjectID.make().raw, target: id, channel: channel, driver: .sound(clipID, feature), amount: channel.soundAmount)
+        let link = MotionLink(
+            id: ObjectID.make().raw,
+            target: id,
+            channel: channel,
+            driver: .sound(clip: clipID, feature: feature),
+            amount: channel.soundAmount
+        )
         guard clip.levels == nil else { return addSoundLink(link, levels: nil) }
         guard !design.measuring.contains(clipID) else { return }
         design.measuring.insert(clipID)

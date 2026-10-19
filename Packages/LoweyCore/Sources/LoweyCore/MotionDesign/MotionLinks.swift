@@ -60,9 +60,9 @@ public struct MotionLink: Codable, Hashable, Sendable, Identifiable {
 
     public enum Driver: Codable, Hashable, Sendable {
         /// Another thing's change in `channel` since its edited place.
-        case thing(ObjectID, Channel)
+        case thing(id: ObjectID, channel: Channel)
         /// An audio clip of the timeline, by id.
-        case sound(String, SoundFeature)
+        case sound(clip: String, feature: SoundFeature)
     }
 
     public var id: String
