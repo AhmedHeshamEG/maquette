@@ -350,6 +350,8 @@ final class StageGestures: NSObject, UIGestureRecognizerDelegate {
             editor.finishEyedrop(commit: editor.eyedropperLoupe != nil)
             return true
         }
+        // Morph into… and Link wait for the thing tapped (D1).
+        if editor.design.wait != nil { return editor.designTap(picked: stage.pickObject(at: point)?.0) }
         guard editor.animatesNow, editor.animate.verb != nil, editor.animate.verb != .path else { return false }
         return editor.animateTap(at: point, picked: stage.pickObject(at: point))
     }

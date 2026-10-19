@@ -10,6 +10,7 @@ import UniformTypeIdentifiers
 struct ModelAddPage: View {
     let editor: EditorModel
     @State private var importingMedia = false
+    @State private var importingLogo = false
 
     var body: some View {
         VStack(alignment: .leading, spacing: HmmSpacing.m) {
@@ -48,6 +49,7 @@ struct ModelAddPage: View {
                 TileGrid {
                     TileButton(title: "3D text", systemName: "textformat", identifier: "add-text3d") { place { editor.addText3D() } }
                     TileButton(title: "Photo or video", systemName: "photo.on.rectangle", identifier: "add-media") { importingMedia = true }
+                    TileButton(title: "Logo (SVG)", systemName: "seal", identifier: "add-logo") { importingLogo = true }
                 }
             }
             PanelSection("Effects") {
@@ -79,6 +81,12 @@ struct ModelAddPage: View {
             if case let .success(url) = result {
                 editor.openPanel = nil
                 Task { await editor.importMedia(url) }
+            }
+        }
+        .fileImporter(isPresented: $importingLogo, allowedContentTypes: [.svg]) { result in
+            if case let .success(url) = result {
+                editor.openPanel = nil
+                editor.importLogo(url)
             }
         }
     }

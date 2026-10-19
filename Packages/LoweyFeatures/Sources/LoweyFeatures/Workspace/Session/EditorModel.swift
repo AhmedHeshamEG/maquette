@@ -206,6 +206,7 @@ final class EditorModel {
     var timelineMode: TimelineMode = .keyframe
     /// Animate (A1): the bar, the verb in the hand, drawn paths, the ghosts, the timeline's style; its working state.
     var animate = AnimateState()
+    var design = DesignState() // motion design's waits and measures (D1, `EditorModel+Design`)
     /// In Keyframe mode, edits become keys at the playhead.
     /// Keys add themselves to animated things in Keys (`keyed`); off only while placing (a crowd's jitter isn't motion).
     var autoKey = true

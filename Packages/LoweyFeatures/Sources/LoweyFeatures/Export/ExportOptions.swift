@@ -86,6 +86,7 @@ struct ExportOptionsView: View {
                 Toggle("Every shot, one file each", isOn: $options.everyShot).accessibilityIdentifier("export-every-shot")
             }
             if ExportOptions.moves(preset), editor.timeline.loop != nil { Toggle("Only the loop", isOn: $options.onlyLoop) }
+            if ExportOptions.moves(preset), preset.kind != .animatic { LoopCheckRow(editor: editor) }
             if preset.format == .gltf, preset != .gltfWeb, editor.hasPaintedThings {
                 Picker("Painted colour", selection: $options.paintColors) {
                     ForEach(PaintColorOutput.allCases, id: \.self) { Text(LocalizedStringKey($0.title)).tag($0) }

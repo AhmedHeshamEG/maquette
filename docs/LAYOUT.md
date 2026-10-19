@@ -91,6 +91,7 @@ when they disagree. In the App Store configuration the walk asserts every held r
 |---|---|
 | Export: Video · Picture · 3D · Paper, then the format, then its presets; Final and the options beside them | `Actions › open-export` |
 | Export (F1): Video ▸ Animatic, Spatial video (where the iPad encodes it), 360° video, HEVC ▸ HDR; Picture ▸ Spatial photo, 360° panorama, PNG ▸ Wide colour; Paper ▸ Storyboard | in the Export sheet |
+| Export (D1): loops seamlessly, or what jumps when it loops and Close the loop | in the Export sheet, beside a video or GIF preset |
 | Share the project file | `Actions › Project file` |
 | Monitor window (Stage Manager, external display) | `Actions › open-monitor` |
 | The Board: plan before building (below) | `Actions › open-board` |
@@ -135,6 +136,8 @@ Three short pages; the page is remembered.
 | Yours: your models, builds, worlds, scripts, favourites, recent; import models (USDZ, glTF, GLB, OBJ, STL, 3MF) | `Library › library-yours › Import models` |
 | An item's menu (the hold menu): rename, favourite; replace with the selection (builds); delete | touch and hold an item |
 | Swap a shape for a model | the object's menu ▸ More ▸ Swap for a model… (the Library opens to swap) |
+| Clone: live copies in a grid, a circle, a line or along a path | the object's menu ▸ More ▸ Clone… (its panel then has Clones) |
+| Morph into another thing's shape | the object's menu ▸ More ▸ Morph into… (tap the thing it becomes) |
 
 ### The scene (its name)
 
@@ -158,6 +161,7 @@ Three short pages; the page is remembered.
 | A light: colour, strength, reach, a spot's cone, a soft panel's size; Setups (three-point, golden hour, moonlight, neon; more one step deeper) (F1) | in the panel of a light |
 | Add: 3D text | `Model › model-add › add-text3d` |
 | Add: a photo or video (a card in the world) | `Model › model-add › add-media` |
+| Add: a logo (an SVG: one solid a colour, the upper colours standing proud) | `Model › model-add › add-logo` |
 | Add: effects (fire, sparks, smoke…) | `Model › model-add › add-fx-fire` |
 | Add: forces (fan, pull, whirl) and fluids (pour water, splash, billowing smoke, flames) | `Model › model-add › add-force-fan` |
 | | `Model › model-add › add-fluid-pour` |
@@ -279,6 +283,10 @@ Animate calls the timeline and its bar, under the stage (A1): six verbs. With no
 | A made character: For games (engines, sprite sheets, turnaround) | in the panel of a made character |
 | A drawing or a modelled thing near a character: Make it a part (or the drawing of a face state) | in the panel of a drawing |
 | More ways to move: once-moves' length, behaviours, animated on (ones…fours), physics, joints, paths, onion skin | `[cube] more-motion` |
+| Links: link it to another thing (a gear, moving with it, growing as it rises) or to the music's loudness, bass or beat | `[cube] more-motion › link-thing` |
+| Clones: the layout and its numbers, effects (random, delay, push) through fields (everywhere, near a point, a ripple), effect strength, Remove | in the panel of a cloned thing |
+| Morph: what it becomes, Remove the morph | in the panel of a morphing thing |
+| 3D text: its font (the style's, or one brought in), letters that animate (fly in, bounce in, cascade, pop, spin in, type on, wave), their order and timing | in the panel of 3D text |
 | Numbers: position, rotation, size | `[cube] transform-toggle` |
 | About this object | `[cube] inspector-more` |
 | Duplicate, hide | `[cube] Duplicate` |
@@ -372,7 +380,7 @@ grammar: the board itself top left, the making tools top right, the sidebar, the
 Touch and hold any thing and the same menu opens in the same order (CONTEXT §4.1): **Duplicate · Rename · Copy ·
 Paste**, then one to three extras that fit the thing, then **Delete** in red. The first four and Delete are always in
 the same places; a row a thing can't do is dimmed. An object's menu holds everything it can do: Hide, Lock, and More
-(Group or Ungroup, Array, To the ground, Settle, Swap for a model, Save to the library, Unpack); on the stage, with other
+(Group or Ungroup, Array, Clone, Morph into, To the ground, Settle, Swap for a model, Save to the library, Unpack); on the stage, with other
 things selected, **Add to the selection** comes first. A finger held still on an object opens it; a finger that moves
 is a drag. The same object has the same menu on the stage, in the outliner, on its timeline row and behind its panel's
 ⋯ button. Also on: keys, clips, flipbook drawings and tracks, cuts, screen effects, paint layers, brushes, Looks,

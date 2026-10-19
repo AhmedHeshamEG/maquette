@@ -71,6 +71,7 @@ private struct TextSection: View {
                 Image(systemName: "text.alignright").tag(TextRecipe.Alignment.right)
             }
             .pickerStyle(.segmented)
+            TextDesignRows(editor: editor, object: object, recipe: recipe)
             Toggle("Stick to the camera", isOn: Binding(get: { object[.sticksToCamera]?.boolValue == true },
                                                         set: { editor.setSticksToCamera(object.id, $0) }))
                 .font(.hmm(.body))

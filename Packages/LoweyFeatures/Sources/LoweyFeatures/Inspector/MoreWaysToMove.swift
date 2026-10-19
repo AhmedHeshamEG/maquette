@@ -18,6 +18,7 @@ struct MoreWaysToMove: View {
                 HmmPillButton("Grow it in, one by one", systemName: "sparkles", prominent: true) { editor.growGenerator() }
             }
             BehaviorList(editor: editor)
+            if let object = editor.singleSelection { LinksSection(editor: editor, object: object) }
             if editor.singleSelection != nil { stepping }
             AnimationViewOptions(editor: editor)
             TileGrid(minimum: 96) {
