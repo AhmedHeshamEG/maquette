@@ -221,6 +221,12 @@ extension BridgeModel {
             guard let file = editor.bringFont(url) else { return .error(422, "That isn't a font (OTF, TTF or TTC)") }
             return .json(["font": file])
         }
+        // A layered drawing (PSD, PSB, Procreate) stood up as a diorama (L2).
+        if request.query["as"] == "drawing" {
+            guard let id = await editor.importDrawing(url) else { return .error(422, "That isn't a layered drawing Maquette can read") }
+            notify("scene")
+            return .json(["added": name, "id": id.raw, "name": editor.baseScene.objects[id]?.name ?? name])
+        }
         if request.query["as"] == "logo" {
             let before = editor.selection
             editor.importLogo(url)

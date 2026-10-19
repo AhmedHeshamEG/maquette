@@ -877,8 +877,16 @@
                   "ink",
                   "comic",
                   "sketch",
+                  "painterly",
+                  "watercolour",
+                  "gouache",
+                  "paperman",
+                  "animeCel",
                   "clay",
-                  "lowpoly"
+                  "cleanProduct",
+                  "lowPoly",
+                  "lowpoly",
+                  "pixel"
                 ]
               },
               "relation": {
@@ -1583,7 +1591,7 @@
             }
           },
           "then": {
-            "description": "A screen effect.",
+            "description": "A screen effect; impact, focusLines and kirbyDots aim at a thing (target) or a point (center, 0…1 from the top left).",
             "properties": {
               "kind": {
                 "enum": [
@@ -1591,7 +1599,10 @@
                   "shake",
                   "speedLines",
                   "zoomBlur",
-                  "glitch"
+                  "glitch",
+                  "impact",
+                  "focusLines",
+                  "kirbyDots"
                 ]
               },
               "at": {
@@ -1605,6 +1616,15 @@
               },
               "color": {
                 "$ref": "#/$defs/color"
+              },
+              "target": {
+                "$ref": "#/$defs/target"
+              },
+              "center": {
+                "type": "array",
+                "items": {
+                  "type": "number"
+                }
               }
             },
             "required": [
@@ -2183,8 +2203,16 @@
                   "ink",
                   "comic",
                   "sketch",
+                  "painterly",
+                  "watercolour",
+                  "gouache",
+                  "paperman",
+                  "animeCel",
                   "clay",
-                  "lowpoly"
+                  "cleanProduct",
+                  "lowPoly",
+                  "lowpoly",
+                  "pixel"
                 ]
               },
               "mood": {
@@ -2221,6 +2249,47 @@
               "sceneOnly": {
                 "type": "boolean"
               },
+              "ground": {
+                "enum": [
+                  "plain",
+                  "desert",
+                  "grass",
+                  "snow",
+                  "rock",
+                  "sand",
+                  "pavement",
+                  "waterEdge",
+                  "roomFloor"
+                ]
+              },
+              "finish": {
+                "type": "object",
+                "properties": {
+                  "misregistration": {
+                    "type": "boolean"
+                  },
+                  "boil": {
+                    "type": "number"
+                  },
+                  "benDay": {
+                    "type": "number"
+                  },
+                  "textureStrength": {
+                    "type": "number"
+                  },
+                  "texture": {
+                    "enum": [
+                      "none",
+                      "paper",
+                      "collage",
+                      "film",
+                      "newsprint",
+                      "riso",
+                      "canvas"
+                    ]
+                  }
+                }
+              },
               "perObject": {
                 "type": "object",
                 "additionalProperties": {
@@ -2228,8 +2297,16 @@
                     "ink",
                     "comic",
                     "sketch",
+                    "painterly",
+                    "watercolour",
+                    "gouache",
+                    "paperman",
+                    "animeCel",
                     "clay",
-                    "lowpoly"
+                    "cleanProduct",
+                    "lowPoly",
+                    "lowpoly",
+                    "pixel"
                   ]
                 }
               }

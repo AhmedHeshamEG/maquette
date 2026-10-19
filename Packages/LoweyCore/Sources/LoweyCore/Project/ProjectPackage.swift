@@ -17,7 +17,8 @@ public enum ZipReader {
         }
     }
 
-    public static func entries(_ data: Data) throws -> [(name: String, data: Data)] {
+    /// Every entry `including` accepts (by name), decompressed and checked.
+    public static func entries(_ data: Data, including: (String) -> Bool = { _ in true }) throws -> [(name: String, data: Data)] {
         let bytes = [UInt8](data)
         func u16(_ at: Int) -> Int { Int(bytes[at]) | Int(bytes[at + 1]) << 8 }
         func u32(_ at: Int) -> Int { u16(at) | u16(at + 2) << 16 }
@@ -46,6 +47,10 @@ public enum ZipReader {
             let commentLength = u16(cursor + 32)
             let local = u32(cursor + 42)
             let name = String(bytes: bytes[cursor + 46 ..< cursor + 46 + nameLength], encoding: .utf8) ?? ""
+            guard including(name) else {
+                cursor += 46 + nameLength + extraLength + commentLength
+                continue
+            }
             guard method == 0 || method == 8 else { throw Failure.compressed(name) }
             guard local + 30 <= bytes.count, u32(local) == 0x0403_4B50 else { throw Failure.notAZip }
             let start = local + 30 + u16(local + 26) + u16(local + 28)

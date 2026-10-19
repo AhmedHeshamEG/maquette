@@ -146,12 +146,12 @@ extension ScriptState {
         let sceneOnly = bool(action, "sceneOnly") ?? (scene.look != nil)
         var look = document.effectiveLook
         if let mood = string(action, "mood").flatMap(LightingPreset.init(rawValue:)) { look = look.applying(mood) }
-        // v3: the Look itself ("ink", "comic", "sketch", "clay", "lowpoly").
+        // v3: the Look itself ("ink", "comic", "painterly"…; any case, so "lowpoly" is Low-poly).
         if let preset = string(action, "look") ?? string(action, "preset") {
-            guard LookPreset.builtIns.contains(where: { $0.id == preset }) else {
+            guard let found = LookPreset.builtIns.first(where: { $0.id.lowercased() == preset.lowercased() }) else {
                 throw fail("unknown Look “\(preset)” (\(LookPreset.builtIns.map(\.id).joined(separator: ", ")))")
             }
-            look.presetID = preset
+            look.presetID = found.id
         }
         if let post = string(action, "post").flatMap(PostSettings.Preset.init(rawValue:)) { look.post = post.settings }
         if let shading = string(action, "shading").flatMap(ShadingStyle.init(rawValue:)) { look.shading = shading }
@@ -169,6 +169,7 @@ extension ScriptState {
         }
         if let bloom = number(action, "bloom") { look.post.bloom = bloom }
         if let grain = number(action, "grain") { look.post.grain = grain }
+        try lookExtras(action, into: &look)
         try run(.setLook(look, scope: sceneOnly ? .scene : .project), label: "Look")
         try perObjectLooks(action)
     }
@@ -192,6 +193,7 @@ extension ScriptState {
         var effect = try ScreenEffect(id: context.ids.next(ObjectID.self).raw, kind: kind, start: time(action["at"]), duration: number(action, "duration"),
                                       strength: number(action, "strength") ?? 1)
         if let color = try color(action["color"]) { effect.color = color.resolved(in: document.palette) }
+        if kind.aims { try aim(action, &effect) }
         copy.effects.append(effect)
         try run(.setTimeline(copy), label: "\(kind.title) at \(format(effect.start))")
     }

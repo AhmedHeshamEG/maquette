@@ -155,6 +155,9 @@ private struct ParticleSection: View {
                 Hint("Animate Emission (keys or Perform) to start and stop it.")
             }
             HmmPillButton("New variation", systemName: "dice") { editor.updateParticles(object.id) { $0.seed = UInt64.random(in: 1 ... 999_999) } }
+            // Kept in Yours (L2), the Effect Studio makes the rest of it.
+            HmmPillButton("Save to Yours", systemName: "tray.and.arrow.down") { editor.saveEffectToYours(object.id) }
+                .accessibilityIdentifier("effect-save-yours")
         }
     }
 }

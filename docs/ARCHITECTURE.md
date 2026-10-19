@@ -736,6 +736,42 @@ flowchart LR
   `Export/LoopCheckRow`; Model ▸ Add's Logo tile; the hold menu's Clone… and Morph into…; the bridge's `add_media` takes
   `as=font` and `as=logo`.
 
+## Looks & the library (0.24)
+
+```mermaid
+flowchart LR
+    Lines[Lines] --> Paint{a Look paints?}
+    Paint -- yes --> Tensor[paintTensor<br/>structure tensor] --> Filter[paintFilter<br/>8-sector anisotropic Kuwahara<br/>wet edges · granulation · paper]
+    Paint -- no --> Post
+    Filter --> Post[Post: pixel blocks · Ben-Day · print textures · misregistration]
+    Post --> Comp[Composite: impact · focus lines · Kirby dots]
+    File[.psd · .psb · .procreate] --> LI[LayeredImage<br/>PSDReader · ProcreateReader] --> DI[DioramaImport<br/>AlphaOutline → sheets]
+    Pack[.maquettepack] --> Kind{pack.json?}
+    Kind -- yes --> LP[LibraryPack.read → adopt into Yours]
+    Kind -- no --> Proj[ProjectPackage]
+```
+
+- **hmm-kit** (0.14): HmmDocuments' `HmmPackManifest`, `HmmLicence`, `HmmPackOrigin` (packs, data only), `GalleryFolders`
+  (stacks as folders, the 0.23 migration) and `GalleryArrangement.sorts`; `HmmStudioAbout`, `HmmPackForm`,
+  `HmmLicencePicker`; HmmDesign's `HmmStudio` and `HmmStudioPage` (the Studio grammar).
+- **Core**: `Look/LookPreset` (`PaintStyle`, `PixelStyle`, `ShadingParams.shadowTint`, `.reflection`), `Look/BuiltInLooks`
+  (twelve), `Look/GroundSurface` and `Ground.surface`; `VFX/Post` (`PostSettings.misregistration`, `.boil`, `.benDay`,
+  three textures; `ScreenEffect` impact, focusLines, kirbyDots with `center` and `target`; `ScreenEffects.state` takes
+  where the target is); `Import/Layered/` (`LayeredImage`, `PSDReader`, `PSDRecord`, `ProcreateReader`,
+  `TileCompression`: Apple's LZ4 framing and LZO1X, `AlphaOutline`, `DioramaImport`); `Library/LibraryPack`,
+  `LibraryPack+Adopt`, `LibraryYours` (`LibraryManifest.styles`, `.effects`, `.parts`, `.origins`);
+  `Project/ProjectStore` (summaries carry their folder); `Samples/KeepersTowerSample`; `AI/ScriptCompiler+Looks`.
+  Schema 23 (identity migrations).
+- **Engine**: `Shaders/PaintedLooks.metal` (`lw_paintTensor`, `lw_paintFilter`, `PaintedLookUniforms`) run by
+  `Renderer+Post.encodePaint` into `FrameTargets.paintTargets` (made on first use) only when `LookResolver.paints()`;
+  `Post.metal` (`lw_benDay`, `lw_printTexture`, pixel blocks from the scene's Look); `Composite.metal`
+  (`lw_drawnEffects`); `Shaders/GroundSurfaces.h` (the eight grounds, picked by the ground colour's w); `Shading.metal`
+  (shadow tint, reflection); `ShotBuilder` projects a screen effect's target into the frame.
+- **Features**: `Look/LookStudioView`, `Library/EffectStudioView`, `Library/PartStudioView` (on `HmmStudio`);
+  `Library/GroundsRow`, `YoursSections`, `PackSheet`; `Workspace/AppModel+Packs` (writing and opening packs; what's inside
+  a `.maquettepack` decides), `AppModel+Gallery` (folders), `AppModel+Samples`; `EditorModel+Diorama`, `EditorModel+Yours`;
+  the Look menu's commands. The bridge's `add_media` takes `as=drawing`.
+
 ## LoweyRender 2
 
 ```mermaid

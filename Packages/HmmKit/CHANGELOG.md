@@ -3,6 +3,21 @@
 All notable changes to hmm-kit. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the
 project uses [Semantic Versioning](https://semver.org/).
 
+## [0.14.0] - 2026-10-19
+
+Built with Maquette 0.24.
+
+### Added
+- **HmmDocuments**: packs, `HmmPackManifest` (`pack.json`: name, author, licence, items and the files they need), checked
+  before anything is read (the app's own, no newer format, no path outside the pack). `HmmLicence` in plain words (use in
+  anything, credit me, personal use only, the author's own words) with the sentence a licence file carries;
+  `HmmPackOrigin` keeps who made an imported thing. An item from someone else's pack keeps its author and licence.
+- **HmmDocuments**: `GalleryFolders`: a gallery's stacks as real folders beside the documents, one level deep (listing,
+  moving with unique names, renaming, dissolving, the old `gallery.json` stacks moved into folders once).
+  `GalleryArrangement` keeps a sort per stack and remembers that its stacks are folders.
+- **HmmDesign**: `HmmStudio`, the Studio grammar (the made thing at the top, pages under it); **HmmDocuments**:
+  `HmmStudioAbout`, `HmmPackForm` and `HmmLicencePicker`.
+
 ## [0.13.0] - 2026-10-19
 
 Built with Maquette 0.23.

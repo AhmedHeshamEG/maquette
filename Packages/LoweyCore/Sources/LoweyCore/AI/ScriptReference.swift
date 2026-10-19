@@ -80,7 +80,8 @@ public enum ScriptReference {
     {"do":"cameraMove","camera":"Shot 2","move":"pushIn|pullOut|punchIn|snapZoom|orbit|dolly|truck|crane|whipPan|shake|reveal","subject":"Paper","at":{"word":"message"},"duration":2,"strength":1}
     {"do":"cut","camera":"Room cam","at":{"word":"people"},"transition":"cut|fade|dipToBlack|wipe|zoomThrough","duration":0.6}
     {"do":"lighting","recipe":"key-warm-world-cool|noir-single-source|golden-rim|monitor-glow|moonlit|studio-soft","subject":"Hesham","intensity":1,"warmth":0.3}
-    {"do":"look","look":"ink|comic|sketch|clay|lowpoly","mood":"day|goldenHour|dusk|night|space|studio|darkStudio","perObject":{"Robot":"sketch"},"fog":40,"sceneOnly":true}
+    {"do":"look","look":"ink|comic|sketch|painterly|watercolour|gouache|paperman|animeCel|clay|cleanProduct|lowPoly|pixel","mood":"day|goldenHour|dusk|night|space|studio|darkStudio","perObject":{"Robot":"sketch"},"fog":40,"sceneOnly":true}
+    {"do":"look","ground":"desert|grass|snow|rock|sand|pavement|waterEdge|roomFloor|plain","finish":{"misregistration":true,"boil":0.4,"benDay":0.6,"texture":"none|paper|collage|film|newsprint|riso|canvas","textureStrength":0.7}}
 
     Animate (say the intent; the app picks the animation)
     {"do":"intent","target":"Hesham","what":"enter|exit|emphasise|react|walk_to|look_at|talk|idle","how":"surprised","to":"Door","at":{"word":"Nobody"},"frameRate":"twos"}
@@ -103,7 +104,8 @@ public enum ScriptReference {
     Story
     {"do":"overlay","shape":"title|label|arrow|highlight|cross|question|exclamation|check|circle|rectangle|triangle|star","text":"1941","at":[0,0.55],"size":1.5,"follow":"Paper"}
     {"do":"flipbook","fx":"speedLines|impactBurst|sweatDrop|sparkle|smear","anchor":"Robot","at":{"word":"boom"},"until":3.2,"color":"#FFFFFF"}
-    {"do":"effect","kind":"flash|shake|speedLines|zoomBlur|glitch","at":{"word":"Nobody"},"duration":0.4,"strength":1}
+    {"do":"effect","kind":"flash|shake|speedLines|zoomBlur|glitch|impact|focusLines|kirbyDots","at":{"word":"Nobody"},"duration":0.4,"strength":1}
+    {"do":"effect","kind":"focusLines","at":2,"target":"Hero"}   (impact, focusLines and kirbyDots aim at a thing, or "center":[0.5,0.4] from the top left)
     {"do":"transcript","text":"Two plus two equals four.","from":0.2,"to":3.6}   (or "words":[{"w":"Two","t":0.2,"e":0.4}]: known timings)
     {"do":"marker","name":"enigma","at":{"word":"Enigma"}}   {"do":"captions","style":"punchy|subtitle|pill|outline","position":"bottom"}
     {"do":"length","seconds":12,"fps":30}

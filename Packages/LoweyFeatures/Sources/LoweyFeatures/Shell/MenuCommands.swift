@@ -84,6 +84,15 @@ public struct LoweyMenuCommands: Commands {
             Button("Mirror Paint") { stageEditor?.togglePaintMirror() }.keyboardShortcut("m", modifiers: [.command, .control])
             Button("Fill Faces") { stageEditor?.toggleFacesBrush() }.keyboardShortcut("f", modifiers: [.command, .option, .shift])
         }
+        CommandMenu("Look") {
+            // L2: the Looks one after another, and the drawn set at the playhead (aimed at the selection).
+            Button("Next Look") { stageEditor?.stepLook(by: 1) }.keyboardShortcut("k", modifiers: [.command, .option])
+            Button("Previous Look") { stageEditor?.stepLook(by: -1) }.keyboardShortcut("k", modifiers: [.command, .option, .shift])
+            Divider()
+            Button("Impact Frame") { stageEditor?.addScreenEffect(.impact) }.keyboardShortcut("i", modifiers: [.command, .control])
+            Button("Focus Lines") { stageEditor?.addScreenEffect(.focusLines) }.keyboardShortcut("u", modifiers: [.command, .control])
+            Button("Kirby Dots") { stageEditor?.addScreenEffect(.kirbyDots) }.keyboardShortcut("k", modifiers: [.command, .control])
+        }
         CommandMenu("Physics") {
             Button("Make Real") { stageEditor?.makeReal() }.keyboardShortcut("j", modifiers: [.command, .shift])
             Button("Not Real") { stageEditor?.makeUnreal() }.keyboardShortcut("j", modifiers: [.command, .option])

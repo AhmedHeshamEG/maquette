@@ -40,6 +40,12 @@ struct LookUniforms: Equatable {
     var comic = SIMD4<Float>.zero
     var finish = SIMD4<Float>.zero
     var grade = SIMD4<Float>.zero
+    /// x = brush strokes, y = stroke size (pt @1080p), z = wet edges, w = granulation (L2).
+    var paint = SIMD4<Float>.zero
+    /// x = paper shows through, y = reflection, z = pixel block (pt @1080p, 0 = off), w = colour levels.
+    var paper = SIMD4<Float>.zero
+    /// rgb = shadow tint (linear), w = how much.
+    var shadowTint = SIMD4<Float>.zero
 }
 
 struct ObjectUniforms {
@@ -88,6 +94,8 @@ struct PostUniforms {
     var airColor = SIMD4<Float>.zero
     /// The sun's colour for its glow and rays (linear), w = 1 when the frame is HDR (highlights kept past white).
     var sunGlow = SIMD4<Float>.zero
+    /// x = Ben-Day dots, y = pixel block (px, 0 = off), z = colour levels (Pixel), w = unused (L2).
+    var print = SIMD4<Float>.zero
 }
 
 struct CompositeUniforms {
@@ -102,6 +110,21 @@ struct CompositeUniforms {
     var output = SIMD4<Float>.zero
     /// x = on, y = opacity, z = 1 over the scene, w = the video's aspect.
     var rotoscope = SIMD4<Float>.zero
+    /// The drawn set (L2): x = impact frame, y = focus lines, z = Kirby dots, w = the drawing's seed (on twos).
+    var drawn = SIMD4<Float>.zero
+    /// xy = where focus lines and an impact aim, zw = where Kirby dots crackle (0…1 from the top left).
+    var drawnPlace = SIMD4<Float>(0.5, 0.5, 0.5, 0.5)
+    /// x = how far Kirby dots have spread (0…1).
+    var drawnSpread = SIMD4<Float>.zero
+    /// x = how far the frame is zoomed so a shake's edges never show (1 under the Pixel Look: its blocks stay whole).
+    var margin = SIMD4<Float>(1.04, 0, 0, 0)
+}
+
+/// The painted Looks' pass (L2): the frame's size, pixels per point, how many rings each sector samples.
+struct PaintedLookUniforms {
+    var size = SIMD4<Float>.zero
+    /// x = pixels per point (height / 1080), y = rings (2 or 3), z = frame index, w = unused.
+    var params = SIMD4<Float>.zero
 }
 
 struct EditorUniforms {

@@ -49,6 +49,7 @@ struct LibraryBrowser: View {
             if page == .motion, !isSwapping {
                 MotionBrowser(editor: editor, query: query)
             } else if page == .things, query.isEmpty, !isSwapping {
+                GroundsRow(editor: editor)
                 KitBrowser(editor: editor, selectedSet: $kitSet, expanded: $expanded)
             } else if page == .characters, results.isEmpty {
                 if query.isEmpty {
@@ -61,12 +62,14 @@ struct LibraryBrowser: View {
                                   actionTitle: "Import models") { importing = true }
                 }
             } else if results.isEmpty {
+                if page == .yours, query.isEmpty, !isSwapping { YoursSections(editor: editor) }
                 HmmEmptyState(query.isEmpty ? "shippingbox" : "questionmark.folder",
                               title: query.isEmpty ? "Your library is empty" : "Nothing called “\(query)” yet",
                               message: "Import USDZ, glTF, GLB or OBJ models (a whole folder works), or build something and Save to library.",
                               actionTitle: "Import models") { importing = true }
             } else {
                 if page == .characters, query.isEmpty, !isSwapping { CharacterRow(editor: editor) }
+                if page == .yours, query.isEmpty, !isSwapping { YoursSections(editor: editor) }
                 LazyVGrid(columns: [GridItem(.adaptive(minimum: 104), spacing: HmmSpacing.s)], spacing: HmmSpacing.s) {
                     ForEach(results) { item in
                         LibraryTile(item: item, thumbnail: library.thumbnail(for: item))

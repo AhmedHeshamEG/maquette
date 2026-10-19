@@ -3,6 +3,20 @@
 One line per feature for the person it serves (`studio-h/USERS.md`), in Hesham's voice, for the YouTube lessons the
 Learn place links to (CONTEXT §8). A phase adds the lines of what it built; M16 records them.
 
+## 0.24 (L2): Looks & the library
+
+- **The anime animator:** "Look, Style, Anime cel: two hard tones and a lavender shadow, on twos. Select the hero, Look,
+  Finish, Focus lines: they close in on him and follow him as he runs."
+- **The Procreate person:** "Drop your Procreate file on the stage: every layer stands up as a sheet, the sky at the back.
+  Push the camera in slowly and the layers part."
+- **The illustrator:** "Painterly: the strokes follow the shapes. Hold it, Duplicate, and in the Look Studio make the
+  strokes bigger; Save to Yours and it's in every project."
+- **The explainer maker:** "Library, Things, Grounds, Snow: the whole floor is snow, lit by the Look like everything on it."
+- **The comic maker:** "Look, Finish, Print: Ben-Day dots on any Look, lines that boil, and the out-of-focus things as
+  slipped plates. Newsprint under it all."
+- **Everyone:** "Library, Yours, Share a pack: pick your Looks and brushes, write your name, say what others may do.
+  AirDrop it; on their iPad it opens with your name on every thing."
+
 ## 0.21 (A1): animate & export
 
 - **The explainer maker:** "Pick the car, Animate, Path, and draw where it goes. Draw slow, it drives slow; speed up, it

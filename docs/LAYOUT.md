@@ -107,8 +107,10 @@ Three short pages; the page is remembered.
 | Control | Walk |
 |---|---|
 | Only this scene | `Look › Only this scene` |
-| Style: Looks (Ink, Comic, Sketch, Clay, Low-poly, My Looks) | `Look › look-style › look-clay` |
-| Style: duplicate as My Look (and its editor) | `Look › look-style › duplicate-look` |
+| Style: twelve Looks (Ink … Painterly, Watercolour, Gouache, Paperman, Anime cel … Pixel), My Looks, Your Looks | `Look › look-style › look-painterly` |
+| Style: duplicate as My Look | `Look › look-style › duplicate-look` |
+| Style: the Look Studio (Light, Lines, Paint, Print, Motion, About); Save to Yours; Share as a pack (L2) | Look ▸ Style ▸ Open “My Look” in the Look Studio, or a My Look's hold menu |
+| Style: a Look's hold menu: duplicate, open in the Look Studio, save to Yours, share as a pack, delete | touch and hold a Look |
 | Style: the palette (linked colours; the sidebar's Pick fills the slot being edited) | `Look › look-style › Add a colour` |
 | World: moods (Day … Studio, Dark studio) | `Look › look-world › mood-dusk` |
 | World: sky from a picture (an HDRI that shows behind everything and lights the world; turn, brightness) (F1) | Look ▸ World ▸ Choose an HDRI… (the Files sheet) |
@@ -118,7 +120,9 @@ Three short pages; the page is remembered.
 | World: the real sun (a place, a date, a time; a shadow study across the timeline; which way north is), in Fine tune the world | Look ▸ World ▸ Fine tune the world ▸ Real sun |
 | Finish: clean, cinematic, dreamy, retro, ink outlines, collage, old film; grain, bloom | `Look › look-finish › Cinematic` |
 | Finish: Motion (smooth, on twos, on threes) for the whole scene | `Look › look-finish › finish-motion` |
-| Finish: screen effects at the playhead (a flash, a shake…) | `Look › look-finish › finish-screen-effects` |
+| Finish: screen effects at the playhead (flash, shake…; impact frame, focus lines, Kirby dots aimed at the selection) | `Look › look-finish › finish-screen-effects` |
+| Finish: textures (paper, collage, old film, newsprint, risograph, canvas) | `Look › look-finish › finish-texture` |
+| Finish: Print on any Look: Ben-Day dots, line boil, focus by misregistration (L2) | `Look › look-finish › finish-misregistration` |
 
 ### Library
 
@@ -126,6 +130,7 @@ Three short pages; the page is remembered.
 |---|---|
 | Search everything (the Kit, your models, builds, worlds, scripts) | `Library › library-search` |
 | Things: the Kit by set | `Library › library-things › kit-sets` |
+| Things: Grounds (plain, desert, grass, snow, rock, sand, pavement, water's edge, room floor) (L2) | `Library › library-things › ground-snow` |
 | Characters ▸ New: from a person, four legs, wings, a blob or nothing; the character lands with its panel open and rigs itself | `Library › library-characters › new-character-person` |
 | Characters: a Blob | `Library › library-characters › add-blob` |
 | Characters: Me | `Library › library-characters › add-me` |
@@ -134,6 +139,9 @@ Three short pages; the page is remembered.
 | A dropped motion plays where the joints match and says which it skipped; a motion's menu: rename, favourite, delete | tap or touch and hold a motion |
 | Characters: everything with a skeleton (the Kit's people, rigged models, saved rigged builds) | `Library › library-characters` |
 | Yours: your models, builds, worlds, scripts, favourites, recent; import models (USDZ, glTF, GLB, OBJ, STL, 3MF) | `Library › library-yours › Import models` |
+| Yours: share a pack (Looks, brushes, materials, effects, parts, motions, things; your name and a licence in words) (L2) | `Library › library-yours › share-pack` |
+| Yours: bring in a pack (or open a .maquettepack from anywhere) | `Library › library-yours › bring-pack` |
+| Yours: your Looks, effects and parts; tap to use; hold for the Effect or Part Studio, share, delete | shown once there are any |
 | An item's menu (the hold menu): rename, favourite; replace with the selection (builds); delete | touch and hold an item |
 | Swap a shape for a model | the object's menu ▸ More ▸ Swap for a model… (the Library opens to swap) |
 | Clone: live copies in a grid, a circle, a line or along a path | the object's menu ▸ More ▸ Clone… (its panel then has Clones) |
@@ -162,6 +170,7 @@ Three short pages; the page is remembered.
 | Add: 3D text | `Model › model-add › add-text3d` |
 | Add: a photo or video (a card in the world) | `Model › model-add › add-media` |
 | Add: a logo (an SVG: one solid a colour, the upper colours standing proud) | `Model › model-add › add-logo` |
+| Add: a drawing (PSD, PSB, Procreate): a painted sheet a layer, stacked in depth, ready to pin and rig (L2) | `Model › model-add › add-drawing` |
 | Add: effects (fire, sparks, smoke…) | `Model › model-add › add-fx-fire` |
 | Add: forces (fan, pull, whirl) and fluids (pour water, splash, billowing smoke, flames) | `Model › model-add › add-force-fan` |
 | | `Model › model-add › add-fluid-pour` |

@@ -94,7 +94,13 @@ struct EditorScreen: View {
         }
         .hmmEditBar(isPresented: $editor.hands.editBar, items: editor.editBarItems)
         .dropDestination(for: URL.self) { urls, location in
-            app.landModels(urls, at: location)
+            // Layered drawings stand up as dioramas (L2); everything else is a model.
+            let drawings = urls.filter { LayeredImage.fileExtensions.contains($0.pathExtension.lowercased()) }
+            for drawing in drawings {
+                app.landDrawing(drawing)
+            }
+            let models = urls.filter { !drawings.contains($0) }
+            if !models.isEmpty { app.landModels(models, at: location) }
             return true
         }
         .animation(HmmMotion.standard.animation(reduceMotion: reduceMotion), value: editor.chromeHidden)

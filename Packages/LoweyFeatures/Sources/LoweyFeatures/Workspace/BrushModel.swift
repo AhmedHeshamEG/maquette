@@ -117,6 +117,15 @@ final class BrushModel {
         changed()
     }
 
+    /// A pack's brushes taken in (L2): the library with them added, and their pictures filed under their keys.
+    func adopt(_ adopted: BrushLibrary, pictures: [String: Data]) {
+        for (_, png) in pictures {
+            _ = try? store.store(image: png)
+        }
+        library = adopted
+        changed()
+    }
+
     private func changed() {
         revision += 1
         previews.removeAll()

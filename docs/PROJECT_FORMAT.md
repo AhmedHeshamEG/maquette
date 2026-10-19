@@ -637,6 +637,31 @@ schema 21.
 
 Schema 22 only added optional keys; files from schema 21 open unchanged, and Maquette 0.22 refuses schema 22.
 
+## Looks & the library (schema 23)
+
+- **Looks** (built in or `looks` in the project) can carry `paint` (absent: none): `{"strokes": 0.8, "size": 6, "wetEdges":
+  0, "granulation": 0, "paper": 0.2}` (size in points at 1080p, the rest 0–1) and `pixel` (absent: none): `{"size": 4,
+  "colors": 6}` (blocks in points at 1080p, levels a channel; used from the scene's Look only). Shading can carry
+  `shadowTint` (a colour, `"#8A7CC0B3"`: how much in its alpha) and `reflection` (0–1). Built-in names add `painterly`,
+  `watercolour`, `gouache`, `paperman`, `animeCel`, `cleanProduct`, `pixel`.
+- **The Finish** (`post`) can carry `misregistration` (bool), `boil` (0–1) and `benDay` (0–1); `texture` adds `newsprint`,
+  `riso`, `canvas`. All off when missing.
+- **Screen effects** add the kinds `impact`, `focusLines` and `kirbyDots`, and `center` (`[x, y]`, 0–1 from the top left) or
+  `target` (a thing's id: the middle of its box as the shot's camera sees it).
+- **The ground** can carry `surface` (absent: plain): `desert`, `grass`, `snow`, `rock`, `sand`, `pavement`, `waterEdge`,
+  `roomFloor`.
+- **A drawing** comes in as ordinary things: a group per drawing (and per layer group), each layer an editable shape with
+  its picture painted on (`paint/`), named after its layer.
+
+Schema 23 only added optional keys; files from schema 22 open unchanged, and Maquette 0.23 refuses schema 23.
+
+### The library (Yours)
+
+`library.json` adds `styles` (saved Looks, by id), `effects` (saved particle effects: `{"id", "name", "particles": {…}}`),
+`parts` (saved character parts: `{"id", "name", "part": {…}, "mesh": "<file>"}`) and `origins` (by the thing's id, brushes
+and materials too: `{"author": "…", "licence": {"kind": "anything" | "credit" | "personal" | "own", "text": "…"}, "pack":
+"…", "imported": "<ISO 8601>"}`). All empty when missing.
+
 
 ## workspace.json
 
@@ -696,12 +721,30 @@ Like `project.json`, the board is for reading: change it through the app so undo
 Home's arrangement, beside the packages (it moves with them to iCloud Drive). Plain JSON, dates in ISO 8601.
 
 ```json
-{"schemaVersion": 1, "sort": "recent", "stacks": [{"id": "…", "name": "Rooms", "members": ["<project id>", "…"], "created": "2026-10-05T10:00:00Z"}]}
+{"schemaVersion": 1, "sort": "recent", "usesFolders": true, "sorts": {"Rooms": "name"}}
 ```
 
-`sort` is `recent`, `name` or `created`. A project id that no longer exists is dropped; a stack left empty goes.
+`sort` is `recent`, `name` or `created`. Since 0.24 a stack is a folder beside the packages, one level deep (the folder's
+name is the stack's); `sorts` holds each stack's own sort by its name. A 0.23 file has `stacks` instead (`[{"id", "name",
+"members": [<project ids>], "created"}]`): the first time Home reads it, the members are moved into a folder each and
+`usesFolders` is written. `Archive` is reserved.
 
 ## Sharing
 
 **Share as one file** writes a `.maquettepack`: a stored (uncompressed) zip of the package, with the library models
 the project uses copied into `assets/`. 3D-lowey's `.loweypack` files import the same way.
+
+**A library pack** (0.24) is a `.maquettepack` too; what's inside decides. It's a zip of:
+
+```
+pack.json           {"formatVersion": 1, "app": "maquette", "name": "…", "author": "…", "licence": {"kind": "credit"},
+                     "created": "<ISO 8601>", "items": [{"kind": "look", "id": "…", "name": "…", "file": "items/<id>.json",
+                     "files": ["pictures/…"], "author": "…", "licence": {…}}]}
+LICENCE.txt         the licence in words
+items/<id>.json     one versioned envelope an item (brush, look, material, effect, part, motion, thing)
+pictures/ models/   what the items name
+```
+
+An item's own `author` and `licence` (when it came from someone else's pack) win over the pack's. Unknown kinds are counted
+and skipped; a pack for another app, a newer `formatVersion`, more than 2000 items or a path that leaves the pack is
+refused. Packs never carry scripts.

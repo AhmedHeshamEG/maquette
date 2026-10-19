@@ -83,7 +83,24 @@ enum LookResolver {
         let finish = preset.finish
         look.finish = SIMD4<Float>(Float(finish.paperGrain), Float(finish.paperTint), Float(finish.vignette), Float(finish.saturation))
         look.grade = SIMD4<Float>(Float(finish.lift), Float(finish.gamma), Float(finish.gain), finish.accentKeepsColor ? 1 : 0)
+        if let paint = preset.paint {
+            look.paint = SIMD4<Float>(Float(paint.strokes), Float(paint.size), Float(paint.wetEdges), Float(paint.granulation))
+            look.paper.x = Float(paint.paper)
+        }
+        look.paper.y = Float(shading.reflection ?? 0)
+        if let pixel = preset.pixel {
+            look.paper.z = Float(min(max(pixel.size, 1), 64))
+            look.paper.w = Float(min(max(pixel.colors, 2), 32))
+        }
+        if let tint = shading.shadowTint {
+            look.shadowTint = SIMD4<Float>(tint.linear, Float(tint.a))
+        }
         return look
+    }
+
+    /// Whether any Look in the frame lays paint over the picture (the paint pass runs only then).
+    static func paints(_ looks: [LookUniforms]) -> Bool {
+        looks.contains { $0.paint.x > 0 || $0.paint.z > 0 || $0.paint.w > 0 || $0.paper.x > 0 }
     }
 
     /// The project's Finish (v1's post settings) as post uniforms.
@@ -93,14 +110,15 @@ enum LookResolver {
         uniforms.grade = SIMD4<Float>(Float(pow(2, post.exposure)), Float(post.contrast), Float(post.saturation), Float(post.temperature))
         uniforms.bloom = SIMD4<Float>(Float(post.bloom) * 0.8, 1.0, Float(sceneLook.shading.bloom) * 0.5, 0)
         uniforms.film = SIMD4<Float>(Float(post.vignette), Float(post.grain), Float(post.chromaticAberration), Float(post.retro))
-        let kind: Float = switch post.texture {
-        case .none: 0
-        case .paper: 1
-        case .collage: 2
-        case .film: 3
-        }
-        uniforms.texture = SIMD4<Float>(kind, Float(post.textureStrength), Float(frame), 0)
+        // 0 none, 1 paper, 2 collage, 3 old film, 4 newsprint, 5 risograph, 6 canvas (Post.metal's lw_finish).
+        uniforms.texture = SIMD4<Float>(Float(post.texture.shaderIndex), Float(post.textureStrength), Float(frame), 0)
         uniforms.pixels = SIMD4<Float>(size.y / 1080, Float(frame), Float(frame / 2), 0)
+        uniforms.print.x = Float(post.benDay)
+        if let pixel = sceneLook.pixel {
+            // The whole frame takes its blocks from the scene's Look, at the picture's own height (D-481).
+            uniforms.print.y = Float(pixel.blockPixels(height: Int(size.y)))
+            uniforms.print.z = Float(min(max(pixel.colors, 2), 32))
+        }
         return uniforms
     }
 }

@@ -4,6 +4,12 @@ Shapr3D's ease, Procreate's feel, Dreams' animation and ToonSquid's rigging, in 
 or art degree. Build a set like Lego, drop in characters, direct them with a camera, sync them to your voice, and
 export the video. By **studio h.**; the continuation of 3D-lowey 2.0. All rights reserved (see [LICENSE](LICENSE)).
 
+**0.24** (phase L2): **Looks & the library**. Seven new Looks (Painterly, Watercolour, Gouache, Paperman, Anime cel,
+Clean product, Pixel), a Finish for any Look (Ben-Day dots, line boil, misregistration, newsprint, riso, canvas, and the
+drawn set: impact frames, focus lines, Kirby dots that follow a thing), Studios for Looks, effects and parts, packs shared
+with an author and a licence in words, layered PSD and Procreate drawings stood up as dioramas, eight grounds, and stacks
+on Home that are real folders.
+
 **0.23** (phase D1): **motion design**. A client's SVG logo stood up as solids, the brand's own font, letters that fly
 in, bounce, cascade or ride a wave; live copies in a grid, a circle, a line or along a path, rippled by effects through
 fields; one thing's motion driving another's (gears), things that move to a song's loudness, bass or beat; a shape

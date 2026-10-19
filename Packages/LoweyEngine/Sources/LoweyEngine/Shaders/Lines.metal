@@ -64,7 +64,7 @@ kernel void lw_ssao(texture2d<float, access::sample> normalDepth [[texture(0)]],
 
 struct LineUniforms {
     float4 size;         // width, height, 1/width, 1/height
-    float4 scale;        // x = pixels per point (height / 1080), y = boil step (frame / 2), z = extra outline width, w = unused
+    float4 scale;        // x = pixels per point (height / 1080), y = boil step (frame / 2), z = extra outline width, w = Finish boil
     float4 selection;    // rgb = selection colour (linear), w = 1 to draw the selection outline
     float4 extraInk;     // rgb = Finish outline colour (linear), w = unused
 };
@@ -164,9 +164,11 @@ kernel void lw_lines(texture2d<float, access::read> color [[texture(0)]],
     float width = (ink ? look.lines.y : extra) * u.scale.x * lineWeights[object] * distanceScale;
     width = max(width, selected ? 2.5 * u.scale.x : 0.0);
     float2 jitter = 0.0;
-    if (look.lineInk.w > 0.0) {
+    // The Look's boil, or the Finish's on any Look (L2), whichever trembles more.
+    float boil = max(look.lineInk.w, u.scale.w);
+    if (boil > 0.0) {
         float2 seed = float2(gid) * 0.045 + u.scale.y * 13.7;
-        jitter = (float2(lw_noise(seed), lw_noise(seed + 31.0)) - 0.5) * 2.4 * look.lineInk.w;
+        jitter = (float2(lw_noise(seed), lw_noise(seed + 31.0)) - 0.5) * 2.4 * boil;
     }
     EdgeHit edge = lw_findEdge(ids, normalDepth, int2(gid), centerID, center, look, width * 0.5 + 1.0, jitter, u);
     if (edge.strength <= 0.0) {

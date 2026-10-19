@@ -10,6 +10,8 @@ struct LookPanel: View {
     @State private var savingLook = false
     @State private var lookName = ""
     @State private var showsFineTune = false
+    @State private var studio: LookStudioTarget?
+    @State private var sharing: IdentifiedURL?
     @AppStorage("look.page") private var page = LookPage.style
 
     private var look: Look { editor.look }
@@ -22,7 +24,10 @@ struct LookPanel: View {
                 case .style:
                     looks
                     if let mine = editor.document.project.customLooks.first(where: { $0.id == look.presetID }) {
-                        MyLookEditor(editor: editor, preset: mine)
+                        HmmPillButton("Open “\(mine.name)” in the Look Studio", systemName: "slider.horizontal.3") {
+                            studio = LookStudioTarget(id: mine.id)
+                        }
+                        .accessibilityIdentifier("open-look-studio")
                     }
                     PaletteSection(editor: editor)
                 case .world:
@@ -42,6 +47,10 @@ struct LookPanel: View {
                     .font(.hmm(.body, weight: .semibold))
             }
         }
+        .sheet(item: $studio) { target in
+            NavigationStack { LookStudioView(editor: editor, id: target.id) }
+        }
+        .sheet(item: $sharing) { ShareSheet(items: [$0.url]) }
         .alert("Save the world to your library", isPresented: $savingLook) {
             TextField("Name", text: $lookName)
             Button("Save") {
@@ -75,8 +84,19 @@ struct LookPanel: View {
                             LookCard(preset: preset, selected: preset.id == look.presetID, mood: look.lightingPreset ?? .day)
                         }
                         .buttonStyle(.plain)
-                        .hmmHoldMenu(HmmHoldMenu(duplicate: { editor.duplicateLook(preset) },
-                                                 delete: holdAction(if: !preset.isBuiltIn) { editor.deleteCustomLook(preset.id) }))
+                        .hmmHoldMenu(menu(for: preset))
+                    }
+                    // Your Looks (L2): kept on this iPad for every project; using one makes a copy the project keeps.
+                    ForEach(editor.library.manifest.styles.filter { style in !editor.allLooks.contains { $0.id == style.id } }) { preset in
+                        Button {
+                            editor.useStyle(preset)
+                        } label: {
+                            LookCard(preset: preset, selected: false, mood: look.lightingPreset ?? .day)
+                        }
+                        .buttonStyle(.plain)
+                        .hmmHoldMenu(HmmHoldMenu(extras: [HmmHoldMenu.Item("Share as a pack", systemName: "square.and.arrow.up") {
+                            share(preset)
+                        }], delete: { editor.library.removeStyle(preset.id) }))
                     }
                 }
             }
@@ -84,8 +104,24 @@ struct LookPanel: View {
                 HmmPillButton("Duplicate as My Look", systemName: "plus.square.on.square") { editor.duplicateLook(editor.lookPreset) }
                     .accessibilityIdentifier("duplicate-look")
             }
-            Hint("Touch and hold a Look for its options. Built-in Looks stay as they are; duplicate one to change it.")
+            Hint("Touch and hold a Look for its options. Built-in Looks stay as they are; duplicate one to make it yours in the Look Studio.")
         }
+    }
+
+    private func menu(for preset: LookPreset) -> HmmHoldMenu {
+        var extras: [HmmHoldMenu.Item] = []
+        if !preset.isBuiltIn {
+            extras.append(HmmHoldMenu.Item("Open in the Look Studio", systemName: "slider.horizontal.3") { studio = LookStudioTarget(id: preset.id) })
+            extras.append(HmmHoldMenu.Item("Save to Yours", systemName: "tray.and.arrow.down") { editor.saveLookToYours(preset) })
+            extras.append(HmmHoldMenu.Item("Share as a pack", systemName: "square.and.arrow.up") { share(preset) })
+        }
+        return HmmHoldMenu(duplicate: { editor.duplicateLook(preset) }, extras: extras,
+                           delete: holdAction(if: !preset.isBuiltIn) { editor.deleteCustomLook(preset.id) })
+    }
+
+    private func share(_ preset: LookPreset) {
+        sharing = editor.app.writePack([.look(preset.id)], name: preset.name, author: editor.app.packAuthor, licence: editor.app.packLicence,
+                                       looks: editor.document.project.customLooks).map(IdentifiedURL.init)
     }
 
     private var moods: some View {
@@ -119,6 +155,11 @@ struct LookPanel: View {
             }
         }
     }
+}
+
+/// Which of the project's Looks the Look Studio opens on.
+struct LookStudioTarget: Identifiable {
+    let id: String
 }
 
 /// Look's three pages.

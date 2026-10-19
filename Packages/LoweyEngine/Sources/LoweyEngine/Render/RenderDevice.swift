@@ -148,6 +148,9 @@ struct Pipelines {
     let bloomDown: MTLComputePipelineState
     let bloomUp: MTLComputePipelineState
     let lens: MTLComputePipelineState
+    /// The painted Looks' pass (L2): the picture's direction, then strokes along it.
+    let paintTensor: MTLComputePipelineState
+    let paintFilter: MTLComputePipelineState
     let finish: MTLComputePipelineState
     let composite: MTLComputePipelineState
     let upscale: MTLComputePipelineState
@@ -192,6 +195,8 @@ struct Pipelines {
         bloomDown = try builder.compute("lw_bloomDown")
         bloomUp = try builder.compute("lw_bloomUp")
         lens = try builder.compute("lw_lens")
+        paintTensor = try builder.compute("lw_paintTensor")
+        paintFilter = try builder.compute("lw_paintFilter")
         finish = try builder.compute("lw_finish")
         composite = try builder.compute("lw_composite")
         upscale = try builder.compute("lw_upscale")

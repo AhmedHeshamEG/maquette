@@ -45,13 +45,18 @@ public struct ShadingParams: Codable, Hashable, Sendable {
     public var bloom: Double
     /// Soft (filtered) sun shadows, for Clay.
     public var softShadows: Bool
+    /// The shadow band laid over with one colour (Anime cel's lavender), its alpha how much (nil: none; D-480).
+    public var shadowTint: RGBA?
+    /// Every surface mirrors the sky at grazing angles, as a lacquered product does (0…1; nil: none; D-479).
+    public var reflection: Double?
 
     public init(model: LookModel = .toon, bands: Int = 2, threshold: Double = 0.5, midThreshold: Double = 0.78,
                 edgeSoftness: Double = 0.03, shadowHueShift: Double = 0.18, shadowValue: Double = 0.35,
                 shadowSaturation: Double = 0.12, ambientSteps: Double = 0.6, contactShading: Double = 0.6,
                 rim: Double = 0.35, rimThreshold: Double = 0.62, rimSoftness: Double = 0.04, specular: Double = 0.8,
                 specularSize: Double = 0.25, specularSoftness: Double = 0.02, smoothing: Double = 1,
-                posterizeTextures: Bool = true, bloom: Double = 0.35, softShadows: Bool = false) {
+                posterizeTextures: Bool = true, bloom: Double = 0.35, softShadows: Bool = false, shadowTint: RGBA? = nil,
+                reflection: Double? = nil) {
         self.model = model
         self.bands = bands
         self.threshold = threshold
@@ -72,6 +77,54 @@ public struct ShadingParams: Codable, Hashable, Sendable {
         self.posterizeTextures = posterizeTextures
         self.bloom = bloom
         self.softShadows = softShadows
+        self.shadowTint = shadowTint
+        self.reflection = reflection
+    }
+}
+
+/// Paint laid over the picture (D-477): Painterly's strokes that follow the forms, Watercolour's washes pooling at
+/// their edges with the pigment settling into the paper's grain, Gouache's flat opaque strokes. A post pass at full
+/// resolution after the lines, so the lines are painted too.
+public struct PaintStyle: Codable, Hashable, Sendable {
+    /// How much the picture is turned into brush strokes along its forms (0…1).
+    public var strokes: Double
+    /// The strokes' size in points at 1080p.
+    public var size: Double
+    /// Washes darken where they meet (0…1).
+    public var wetEdges: Double
+    /// Pigment settling into the paper, more where the paint is dark (0…1).
+    public var granulation: Double
+    /// The paper shows through light paint, as watercolour is transparent (0…1).
+    public var paper: Double
+
+    public init(strokes: Double = 0.6, size: Double = 6, wetEdges: Double = 0, granulation: Double = 0, paper: Double = 0) {
+        self.strokes = strokes
+        self.size = size
+        self.wetEdges = wetEdges
+        self.granulation = granulation
+        self.paper = paper
+    }
+
+    /// Nothing to paint.
+    public var isOff: Bool { strokes <= 0 && wetEdges <= 0 && granulation <= 0 && paper <= 0 }
+}
+
+/// Pixel art (D-481): the picture drawn in square blocks with a few colours. The whole frame takes it from the scene's
+/// Look (a block can't be half one Look and half another).
+public struct PixelStyle: Codable, Hashable, Sendable {
+    /// A block's size in points at 1080p (2…16).
+    public var size: Double
+    /// Levels per colour channel (2…32).
+    public var colors: Int
+
+    public init(size: Double = 4, colors: Int = 8) {
+        self.size = size
+        self.colors = colors
+    }
+
+    /// The block in pixels for a picture `height` pixels tall (at least one).
+    public func blockPixels(height: Int) -> Int {
+        max(Int((min(max(size, 1), 64) * Double(height) / 1080).rounded()), 1)
     }
 }
 
@@ -207,10 +260,14 @@ public struct LookPreset: Codable, Hashable, Sendable, Identifiable {
     public var finish: LookFinish
     /// Default stepping for animated objects (cameras stay on ones).
     public var stepping: Stepping
+    /// Paint over the picture (Painterly, Watercolour, Gouache; nil: none).
+    public var paint: PaintStyle?
+    /// Pixel art (nil: none).
+    public var pixel: PixelStyle?
 
     public init(id: String, name: String, basedOn: String? = nil, shading: ShadingParams = ShadingParams(),
                 lines: LineParams = LineParams(), comic: ComicParams = .off, finish: LookFinish = .neutral,
-                stepping: Stepping = .onOnes) {
+                stepping: Stepping = .onOnes, paint: PaintStyle? = nil, pixel: PixelStyle? = nil) {
         self.id = id
         self.name = name
         self.basedOn = basedOn
@@ -219,6 +276,8 @@ public struct LookPreset: Codable, Hashable, Sendable, Identifiable {
         self.comic = comic
         self.finish = finish
         self.stepping = stepping
+        self.paint = paint
+        self.pixel = pixel
     }
 
     public var isBuiltIn: Bool { LookPreset.builtIns.contains { $0.id == id } }

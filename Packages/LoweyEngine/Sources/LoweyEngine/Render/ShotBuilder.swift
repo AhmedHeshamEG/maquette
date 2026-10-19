@@ -66,7 +66,7 @@ public final class ShotBuilder {
         input.paintFile = paintFile
         input.simulated = animated.simulated
         var request = FrameRequest(input: input, camera: camera, lens: mainID.flatMap { animated.scene.objects[$0] }.map(CameraLens.init),
-                                   screen: ScreenEffects.state(at: time, effects: timeline.effects, fps: timeline.fps), frameIndex: frameIndex,
+                                   screen: screenState(animated, camera: camera, aspect: aspect), frameIndex: frameIndex,
                                    renderScale: renderScale, transparent: transparent)
         if let transition {
             let from = RenderCamera.shot(transition.from, in: animated.scene, fallback: viewpoint, aspect: aspect)
@@ -75,6 +75,22 @@ public final class ShotBuilder {
         request.overlay = overlayImage(animated, camera: camera, framing: framing, size: size, captions: captions)
         request.flipbooks = flipbookDraws(animated, camera: camera, size: size)
         return request
+    }
+
+    /// The screen effects of the moment; a drawn effect that follows a thing aims at the middle of the thing's box as the
+    /// shot's camera sees it (L2).
+    func screenState(_ animated: AnimatedScene, camera: RenderCamera, aspect: Double) -> ScreenState {
+        guard timeline.effects.contains(where: { $0.target != nil }) else {
+            return ScreenEffects.state(at: animated.time, effects: timeline.effects, fps: timeline.fps)
+        }
+        let pose = CoreTransform(position: Vec3(camera.position), rotation: Quat(camera.orientation))
+        let bounds = SceneBounds(library: catalog.manifest)
+        return ScreenEffects.state(at: animated.time, effects: timeline.effects, fps: timeline.fps) { id in
+            guard animated.scene.objects[id] != nil else { return nil }
+            let middle = bounds.worldBounds(of: id, in: animated.scene)?.center ?? animated.scene.worldTransform(of: id).position
+            return OverlayLayout.project(middle, camera: pose, fieldOfView: Double(camera.fieldOfView), aspect: aspect)
+                .map { Vec2(($0.0 + 1) / 2, (1 - $0.1) / 2) }
+        }
     }
 
     /// Overlays (titles, labels, arrows…) and captions drawn by Core Graphics at the frame's size (nil when none).

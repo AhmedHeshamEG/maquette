@@ -31,7 +31,8 @@ compositions = ["center", "leftThird", "rightThird", "lowAngle", "highAngle"]
 recipes = ["three-point", "golden-hour", "moonlit", "neon", "key-warm-world-cool", "noir-single-source", "golden-rim", "monitor-glow",
            "studio-soft"]
 intents = ["enter", "exit", "emphasise", "react", "walk_to", "look_at", "talk", "idle"]
-looks = ["ink", "comic", "sketch", "clay", "lowpoly"]
+looks = ["ink", "comic", "sketch", "painterly", "watercolour", "gouache", "paperman", "animeCel", "clay", "cleanProduct", "lowPoly",
+         "lowpoly", "pixel"]
 fx = ["speedLines", "impactBurst", "sweatDrop", "sparkle", "smear"]
 expressions = ["neutral", "happy", "laugh", "smug", "surprised", "shocked", "scared", "sad", "angry", "sleepy", "wink", "thinking"]
 presets = ["popIn", "popOut", "grow", "shrink", "bounce", "wiggle", "float", "spin", "shake", "pulse", "fadeIn", "fadeOut",
@@ -85,6 +86,11 @@ verbs = {
     "look": ("The Look, mood and post; per-object Looks.", {"look": {"enum": looks}, "mood": s, "post": s, "shading": s,
                                                             "fog": {"anyOf": [b, n]}, "palette": {"type": "array", "items": color},
                                                             "bloom": n, "grain": n, "sceneOnly": b,
+                                                            "ground": {"enum": ["plain", "desert", "grass", "snow", "rock", "sand", "pavement",
+                                                                                "waterEdge", "roomFloor"]},
+                                                            "finish": {"type": "object", "properties": {
+                                                                "misregistration": b, "boil": n, "benDay": n, "textureStrength": n,
+                                                                "texture": {"enum": ["none", "paper", "collage", "film", "newsprint", "riso", "canvas"]}}},
                                                             "perObject": {"type": "object", "additionalProperties": {"enum": looks}}}, []),
     "intent": ("Say what it should do; the app picks the animation.", {"target": tgt, "what": {"enum": intents},
                "how": {"enum": expressions}, "to": {"anyOf": [tgt, v3]}, "at": time, "on_word": s, "duration": n, "strength": n,
@@ -110,8 +116,9 @@ verbs = {
                                                  "follow": tgt, "color": color}, ["shape"]),
     "flipbook": ("Drawn FX from the library.", {"fx": {"enum": fx}, "anchor": {"anyOf": [tgt, v3]}, "at": time, "until": time,
                                                "color": color, "frames": n, "name": s}, ["fx"]),
-    "effect": ("A screen effect.", {"kind": {"enum": ["flash", "shake", "speedLines", "zoomBlur", "glitch"]}, "at": time,
-                                    "duration": n, "strength": n, "color": color}, ["kind"]),
+    "effect": ("A screen effect; impact, focusLines and kirbyDots aim at a thing (target) or a point (center, 0…1 from the top left).",
+               {"kind": {"enum": ["flash", "shake", "speedLines", "zoomBlur", "glitch", "impact", "focusLines", "kirbyDots"]}, "at": time,
+                "duration": n, "strength": n, "color": color, "target": tgt, "center": {"type": "array", "items": n}}, ["kind"]),
     "marker": ("A timeline marker.", {"name": s, "at": time}, ["at"]),
     "captions": ("Captions on/off and style.", {"enabled": b, "style": s, "position": s}, []),
     "array": ("Copies in a line or ring.", {"target": tgt, "count": n, "step": v3, "radius": n, "faceCenter": b, "name": s}, ["target"]),

@@ -132,7 +132,7 @@ Drawn FX that sell a moment: speedLines, impactBurst, sweatDrop, sparkle, smear 
 
 ## `add_media`
 
-A picture or video file from this laptop into the open shot: a thin card standing in the 3D world, or overlay=True to lay it flat over the frame. Videos play from `at` seconds (default: the playhead). environment=True takes a Radiance .hdr panorama (an HDRI) as the world's sky and light: its sun and sky colours light the scene; turn it with build's {"do": "film", "op": "environment", "turn": 40}. font=True brings an OTF/TTF font into the project for 3D text (build's {"do": "text", "font": "fonts/…"}); logo=True stands an SVG logo up as solids, one a colour.
+A picture or video file from this laptop into the open shot: a thin card standing in the 3D world, or overlay=True to lay it flat over the frame. Videos play from `at` seconds (default: the playhead). environment=True takes a Radiance .hdr panorama (an HDRI) as the world's sky and light: its sun and sky colours light the scene; turn it with build's {"do": "film", "op": "environment", "turn": 40}. font=True brings an OTF/TTF font into the project for 3D text (build's {"do": "text", "font": "fonts/…"}); logo=True stands an SVG logo up as solids, one a colour; drawing=True stands a layered PSD, PSB or Procreate drawing up as a diorama, one painted sheet a layer.
 
 | Parameter | Type | Default |
 |---|---|---|
@@ -142,6 +142,7 @@ A picture or video file from this laptop into the open shot: a thin card standin
 | `environment` | boolean | `false` |
 | `font` | boolean | `false` |
 | `logo` | boolean | `false` |
+| `drawing` | boolean | `false` |
 
 ## `render_manim`
 

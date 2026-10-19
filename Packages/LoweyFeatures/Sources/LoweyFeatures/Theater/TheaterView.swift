@@ -56,7 +56,7 @@ struct TheaterView: View {
                             state.nameText = project.info.name
                             state.renaming = project
                         },
-                        samples: state.openStack == nil && state.query.isEmpty && !state.selecting ? AnyView(SamplesCard()) : nil,
+                        samples: state.openStack == nil && state.query.isEmpty && !state.selecting ? AnyView(SamplesCard(playing: playing)) : nil,
                         projectMenu: { ProjectMenu(project: $0, state: state) },
                         stackMenu: { StackMenu(stack: $0, state: state) })
         }
@@ -99,27 +99,37 @@ private struct SetUpRow: View {
     }
 }
 
-/// The samples, once, as one stack-like card: tap it for the list; each is made fresh and opened.
+/// The samples, once, as one stack-like card: the Keeper's Tower turning on top (L2); tap it for the list, each is
+/// made fresh and opened.
 private struct SamplesCard: View {
+    let playing: Bool
     @Environment(AppModel.self) private var app
     @Environment(\.hmmTheme) private var theme
 
     var body: some View {
         Menu {
+            Button("The Keeper's Tower", systemImage: "building.columns") { app.createTowerSample(open: true) }
+                .accessibilityIdentifier("sample-tower")
             Button("Welcome island", systemImage: "tree") { app.createIslandSample(open: true) }
                 .accessibilityIdentifier("Welcome island")
             Button("The Enigma story", systemImage: "sparkles") { app.createEnigmaSample(open: true) }
         } label: {
             VStack(alignment: .leading, spacing: HmmSpacing.s) {
                 ZStack {
-                    ForEach(0 ..< 3) { index in
+                    ForEach(0 ..< 2) { index in
                         RoundedRectangle(cornerRadius: HmmRadius.card, style: .continuous)
                             .fill(theme.surface2.opacity(1 - Double(index) * 0.25))
                             .overlay(RoundedRectangle(cornerRadius: HmmRadius.card, style: .continuous).stroke(theme.line))
                             .rotationEffect(.degrees(Double(index - 1) * 4))
                             .offset(x: CGFloat(index - 1) * 6)
                     }
-                    Image(systemName: "sparkles").font(.system(size: 34, weight: .medium)).foregroundStyle(theme.text2)
+                    if let still = app.samplesStill {
+                        TurntableView(url: app.samplesLoopURL, still: still, revision: app.samplesRevision, playing: playing)
+                            .clipShape(RoundedRectangle(cornerRadius: HmmRadius.card, style: .continuous))
+                            .accessibilityLabel(Text("The Keeper's Tower, turning"))
+                    } else {
+                        Image(systemName: "sparkles").font(.system(size: 34, weight: .medium)).foregroundStyle(theme.text2)
+                    }
                 }
                 .frame(maxWidth: .infinity)
                 .aspectRatio(16 / 9, contentMode: .fit)
@@ -174,15 +184,16 @@ private struct ProjectMenu: View {
     /// A tap opens a card, so the menu doesn't: its extras are the stack it's in, sharing, and the archive.
     private var menu: HmmHoldMenu {
         let id = project.id.raw
+        // Move to… (L2): a stack is a folder, as in the Files app.
         var stacking = [HmmHoldMenu.Item("New stack…", systemName: "plus") {
             state.nameText = ""
             state.naming = [id]
         }]
-        stacking += app.gallery.stacks.filter { !$0.members.contains(id) }.map { stack in
+        stacking += app.gallery.stacks.filter { $0.id != project.folder }.map { stack in
             HmmHoldMenu.Item(stack.name, id: stack.id, isVerbatim: true) { app.addToStack([id], stack: stack.id) }
         }
-        if app.gallery.stack(containing: id) != nil {
-            stacking.append(HmmHoldMenu.Item("Move out of the stack", systemName: "arrow.up.square") { app.moveOutOfStacks([id]) })
+        if project.folder != nil {
+            stacking.append(HmmHoldMenu.Item("Out of the stack", systemName: "arrow.up.square") { app.moveOutOfStacks([id]) })
         }
         let sharing = [
             HmmHoldMenu.Item("Share as one file (.maquettepack)", systemName: "square.and.arrow.up") { state.sharing = app.package(project) },
@@ -192,7 +203,7 @@ private struct ProjectMenu: View {
             state.nameText = project.info.name
             state.renaming = project
         }, extras: [
-            HmmHoldMenu.Item("Add to stack", systemName: "square.stack", children: stacking),
+            HmmHoldMenu.Item("Move to…", systemName: "folder", children: stacking),
             HmmHoldMenu.Item("Share", systemName: "square.and.arrow.up", children: sharing),
             HmmHoldMenu.Item("Archive", systemName: "archivebox") { app.archive(project) }
         ], delete: { state.deleting = [id] })
@@ -210,6 +221,11 @@ private struct StackMenu: View {
             state.nameText = stack.name
             state.renamingStack = stack
         }, extras: [
+            HmmHoldMenu.Item("Sort inside", systemName: "arrow.up.arrow.down", children: GallerySort.allCases.map { sort in
+                HmmHoldMenu.Item(sort.title, id: "sort-\(sort.rawValue)", systemName: app.gallery.sort(in: stack.id) == sort ? "checkmark" : "") {
+                    app.setGallerySort(sort, in: stack.id)
+                }
+            }),
             HmmHoldMenu.Item("Unstack", systemName: "square.stack.3d.down.right") { withHmmAnimation(.standard) { app.unstack(stack.id) } }
         ]))
     }

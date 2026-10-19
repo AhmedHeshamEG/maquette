@@ -159,11 +159,14 @@ public struct Ground: Codable, Hashable, Sendable {
     public var color: RGBA
     /// Radius in meters.
     public var size: Double
+    /// What the ground is made of (Library ▸ Things ▸ Grounds, D-489); nil: a plain floor in its colour.
+    public var surface: GroundSurface?
 
-    public init(visible: Bool = true, color: RGBA = RGBA(0.55, 0.6, 0.5), size: Double = 60) {
+    public init(visible: Bool = true, color: RGBA = RGBA(0.55, 0.6, 0.5), size: Double = 60, surface: GroundSurface? = nil) {
         self.visible = visible
         self.color = color
         self.size = size
+        self.surface = surface
     }
 }
 

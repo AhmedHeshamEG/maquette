@@ -14,6 +14,7 @@ struct PostUniforms {
     float4 air;        // x = haze density (per metre), y = god rays, zw = the sun on the frame (0…1 from the top left)
     float4 airColor;   // haze colour (linear), w = how much the sun faces the camera
     float4 sunGlow;    // the sun's colour (linear), w = 1 for an HDR frame (highlights kept past white)
+    float4 print;      // x = Ben-Day dots, y = pixel block (px, 0 = off), z = colour levels (Pixel), w = unused (L2)
 };
 
 constexpr sampler lw_postSampler(coord::normalized, address::clamp_to_edge, filter::linear);
@@ -183,6 +184,43 @@ static inline float3 lw_air(float3 color, float2 uv, texture2d<float, access::sa
     return color;
 }
 
+/// Ben-Day dots (L2): flat colour printed as dots of ink on paper, bigger where the colour is darker.
+static inline float3 lw_benDay(float3 color, float2 pixel, constant LookUniforms &look, constant PostUniforms &u) {
+    float spacing = max(look.comic.y, 4.0) * 1.15 * u.pixels.x;
+    float2x2 rotation = float2x2(float2(0.9659, 0.2588), float2(-0.2588, 0.9659));
+    float2 local = fract(rotation * pixel / spacing) - 0.5;
+    float coverage = saturate(1.25 - lw_luminance(color) * 0.9);
+    float radius = sqrt(coverage) * 0.6;
+    float inked = 1.0 - smoothstep(radius - 0.06, radius + 0.06, length(local));
+    float3 printed = mix(float3(1.0, 0.97, 0.9), color, inked);
+    return mix(color, printed, u.print.x);
+}
+
+/// Print textures (L2): 4 newsprint (yellowed, fibrous, blacks lifted), 5 risograph (grain, few levels, warm paper),
+/// 6 canvas (a woven tooth).
+static inline float3 lw_printTexture(float3 color, uint2 gid, float kind, constant PostUniforms &u) {
+    float strength = u.texture.y;
+    float2 p = float2(gid);
+    if (kind < 4.5) {
+        float blotch = lw_noise(p / (u.size.y / 120.0) + 11.0);
+        color *= (1.0 - strength * (0.14 - 0.2 * blotch)) * float3(0.98, 0.95, 0.84);
+        color *= 1.0 - strength * 0.08 * lw_noise(p * float2(0.08, 1.6));
+        color = color * (1.0 - 0.08 * strength) + 0.04 * strength;
+        return mix(float3(lw_luminance(color)), color, 1.0 - 0.2 * strength);
+    }
+    if (kind < 5.5) {
+        float grain = lw_hash(p * 0.5);
+        color *= 1.0 - strength * 0.22 * (grain - 0.3);
+        float3 stepped = floor(pow(max(color, 0.0), 1.0 / 2.2) * 5.0 + 0.5) / 5.0;
+        color = mix(color, pow(stepped, 2.2), strength * 0.7);
+        return color * mix(float3(1.0), float3(1.0, 0.97, 0.93), strength);
+    }
+    float spacing = max(3.0 * u.pixels.x, 2.0);
+    float weave = sin(p.x * M_PI_F / spacing) * sin(p.y * M_PI_F / spacing);
+    color *= 1.0 - strength * 0.1 * (0.5 + 0.5 * weave);
+    return color * (1.0 - strength * 0.05 * lw_noise(p * 0.9));
+}
+
 kernel void lw_finish(texture2d<float, access::sample> source [[texture(0)]],
                       texture2d<float, access::sample> light [[texture(1)]],
                       texture2d<uint, access::read> ids [[texture(2)]],
@@ -195,9 +233,12 @@ kernel void lw_finish(texture2d<float, access::sample> source [[texture(0)]],
     if (gid.x >= uint(u.size.x) || gid.y >= uint(u.size.y)) { return; }
     float2 uv = (float2(gid) + 0.5) * u.size.zw;
     float2 pixel = float2(gid);
-    if (u.film.w > 0.0) {
-        // Retro: chunky pixels (read at the block's centre) and fewer colours below.
-        float block = max(2.0, u.size.y / 540.0 * (2.0 + u.film.w * 6.0));
+    // Under the Pixel Look every mark (grain, dots, paper, vignette) is one per block, so a block stays one colour.
+    float2 spot = u.print.y > 1.0 ? floor(pixel / u.print.y) * u.print.y : pixel;
+    // Retro's chunky pixels, and the Pixel Look's blocks (L2): read at the block's centre, fewer colours below.
+    float block = u.film.w > 0.0 ? max(2.0, u.size.y / 540.0 * (2.0 + u.film.w * 6.0)) : 0.0;
+    block = max(block, u.print.y);
+    if (block > 1.0) {
         pixel = (floor(pixel / block) + 0.5) * block;
         uv = pixel * u.size.zw;
     }
@@ -210,14 +251,14 @@ kernel void lw_finish(texture2d<float, access::sample> source [[texture(0)]],
     if (look.comic.x > 0.0 && lw_idObject(id) != 0u) {
         float level = light.sample(lw_postSampler, uv).r;
         float darkness = 1.0 - smoothstep(0.0, 0.5, level);
-        float dots = lw_halftone(float2(gid), darkness, look.comic.y * u.pixels.x, look.comic.x);
+        float dots = lw_halftone(spot, darkness, look.comic.y * u.pixels.x, look.comic.x);
         color = mix(color, color * 0.55, dots * darkness);
     }
     // Hatched lines in the shadow band.
     if (look.lineShape.w > 0.0 && lw_idObject(id) != 0u) {
         float level = light.sample(lw_postSampler, uv).r;
         float darkness = 1.0 - smoothstep(0.0, 0.5, level);
-        float strokes = lw_hatch(float2(gid), darkness, max(look.comic.y, 3.0) * u.pixels.x, look.lineShape.w);
+        float strokes = lw_hatch(spot, darkness, max(look.comic.y, 3.0) * u.pixels.x, look.lineShape.w);
         color = mix(color, color * 0.45, strokes * darkness);
     }
     if (u.air.x > 0.0 || u.air.y > 0.0) { color = lw_air(color, uv, normalDepth, u); }
@@ -226,16 +267,28 @@ kernel void lw_finish(texture2d<float, access::sample> source [[texture(0)]],
     bool hdr = u.sunGlow.w > 0.5;
     color = hdr ? clamp(color * u.grade.x, 0.0, 3.78) : lw_softClip(color * u.grade.x);
     color = lw_grade(color, u, look, accent);
+    if (u.print.x > 0.0 && normalDepth.sample(lw_pointSampler, uv).w < 1e5) { color = lw_benDay(color, pixel, look, u); }
+    if (u.print.z > 1.0) {
+        // The Pixel Look's few colours, stepped as the eye sees them and ordered-dithered block by block, as pixel artists
+        // do, so dark and in-between colours keep their hue instead of falling to the nearest step.
+        const float bayer[16] = {0, 8, 2, 10, 12, 4, 14, 6, 3, 11, 1, 9, 15, 7, 13, 5};
+        uint2 cell = uint2(spot / max(u.print.y, 1.0)) & 3u;
+        float threshold = (bayer[cell.y * 4u + cell.x] + 0.5) / 16.0 - 0.5;
+        float levels = u.print.z - 1.0;
+        float3 display = saturate(floor(pow(max(color, 0.0), 1.0 / 2.2) * levels + 0.5 + threshold) / levels);
+        color = pow(display, 2.2);
+    }
     // Paper: faint grain and a warm tint (Comic's print, Sketch's sheet).
     if (look.finish.x > 0.0 || look.finish.y > 0.0) {
-        float fibre = lw_noise(float2(gid) * 0.9) * 0.5 + lw_noise(float2(gid) * 0.11) * 0.5;
+        float fibre = lw_noise(spot * 0.9) * 0.5 + lw_noise(spot * 0.11) * 0.5;
         color *= 1.0 - look.finish.x * 0.08 * fibre;
         color = mix(color, color * float3(1.0, 0.95, 0.82), look.finish.y * 0.6);
     }
     float kind = u.texture.x;
-    if (kind > 0.5 && u.texture.y > 0.0) {
+    if (kind > 3.5 && u.texture.y > 0.0) { color = lw_printTexture(color, uint2(spot), kind, u); }
+    if (kind > 0.5 && kind < 3.5 && u.texture.y > 0.0) {
         float seed = kind > 2.5 ? u.texture.z : 7.0;
-        float blotch = lw_noise(float2(gid) / (u.size.y / 90.0) + seed * 3.1);
+        float blotch = lw_noise(spot / (u.size.y / 90.0) + seed * 3.1);
         float tone = 1.0 - u.texture.y * (0.3 - 0.35 * blotch);
         color *= tone * float3(1.0, 0.97, 0.9);
         if (kind > 1.5 && kind < 2.5) { color = floor(color * max(5.0, 12.0 - u.texture.y * 6.0) + 0.5) / max(5.0, 12.0 - u.texture.y * 6.0); }
@@ -253,11 +306,11 @@ kernel void lw_finish(texture2d<float, access::sample> source [[texture(0)]],
     }
     float vignette = max(u.film.x, look.finish.z);
     if (vignette > 0.0) {
-        float2 fromCenter = (float2(gid) * u.size.zw - 0.5) * float2(u.size.x * u.size.w, 1.0);
+        float2 fromCenter = (spot * u.size.zw - 0.5) * float2(u.size.x * u.size.w, 1.0);
         color *= 1.0 - vignette * smoothstep(0.35, 1.05, length(fromCenter) * 1.2);
     }
     if (u.film.y > 0.0) {
-        float noise = lw_hash(float2(gid) + u.pixels.y * 17.0) - 0.5;
+        float noise = lw_hash(spot + u.pixels.y * 17.0) - 0.5;
         color = saturate(color + noise * u.film.y * 0.12);
     }
     output.write(float4(hdr ? clamp(color, 0.0, 3.78) : saturate(color), sampled.a), gid);
