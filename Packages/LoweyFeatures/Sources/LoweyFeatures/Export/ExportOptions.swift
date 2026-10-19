@@ -15,11 +15,14 @@ struct ExportOptions: Equatable {
     var onlyLoop = false
     var custom = false
     var paintColors: PaintColorOutput = .texture
+    /// Spatial: the eyes' distance against a person's.
+    var stereoDepth = 1.0
 
     func job(_ preset: ExportPreset, settings: ExportSettings) -> ExportJob {
         var settings = settings
         settings.final = final && Self.renders(preset)
-        if Self.moves(preset) || preset.kind == .still {
+        settings.stereoDepth = stereoDepth
+        if Self.seeThrough(preset, settings) {
             settings.transparent = transparent
             if transparent, !settings.codec.hasAlpha, preset.kind == .video { settings.codec = .hevcAlpha }
             if !transparent, settings.codec == .hevcAlpha { settings.codec = .hevc }
@@ -28,14 +31,19 @@ struct ExportOptions: Equatable {
                          onlySelection: onlySelection, paintColors: paintColors)
     }
 
-    /// Video, GIF, frames and passes: things that play over time.
+    /// Video, GIF, frames and passes, the animatic, spatial and 360° video: things that play over time.
     static func moves(_ preset: ExportPreset) -> Bool {
-        [.video, .gif, .frames, .passes].contains(preset.kind)
+        [.video, .gif, .frames, .passes, .animatic, .spatialVideo, .video360].contains(preset.kind)
     }
 
-    /// Everything drawn by the renderer (Final applies).
+    /// Drawn by the renderer with Final's passes (spatial and 360° draw each view once).
     static func renders(_ preset: ExportPreset) -> Bool {
-        moves(preset) || [.still, .stillPasses, .paper].contains(preset.kind)
+        [.video, .gif, .frames, .passes, .animatic, .still, .stillPasses, .paper, .storyboard].contains(preset.kind)
+    }
+
+    /// A transparent background is offered: flat pictures and video that isn't HDR.
+    static func seeThrough(_ preset: ExportPreset, _ settings: ExportSettings) -> Bool {
+        [.video, .gif, .frames, .passes, .still].contains(preset.kind) && !settings.codec.isHDR
     }
 }
 
@@ -58,8 +66,15 @@ struct ExportOptionsView: View {
                 }
                 .accessibilityIdentifier("export-final")
             }
-            if ExportOptions.moves(preset) || preset.kind == .still {
+            if ExportOptions.seeThrough(preset, settings) {
                 Toggle("Transparent background", isOn: $options.transparent).accessibilityIdentifier("export-transparent")
+            }
+            if preset.kind == .spatialVideo || preset.kind == .spatialPhoto {
+                LabeledSlider(title: "Depth", value: options.stereoDepth, range: 0.5 ... 2, format: { String(format: "%.1f×", $0) }) {
+                    options.stereoDepth = $0
+                }
+                .accessibilityIdentifier("export-stereo-depth")
+                Text("1× is a person's eyes. Deeper for a model on a desk, flatter for a city.").font(.hmm(.footnote)).foregroundStyle(theme.text2)
             }
             if !editor.selection.isEmpty, preset.kind != .lookShader, preset.kind != .captions {
                 Toggle("Only the selection", isOn: $options.onlySelection).accessibilityIdentifier("export-only-selection")
@@ -78,7 +93,7 @@ struct ExportOptionsView: View {
                 .pickerStyle(.segmented)
                 .accessibilityIdentifier("model-colours")
             }
-            if ExportOptions.moves(preset) {
+            if ExportOptions.moves(preset), preset.kind != .video360 {
                 Toggle("Custom size, frame rate and quality", isOn: $options.custom)
                 if options.custom { customControls }
             }

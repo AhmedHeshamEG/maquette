@@ -29,6 +29,8 @@ extension ExportPreset {
         case .youtube4K: "YouTube 4K"
         case .hevc1080: "1080p"
         case .transparent: "Transparent 1080p"
+        case .hdr1080: "HDR 1080p"
+        case .hdr4K: "HDR 4K"
         case .prores1080: "1080p"
         case .prores4K: "4K"
         case .gifLoop: "Square loop"
@@ -40,6 +42,14 @@ extension ExportPreset {
         case .stillHD: "HD"
         case .still4K: "4K"
         case .stillTransparent: "Transparent HD"
+        case .stillP3: "Wide colour 4K (P3, 16-bit)"
+        case .animatic1080: "1080p"
+        case .spatial1080: "1080p, both eyes"
+        case .video360x4K: "4K (3840 × 1920)"
+        case .video360x6K: "6K (5760 × 2880)"
+        case .spatialPhotoHD: "HD, both eyes"
+        case .panorama6K: "6K"
+        case .panorama8K: "8K"
         case .stillPasses: "HD"
         case .gltfGodot: "For Godot"
         case .gltfWeb: "For the web"
@@ -58,6 +68,8 @@ extension ExportPreset {
         case .paperFrameA3: "This frame, A3"
         case .paperFramesA4: "Frames across the shot, A4"
         case .paperFramesLetter: "Frames across the shot, US Letter"
+        case .storyboardA4: "Storyboard, A4"
+        case .storyboardLetter: "Storyboard, US Letter"
         }
     }
 
@@ -81,6 +93,11 @@ extension ExportPreset {
         case .mapsPNG: "square.grid.3x3"
         case .paperFrameA4, .paperFrameLetter, .paperFrameA3: "doc.richtext"
         case .paperFramesA4, .paperFramesLetter: "rectangle.split.3x3"
+        case .storyboardA4, .storyboardLetter: "rectangle.split.3x1"
+        case .hdr1080, .hdr4K, .stillP3: "sun.max"
+        case .animatic1080: "rectangle.stack"
+        case .spatial1080, .spatialPhotoHD: "pano"
+        case .video360x4K, .video360x6K, .panorama6K, .panorama8K: "globe.americas"
         default: "play.rectangle"
         }
     }
@@ -94,6 +111,12 @@ extension ExportPreset {
         case .fbxUnity: "The rigged thing with its joints named for Unity's humanoid."
         case .fbxUnreal: "The rigged thing with its joints named for Unreal's mannequin."
         case .shaderGodot, .shaderUnity: "Close to this Look, never identical: the whole picture's effects stay in Maquette."
+        case .hdr1080, .hdr4K: "Highlights past white and wider colour, for HDR screens (HLG). Final's motion blur isn't drawn in HDR."
+        case .stillP3: "Display P3 colour, 16 bits a channel, for print and wide-colour screens."
+        case .animatic1080: "Each shot held on its key moment for as long as it lasts, with the sound."
+        case .spatial1080, .spatialPhotoHD: "Two eyes a person's width apart; opens in depth on Apple Vision Pro and in Photos."
+        case .video360x4K, .video360x6K, .panorama6K, .panorama8K: "All the way round the shot camera; titles and flipbooks stay out."
+        case .storyboardA4, .storyboardLetter: "Every shot's key frame with its camera, lens, length and the words said over it."
         default: nil
         }
     }

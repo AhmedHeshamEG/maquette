@@ -21,6 +21,8 @@ struct ExportSheet: View {
     @State private var sharing: [URL] = []
     /// Whether this iPad writes ProRes (asked once, by writing two small frames).
     @State private var proRes = false
+    /// Whether it writes 10-bit HDR HEVC (F1).
+    @State private var hdr = false
     @Environment(\.hmmTheme) private var theme
 
     var body: some View {
@@ -29,7 +31,7 @@ struct ExportSheet: View {
             formats
             Text(LocalizedStringKey(format.purpose)).font(.hmm(.footnote)).foregroundStyle(theme.text2)
             LazyVGrid(columns: [GridItem(.adaptive(minimum: 150), spacing: HmmSpacing.xs)], spacing: HmmSpacing.xs) {
-                ForEach(format.presets) { item in
+                ForEach(format.presets.filter { hdr || !$0.settings(range: range, fps: 30).codec.isHDR }) { item in
                     TileButton(title: ExportPreset.title(of: item), systemName: ExportPreset.symbol(of: item), identifier: "export-\(item.rawValue)",
                                isOn: preset == item) { choose(item) }
                 }
@@ -43,7 +45,10 @@ struct ExportSheet: View {
             results
         }
         .onAppear { open(category, remembered: true) }
-        .task { proRes = await ExportCapabilities.proRes() }
+        .task {
+            proRes = await ExportCapabilities.proRes()
+            hdr = await ExportCapabilities.hdr()
+        }
         .onChange(of: options.onlyLoop) { _, _ in settings.range = range }
         .sheet(isPresented: Binding(get: { !sharing.isEmpty }, set: { if !$0 { sharing = [] } })) { ShareSheet(items: sharing) }
     }
@@ -82,6 +87,7 @@ struct ExportSheet: View {
         category.formats.filter { item in
             switch item {
             case .prores: proRes
+            case .spatialVideo: SpatialVideoEncoder.isSupported
             case .fbx: editor.canExportFBX
             case .maps: editor.hasPaintedThings
             case .captions: !editor.timeline.transcripts.isEmpty
@@ -123,6 +129,12 @@ struct ExportSheet: View {
         case .lookShader: return "The \(editor.lookPreset.name) Look, with LICENSE.txt: use it in anything, commercial included."
         case .paper: return preset.paper?.frames == true ? "Nine frames across the shot, with their moments." : "The frame at the playhead."
         case .captions: return "Subtitles (.srt and .vtt) from the transcript."
+        case .animatic, .spatialVideo, .video360:
+            let size = settings.size
+            return "\(size.width) × \(size.height) · \(settings.fps) fps · \(NumberFormat.short(settings.range.duration)) s"
+                + (preset.kind == .animatic ? " · \(editor.timeline.shots(in: settings.range).count) shots held" : "")
+        case .spatialPhoto, .panorama: return "The frame at the playhead, all around or in depth."
+        case .storyboard: return "\(editor.timeline.shots().count) shots, three to a row."
         }
     }
 
@@ -175,6 +187,15 @@ enum ExportCapabilities {
         if let writesProRes { return writesProRes }
         let answer = await VideoEncoder.canEncode(.prores4444)
         writesProRes = answer
+        return answer
+    }
+
+    private static var writesHDR: Bool?
+
+    static func hdr() async -> Bool {
+        if let writesHDR { return writesHDR }
+        let answer = await VideoEncoder.canEncode(.hevcHDR)
+        writesHDR = answer
         return answer
     }
 }
