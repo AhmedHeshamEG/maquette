@@ -277,6 +277,8 @@ final class EditorModel {
     var references: [ReferenceCard] = []
     /// The video behind the stage (F1), kept in the workspace.
     var rotoscope: Rotoscope?
+    /// The camera button's Lens and frame popover (F1).
+    var showsLensPanel = false
     /// The history scrubber, while it's open (`EditorModel+HistoryScrubber`).
     var historyScrub: HistoryScrubState?
     var lastSaved: Date?

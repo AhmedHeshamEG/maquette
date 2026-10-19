@@ -270,16 +270,14 @@ private struct SnapMagnet: View {
 /// The camera button: tap to look through the camera (again for the next one, then back to the free view); hold for
 /// a new camera from this view, or to pick one.
 private struct CameraButton: View {
-    let editor: EditorModel
-    @State private var showsLens = false
+    @Bindable var editor: EditorModel
 
     var body: some View {
         HmmButton("video", label: "Camera", isOn: editor.directorView) { editor.tapCameraButton() }
             .contextMenu {
                 Button("New camera from this view", systemImage: "plus") { editor.newCameraFromThisView() }
                 if editor.editedCamera != nil {
-                    Button("Lens and frame…", systemImage: "camera.aperture") { showsLens = true }
-                        .keyboardShortcut("l", modifiers: [.command, .option])
+                    Button("Lens and frame…", systemImage: "camera.aperture") { editor.showsLensPanel = true }
                 }
                 if !editor.cameras.isEmpty {
                     Section("Look through") {
@@ -297,7 +295,7 @@ private struct CameraButton: View {
                 }
             }
             .accessibilityIdentifier("camera-button")
-            .popover(isPresented: $showsLens, arrowEdge: .trailing) {
+            .popover(isPresented: $editor.showsLensPanel, arrowEdge: .trailing) {
                 if let camera = editor.editedCamera {
                     ScrollView {
                         CameraLensPanel(editor: editor, camera: camera).padding(HmmSpacing.m)
