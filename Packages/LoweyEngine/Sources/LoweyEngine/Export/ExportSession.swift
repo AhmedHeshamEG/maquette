@@ -173,10 +173,11 @@ public final class ExportSession {
     // MARK: Frames
 
     /// The frame at `time` as BGRA bytes of the settings' size (top row first): one draw, or Final's moments, each
-    /// drawn larger and brought down, averaged.
+    /// drawn larger and brought down, averaged. The Pixel Look is always one draw: its blocks are hard-edged and still
+    /// between drawings, so smoothing them would only blur pixel art (D-481).
     func frameBytes(at time: Double, settings: ExportSettings) async throws -> [UInt8] {
         let size = settings.size
-        guard settings.final else {
+        guard settings.final, builder.document.lookPreset.pixel == nil else {
             return try await frames.bytes(frameRequest(at: time, settings: settings), width: size.width, height: size.height)
         }
         let scale = FinalFrames.supersample(longSide: settings.longSide)

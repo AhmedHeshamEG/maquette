@@ -3063,6 +3063,8 @@ rim and highlight, lines in each thing's own colour, on twos.
 **D-481 — Pixel.** `LookPreset.pixel`: blocks of `size` points at 1080p and `colors` levels a channel, stepped in display
 gamma. Blocks are a whole-frame thing, so they come from the scene's Look (a block can't be half Pixel and half Ink); the
 lines are drawn first and turn chunky with everything. Blocks follow the frame's height: a 4K export looks like the stage.
+Its few colours are ordered-dithered block by block (darks keep their hue), and a Final export draws it once: supersampling
+and motion blur would only soften pixel art.
 
 **D-482 — The Finish on any Look.** `PostSettings` gains `misregistration` (the camera's depth of field drawn as slipped
 colour plates, as Comic does), `boil` (lines tremble on twos, the larger of it and the Look's) and `benDay` (flat colour
