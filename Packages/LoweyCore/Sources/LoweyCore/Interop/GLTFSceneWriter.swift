@@ -111,6 +111,7 @@ struct GLTFSceneWriter {
             node["extensions"] = ["KHR_lights_punctual": ["light": addLight(object, type: type)]]
             extras["intensity"] = object[.lightIntensity]?.floatValue ?? 1
             extras["shadows"] = object[.lightShadows]?.boolValue ?? (type == .directional)
+            if type == .area { extras["panel"] = [object[.lightWidth]?.floatValue ?? 1, object[.lightHeight]?.floatValue ?? 0.6] }
         default:
             break
         }
@@ -273,22 +274,6 @@ struct GLTFSceneWriter {
         cameras.append(["type": "perspective", "name": object.name,
                         "perspective": ["yfov": fieldOfView, "znear": 0.01, "zfar": 1000, "aspectRatio": 16.0 / 9.0]])
         return cameras.count - 1
-    }
-
-    mutating func addLight(_ object: SceneObject, type: LightType) -> Int {
-        let color = object[.lightColor]?.colorValue?.resolved(in: look.palette) ?? .white
-        var light: [String: Any] = [
-            "name": object.name, "type": type.rawValue,
-            "color": [SceneExport.linear(color.r), SceneExport.linear(color.g), SceneExport.linear(color.b)],
-            "intensity": object[.lightIntensity]?.floatValue ?? 1
-        ]
-        if type != .directional, let range = object[.lightRange]?.floatValue { light["range"] = range }
-        if type == .spot {
-            let outer = (object[.spotAngle]?.floatValue ?? 45) * .pi / 180 / 2
-            light["spot"] = ["innerConeAngle": outer * 0.8, "outerConeAngle": outer]
-        }
-        lights.append(light)
-        return lights.count - 1
     }
 
     // MARK: Animation
@@ -463,5 +448,26 @@ enum GLBContainer {
             result.append(binary)
         }
         return result
+    }
+}
+
+extension GLTFSceneWriter {
+    mutating func addLight(_ object: SceneObject, type: LightType) -> Int {
+        let color = object[.lightColor]?.colorValue?.resolved(in: look.palette) ?? .white
+        var light: [String: Any] = [
+            // glTF has no area light: a soft panel travels as a wide, soft spot (its size rides in the node's extras).
+            "name": object.name, "type": type == .area ? LightType.spot.rawValue : type.rawValue,
+            "color": [SceneExport.linear(color.r), SceneExport.linear(color.g), SceneExport.linear(color.b)],
+            "intensity": object[.lightIntensity]?.floatValue ?? 1
+        ]
+        if type != .directional, let range = object[.lightRange]?.floatValue { light["range"] = range }
+        if type == .spot {
+            let outer = (object[.spotAngle]?.floatValue ?? 45) * .pi / 180 / 2
+            light["spot"] = ["innerConeAngle": outer * 0.8, "outerConeAngle": outer]
+        } else if type == .area {
+            light["spot"] = ["innerConeAngle": 0.0, "outerConeAngle": 80 * Double.pi / 180]
+        }
+        lights.append(light)
+        return lights.count - 1
     }
 }

@@ -19,7 +19,19 @@ public enum PrimitiveShape: String, Codable, Sendable, CaseIterable {
 }
 
 public enum LightType: String, Codable, Sendable, CaseIterable {
-    case directional, point, spot
+    /// A sun (a second one; the Look's sun casts the shadows), a bulb, a spot, and a soft panel (F1: a rectangle that
+    /// lights the way it faces, softly, like a softbox or a window).
+    case directional, point, spot, area
+
+    /// What people call it.
+    public var title: String {
+        switch self {
+        case .directional: "Sun"
+        case .point: "Bulb"
+        case .spot: "Spot"
+        case .area: "Soft panel"
+        }
+    }
 }
 
 /// A drawn object stores the *recipe* (strokes + style), not the triangles.

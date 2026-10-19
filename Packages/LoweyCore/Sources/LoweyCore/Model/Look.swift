@@ -125,6 +125,13 @@ public struct Sky: Codable, Hashable, Sendable {
     public var bottom: RGBA
     /// Star density 0...1 (0 = none).
     public var stars: Double
+    /// An HDRI shown behind everything (F1): its asset key in the project (`assets/…hdr`). The three colours above are the
+    /// picture's own, so a Look that reads the sky's gradient still agrees with it.
+    public var environment: String?
+    /// Degrees the picture is turned around the up axis (left positive, seen from above).
+    public var environmentTurn: Double?
+    /// Stops the picture is brightened (or darkened) by to sit behind the scene.
+    public var environmentExposure: Double?
 
     public init(top: RGBA, horizon: RGBA, bottom: RGBA, stars: Double = 0) {
         self.top = top
@@ -176,6 +183,8 @@ public struct Look: Codable, Hashable, Sendable {
     public var ground: Ground
     /// Post-processing (bloom, grain, grade, outlines, retro, textures…) — Phase 3.
     public var post: PostSettings
+    /// Haze and god rays (F1); nil = clear air.
+    public var atmosphere: Atmosphere?
 
     public init(
         presetID: String = LookLibrary.defaultID,
@@ -200,7 +209,7 @@ public struct Look: Codable, Hashable, Sendable {
     }
 
     private enum CodingKeys: String, CodingKey {
-        case presetID, shading, palette, lightingPreset, lighting, sky, fog, ground, post
+        case presetID, shading, palette, lightingPreset, lighting, sky, fog, ground, post, atmosphere
     }
 
     public init(from decoder: Decoder) throws {
@@ -214,6 +223,7 @@ public struct Look: Codable, Hashable, Sendable {
         fog = try c.decode(Fog.self, forKey: .fog)
         ground = try c.decode(Ground.self, forKey: .ground)
         post = try c.decodeIfPresent(PostSettings.self, forKey: .post) ?? PostSettings()
+        atmosphere = try c.decodeIfPresent(Atmosphere.self, forKey: .atmosphere)
     }
 
     public func encode(to encoder: Encoder) throws {
@@ -227,6 +237,7 @@ public struct Look: Codable, Hashable, Sendable {
         try c.encode(fog, forKey: .fog)
         try c.encode(ground, forKey: .ground)
         if post != PostSettings() { try c.encode(post, forKey: .post) }
+        try c.encodeIfPresent(atmosphere, forKey: .atmosphere)
     }
 
     public static let `default` = MoodPresets.look(for: .day)

@@ -157,6 +157,7 @@ extension ScriptState {
         let type: LightType = switch string(action, "type") {
         case "spot": .spot
         case "sun", "directional": .directional
+        case "panel", "softPanel", "area": .area
         default: .point
         }
         var factory = ObjectFactory(ids: context.ids)
@@ -166,6 +167,13 @@ extension ScriptState {
         if let color = try color(action["color"]) { object[.lightColor] = .color(color) }
         if let intensity = number(action, "intensity") { object[.lightIntensity] = .float(intensity) }
         if let range = number(action, "range") { object[.lightRange] = .float(range) }
+        if let size = action["size"]?.arrayValue?.compactMap(\.numberValue), size.count == 2 {
+            object[.lightWidth] = .float(max(size[0], 0.05))
+            object[.lightHeight] = .float(max(size[1], 0.05))
+        }
+        if let aim = try point(action["aim"]) {
+            object.transform.rotation = BehaviorEvaluator.facing(aim - object.transform.position, cameraStyle: true)
+        }
         try insert(object, action: action, verb: "Light")
     }
 

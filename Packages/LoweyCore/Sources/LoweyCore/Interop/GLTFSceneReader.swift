@@ -88,6 +88,13 @@ public enum GLTFSceneReader {
                 }
             } else if let light = lightIndex(node) {
                 applyLight(light, to: &object)
+                // Ours: a soft panel written as a spot keeps its size in the node's extras.
+                if let panel = GLTFReader.numbers(((node["extras"] as? [String: Any])?["maquette"] as? [String: Any])?["panel"]), panel.count == 2 {
+                    object.kind = .light(.area)
+                    object[.lightWidth] = .float(panel[0])
+                    object[.lightHeight] = .float(panel[1])
+                    object[.spotAngle] = nil
+                }
             } else if let mesh = node["mesh"] as? Int {
                 let pieces = try meshPieces(mesh)
                 if pieces.count == 1, let piece = pieces.first {

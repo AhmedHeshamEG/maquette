@@ -52,6 +52,7 @@ public struct ObjectFactory: Sendable {
         case .directional: "Sun light"
         case .point: "Lamp light"
         case .spot: "Spot light"
+        case .area: "Soft panel"
         }
         var object = SceneObject(id: ids.next(), name: name, kind: .light(type), transform: Transform(position: position))
         object[.lightColor] = .color(.rgba(color))
@@ -64,6 +65,14 @@ public struct ObjectFactory: Sendable {
         }
         if type == .directional {
             object.transform.rotation = Quat(eulerDegrees: Vec3(-50, 30, 0))
+        }
+        if type == .area {
+            // A softbox: a metre by 60 cm, tipped down toward what's in front of it, brighter to make up for its spread.
+            object[.lightWidth] = .float(1)
+            object[.lightHeight] = .float(0.6)
+            object[.lightIntensity] = .float(2)
+            object[.lightRange] = .float(8)
+            object.transform.rotation = Quat(angle: -0.5, axis: .unitX)
         }
         return object
     }
