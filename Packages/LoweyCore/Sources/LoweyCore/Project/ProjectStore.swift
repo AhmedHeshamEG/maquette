@@ -1,11 +1,20 @@
 import Foundation
+import HmmDocuments
 
 /// A project on disk, as listed on the Home screen.
 public struct ProjectSummary: Hashable, Sendable, Identifiable {
     public var url: URL
     public var info: ProjectInfo
+    /// The folder it's in (a stack on Home, L2), nil at the top level.
+    public var folder: String?
     public var id: ProjectID { info.id }
     public var thumbnailURL: URL { url.appendingPathComponent(ProjectLayout.thumbnail) }
+
+    public init(url: URL, info: ProjectInfo, folder: String? = nil) {
+        self.url = url
+        self.info = info
+        self.folder = folder
+    }
 }
 
 /// The `.lowey` project package (an hmm-kit `DocumentPackage`, visible in the Files app):
@@ -92,15 +101,16 @@ public struct ProjectStore: Sendable {
 
     // MARK: Listing
 
+    /// Every project at the top level and in the folders beside them (Home's stacks, one level deep, L2), newest first.
     public func listProjects() -> [ProjectSummary] {
-        let fileManager = FileManager.default
-        guard let entries = try? fileManager.contentsOfDirectory(
-            at: root, includingPropertiesForKeys: nil, options: [.skipsHiddenFiles]
-        ) else { return [] }
-        return entries
-            .filter(ProjectLayout.isProject)
-            .compactMap { url in (try? loadProjectInfo(at: url)).map { ProjectSummary(url: url, info: $0.info) } }
+        folders.allDocuments()
+            .compactMap { found in (try? loadProjectInfo(at: found.url)).map { ProjectSummary(url: found.url, info: $0.info, folder: found.folder) } }
             .sorted { $0.info.modified > $1.info.modified }
+    }
+
+    /// The folders beside the projects (stacks on Home); the archive isn't one.
+    public var folders: GalleryFolders {
+        GalleryFolders(root: root, reserved: [Self.archiveFolder]) { ProjectLayout.isProject($0) }
     }
 
     // MARK: Create / delete / duplicate / rename
@@ -158,7 +168,7 @@ public struct ProjectStore: Sendable {
 
     public func duplicateProject(at url: URL) throws -> URL {
         let (info, _) = try loadProjectInfo(at: url)
-        let copyURL = uniqueURL(for: "\(info.name) copy")
+        let copyURL = uniqueURL(for: "\(info.name) copy", in: url.deletingLastPathComponent())
         try FileManager.default.copyItem(at: url, to: copyURL)
         var copy = info
         copy.id = .make()
@@ -175,7 +185,7 @@ public struct ProjectStore: Sendable {
         info.name = name
         info.modified = Date()
         try SafeFileWriter.write(coder.encode(info, kind: .project), to: url.appendingPathComponent(ProjectLayout.projectFile))
-        let target = uniqueURL(for: name)
+        let target = uniqueURL(for: name, in: url.deletingLastPathComponent())
         guard target.lastPathComponent != url.lastPathComponent else { return url }
         try FileManager.default.moveItem(at: url, to: target)
         return target
@@ -291,13 +301,14 @@ public struct ProjectStore: Sendable {
 
     // MARK: Helpers
 
-    /// A folder name derived from the project name, unique inside `root`.
-    public func uniqueURL(for name: String) -> URL {
+    /// A folder name derived from the project name, unique inside `folder` (the projects' root by default).
+    public func uniqueURL(for name: String, in folder: URL? = nil) -> URL {
+        let place = folder ?? root
         let base = Self.sanitize(name)
-        var candidate = root.appendingPathComponent("\(base).\(ProjectLayout.fileExtension)")
+        var candidate = place.appendingPathComponent("\(base).\(ProjectLayout.fileExtension)")
         var counter = 2
         while FileManager.default.fileExists(atPath: candidate.path) {
-            candidate = root.appendingPathComponent("\(base) \(counter).\(ProjectLayout.fileExtension)")
+            candidate = place.appendingPathComponent("\(base) \(counter).\(ProjectLayout.fileExtension)")
             counter += 1
         }
         return candidate
