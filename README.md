@@ -4,6 +4,12 @@ Shapr3D's ease, Procreate's feel, Dreams' animation and ToonSquid's rigging, in 
 or art degree. Build a set like Lego, drop in characters, direct them with a camera, sync them to your voice, and
 export the video. By **studio h.**; the continuation of 3D-lowey 2.0. All rights reserved (see [LICENSE](LICENSE)).
 
+**0.22** (phase F1): **film**. Light like a set: a soft panel beside the bulb, spot and sun, setups (three-point,
+golden hour, moonlight, neon), haze and god rays, and an HDRI that shows behind everything and lights the world. A real
+lens: camera bodies and their millimetres, the frame's shape (16:9, 2.39:1, 9:16, 4:5, 1:1), focus that follows a thing and
+pulls to the next, rigs (dolly, crane, orbit, handheld). Storyboards and animatics from the shots; spatial video and photos
+for Vision Pro, 360° video and panoramas, HDR video, wide-colour stills; a rotoscope video behind the stage.
+
 **0.21** (phase A1): **animate & export**. Animate has a bar: draw where a thing goes and it follows at the speed you
 drew, facing the way it goes and leaning into turns; look at things; pick up and hand off; key any property. The
 timeline shows motion (thick rows with a curve of each thing's movement, frames when zoomed in, the dope sheet) and ghosts

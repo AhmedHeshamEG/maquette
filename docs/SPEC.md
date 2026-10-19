@@ -27,6 +27,7 @@ reference and stays.
 | Draw again and one grammar (U5): one Draw where the brush decides (lines, paint, solids, shapes, shadow), zero setup (the surface, else the sheet facing you), the sheet as paper with a hold menu, strokes under the tip (a UI test), shapes in one drag pulled into solids, a tapped stroke's chip, flicked frames and onion skins on the timecode, every number a slider, two fingers on the view, press and carry, hover lighting, the lasso's three homes, the quick menu per tool, the eyedropper loupe, titles stuck to the camera, to the ground by the real shape | **0.15.** D-280 … D-300. Smudge on painted models comes with U7 Texture (D-283). |
 | Shape (U6): touch and drag with no modes (the Pencil lights the face, edge or corner of the selected shape; drag pulls, rounds, moves), the part's chip (inset, shell, bridge, knife, bevel, round, loop cut, merge, fill hole), Model's bar (Shape, Brush, Cage, Bend, Measure), Smooth and making it real, the smooth angle and flat shading, triangle count, clean topology (Instant Meshes), linked copies, the pivot, typed sides, sweep / revolve / loft, sketch rules with our own solver, the view cube, the bridge's `model` and `profile` | **0.16.** D-301 … D-325. Strokes on placed models need them painted first (D-318); the cage doesn't animate yet (D-317). |
 | Characters (K1): Characters ▸ New from five starts, parts with jobs from our own set (or drawn, or modelled) on a character or any thing, the rig built itself, 14 mouths and brows as bends, Say a line, proportions by handles, act it out, GLB for Godot / Unity / Unreal with blend shapes and named clips, sprite sheets, pixel art, turnarounds | **0.20.** D-386 … D-406. Rigid pieces (D-391); people act, animals don't yet (D-397). |
+| Film (F1): the soft panel, setups (three-point, golden hour, moonlight, neon), haze and god rays, an HDRI as the sky and the light; camera bodies and real millimetres, the frame's shape (16:9, 2.39:1, 9:16, 4:5, 1:1), focus on a thing and focus pulls, rigs (dolly, crane, orbit, handheld); storyboards and animatics; spatial video and photos, 360° video and panoramas, HDR, wide colour; the rotoscope | **0.22.** D-433 … D-458. 360° is six views laid flat (D-450); HDR is HLG (D-451); only the sun throws god rays (D-442). |
 | Texture (the full colour picker, layers, smudge on paint) | U7 |
 | Mechanisms + AR, web layer (held) | M12 |
 | Content and finish: the house kit, waiting designed, the Board's finish | M14 |
@@ -37,6 +38,25 @@ reference and stays.
 Cast is gone (D-227): what said *Cast ▸ Voice & face*, *Triggers* and *Life* below is the selected character's
 button beside Record in the timeline's Perform; *Cast ▸ Rig* is Rig; *Make it part of* is in Rig. Everything below
 still works the same way.
+
+### Film (0.22)
+
+- **Lights** (D-440, D-441): Model ▸ Add ▸ Bulb · Spot · **Soft panel** · Sun. A light's panel: colour, strength, reach, a
+  spot's cone, a panel's width and height, and **Setups**: Three-point, Golden hour, Moonlight, Neon (More setups: the six
+  toon recipes), placed around the selection the way the shot camera sees it; the last setup's lights are replaced.
+- **The air and the sky** (D-442, D-443): Look ▸ World ▸ **Sky from a picture** (an HDRI: Radiance .hdr; turn, brightness,
+  back to the mood's sky) and **Air** (haze, god rays).
+- **The lens and the frame** (D-444 … D-446): on the camera's panel and the camera button's **Lens and frame…** (⌥⌘L): the
+  camera body, the focal length in its millimetres, the aperture, **Focus on selection** (the lens follows it), **Pull focus
+  here** (from the playhead), By distance; the frame's shape and its thirds and safe areas.
+- **Rigs** (D-447): On a tripod · Dolly (travel) · Crane (lift, swing, arm) · Orbit (swing, lift) · Handheld (shake); each
+  number keyable with its diamond.
+- **Exports** (D-448 … D-452): Video ▸ Animatic, Spatial video, 360° video, HEVC ▸ HDR 1080p and 4K; Picture ▸ Spatial
+  photo, 360° panorama, PNG ▸ Wide colour 4K; Paper ▸ Storyboard (A4, US Letter). The option Depth for spatial ones.
+- **Rotoscope** (D-453): Actions ▸ Rotoscope: a video from Photos behind the stage, from the playhead; opacity, over the
+  scene, start at the playhead, another video, remove. Never exported.
+- **The bridge** (D-454): `film` with `op` lens, frame, focus, rig, air, environment, shots; `light` `type: panel`;
+  `lighting` gains the four setups; `add_media(environment=True)` for HDRIs; `sketch`, `boolean`, `profile` ▸ `pull`.
 
 ### Animate and export (0.21)
 
