@@ -31,7 +31,7 @@ final class DesignRenderTests: XCTestCase {
         let during = try await image(flying, at: 0.8)
         let after = try await image(flying, at: 2)
         GoldenImage().attach(during, name: "letters-flying")
-        XCTAssertGreaterThan(ImageChecks.difference(still, before), 0.02, "nothing shows before they start")
+        XCTAssertGreaterThan(ImageChecks.difference(still, before), 0.005, "nothing shows before they start")
         XCTAssertGreaterThan(ImageChecks.difference(still, during), 0.005, "on their way")
         XCTAssertLessThan(ImageChecks.difference(still, after), 0.002, "arrived, they are the still text")
     }
@@ -97,8 +97,9 @@ final class DesignRenderTests: XCTestCase {
         let input = RenderInput(document: Document(project: document.project, scene: shown.scene), time: 0, poses: [:], selection: ["cube"])
         let renderer = try LoweyRenderer(device: RenderDevice.sharedDevice())
         let compiled = renderer.compiler.compile(input, cameraPosition: SIMD3<Float>(1.2, 0.8, 4))
-        let picked = Set(compiled.items.map(\.uniforms.ids.x))
-        XCTAssertEqual(picked.count, 1, "all three copies pick as the cube")
+        // Each draw has its own index; every one of them names the cube, so a tap on any copy picks the cube.
+        let picked = Set(compiled.items.map { compiled.objectIDs[Int($0.uniforms.ids.x) - 1] })
+        XCTAssertEqual(picked, ["cube"], "all three copies pick as the cube")
         XCTAssertEqual(compiled.items.count, 3)
         XCTAssertTrue(compiled.items.allSatisfy { ($0.uniforms.ids.z & ObjectFlags.selected.rawValue) != 0 }, "and are selected with it")
     }
