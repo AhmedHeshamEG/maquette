@@ -53,6 +53,7 @@ extension EditorModel {
         let overlay = stageOverlay(for: stage, director: director != nil)
         request.overlay = overlay.image
         request.flipbooks = overlay.flipbooks
+        request.rotoscope = rotoscopeFrame()
         if director != nil {
             var editor = stage.editorScene(showsSelection: false)
             editor.showsGrid = false

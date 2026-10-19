@@ -83,7 +83,7 @@ extension EditorModel {
         return object.id
     }
 
-    private func uniqueMediaName(_ original: String) -> String {
+    func uniqueMediaName(_ original: String) -> String {
         let base = (original as NSString).deletingPathExtension
         let ext = (original as NSString).pathExtension
         var candidate = original

@@ -208,6 +208,14 @@ extension BridgeModel {
         } catch {
             return .error(500, error.localizedDescription)
         }
+        if request.query["as"] == "environment" {
+            // An HDRI: the world's sky and light (F1), as Look ▸ World ▸ Sky from a picture does it.
+            let before = editor.look.sky.environment
+            await editor.importEnvironment(url)
+            guard let key = editor.look.sky.environment, key != before else { return .error(422, "That isn't a Radiance .hdr picture") }
+            notify("scene")
+            return .json(["environment": key, "sun": "azimuth \(Int(editor.look.lighting.sunAzimuth))°, elevation \(Int(editor.look.lighting.sunElevation))°"])
+        }
         let placement = MediaPlacement(rawValue: request.query["as"] ?? "card") ?? .card
         guard let id = await editor.importMedia(url, at: request.query["at"].flatMap(Double.init), as: placement) else {
             return .error(422, "Couldn't add \(name)")

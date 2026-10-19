@@ -275,6 +275,8 @@ final class EditorModel {
     var boardShown = false
     /// Pictures pinned from the board, floating over the stage (`workspace.json`).
     var references: [ReferenceCard] = []
+    /// The video behind the stage (F1), kept in the workspace.
+    var rotoscope: Rotoscope?
     /// The history scrubber, while it's open (`EditorModel+HistoryScrubber`).
     var historyScrub: HistoryScrubState?
     var lastSaved: Date?

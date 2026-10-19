@@ -271,11 +271,16 @@ private struct SnapMagnet: View {
 /// a new camera from this view, or to pick one.
 private struct CameraButton: View {
     let editor: EditorModel
+    @State private var showsLens = false
 
     var body: some View {
         HmmButton("video", label: "Camera", isOn: editor.directorView) { editor.tapCameraButton() }
             .contextMenu {
                 Button("New camera from this view", systemImage: "plus") { editor.newCameraFromThisView() }
+                if editor.editedCamera != nil {
+                    Button("Lens and frame…", systemImage: "camera.aperture") { showsLens = true }
+                        .keyboardShortcut("l", modifiers: [.command, .option])
+                }
                 if !editor.cameras.isEmpty {
                     Section("Look through") {
                         ForEach(editor.cameras, id: \.self) { id in
@@ -292,5 +297,14 @@ private struct CameraButton: View {
                 }
             }
             .accessibilityIdentifier("camera-button")
+            .popover(isPresented: $showsLens, arrowEdge: .trailing) {
+                if let camera = editor.editedCamera {
+                    ScrollView {
+                        CameraLensPanel(editor: editor, camera: camera).padding(HmmSpacing.m)
+                    }
+                    .frame(width: 340, height: 520)
+                    .presentationCompactAdaptation(.popover)
+                }
+            }
     }
 }

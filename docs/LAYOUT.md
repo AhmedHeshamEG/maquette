@@ -90,9 +90,11 @@ when they disagree. In the App Store configuration the walk asserts every held r
 | Control | Walk |
 |---|---|
 | Export: Video · Picture · 3D · Paper, then the format, then its presets; Final and the options beside them | `Actions › open-export` |
+| Export (F1): Video ▸ Animatic, Spatial video (where the iPad encodes it), 360° video, HEVC ▸ HDR; Picture ▸ Spatial photo, 360° panorama, PNG ▸ Wide colour; Paper ▸ Storyboard | in the Export sheet |
 | Share the project file | `Actions › Project file` |
 | Monitor window (Stage Manager, external display) | `Actions › open-monitor` |
 | The Board: plan before building (below) | `Actions › open-board` |
+| Rotoscope: a video behind the stage, its frame the one under the playhead (opacity, over the scene, start at the playhead); never exported (F1) | Actions ▸ Rotoscope, once a video is picked from Photos |
 | History scrubber, versions; over it, the selected thing's modelling steps to change (H1) | `Actions › open-history` |
 | Learn: the tour, every gesture, the instructions switch | `Actions › open-learn` |
 | Settings | `Actions › Settings` |
@@ -108,6 +110,8 @@ Three short pages; the page is remembered.
 | Style: duplicate as My Look (and its editor) | `Look › look-style › duplicate-look` |
 | Style: the palette (linked colours; the sidebar's Pick fills the slot being edited) | `Look › look-style › Add a colour` |
 | World: moods (Day … Studio, Dark studio) | `Look › look-world › mood-dusk` |
+| World: sky from a picture (an HDRI that shows behind everything and lights the world; turn, brightness) (F1) | Look ▸ World ▸ Choose an HDRI… (the Files sheet) |
+| World: the air, haze and god rays (F1) | `Look › look-world › Haze` |
 | World: fine tune the world | `Look › look-world › Fine tune the world` |
 | World: save the world to the library | `Look › look-world › Save this world to the library` |
 | World: the real sun (a place, a date, a time; a shadow study across the timeline; which way north is), in Fine tune the world | Look ▸ World ▸ Fine tune the world ▸ Real sun |
@@ -149,7 +153,9 @@ Three short pages; the page is remembered.
 |---|---|
 | Add: shapes (cube, sphere, cylinder, cone, plane, torus, ramp; bevelled), in the colour in the hand | `Model › model-add › add-cube` |
 | | `Model › model-add › add-ramp` |
-| Add: lamp, spot, sun | `Model › model-add › add-spot` |
+| Add: bulb, spot, soft panel, sun | `Model › model-add › add-spot` |
+| | `Model › model-add › add-panel` |
+| A light: colour, strength, reach, a spot's cone, a soft panel's size; Setups (three-point, golden hour, moonlight, neon; more one step deeper) (F1) | in the panel of a light |
 | Add: 3D text | `Model › model-add › add-text3d` |
 | Add: a photo or video (a card in the world) | `Model › model-add › add-media` |
 | Add: effects (fire, sparks, smoke…) | `Model › model-add › add-fx-fire` |
@@ -280,7 +286,7 @@ Animate calls the timeline and its bar, under the stage (A1): six verbs. With no
 | Delete | `[cube] Delete` |
 | Resize | `[cube] resize-inspector` |
 | Align and distribute (several selected) | in the panel when more than one thing is selected |
-| Camera: shot, framing, lens, focus, moves, transitions | in the panel when a camera is selected |
+| Camera: shot, Frame shot, the lens (a camera body, millimetres, aperture, focus on a thing, pull focus here), the frame's shape and guides, the rig (dolly, crane, orbit, handheld, keyed), 9:16 framing, moves, transitions (F1) | in the panel when a camera is selected |
 | Fold to a chip (its name and Move · Turn · Size); tap the name to unfold | `[cube] fold-inspector` |
 | 3D text: Stick to the camera (a title that stays put on the picture) | in the panel of 3D text |
 | Every number is a slider: drag it (slowly for fine, fast for coarse) or tap it to type | the numbers in the panel and on the stage |
@@ -303,7 +309,7 @@ Animate calls the timeline and its bar, under the stage (A1): six verbs. With no
 | Views (top, front, side; perspective or orthographic), when Settings ▸ Stage hides the view cube | in the cube's place |
 | The Snap magnet: everything that snaps, on or off (a finger held down while the Pencil works flips it for that move) | `snap-magnet` |
 | The magnet's details: the grid and its size, corners and middles, edges, faces, objects, the ground, turning in steps, how near | touch and hold the magnet |
-| The camera button: tap to look through (again: the next, then back); hold for a new camera from this view | `camera-button` |
+| The camera button: tap to look through (again: the next, then back); hold for a new camera from this view, or Lens and frame… (⌥⌘L, F1) | `camera-button` |
 | The joystick, on or off (on by default) | `joystick-toggle` |
 | The tool's bar (Draw, Model, Rig, scatter) | below the stage while that tool is on |
 | The trigger deck: the selected character's triggers under the fingers *(held: 1.2)* | below the stage with Select in the hand while the timeline is in Perform |

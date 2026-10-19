@@ -1,6 +1,22 @@
 {
   "sourceLanguage": "en",
   "strings": {
+    " · %lld shots held": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": " · %lld inquadrature ferme"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": " · %lld لقطات ثابتة"
+          }
+        }
+      }
+    },
     " · Final": {
       "localizations": {
         "it": {
@@ -285,6 +301,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "%@ بالعالم"
+          }
+        }
+      }
+    },
+    "%@ × %@ · %@ fps · %@ s": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ × %@ · %@ fps · %@ s"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ × %@ · %@ إطار/ث · %@ ث"
           }
         }
       }
@@ -577,6 +609,22 @@
         }
       }
     },
+    "%lld shots, three to a row.": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld inquadrature, tre per riga."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld لقطات، ثلاث في كل صف."
+          }
+        }
+      }
+    },
     "%lld words. They're on the timeline now": {
       "localizations": {
         "it": {
@@ -625,6 +673,38 @@
         }
       }
     },
+    "16:9 (video)": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "16:9 (video)"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "16:9 (فيديو)"
+          }
+        }
+      }
+    },
+    "1× is a person's eyes. Deeper for a model on a desk, flatter for a city.": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "1× sono gli occhi di una persona. Più profondo per un modellino sulla scrivania, più piatto per una città."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "1× هي عينا إنسان. أعمق لمجسّم على مكتب، وأسطح لمدينة."
+          }
+        }
+      }
+    },
     "2 bands": {
       "localizations": {
         "it": {
@@ -637,6 +717,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "طبقتان"
+          }
+        }
+      }
+    },
+    "2.39:1 (cinema)": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "2.39:1 (cinema)"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "2.39:1 (سينما)"
           }
         }
       }
@@ -769,6 +865,22 @@
         }
       }
     },
+    "4:5 (feed)": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "4:5 (feed)"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "4:5 (الخلاصة)"
+          }
+        }
+      }
+    },
     "5 cm shapes on a 1 cm grid, close up.": {
       "localizations": {
         "it": {
@@ -813,6 +925,38 @@
           "stringUnit": {
             "state": "translated",
             "value": "8 اتجاهات"
+          }
+        }
+      }
+    },
+    "9:16 (Reels, Shorts)": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "9:16 (Reels, Shorts)"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "9:16 (ريلز، شورتس)"
+          }
+        }
+      }
+    },
+    "9:16 framing": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Inquadratura 9:16"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تأطير 9:16"
           }
         }
       }
@@ -1057,6 +1201,22 @@
         }
       }
     },
+    "A Radiance .hdr panorama shows behind everything and lights the world: its sun, its sky.": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Un panorama Radiance .hdr si vede dietro a tutto e illumina il mondo: il suo sole, il suo cielo."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "بانوراما Radiance ‎.hdr تظهر خلف كل شيء وتضيء العالم: شمسها وسماؤها."
+          }
+        }
+      }
+    },
     "A real thing falls, collides and is pushed, with the weight of what it's made of.": {
       "localizations": {
         "it": {
@@ -1117,6 +1277,38 @@
           "stringUnit": {
             "state": "translated",
             "value": "كتف"
+          }
+        }
+      }
+    },
+    "A soft key, a gentle fill and a rim from behind: the subject reads round and stands off the background.": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Una luce principale morbida, un riempimento leggero e un controluce: il soggetto appare tondo e si stacca dallo sfondo."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "إضاءة رئيسية ناعمة وإضاءة ملء خفيفة وإضاءة حافة من الخلف: يبدو الموضوع مجسّمًا وينفصل عن الخلفية."
+          }
+        }
+      }
+    },
+    "A soft panel lights the way it faces, like a softbox or a window. Turn it to aim it.": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Un pannello morbido illumina verso dove guarda, come un softbox o una finestra. Ruotalo per puntarlo."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "اللوح الناعم يضيء في الاتجاه الذي يواجهه، مثل صندوق إضاءة أو نافذة. أدِره لتوجيهه."
           }
         }
       }
@@ -1885,6 +2077,22 @@
         }
       }
     },
+    "Air": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aria"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الهواء"
+          }
+        }
+      }
+    },
     "Align": {
       "localizations": {
         "it": {
@@ -2377,6 +2585,38 @@
         }
       }
     },
+    "Another HDRI": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Un altro HDRI"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "صورة HDRI أخرى"
+          }
+        }
+      }
+    },
+    "Another video": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Un altro video"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "فيديو آخر"
+          }
+        }
+      }
+    },
     "Any AI can write a Scene Script (JSON). Paste it or open the file; you see what it does before it happens.": {
       "localizations": {
         "it": {
@@ -2517,6 +2757,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "تطبيق معكوس"
+          }
+        }
+      }
+    },
+    "APS-C": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "APS-C"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "APS-C"
           }
         }
       }
@@ -2981,6 +3237,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "عودة إلى العرض الحر"
+          }
+        }
+      }
+    },
+    "Back to the mood's sky": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Torna al cielo dell'atmosfera"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "العودة إلى سماء الأجواء"
           }
         }
       }
@@ -3961,6 +4233,22 @@
         }
       }
     },
+    "Bulb": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lampadina"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "مصباح"
+          }
+        }
+      }
+    },
     "Bulge": {
       "localizations": {
         "it": {
@@ -4025,6 +4313,22 @@
         }
       }
     },
+    "By distance": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Per distanza"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "حسب المسافة"
+          }
+        }
+      }
+    },
     "Cage": {
       "localizations": {
         "it": {
@@ -4069,6 +4373,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Camera"
+          }
+        }
+      }
+    },
+    "Camera body": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Corpo macchina"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "جسم الكاميرا"
           }
         }
       }
@@ -4453,6 +4773,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "اختر عظمة"
+          }
+        }
+      }
+    },
+    "Choose an HDRI…": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Scegli un HDRI…"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "اختر صورة HDRI…"
           }
         }
       }
@@ -9197,6 +9533,22 @@
         }
       }
     },
+    "Everything is sharp until the aperture is set: try f/2.8": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tutto è a fuoco finché non imposti il diaframma: prova f/2.8"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "كل شيء واضح حتى تضبط فتحة العدسة: جرّب f/2.8"
+          }
+        }
+      }
+    },
     "Everything using this colour updates.": {
       "localizations": {
         "it": {
@@ -11581,6 +11933,22 @@
         }
       }
     },
+    "Full frame": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Full frame"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "إطار كامل"
+          }
+        }
+      }
+    },
     "Fur": {
       "localizations": {
         "it": {
@@ -11881,6 +12249,38 @@
         }
       }
     },
+    "God rays": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Raggi di luce"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "أشعة الضوء"
+          }
+        }
+      }
+    },
+    "God rays stream from the sun past what stands in front of it: turn the camera toward the sun to see them.": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "I raggi partono dal sole e passano oltre ciò che gli sta davanti: gira la camera verso il sole per vederli."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تنساب الأشعة من الشمس متجاوزة ما يقف أمامها: وجّه الكاميرا نحو الشمس لتراها."
+          }
+        }
+      }
+    },
     "Godot": {
       "localizations": {
         "it": {
@@ -11925,6 +12325,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "الساعة الذهبية"
+          }
+        }
+      }
+    },
+    "Golden rim": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Controluce dorato"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "حافة ذهبية"
           }
         }
       }
@@ -12361,6 +12777,22 @@
         }
       }
     },
+    "Handheld": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A mano"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "محمولة باليد"
+          }
+        }
+      }
+    },
     "Hangs from its top edge": {
       "localizations": {
         "it": {
@@ -12421,6 +12853,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "تظليل بالخطوط"
+          }
+        }
+      }
+    },
+    "Haze": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Foschia"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ضباب خفيف"
           }
         }
       }
@@ -13065,6 +13513,22 @@
         }
       }
     },
+    "IMAX 70 mm": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "IMAX 70 mm"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "IMAX ‏70 مم"
+          }
+        }
+      }
+    },
     "Impact": {
       "localizations": {
         "it": {
@@ -13673,6 +14137,22 @@
         }
       }
     },
+    "Its frame follows the playhead. Look through the camera to line it up with the shot.": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Il suo fotogramma segue la testina. Guarda dalla camera per allinearlo all'inquadratura."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "إطاره يتبع رأس التشغيل. انظر عبر الكاميرا لمحاذاته مع اللقطة."
+          }
+        }
+      }
+    },
     "Its hit lands on the playhead (on the nearest word with snapping on). In the transcript, pick a word: Sound here.": {
       "localizations": {
         "it": {
@@ -14169,6 +14649,22 @@
         }
       }
     },
+    "Key a number at one moment, change the playhead and move it: the rig moves between them.": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Metti una chiave a un valore in un momento, sposta la testina e cambialo: il carrello si muove tra i due."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ضع مفتاحًا لقيمة في لحظة، ثم حرّك رأس التشغيل وغيّرها: تتحرك الحامل بينهما."
+          }
+        }
+      }
+    },
     "Key at %@ seconds": {
       "localizations": {
         "it": {
@@ -14421,6 +14917,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "مصباح"
+          }
+        }
+      }
+    },
+    "Large format (65)": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Grande formato (65)"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تنسيق كبير (65)"
           }
         }
       }
@@ -14797,6 +15309,22 @@
         }
       }
     },
+    "Lens and frame…": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Obiettivo e formato…"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "العدسة والإطار…"
+          }
+        }
+      }
+    },
     "Level": {
       "localizations": {
         "it": {
@@ -15049,6 +15577,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "أخف عتامة"
+          }
+        }
+      }
+    },
+    "Lights the selection as the shot camera sees it; the last setup's lights are replaced.": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Illumina la selezione come la vede la camera dell'inquadratura; le luci dell'ultimo schema vengono sostituite."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "يضيء المحدد كما تراه كاميرا اللقطة؛ وتُستبدل أضواء الإعداد السابق."
           }
         }
       }
@@ -16281,6 +16825,22 @@
         }
       }
     },
+    "Micro Four Thirds": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Micro Quattro Terzi"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "مايكرو فور ثردز"
+          }
+        }
+      }
+    },
     "Microphone level": {
       "localizations": {
         "it": {
@@ -16697,6 +17257,22 @@
         }
       }
     },
+    "Moonlight": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chiaro di luna"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ضوء القمر"
+          }
+        }
+      }
+    },
     "More": {
       "localizations": {
         "it": {
@@ -16741,6 +17317,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "بكسلات أكثر للتفاصيل الدقيقة، وأقل لملف خفيف. تبقى كل الطبقات."
+          }
+        }
+      }
+    },
+    "More setups": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Altri schemi"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "إعدادات أخرى"
           }
         }
       }
@@ -17409,6 +18001,22 @@
         }
       }
     },
+    "Neon": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Neon"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "نيون"
+          }
+        }
+      }
+    },
     "Neutral": {
       "localizations": {
         "it": {
@@ -17793,6 +18401,22 @@
         }
       }
     },
+    "Night, two coloured signs from either side, a little haze: a street after the rain.": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Notte, due insegne colorate ai lati, un po' di foschia: una strada dopo la pioggia."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ليل، ولافتتان ملونتان من الجانبين، وقليل من الضباب: شارع بعد المطر."
+          }
+        }
+      }
+    },
     "Nine frames across the shot, with their moments.": {
       "localizations": {
         "it": {
@@ -17997,6 +18621,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "لا توجد نسخ بعد"
+          }
+        }
+      }
+    },
+    "Noir": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Noir"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "نوار"
           }
         }
       }
@@ -18545,6 +19185,22 @@
         }
       }
     },
+    "On a tripod": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Su treppiede"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "على حامل ثلاثي"
+          }
+        }
+      }
+    },
     "On fours": {
       "localizations": {
         "it": {
@@ -19041,6 +19697,22 @@
         }
       }
     },
+    "Only the sun casts shadows; bulbs, spots and panels light without them.": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Solo il sole proietta ombre; lampadine, spot e pannelli illuminano senza."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الشمس وحدها تُلقي ظلالًا؛ المصابيح والكشافات والألواح تضيء بلا ظلال."
+          }
+        }
+      }
+    },
     "Only the sun casts shadows; lamps and spots light without them.": {
       "localizations": {
         "it": {
@@ -19417,6 +20089,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "المخطط · %lld"
+          }
+        }
+      }
+    },
+    "Over the scene": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sopra la scena"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "فوق المشهد"
           }
         }
       }
@@ -20317,6 +21005,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "منظور"
+          }
+        }
+      }
+    },
+    "Phone (main camera)": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Telefono (fotocamera principale)"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "هاتف (الكاميرا الرئيسية)"
           }
         }
       }
@@ -21705,6 +22409,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "سحب الأوجه والحواف والزوايا"
+          }
+        }
+      }
+    },
+    "Pull focus here": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sposta il fuoco qui"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "انقل التركيز هنا"
           }
         }
       }
@@ -23601,6 +24321,22 @@
         }
       }
     },
+    "Rotoscope": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rotoscopio"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "روتوسكوب"
+          }
+        }
+      }
+    },
     "Roughness": {
       "localizations": {
         "it": {
@@ -24401,6 +25137,22 @@
         }
       }
     },
+    "Screen glow": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Luce dello schermo"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "وهج الشاشة"
+          }
+        }
+      }
+    },
     "Screen shake": {
       "localizations": {
         "it": {
@@ -24621,6 +25373,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "حدّد مجسمًا أولًا"
+          }
+        }
+      }
+    },
+    "Select a thing too: the lens follows it. Pull focus here hands the focus to it at the playhead.": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Seleziona anche un oggetto: l'obiettivo lo segue. Sposta il fuoco qui gli passa il fuoco alla testina."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "حدّد شيئًا أيضًا: تتبعه العدسة. «انقل التركيز هنا» يسلّمه التركيز عند رأس التشغيل."
           }
         }
       }
@@ -25201,6 +25969,22 @@
         }
       }
     },
+    "Setups": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Schemi di luce"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "إعدادات الإضاءة"
+          }
+        }
+      }
+    },
     "Shading": {
       "localizations": {
         "it": {
@@ -25745,6 +26529,22 @@
         }
       }
     },
+    "Show it": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mostralo"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "أظهره"
+          }
+        }
+      }
+    },
     "Show kept dimensions": {
       "localizations": {
         "it": {
@@ -26201,6 +27001,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "تخطّي الجولة"
+          }
+        }
+      }
+    },
+    "Sky from a picture": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cielo da un'immagine"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "سماء من صورة"
           }
         }
       }
@@ -26813,6 +27629,22 @@
         }
       }
     },
+    "Soft panel": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pannello morbido"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "لوح ناعم"
+          }
+        }
+      }
+    },
     "Soft round": {
       "localizations": {
         "it": {
@@ -26825,6 +27657,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "دائرية ناعمة"
+          }
+        }
+      }
+    },
+    "Soft studio": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Studio morbido"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "استوديو ناعم"
           }
         }
       }
@@ -27613,6 +28461,22 @@
         }
       }
     },
+    "Starts at %@": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Inizia a %@"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "يبدأ عند %@"
+          }
+        }
+      }
+    },
     "Starts here": {
       "localizations": {
         "it": {
@@ -28201,6 +29065,38 @@
           "stringUnit": {
             "state": "translated",
             "value": "قوة الشمس"
+          }
+        }
+      }
+    },
+    "Super 16 (film)": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Super 16 (pellicola)"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "سوبر 16 (فيلم)"
+          }
+        }
+      }
+    },
+    "Super 35 (cinema)": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Super 35 (cinema)"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "سوبر 35 (سينما)"
           }
         }
       }
@@ -29545,6 +30441,22 @@
         }
       }
     },
+    "That HDRI can't be read (%@). Maquette reads Radiance .hdr files.": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Questo HDRI non si può leggere (%@). Maquette legge i file Radiance .hdr."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "لا يمكن قراءة صورة HDRI هذه (%@). يقرأ Maquette ملفات Radiance ‎.hdr."
+          }
+        }
+      }
+    },
     "That isn't a picture": {
       "localizations": {
         "it": {
@@ -29701,6 +30613,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "لم يعد لهذا الزرّ ما يُظهره"
+          }
+        }
+      }
+    },
+    "That video can't be read": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Questo video non si può leggere"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "لا يمكن قراءة هذا الفيديو"
           }
         }
       }
@@ -29897,6 +30825,22 @@
         }
       }
     },
+    "The Director view, Frame shot and every video and picture come out in this shape.": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La vista Regia, Inquadra e ogni video e immagine escono in questo formato."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "عرض المخرج وتأطير اللقطة وكل فيديو وصورة تخرج بهذا الشكل."
+          }
+        }
+      }
+    },
     "The Enigma story": {
       "localizations": {
         "it": {
@@ -29925,6 +30869,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "أول ما يُختار يحتفظ بمظهره ومكانه."
+          }
+        }
+      }
+    },
+    "The frame at the playhead, all around or in depth.": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Il fotogramma alla testina, tutto intorno o in profondità."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الإطار عند رأس التشغيل، من كل الجهات أو بعمق."
           }
         }
       }
@@ -30537,6 +31497,22 @@
         }
       }
     },
+    "The sun low and warm, long shadows, a golden haze: the hour before sunset.": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Il sole basso e caldo, ombre lunghe, una foschia dorata: l'ora prima del tramonto."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "شمس منخفضة ودافئة، وظلال طويلة، وضباب ذهبي: الساعة التي تسبق الغروب."
+          }
+        }
+      }
+    },
     "The surface laid flat": {
       "localizations": {
         "it": {
@@ -30661,6 +31637,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "تعذّرت قراءة آخر تعديل فقط. كل ما قبله موجود هنا."
+          }
+        }
+      }
+    },
+    "The video is behind the stage from %@; exports never show it": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Il video è dietro la scena da %@; le esportazioni non lo mostrano mai"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الفيديو خلف المسرح من %@؛ ولا يظهر أبدًا في التصدير"
           }
         }
       }
@@ -31441,6 +32433,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "نقر بثلاثة أصابع"
+          }
+        }
+      }
+    },
+    "Three-point": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tre punti"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ثلاث نقاط"
           }
         }
       }
@@ -33521,6 +34529,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "الجدران تتبع الزوايا التي تلمسها؛ الأبواب والنوافذ توضع حيث تلمس جدارًا."
+          }
+        }
+      }
+    },
+    "Warm key, cool world": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Luce calda, mondo freddo"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "إضاءة دافئة، عالم بارد"
           }
         }
       }

@@ -18,6 +18,7 @@ extension EditorModel {
         frameGuide = workspace.frameGuide
         planeGuide = workspace.planeGuide
         references = workspace.references
+        rotoscope = workspace.rotoscope
         projectSetUp = workspace.setUp
         if workspace.firstPanel == ProjectWorkspace.boardPanel {
             // A Sketch project opens on its board, once.
@@ -54,6 +55,7 @@ extension EditorModel {
         workspace.frameGuide = frameGuide
         workspace.planeGuide = planeGuide
         workspace.references = references
+        workspace.rotoscope = rotoscope
         do {
             try store.saveWorkspace(workspace, at: projectURL)
         } catch {
