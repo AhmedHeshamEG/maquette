@@ -248,6 +248,8 @@ public struct SceneObject: Codable, Hashable, Sendable, Identifiable {
     public var physics: ObjectPhysics?
     /// A part of a made character: its job, side and face states (nil = not a part; `CharacterPart`).
     public var part: CharacterPart?
+    /// Copies laid out and rippled, a morph, letters that animate (nil = none; `MotionDesign`).
+    public var motionDesign: MotionDesign?
 
     public init(
         id: ObjectID,

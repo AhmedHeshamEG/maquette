@@ -29,6 +29,9 @@ let package = Package(
                 .product(name: "HmmDocuments", package: "HmmKit"),
                 .product(name: "HmmPerception", package: "HmmKit"),
                 .product(name: "HmmTranscript", package: "HmmKit"),
+                // Sound levels and beats (pure), SVG drawings as outlines (pure).
+                .product(name: "HmmMedia", package: "HmmKit"),
+                .product(name: "HmmVector", package: "HmmKit"),
                 // Booleans (C++ behind a C face; see Packages/Manifold/VENDORED.md).
                 .product(name: "ManifoldCpp", package: "Manifold"),
                 // Clean quads from a sculpt (C++ behind a C face; see Packages/InstantMeshes/VENDORED.md).

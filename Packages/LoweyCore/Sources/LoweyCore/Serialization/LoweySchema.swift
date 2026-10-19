@@ -66,7 +66,10 @@ public enum LoweySchema {
     ///     `lookAt` property.
     /// 21: Maquette 0.22's film: the `area` light (a soft panel) and its `lightWidth` / `lightHeight`, cameras' `sensor`,
     ///     `rig…` and `focusOn` properties, timelines' `frame`, the Look's `atmosphere` and the sky's `environment…`.
-    public static let currentVersion = 21
+    /// 22: Maquette 0.23's motion design: objects' `motionDesign` (clones, a morph, animated letters), timelines'
+    ///     `links`, audio clips' `levels`, 3D text's `font`, the `morph` and `effectStrength` properties, the
+    ///     `setMotionDesign` and `setLinks` commands.
+    public static let currentVersion = 22
 
     public static let migrations: [Migration] = [
         Migration(kind: .scene, from: 0, transform: liftSceneV0),
@@ -148,7 +151,11 @@ public enum LoweySchema {
         // 20 → 21 adds a light type, optional fields and properties; nothing older changes shape.
         Migration(kind: .scene, from: 20) { $0 },
         Migration(kind: .project, from: 20) { $0 },
-        Migration(kind: .library, from: 20) { $0 }
+        Migration(kind: .library, from: 20) { $0 },
+        // 21 → 22 adds optional motion design, links, levels and a font; nothing older changes shape.
+        Migration(kind: .scene, from: 21) { $0 },
+        Migration(kind: .project, from: 21) { $0 },
+        Migration(kind: .library, from: 21) { $0 }
     ] + unchangedSince(.brushes) + unchangedSince(.materials)
 
     /// A file kind whose payload hasn't changed shape at any version: every step keeps it as it is (D-339; the

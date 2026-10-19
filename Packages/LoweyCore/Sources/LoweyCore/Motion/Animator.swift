@@ -77,6 +77,8 @@ public enum Animator {
         RubberHose.apply(to: &scene, animated: &animated)
         let camera = timeline.cutCamera(at: time).flatMap { scene.objects[$0] != nil ? $0 : nil }
             ?? scene.activeCamera.flatMap { scene.objects[$0] != nil ? $0 : nil }
+        // Cloners lay out their copies, each playing the thing's motion at its own moment.
+        if ClonePlayback.anyone(in: scene) { ClonePlayback.apply(to: &scene, document: document, time: time, animated: &animated) }
         StickToCamera.apply(to: &scene, camera: camera, animated: &animated)
         var shapes = physics.map { PhysicsPlayback.apply($0, to: &scene, at: time, animated: &animated) } ?? .none
         shapes.meshes.merge(faces) { run, _ in run }
@@ -117,6 +119,8 @@ public enum Animator {
                 animated.insert(behavior.target)
             }
         }
+        // Things and sounds driving things, on top of their own keys and behaviours.
+        if !timeline.links.isEmpty { MotionLinks.apply(timeline.links, to: &scene, document: document, time: time, animated: &animated) }
         var poses: [ObjectID: [Transform]] = [:]
         for track in timeline.clipTracks {
             guard let object = scene.objects[track.target] else { continue }

@@ -1,4 +1,5 @@
 import Foundation
+import HmmMedia
 
 /// What an audio clip is for. Roles only change defaults (colour, lane, ducking), never behaviour.
 public enum AudioRole: String, Codable, Sendable, CaseIterable, Identifiable {
@@ -48,6 +49,8 @@ public struct AudioClip: Codable, Hashable, Sendable, Identifiable {
     /// Optional volume automation on top of `volume` (times relative to the clip start, sorted).
     public var envelope: [EnvelopePoint]
     public var muted: Bool
+    /// How loud the file is, its bass and its beats, measured when something first moves to it (D1; nil = not yet).
+    public var levels: SoundLevels?
 
     public init(
         id: String, role: AudioRole, name: String, file: String, start: Double = 0, offset: Double = 0,

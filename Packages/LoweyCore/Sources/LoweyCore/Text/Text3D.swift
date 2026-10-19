@@ -30,18 +30,22 @@ public struct TextRecipe: Codable, Hashable, Sendable {
     /// Extrusion depth as a fraction of `size`.
     public var depth: Double
     public var alignment: Alignment
+    /// A font brought in (D1): its file in the project's `assets/fonts/`, used instead of the style's (nil = the style's).
+    public var font: String?
 
-    public init(text: String, style: Style = .blocky, size: Double = 1, depth: Double = 0.25, alignment: Alignment = .center) {
+    public init(text: String, style: Style = .blocky, size: Double = 1, depth: Double = 0.25, alignment: Alignment = .center,
+                font: String? = nil) {
         self.text = text
         self.style = style
         self.size = size
         self.depth = depth
         self.alignment = alignment
+        self.font = font
     }
 
     /// Whether Core can mesh every character (the blocky font covers Latin letters, digits, punctuation).
     public var coreMeshable: Bool {
-        style == .blocky && text.uppercased().allSatisfy { $0 == "\n" || BlockFont.glyphs[$0] != nil }
+        font == nil && style == .blocky && text.uppercased().allSatisfy { $0 == "\n" || BlockFont.glyphs[$0] != nil }
     }
 
     /// Approximate bounds (base-centred, standing on the ground like every Lowey object).
