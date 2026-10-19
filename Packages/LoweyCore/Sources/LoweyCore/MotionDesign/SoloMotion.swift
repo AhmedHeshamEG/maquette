@@ -11,6 +11,9 @@ struct SoloMotion {
     let behaviors: [Behavior]
     let links: [MotionLink]
     let rates: FrameRates
+    /// The stretch a loop plays (the loop region, else the timeline), and whether the thing meets itself over it.
+    let range: TimeRange
+    private(set) var repeats = false
 
     init(_ id: ObjectID, in document: Document, withLinks: Bool) {
         self.id = id
@@ -28,6 +31,8 @@ struct SoloMotion {
         tracks = Timeline(fps: timeline.fps, duration: timeline.duration, stepping: timeline.stepping,
                           tracks: timeline.tracks.filter { keep.contains($0.target) })
         rates = FrameRates(document)
+        range = timeline.loop ?? TimeRange(start: 0, end: timeline.duration)
+        repeats = meetsItself(over: range)
     }
 
     /// What a behaviour looks at or moves with.
@@ -44,15 +49,13 @@ struct SoloMotion {
     /// a moment before its start comes round from its end, so copies and links that wait play the motion as it repeats
     /// and a loop still meets itself; a motion that happens once rests before it starts.
     func earlier(_ time: Double, by delay: Double) -> Double {
-        let timeline = document.scene.timeline
-        let range = timeline.loop ?? TimeRange(start: 0, end: timeline.duration)
         let moment = time - delay
-        guard delay > 0, range.duration > 1e-6, moment < range.start, repeats(over: range) else { return moment }
+        guard delay > 0, range.duration > 1e-6, moment < range.start, repeats else { return moment }
         return range.end - (range.start - moment).truncatingRemainder(dividingBy: range.duration)
     }
 
     /// Whether the thing stands the same at the end of `range` as at its start.
-    func repeats(over range: TimeRange) -> Bool {
+    private func meetsItself(over range: TimeRange) -> Bool {
         guard let first = transform(at: range.start), let last = transform(at: range.end) else { return false }
         return first.position.distance(to: last.position) < 1e-4 && abs(first.rotation.normalized.dot(last.rotation.normalized)) > 1 - 1e-8
             && (first.scale - last.scale).length < 1e-4

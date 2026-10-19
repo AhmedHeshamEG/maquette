@@ -266,6 +266,7 @@ Animate calls the timeline and its bar, under the stage (A1): six verbs. With no
 | Colour (the scene's palette) | `[cube] section-Colour` |
 | What kind of thing it is: a light's, a text's, an overlay's, an effect's own controls | in the panel for those things |
 | Make it move, one strip: loops (spin, float, bounce, wiggle, swing, follow a path), then once-moves; speed, keyframes | `[cube] motion-bounce` |
+| Make it move: Link (moved by another thing: tap it next) | `[cube] motion-link` |
 | | `[cube] preset-popIn` |
 | On the selection: Scatter copies on the ground | `[cube] tool-scatter` |
 | On the selection: Mirror and symmetry | `[cube] mirror` |

@@ -1,4 +1,6 @@
 import CoreText
+import HmmMedia
+import HmmVector
 import LoweyCore
 @testable import LoweyEngine
 import UIKit
@@ -99,5 +101,41 @@ final class DesignRenderTests: XCTestCase {
         XCTAssertEqual(picked.count, 1, "all three copies pick as the cube")
         XCTAssertEqual(compiled.items.count, 3)
         XCTAssertTrue(compiled.items.allSatisfy { ($0.uniforms.ids.z & ObjectFlags.selected.rawValue) != 0 }, "and are selected with it")
+    }
+
+    /// The phase's acceptance (D1): a logo extruded, cloned and rippling to a music track, the loop closed, looks the same
+    /// at its end as at its start, and exports as a ProRes 4444 loop with alpha (where the simulator writes ProRes).
+    func testARipplingLogoLoopsSeamlesslyAndExports() async throws {
+        let svg = "<svg viewBox='0 0 200 80'><rect width='200' height='80' fill='#d81e2c'/><circle cx='100' cy='40' r='25' fill='#ffffff'/></svg>"
+        var ids = IDFactory.sequential("logo")
+        let made = try XCTUnwrap(try LogoImport.objects(SVG.read(Data(svg.utf8)), name: "Brand", width: 0.6, depth: 0.06) { ids.next() })
+        var document = TestDocuments.document("Brand loop", objects: made.objects, camera: Vec3(0, 1.6, 6))
+        var design = MotionDesign(clones: ObjectClones(layout: .grid(columns: 3, rows: 3, layers: 1, spacing: Vec3(0.9, 0.9, 0.9))))
+        design.clones?.effects = [CloneEffect.starting(.push, id: "ripple", size: 0.6), CloneEffect(id: "d", kind: .delay, delay: 0.1)]
+        document.scene.objects[made.root]?.motionDesign = design
+        document.scene.objects[made.root]?[PropertyKey.effectStrength] = PropertyValue.float(0)
+        var music = AudioClip(id: "music", role: .music, name: "Music", file: "music.m4a", duration: 4)
+        music.levels = SoundLevels(loudness: Array(repeating: 200, count: 240), bass: Array(repeating: 200, count: 240),
+                                   beats: stride(from: 0.0, to: 4, by: 0.5).map(\.self), tempo: 120)
+        document.scene.timeline.duration = 2
+        document.scene.timeline.audio = [music]
+        document.scene.timeline.links = [MotionLink(id: "l", target: made.root, channel: .effect, driver: .sound(clip: "music", feature: .beat))]
+        document.scene.timeline.behaviors = [Behavior(id: "spin", target: made.root, kind: .spin(degreesPerSecond: 70, axis: .y))]
+        let range = TimeRange(start: 0, end: 2)
+        var closed = document
+        _ = try XCTUnwrap(LoopClose.command(document, range: range)).apply(to: &closed)
+        XCTAssertEqual(LoopCheck.seams(closed, range: range), [])
+        let first = try await image(closed, at: 0)
+        let last = try await image(closed, at: 2)
+        let middle = try await image(closed, at: 1.1)
+        GoldenImage().attach(middle, name: "brand-loop")
+        XCTAssertLessThan(ImageChecks.difference(first, last), 0.002, "the end meets the start")
+        XCTAssertGreaterThan(ImageChecks.difference(first, middle), 0.002, "and it moves in between")
+        let writes = await VideoEncoder.canEncode(.prores4444)
+        let session = try TestDocuments.session(closed)
+        let settings = ExportSettings(framing: .landscape, longSide: 320, fps: 10, codec: writes ? .prores4444 : .hevcAlpha, range: range,
+                                      transparent: true)
+        let url = try await session.video(settings, audio: nil, to: ImageChecks.temporaryFolder("brand-loop").appendingPathComponent("loop.mov")) { _ in }
+        XCTAssertTrue(FileManager.default.fileExists(atPath: url.path))
     }
 }
