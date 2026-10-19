@@ -60,7 +60,9 @@ public enum ProjectHistory {
         20: { $0 },
         // 21 → 22 only adds the optional motion design, links, levels and font, and the `setMotionDesign` and `setLinks`
         // commands.
-        21: { $0 }
+        21: { $0 },
+        // 22 → 23 adds Look and Finish fields, effect kinds and a ground surface; nothing older changes shape.
+        22: { $0 }
     ]
     /// The first schema journals were written with (Maquette 0.1).
     public static let firstJournalSchema = 4

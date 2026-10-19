@@ -69,7 +69,11 @@ public enum LoweySchema {
     /// 22: Maquette 0.23's motion design: objects' `motionDesign` (clones, a morph, animated letters), timelines'
     ///     `links`, audio clips' `levels`, 3D text's `font`, the `morph` and `effectStrength` properties, the
     ///     `setMotionDesign` and `setLinks` commands.
-    public static let currentVersion = 22
+    /// 23: Maquette 0.24's Looks and library: Looks' `paint` and `pixel`, shading's `shadowTint` and `reflection`, the
+    ///     Finish's `misregistration`, `boil`, `benDay` and three print textures, screen effects' `impact`, `focusLines` and
+    ///     `kirbyDots` with a `center` or `target`, the ground's `surface`, the library's `styles`, `effects`, `parts` and
+    ///     `origins`.
+    public static let currentVersion = 23
 
     public static let migrations: [Migration] = [
         Migration(kind: .scene, from: 0, transform: liftSceneV0),
@@ -155,7 +159,11 @@ public enum LoweySchema {
         // 21 → 22 adds optional motion design, links, levels and a font; nothing older changes shape.
         Migration(kind: .scene, from: 21) { $0 },
         Migration(kind: .project, from: 21) { $0 },
-        Migration(kind: .library, from: 21) { $0 }
+        Migration(kind: .library, from: 21) { $0 },
+        // 22 → 23 adds Look and Finish fields, effect kinds, a ground surface and library lists; nothing older changes shape.
+        Migration(kind: .scene, from: 22) { $0 },
+        Migration(kind: .project, from: 22) { $0 },
+        Migration(kind: .library, from: 22) { $0 }
     ] + unchangedSince(.brushes) + unchangedSince(.materials)
 
     /// A file kind whose payload hasn't changed shape at any version: every step keeps it as it is (D-339; the

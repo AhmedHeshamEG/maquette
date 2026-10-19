@@ -43,8 +43,88 @@ public extension LookPreset {
         lines: LineParams(enabled: false, width: 1.2)
     )
 
-    /// The five built-in Looks, in the order the Look panel shows them.
-    static let builtIns: [LookPreset] = [.ink, .comic, .sketch, .clay, .lowPoly]
+    /// Painterly (Arcane, Puss in Boots lineage): three soft bands with strongly coloured shadows, then the whole picture
+    /// laid down in brush strokes that follow the forms; thin darkened lines painted with it.
+    static let painterly = LookPreset(
+        id: "painterly", name: "Painterly",
+        shading: ShadingParams(bands: 3, threshold: 0.48, midThreshold: 0.76, edgeSoftness: 0.06, shadowHueShift: 0.32, shadowValue: 0.32,
+                               shadowSaturation: 0.18, ambientSteps: 0.5, contactShading: 0.7, rim: 0.4, rimThreshold: 0.6, rimSoftness: 0.08,
+                               specular: 0.6, specularSoftness: 0.06, posterizeTextures: false, bloom: 0.4),
+        lines: LineParams(width: 1.3, darken: 0.7, creaseAngle: 55, boil: 0.15),
+        finish: LookFinish(paperGrain: 0.15, vignette: 0.12, saturation: 0.1),
+        paint: PaintStyle(strokes: 0.85, size: 7, wetEdges: 0.1, granulation: 0.1)
+    )
+
+    /// Watercolour: light, transparent washes with cool shadows; the paper shows through, washes darken where they
+    /// meet and the pigment settles into the grain; a light sepia pencil line.
+    static let watercolour = LookPreset(
+        id: "watercolour", name: "Watercolour",
+        shading: ShadingParams(bands: 3, threshold: 0.46, midThreshold: 0.74, edgeSoftness: 0.08, shadowHueShift: 0.35, shadowValue: 0.22,
+                               shadowSaturation: 0.08, ambientSteps: 0.2, contactShading: 0.5, rim: 0.1, specular: 0.2,
+                               posterizeTextures: false, bloom: 0.2),
+        lines: LineParams(width: 1.0, colorMode: .ink, inkColor: RGBA(0.32, 0.24, 0.2), darken: 0.6, creaseAngle: 60,
+                          depthSensitivity: 0.45, boil: 0.3, pencil: true),
+        finish: LookFinish(paperGrain: 0.45, paperTint: 0.08, saturation: -0.08),
+        paint: PaintStyle(strokes: 0.35, size: 5, wetEdges: 0.75, granulation: 0.6, paper: 0.45)
+    )
+
+    /// Gouache: opaque, matte, slightly chalky paint in flat strokes, the paper's tooth in it.
+    static let gouache = LookPreset(
+        id: "gouache", name: "Gouache",
+        shading: ShadingParams(bands: 3, threshold: 0.5, midThreshold: 0.76, edgeSoftness: 0.035, shadowHueShift: 0.3, shadowValue: 0.3,
+                               shadowSaturation: 0.1, contactShading: 0.6, rim: 0.2, specular: 0.25, bloom: 0.15),
+        lines: LineParams(width: 1.2, darken: 0.65, boil: 0.1),
+        finish: LookFinish(paperGrain: 0.55, paperTint: 0.05, saturation: -0.12, lift: 0.04),
+        paint: PaintStyle(strokes: 0.6, size: 6, wetEdges: 0.25, granulation: 0.2)
+    )
+
+    /// Paperman: soft, filmic light in black and white, thin clean ink drawn over it, grain; things flagged Accent keep
+    /// their colour (D-478). Sketch is pencil on paper; this is a film.
+    static let paperman = LookPreset(
+        id: "paperman", name: "Paperman",
+        shading: ShadingParams(model: .clay, edgeSoftness: 0.5, shadowHueShift: 0, shadowValue: 0.25, shadowSaturation: 0, ambientSteps: 0,
+                               contactShading: 0.85, rim: 0.25, specular: 0.3, specularSize: 0.35, specularSoftness: 0.25,
+                               posterizeTextures: false, bloom: 0.3, softShadows: true),
+        lines: LineParams(width: 1.1, colorMode: .ink, inkColor: RGBA(0.1, 0.1, 0.11), creaseAngle: 48, boil: 0.25),
+        finish: LookFinish(paperGrain: 0.3, vignette: 0.3, saturation: -1, accentKeepsColor: true, gamma: 0.05)
+    )
+
+    /// Anime cel: two hard tones with a lavender shadow, a hard rim and highlight, lines in each thing's own colour,
+    /// on twos (D-480).
+    static let animeCel = LookPreset(
+        id: "animeCel", name: "Anime cel",
+        shading: ShadingParams(threshold: 0.52, edgeSoftness: 0.003, shadowHueShift: 0.12, shadowValue: 0.22, shadowSaturation: 0.1,
+                               ambientSteps: 1, contactShading: 0.25, rim: 0.6, rimThreshold: 0.72, rimSoftness: 0.005, specular: 1,
+                               specularSize: 0.12, specularSoftness: 0.004, bloom: 0.35, shadowTint: RGBA(0.62, 0.58, 0.82, 0.45)),
+        lines: LineParams(width: 1.4, darken: 0.85, creaseAngle: 65, depthSensitivity: 0.6),
+        finish: LookFinish(saturation: 0.08),
+        stepping: .onTwos
+    )
+
+    /// Clean product: soft studio light, soft shadows, lacquered surfaces that mirror the room at their edges, no lines
+    /// (D-479).
+    static let cleanProduct = LookPreset(
+        id: "cleanProduct", name: "Clean product",
+        shading: ShadingParams(model: .clay, edgeSoftness: 0.5, shadowHueShift: 0.04, shadowValue: 0.15, shadowSaturation: 0.02, ambientSteps: 0,
+                               contactShading: 0.9, rim: 0.15, rimThreshold: 0.55, rimSoftness: 0.2, specular: 0.8, specularSize: 0.3,
+                               specularSoftness: 0.15, posterizeTextures: false, bloom: 0.15, softShadows: true, reflection: 0.45),
+        lines: .off
+    )
+
+    /// Pixel: hard toon light in square blocks and few colours, a one-pixel ink line, on twos (D-481).
+    static let pixel = LookPreset(
+        id: "pixel", name: "Pixel",
+        shading: ShadingParams(edgeSoftness: 0.002, ambientSteps: 1, contactShading: 0.5, rim: 0.3, rimSoftness: 0.002, specular: 0.6,
+                               specularSoftness: 0.002, bloom: 0),
+        lines: LineParams(width: 1, colorMode: .ink, inkColor: RGBA(0.06, 0.05, 0.08), darken: 0.8, creaseAngle: 60, depthSensitivity: 0.6),
+        stepping: .onTwos,
+        pixel: PixelStyle(size: 4, colors: 8)
+    )
+
+    /// The built-in Looks, in the order the Look panel shows them: the toon family, paint, film, solid, pixels.
+    static let builtIns: [LookPreset] = [
+        .ink, .comic, .sketch, .painterly, .watercolour, .gouache, .paperman, .animeCel, .clay, .cleanProduct, .lowPoly, .pixel
+    ]
 }
 
 /// Finds Looks by id among the built-ins and a project's own ("My Look") presets.

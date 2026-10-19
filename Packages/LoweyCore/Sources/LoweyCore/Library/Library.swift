@@ -1,4 +1,5 @@
 import Foundation
+import HmmDocuments
 
 public enum AssetFormat: String, Codable, Sendable, CaseIterable {
     case usdz, gltf, glb, obj, stl
@@ -149,6 +150,15 @@ public struct LibraryManifest: Codable, Hashable, Sendable {
     public var scripts: [ScriptAsset]
     /// Poses, clips and loops saved to drop on anything (`MotionItem`).
     public var motions: [MotionItem]
+    /// Your Looks (render styles made in the Look Studio or brought in a pack), offered in every project (L2).
+    public var styles: [LookPreset] = []
+    /// Particle effects made in the Effect Studio (L2).
+    public var effects: [SavedEffect] = []
+    /// Character parts saved to Yours (L2).
+    public var parts: [SavedPart] = []
+    /// Where items that came in packs came from, by `LibraryKind.key` (brushes and materials included, though their
+    /// libraries keep their own files).
+    public var origins: [String: HmmPackOrigin] = [:]
     /// The Kit's assets (shipped with the app; never saved in `library.json`).
     public var kit: [LibraryAsset] = []
 
@@ -161,7 +171,7 @@ public struct LibraryManifest: Codable, Hashable, Sendable {
         self.motions = motions
     }
 
-    private enum CodingKeys: String, CodingKey { case assets, prefabs, looks, scripts, motions }
+    private enum CodingKeys: String, CodingKey { case assets, prefabs, looks, scripts, motions, styles, effects, parts, origins }
 
     public init(from decoder: Decoder) throws {
         let c = try decoder.container(keyedBy: CodingKeys.self)
@@ -170,6 +180,10 @@ public struct LibraryManifest: Codable, Hashable, Sendable {
         looks = try c.decodeIfPresent([SavedLook].self, forKey: .looks) ?? []
         scripts = try c.decodeIfPresent([ScriptAsset].self, forKey: .scripts) ?? []
         motions = try c.decodeIfPresent([MotionItem].self, forKey: .motions) ?? []
+        styles = try c.decodeIfPresent([LookPreset].self, forKey: .styles) ?? []
+        effects = try c.decodeIfPresent([SavedEffect].self, forKey: .effects) ?? []
+        parts = try c.decodeIfPresent([SavedPart].self, forKey: .parts) ?? []
+        origins = try c.decodeIfPresent([String: HmmPackOrigin].self, forKey: .origins) ?? [:]
     }
 
     public func encode(to encoder: Encoder) throws {
@@ -179,6 +193,10 @@ public struct LibraryManifest: Codable, Hashable, Sendable {
         try c.encode(looks, forKey: .looks)
         try c.encode(scripts, forKey: .scripts)
         if !motions.isEmpty { try c.encode(motions, forKey: .motions) }
+        if !styles.isEmpty { try c.encode(styles, forKey: .styles) }
+        if !effects.isEmpty { try c.encode(effects, forKey: .effects) }
+        if !parts.isEmpty { try c.encode(parts, forKey: .parts) }
+        if !origins.isEmpty { try c.encode(origins, forKey: .origins) }
     }
 
     public func asset(_ id: AssetID) -> LibraryAsset? {
