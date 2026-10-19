@@ -2936,3 +2936,98 @@ what a spot does. Spatial frames draw twice and 360° frames six times, export o
 on a smaller one. The device checklist times a 360° 4K export and a spatial export on the iPad.
 
 **D-458 — Translations still ride along.** The new strings were translated into Italian and Arabic for the catalog check.
+
+## Maquette 0.23 — D1, motion design
+
+The inbox had nothing for this phase (one queued idea is a session of its own), and F1 left no device notes yet.
+
+**D-459 — A logo is modelled solids.** An SVG comes in as one modelled solid a fill colour (a group when there are
+several): each shape pulled out with its holes, upright and facing the front, standing on the ground, centred, a metre
+wide and 8 % of that deep. Colours drawn later stand proud of the ones under them by an eighth of the depth each, as an
+embossed sign does, so no two faces fight for the same place. Being ordinary modelled shapes, they push and pull, round,
+paint, break and export like anything modelled. *Rejected:* a logo kind that keeps its SVG (one more kind every tool must
+learn, for a depth that push/pull already changes); every colour at the same depth (the faces flicker).
+
+**D-460 — SVG, read in the kit.** hmm-kit's new `HmmVector` reads SVG with its own small XML reader and flattens every
+path command, arcs included, within a thousandth of the drawing's size; groups, transforms, `<use>`, nested `<svg>`, CSS
+classes and ids from `<style>`, `currentColor`, and gradients as the average of their stops. Strokes, text and pictures
+can't become filled outlines, so they're counted and named ("left out: 2 outlines drawn with a pen") instead of
+guessed at. Cutaway gets it for its templates. *Rejected:* Foundation's `XMLParser` (FoundationXML on Linux: a different
+parser on each platform); turning strokes into outlines (overlapping pieces would read as holes without a 2D boolean).
+
+**D-461 — Fonts belong to the project.** A font brought in from the text's panel is copied to `assets/fonts/` and named by
+the text (`font`); CoreText makes its letters through a descriptor read from the file, so stage, export and another iPad
+all draw it. A file that isn't a font is refused at the door; a font that can't be read later falls back to the style's.
+*Rejected:* registering fonts with the system (the project would lose its letters on another iPad); a device-wide font
+list (the same).
+
+**D-462 — Letters animate from presets.** Fly in, Bounce in, Cascade, Pop, Spin in, Type on (arrive once and rest) and Wave
+(keeps going); the order (first to last, last to first, from the middle, random), the time between letters and each
+letter's length; they start at the playhead. Each letter's pose is pure Core (`TextAnimator`), and the renderer draws every
+character on its own about its own middle; at rest the letters are exactly the still text (a render test). *Rejected:*
+letters as separate things (the text would stop being one text you can retype).
+
+**D-463 — Clones are a recipe on the thing.** Its copies exist only in the shown scene (as broken pieces do since P1): the
+thing itself is the first copy, the others are named after it, pick and select as it, and aren't in the outliner. Layouts:
+a grid (across, deep, high), a circle (facing out), a line, along a drawn path; in the thing's own directions, from where it
+was put; at most 1000 copies. *Rejected:* real copies (that's Array, already in the same menu: a flood in the outliner,
+and editing one isn't editing all); copies drawn only by the renderer (the bridge, observe and 3D files wouldn't see them).
+
+**D-464 — Effects through fields.** Random (seeded, the same every time), Delay (each copy plays the thing's own motion a
+moment after the one before; with a field, copies as far from its centre start together, so rings ripple out) and Push
+(moved, turned, grown as much as the field reaches); fields are Everywhere, Near a point and Ripple (a ring travelling out,
+a new one every few seconds). One `effectStrength` scales them all and is keyed or linked like any number. *Rejected:*
+Cinema 4D's falloff shapes and remap curves (a second grammar to learn; a ripple and a sphere make the brand loop).
+
+**D-465 — Links.** A link adds the driver's change since its edited place (things) or the sound's value (sounds), times an
+amount, to one channel of the target: moves, turns, size, glow, opacity, clone effects, morph, reveal. Turns are followed
+from the start in tenths of a second so a gear driven at half speed keeps turning past half a turn; drivers are read
+without their own links, so two things linked both ways can't loop. Presets in the panel: turns with it, turns against it
+(a gear), moves with it, grows as it rises. *Rejected:* expressions (code, and law 12 keeps packs data).
+
+**D-466 — A sound measured once.** Loudness and bass sixty times a second against the sound's own quiet and loud, and its
+beats: onsets from where the energy jumps (the bass counting double), a tempo from their autocorrelation between 60 and
+180 a minute, a grid locked onto each kick; free-time sound gives its strong onsets instead. Kept on the clip (`levels`,
+base64, about 20 KB for three minutes), measured in the background the first time something moves to it. A link follows
+the clip's fades and mute, not its volume (turning the music down shouldn't calm the ripple). In the kit, for Cutaway.
+*Rejected:* measuring every frame (costly, and the stage and the export could differ); a file beside the clip (the
+Animator reads only the document).
+
+**D-467 — Morph.** Hold menu ▸ More ▸ Morph into…, then tap the thing it becomes: the first shape, cut finer, has each
+corner matched to the second by looking out from the middle of each in the same direction, measured against each one's
+box, so a cube reaches the ends of a long bar; its colour goes the same way; at the end it is the second shape, which is
+hidden while it serves as one. `morph` is keyed 0 → 1 over a second from the playhead. Between shapes made here (shapes,
+modelled solids, logos, drawings, blocky text); a placed Kit model is made editable first. *Rejected:* matching to the
+nearest point (folds on hollow shapes); a full correspondence solve (heavy, and still lost between a cup and a ball).
+
+**D-468 — Seamless loops.** The export checks the stretch it loops over (the loop region, else the timeline): the moment
+after the last frame against the first, for every thing's place, turn, size, colour, glow and opacity, copies and letters
+included; real things are named as not repeating. Close the loop gives keys that end elsewhere a last key where they began
+and fits repeats to the nearest whole number (spin, float, bounce, swing, orbit, sway, a path followed round, a ripple, a
+wave of letters); a wiggle and letters flying in once stay on the list. Copies and links that wait play a motion that
+repeats as it repeats, so a closed loop stays closed; a one-off motion rests before its start. *Rejected:* exporting one
+frame fewer (it hides a jump instead of fixing it).
+
+**D-469 — Where it lives.** Model ▸ Add ▸ Logo (SVG); the text's panel holds its font and its letters; the object's menu ▸
+More holds Clone… and Morph into… (its three extras are taken); the object's panel shows Clones and Morph when a thing has
+them; Links sit in More ways to move; the loop check sits beside a video or GIF preset in the Export sheet. The menu bar:
+Clone (⌃⌘C), Morph Into… (⌃⌘O), Close the Loop (⌃⌘E).
+
+**D-470 — The bridge's `design`.** logo (SVG text or a project file), clone, effect, link (to a thing or a sound), morph,
+letters and loop (`close`); `text` takes a `font`; fonts and logos come over `add_media` (`font=True`, `logo=True`). The
+lowey skill's motion-design module teaches it.
+
+**D-471 — Schema 22.** Objects' `motionDesign` (clones, morph, letters), timelines' `links`, audio clips' `levels`, 3D
+text's `font`, the `morph` and `effectStrength` properties, the `setMotionDesign` and `setLinks` commands. 0.22 refuses a
+schema-22 file with its usual message.
+
+**D-472 — Kit 0.13.** `HmmVector` (SVG) and HmmMedia's `SoundLevels`, `SoundAnalysis` and `SoundReader`.
+
+**D-473 — Every tier.** A copy or a letter is one draw; at most 1000 copies. Delayed copies read the thing's motion on a
+scene of just it; a morph moves a few thousand corners on the CPU a frame and caches its match; a sound is measured once,
+in the background. The same features everywhere; the device checklist times 1000 rippling copies on a Tier B iPad.
+
+**D-474 — 3D files.** Copies go out where they stand at the playhead, letters at rest; their motion as keys is in the
+backlog.
+
+**D-475 — Translations still ride along.** The new strings were translated into Italian and Arabic for the catalog check.

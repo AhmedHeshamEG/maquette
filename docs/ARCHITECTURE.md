@@ -27,6 +27,7 @@ flowchart TD
         Brush[HmmBrush · HmmBrushRender]
         Board[HmmBoard · HmmBoardUI]
         Held[HmmHeld]
+        Vector[HmmVector]
     end
     App --> Features
     Features --> Engine
@@ -37,7 +38,7 @@ flowchart TD
     Core --> Jolt
     Features --> Design & Bridge & Diagnostics & Documents & Perception & Board & Held
     Engine --> Media & Diagnostics & Transcript & Perception & Brush
-    Core --> Commands & Documents & Transcript & Brush
+    Core --> Commands & Documents & Transcript & Brush & Media & Vector
     Board --> Brush
 ```
 
@@ -700,6 +701,40 @@ flowchart LR
 - **Features**: `Inspector/LightSection` (setups), `Inspector/CameraLensPanel` (on the camera's panel and the camera
   button's popover), `Look/AirSection`, `Actions/RotoscopePanel`, `Workspace/UI/PickedMovie`, `EditorModel+Film`,
   `EditorModel+ExportFilm`; `deliveryFraming` is the timeline's frame.
+
+## Motion design (0.23)
+
+```mermaid
+flowchart LR
+    SVG[.svg] --> HV[HmmVector · SVG.read<br/>filled shapes, flattened] --> Logo[LogoImport<br/>a solid a colour: Prism → EditableMesh]
+    Clip[audio clip] --> SR[HmmMedia · SoundReader → SoundAnalysis<br/>loudness · bass · beats] --> Levels[AudioClip.levels]
+    Doc[Document] --> Anim[Animator.posed: keys → behaviours → MotionLinks]
+    Levels --> Anim
+    Anim --> Rest[… holds · looks · faces …] --> Clones[ClonePlayback<br/>copies in the shown scene · SoloMotion for delays]
+    Clones --> SC[SceneCompiler: copies pick as their thing<br/>letters one by one · morphs]
+    Doc --> Loop[LoopCheck · LoopClose]
+```
+
+- **hmm-kit** (0.13): `HmmVector` (`SVG.read`: `XMLReader`, `SVGPathReader` and `CurveFlattener`, `SVGStyleSheet`,
+  `SVGPaintState`, `SVGWalker`; `VectorDrawing`, `VectorShape`, `VectorSkipped`); HmmMedia's `SoundLevels` (base64 in JSON,
+  `pulse`), `SoundAnalysis` and `BeatFinder` (pure), `SoundReader` (AVFoundation).
+- **Core `MotionDesign/`**: `MotionDesign` on `SceneObject.motionDesign` (`ObjectClones`, `ObjectMorph`, `TextAnimator`) and
+  the `morph`, `effectStrength`, `cloneOf` properties; `ObjectClones` (layouts, `CloneEffect`, `CloneField`) and
+  `ClonePlayback` (slots, delays ranked by distance, effects, copies of a subtree); `SoloMotion` (one thing's keys,
+  behaviours and links on a scene of just it; `earlier` wraps a moment round a loop when the motion repeats);
+  `MotionLinks` (`MotionLink` on `Timeline.links`, sound values through the clip's fades, `LinkTurns` unwraps turns);
+  `TextAnimator` and `LetterPose`; `MorphPair`; `LoopCheck` and `LoopClose`; `LogoImport`; `MorphOperations`. Commands
+  `setMotionDesign`, `setLinks`. `Text3D`: `TextRecipe.font`, `BlockFont.letters`. `AI/ScriptCompiler+Design`: the
+  `design` verb. The Animator applies links after behaviours (in `posed`) and lays out clones before Stick to the camera.
+- **Engine**: `Text/TextLetters` (`FontFiles`: fonts read from the project through the frame's files; `FontFileInfo`;
+  `TextMesher.letters`: each character's solid laid out as the whole text), `Render/SceneCompiler+Design` (text in a font,
+  letters at their poses, morphs: the match cached per pair of shapes, the target's shape at the end; `MeshKey.letter`,
+  `.morphTarget`). `SceneCompiler.compile` picks and selects a copy as its `cloneOf`.
+- **Features**: `Workspace/Session/EditorModel+Design` (logos, fonts, letters, clones, morphs, `designTap`) and
+  `+DesignLinks` (links, sounds measured in the background, the loop check), `DesignTypes` (`DesignWait`, `DesignState`,
+  `LinkPreset`); views `Inspector/CloneSection`, `Inspector/DesignSections` (`TextDesignRows`, `MorphRow`, `LinksSection`),
+  `Export/LoopCheckRow`; Model ▸ Add's Logo tile; the hold menu's Clone… and Morph into…; the bridge's `add_media` takes
+  `as=font` and `as=logo`.
 
 ## LoweyRender 2
 

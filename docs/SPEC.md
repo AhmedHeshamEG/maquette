@@ -28,6 +28,7 @@ reference and stays.
 | Shape (U6): touch and drag with no modes (the Pencil lights the face, edge or corner of the selected shape; drag pulls, rounds, moves), the part's chip (inset, shell, bridge, knife, bevel, round, loop cut, merge, fill hole), Model's bar (Shape, Brush, Cage, Bend, Measure), Smooth and making it real, the smooth angle and flat shading, triangle count, clean topology (Instant Meshes), linked copies, the pivot, typed sides, sweep / revolve / loft, sketch rules with our own solver, the view cube, the bridge's `model` and `profile` | **0.16.** D-301 … D-325. Strokes on placed models need them painted first (D-318); the cage doesn't animate yet (D-317). |
 | Characters (K1): Characters ▸ New from five starts, parts with jobs from our own set (or drawn, or modelled) on a character or any thing, the rig built itself, 14 mouths and brows as bends, Say a line, proportions by handles, act it out, GLB for Godot / Unity / Unreal with blend shapes and named clips, sprite sheets, pixel art, turnarounds | **0.20.** D-386 … D-406. Rigid pieces (D-391); people act, animals don't yet (D-397). |
 | Film (F1): the soft panel, setups (three-point, golden hour, moonlight, neon), haze and god rays, an HDRI as the sky and the light; camera bodies and real millimetres, the frame's shape (16:9, 2.39:1, 9:16, 4:5, 1:1), focus on a thing and focus pulls, rigs (dolly, crane, orbit, handheld); storyboards and animatics; spatial video and photos, 360° video and panoramas, HDR, wide colour; the rotoscope | **0.22.** D-433 … D-458. 360° is six views laid flat (D-450); HDR is HLG (D-451); only the sun throws god rays (D-442). |
+| Motion design (D1): logos from SVG as solids, fonts brought in, letters that animate (seven presets), clones (grid, circle, line, a path) with effects (random, delay, push) through fields (everywhere, near a point, a ripple), links between things and to a sound's loudness, bass or beat, morphs, the seamless-loop check and Close the loop | **0.23.** D-459 … D-475. Copies live only in the shown scene (D-463); morphs are between shapes made here (D-467); 3D files carry copies and letters at rest (D-474). |
 | Texture (the full colour picker, layers, smudge on paint) | U7 |
 | Mechanisms + AR, web layer (held) | M12 |
 | Content and finish: the house kit, waiting designed, the Board's finish | M14 |
@@ -38,6 +39,24 @@ reference and stays.
 Cast is gone (D-227): what said *Cast ▸ Voice & face*, *Triggers* and *Life* below is the selected character's
 button beside Record in the timeline's Perform; *Cast ▸ Rig* is Rig; *Make it part of* is in Rig. Everything below
 still works the same way.
+
+### Motion design (0.23)
+
+- **Logos** (D-459, D-460): Model ▸ Add ▸ Logo (SVG): one solid a fill colour, grouped, a metre wide, the upper colours
+  proud; the toast names what was left out.
+- **Fonts and letters** (D-461, D-462): the text's panel: Font (the style's, the project's fonts, Bring in a font…) and
+  Letters (None, Fly in, Bounce in, Cascade, Pop, Spin in, Type on, Wave; Order, Between letters, Each letter or One wave).
+- **Clones** (D-463, D-464): the object's menu ▸ More ▸ Clone…; the object's panel ▸ Clones: Layout (Grid: across, deep,
+  high, spacing; Circle: copies, radius, facing out; Line: copies, spacing; Along a path: copies, the path, turned along
+  it), the effects with their numbers and Where (Everywhere, Near a point, Ripple), Add an effect, Effect strength, Remove.
+- **Links** (D-465, D-466): More ways to move ▸ the links that move the selection (How much, Remove), Link to another thing…
+  (four presets, then tap the driver), and, with sound on the timeline, To the sound's (Loudness, Bass, Beat) · It (what
+  moves) · Move to the music….
+- **Morph** (D-467): the object's menu ▸ More ▸ Morph into…, then tap; the object's panel ▸ Morph: what it becomes, Remove.
+- **Loops** (D-468): the Export sheet beside a video or GIF: Loops seamlessly, or Jumps when it loops with what jumps and
+  Close the loop.
+- **The bridge** (D-470): `design` with `op` logo, clone, effect, link, morph, letters, loop; `text` `font`;
+  `add_media(font=True)`, `add_media(logo=True)`.
 
 ### Film (0.22)
 

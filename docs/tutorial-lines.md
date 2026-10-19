@@ -97,6 +97,21 @@ Learn place links to (CONTEXT §8). A phase adds the lines of what it built; M16
 - **The explainer maker:** "Titles are 3D text: switch on Stick to the camera and it stays on the picture while the
   camera flies."
 
+## 0.23 (D1): motion design
+
+- **The motion designer:** "Model, Add, Logo: pick the client's SVG. Each colour stands up as a solid; push the front
+  face to make it deeper."
+- **The motion designer:** "Select your text, Font, Bring in a font: the brand's own. Then Letters, Fly in: they arrive one
+  after another from the playhead."
+- **The motion designer:** "Hold the logo, More, Clone: twenty-five copies. Add an effect, Push, Where: Ripple. Then More
+  ways to move, Move to the music, Beat: the ripple comes with every kick."
+- **The explainer maker:** "Two gears: select one, Link to another thing, Turns against it, tap the other. Spin the first
+  and both turn."
+- **The hobby sculptor:** "Hold the cube, More, Morph into, tap the ball: it becomes the ball over a second. Drag its keys to
+  say when."
+- **Everyone:** "Export says whether it loops seamlessly. If it jumps, Close the loop: spins and ripples are fitted to the
+  loop's length."
+
 ## 0.22 (F1): film
 
 - **The explainer maker:** "Select the speaker and a light, then tap Three-point: a soft key, a fill and a rim, placed

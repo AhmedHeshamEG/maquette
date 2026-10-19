@@ -3,6 +3,31 @@
 All notable changes. 1.x grew in four phases (v0.1 → v1.4); 2.0 is the remaster, released as betas first. Maquette
 continues from 2.0 and numbers its phases again from 0.1 (each phase bumps the minor version until 1.0).
 
+## [0.23] — Maquette — motion design (phase D1)
+
+Brand loops on the iPad: a client's logo stood up, the brand font, letters that animate, copies that ripple to the music,
+and a loop that meets itself.
+
+- **Logos**: Model ▸ Add ▸ **Logo (SVG)**. Each fill colour becomes a solid, upright, a metre wide, the upper colours
+  standing a little proud; push a face to make it deeper, round its edges, paint it. What an SVG can't carry as a filled
+  shape (pen outlines, text, pictures) is named, not guessed at.
+- **Fonts**: the text's panel ▸ Font ▸ **Bring in a font…** (OTF, TTF, TTC). The font travels with the project.
+- **Letters that animate**: the text's panel ▸ Letters: **Fly in**, **Bounce in**, **Cascade**, **Pop**, **Spin in**,
+  **Type on**, **Wave**, from the playhead; their order (first to last, last to first, from the middle, random), the time
+  between letters and each letter's length.
+- **Clones**: the object's menu ▸ More ▸ **Clone…** (⌃⌘C): live copies in a **grid**, a **circle**, a **line** or **along a
+  path**, moved by **effects**: **Random**, **Delay** (each copy plays the thing's motion a moment after the one before)
+  and **Push**, through **fields**: everywhere, near a point, or a **ripple** travelling out. One Effect strength scales them.
+- **Links**: More ways to move ▸ **Link to another thing…**: turns with it, turns against it (a gear), moves with it, grows
+  as it rises. **Move to the music…**: a thing follows a sound's **loudness**, **bass** or **beat** (measured once, in the
+  background; the tempo is found by itself).
+- **Morph**: the object's menu ▸ More ▸ **Morph into…** (⌃⌘O), then tap the shape it becomes: it changes shape and colour
+  over a second from the playhead, its keys yours to move.
+- **Seamless loops**: the Export sheet says whether a video loops seamlessly and what jumps; **Close the loop** (⌃⌘E) puts
+  keys back where they began and fits spins, floats, ripples and waves to whole repeats.
+- **The bridge** (`design`): logo, clone, effect, link, morph, letters, loop; `text` takes a `font`; fonts and logos come over
+  `add_media`. The lowey skill learns motion design.
+
 ## [0.22] — Maquette — film (phase F1)
 
 Light like a film set, shoot with a real lens, and deliver in every shape a film goes out in.

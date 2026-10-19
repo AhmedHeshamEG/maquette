@@ -3,6 +3,14 @@
 One task per feature for the two test weeks (between M14 and M16), written for its person in `studio-h/USERS.md`. A
 task says what to make, never which buttons to press; the tester says where they got stuck.
 
+## 0.23 (D1): motion design
+
+- **The motion designer:** a client's SVG logo extruded in the brand's font with its name flying in, cloned into a grid that
+  ripples to a music track's beat, in the Clean Look, exported as a seamless ProRes 4444 loop with alpha.
+- **The explainer maker:** two gears that turn each other, and a title whose letters bounce in on a word.
+- **The hobby sculptor:** a box that morphs into a ball and back.
+- **Everyone:** a spinning logo exported as a GIF that loops without a jump.
+
 ## 0.22 (F1): film
 
 - **The explainer maker:** three shots of the keeper at the Keeper's Tower in one scene, lit with a setup, a focus pull from
