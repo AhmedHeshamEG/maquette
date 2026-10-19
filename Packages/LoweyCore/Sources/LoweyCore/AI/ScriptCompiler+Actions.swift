@@ -64,6 +64,7 @@ extension ScriptState {
         "sketch": { try $0.sketch($1) },
         "boolean": { try $0.boolean($1) },
         "film": { try $0.film($1) },
+        "design": { try $0.design($1) },
         "command": { try $0.rawCommand($1) }
     ]
 

@@ -777,6 +777,7 @@
             "clip",
             "command",
             "cut",
+            "design",
             "effect",
             "expression",
             "film",
@@ -1357,6 +1358,219 @@
             },
             "required": [
               "camera"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "do": {
+                "const": "design"
+              }
+            }
+          },
+          "then": {
+            "description": "D1's motion design: an SVG logo stood up as solids (one a colour); copies of a thing in a grid, a circle, a line or along a path, moved by effects (random, delay, push) through fields (everywhere, near a point, a ripple); links that let a thing's motion or a sound (loudness, bass, beat) drive another thing; a morph into another thing's shape; letters that animate; and the loop check, which can close the loop.",
+            "properties": {
+              "op": {
+                "enum": [
+                  "logo",
+                  "clone",
+                  "effect",
+                  "link",
+                  "morph",
+                  "letters",
+                  "loop"
+                ]
+              },
+              "target": {
+                "$ref": "#/$defs/target"
+              },
+              "name": {
+                "type": "string"
+              },
+              "svg": {
+                "type": "string"
+              },
+              "file": {
+                "type": "string"
+              },
+              "width": {
+                "type": "number"
+              },
+              "depth": {
+                "type": "number"
+              },
+              "at": {
+                "$ref": "#/$defs/time"
+              },
+              "layout": {
+                "enum": [
+                  "grid",
+                  "circle",
+                  "line",
+                  "path"
+                ]
+              },
+              "count": {
+                "type": "number"
+              },
+              "columns": {
+                "type": "number"
+              },
+              "rows": {
+                "type": "number"
+              },
+              "layers": {
+                "type": "number"
+              },
+              "spacing": {
+                "anyOf": [
+                  {
+                    "$ref": "#/$defs/vec3"
+                  },
+                  {
+                    "type": "number"
+                  }
+                ]
+              },
+              "radius": {
+                "type": "number"
+              },
+              "facesOut": {
+                "type": "boolean"
+              },
+              "step": {
+                "$ref": "#/$defs/vec3"
+              },
+              "path": {
+                "$ref": "#/$defs/target"
+              },
+              "along": {
+                "type": "boolean"
+              },
+              "kind": {
+                "enum": [
+                  "random",
+                  "delay",
+                  "push"
+                ]
+              },
+              "move": {
+                "$ref": "#/$defs/vec3"
+              },
+              "turn": {
+                "$ref": "#/$defs/vec3"
+              },
+              "grow": {
+                "type": "number"
+              },
+              "delay": {
+                "type": "number"
+              },
+              "field": {
+                "enum": [
+                  "everywhere",
+                  "sphere",
+                  "ripple"
+                ]
+              },
+              "centre": {
+                "$ref": "#/$defs/vec3"
+              },
+              "speed": {
+                "type": "number"
+              },
+              "every": {
+                "type": "number"
+              },
+              "clear": {
+                "type": "boolean"
+              },
+              "channel": {
+                "enum": [
+                  "moveX",
+                  "moveY",
+                  "moveZ",
+                  "turnX",
+                  "turnY",
+                  "turnZ",
+                  "size",
+                  "glow",
+                  "opacity",
+                  "effect",
+                  "morph",
+                  "reveal"
+                ]
+              },
+              "from": {
+                "$ref": "#/$defs/target"
+              },
+              "fromChannel": {
+                "enum": [
+                  "moveX",
+                  "moveY",
+                  "moveZ",
+                  "turnX",
+                  "turnY",
+                  "turnZ",
+                  "size"
+                ]
+              },
+              "sound": {
+                "type": "string"
+              },
+              "feature": {
+                "enum": [
+                  "loudness",
+                  "bass",
+                  "beat"
+                ]
+              },
+              "amount": {
+                "type": "number"
+              },
+              "into": {
+                "$ref": "#/$defs/target"
+              },
+              "duration": {
+                "type": "number"
+              },
+              "preset": {
+                "enum": [
+                  "flyIn",
+                  "bounce",
+                  "cascade",
+                  "pop",
+                  "spin",
+                  "typewriter",
+                  "wave",
+                  "none"
+                ]
+              },
+              "order": {
+                "enum": [
+                  "forward",
+                  "backward",
+                  "middle",
+                  "random"
+                ]
+              },
+              "stagger": {
+                "type": "number"
+              },
+              "length": {
+                "type": "number"
+              },
+              "close": {
+                "type": "boolean"
+              },
+              "off": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "op"
             ]
           }
         },
@@ -3154,7 +3368,7 @@
             }
           },
           "then": {
-            "description": "3D words.",
+            "description": "3D words; `font` names a font file brought into the project (fonts/…).",
             "properties": {
               "text": {
                 "type": "string"
@@ -3169,6 +3383,9 @@
                 "type": "number"
               },
               "style": {
+                "type": "string"
+              },
+              "font": {
                 "type": "string"
               },
               "color": {
