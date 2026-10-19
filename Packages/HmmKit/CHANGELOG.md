@@ -3,6 +3,21 @@
 All notable changes to hmm-kit. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the
 project uses [Semantic Versioning](https://semver.org/).
 
+## [0.12.0] - 2026-10-19
+
+Built with Maquette 0.22.
+
+### Added
+- **HmmMedia**: HDR video, `VideoCodecKind.hevcHDR`: 10-bit HEVC in HLG with BT.2020 colour (.mov); its buffers are RGBA
+  half floats tagged with their colour, so a renderer writes HDR highlights straight in.
+- **HmmMedia**: spatial video for Vision Pro, `SpatialVideoEncoder`: MV-HEVC with the left and right eye tagged, the
+  cameras' baseline, field of view and the screen's depth, and the same sound track as a flat video (`isSupported`
+  says whether the device encodes it).
+- **HmmMedia**: `ImageWriters.spatialPhoto` (a HEIC stereo pair with each eye's camera) and `ImageWriters.panorama` (an
+  equirectangular JPEG with Photo Sphere tags).
+- **HmmMedia**: `SphericalVideo` marks a finished MP4 or MOV as 360° video (the Spherical Video V1 box YouTube and
+  headsets read), moving the media's chunk offsets when the movie box comes first. Pure Swift.
+
 ## [0.11.0] - 2026-10-18
 
 Built with Maquette 0.21.

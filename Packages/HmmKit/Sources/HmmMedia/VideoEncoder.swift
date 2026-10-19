@@ -2,6 +2,7 @@
     import AVFoundation
     import CoreVideo
     import Foundation
+    import VideoToolbox
 
     public enum EncodeError: Error, Equatable, CustomStringConvertible {
         case invalidSettings
@@ -39,11 +40,11 @@
             self.settings = settings
             self.url = url
             try? FileManager.default.removeItem(at: url)
-            writer = try AVAssetWriter(outputURL: url, fileType: settings.codec.hasAlpha ? .mov : .mp4)
+            writer = try AVAssetWriter(outputURL: url, fileType: settings.codec.fileExtension == "mov" ? .mov : .mp4)
             input = AVAssetWriterInput(mediaType: .video, outputSettings: Self.videoSettings(settings))
             input.expectsMediaDataInRealTime = false
             adaptor = AVAssetWriterInputPixelBufferAdaptor(assetWriterInput: input, sourcePixelBufferAttributes: [
-                kCVPixelBufferPixelFormatTypeKey as String: kCVPixelFormatType_32BGRA,
+                kCVPixelBufferPixelFormatTypeKey as String: settings.codec.isHDR ? kCVPixelFormatType_64RGBAHalf : kCVPixelFormatType_32BGRA,
                 kCVPixelBufferWidthKey as String: settings.width,
                 kCVPixelBufferHeightKey as String: settings.height,
                 kCVPixelBufferMetalCompatibilityKey as String: true,
@@ -96,15 +97,19 @@
             case .hevc: .hevc
             case .hevcAlpha: .hevcWithAlpha
             case .prores4444: .proRes4444
+            case .hevcHDR: .hevc
             }
             var output: [String: Any] = [AVVideoCodecKey: codec, AVVideoWidthKey: settings.width, AVVideoHeightKey: settings.height]
             if settings.codec != .prores4444 {
-                output[AVVideoCompressionPropertiesKey] = [
+                var compression: [String: Any] = [
                     AVVideoAverageBitRateKey: settings.bitrate,
                     AVVideoExpectedSourceFrameRateKey: settings.fps,
                     AVVideoMaxKeyFrameIntervalKey: settings.keyframeInterval
                 ]
+                if settings.codec.isHDR { compression[AVVideoProfileLevelKey] = kVTProfileLevel_HEVC_Main10_AutoLevel as String }
+                output[AVVideoCompressionPropertiesKey] = compression
             }
+            if settings.codec.isHDR { output[AVVideoColorPropertiesKey] = hdrColor }
             return output
         }
 
@@ -120,12 +125,27 @@
             return format
         }
 
+        /// BT.2020 colour, HLG light, the BT.2020 matrix: what an HDR file says it holds.
+        static var hdrColor: [String: Any] {
+            [
+                AVVideoColorPrimariesKey: AVVideoColorPrimaries_ITU_R_2020,
+                AVVideoTransferFunctionKey: AVVideoTransferFunction_ITU_R_2100_HLG,
+                AVVideoYCbCrMatrixKey: AVVideoYCbCrMatrix_ITU_R_2020
+            ]
+        }
+
         /// A pixel buffer from the encoder's pool (IOSurface-backed, Metal-compatible), to render the next frame into.
+        /// An HDR encoder's buffers are tagged with their colour, so the encoder converts nothing.
         public func makePixelBuffer() throws -> CVPixelBuffer {
             guard let pool = adaptor.pixelBufferPool else { throw EncodeError.writer(writer.error?.localizedDescription ?? "no buffer pool") }
             var buffer: CVPixelBuffer?
             CVPixelBufferPoolCreatePixelBuffer(nil, pool, &buffer)
             guard let buffer else { throw EncodeError.writer("no pixel buffer") }
+            if settings.codec.isHDR {
+                CVBufferSetAttachment(buffer, kCVImageBufferColorPrimariesKey, kCVImageBufferColorPrimaries_ITU_R_2020, .shouldPropagate)
+                CVBufferSetAttachment(buffer, kCVImageBufferTransferFunctionKey, kCVImageBufferTransferFunction_ITU_R_2100_HLG, .shouldPropagate)
+                CVBufferSetAttachment(buffer, kCVImageBufferYCbCrMatrixKey, kCVImageBufferYCbCrMatrix_ITU_R_2020, .shouldPropagate)
+            }
             return buffer
         }
 
