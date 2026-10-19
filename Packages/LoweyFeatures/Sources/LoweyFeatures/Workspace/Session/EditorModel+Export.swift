@@ -94,6 +94,13 @@ extension EditorModel {
                 try await urls.append(exportMoving(job.preset.kind, settings: settings, document: document, name: name, id: id, progress: step))
             }
             return urls
+        case .animatic, .spatialVideo, .video360:
+            return try await exportFilmMoving(job, document: document, isOpen: isOpen, id: id, progress: progress)
+        case .spatialPhoto, .panorama:
+            return try await [exportFilmPicture(job, document: document, at: isOpen ? time : min(time, document.scene.timeline.duration),
+                                                progress: progress)]
+        case .storyboard:
+            return try await [exportStoryboard(job, document: document, isOpen: isOpen, progress: progress)]
         case .still, .stillPasses:
             return try await [exportPicture(job, document: document, at: isOpen ? time : min(time, document.scene.timeline.duration),
                                             progress: progress)]
@@ -149,8 +156,13 @@ extension EditorModel {
         if job.preset.kind == .stillPasses {
             return try await session.passes(settings, to: rendersFolder.appendingPathComponent(name + " passes"), progress: progress)
         }
-        let image = try await session.image(at: time, framing: settings.framing, longSide: settings.longSide, transparent: settings.transparent)
         let url = rendersFolder.appendingPathComponent(name).appendingPathExtension("png")
+        if settings.wideColour {
+            try await session.widePNG(at: time, settings: settings).write(to: url, options: .atomic)
+            progress(1)
+            return url
+        }
+        let image = try await session.image(at: time, framing: settings.framing, longSide: settings.longSide, transparent: settings.transparent)
         guard let png = UIImage(cgImage: image).pngData() else { throw ExportError.nothingToExport }
         try png.write(to: url, options: .atomic)
         progress(1)

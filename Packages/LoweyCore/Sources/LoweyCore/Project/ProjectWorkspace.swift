@@ -98,6 +98,8 @@ public struct ProjectWorkspace: Codable, Hashable, Sendable {
     public var planeGuide: DrawingGuide?
     /// Pictures pinned from the Schizzo board, floating over the stage.
     public var references: [ReferenceCard]
+    /// A video behind the stage to animate over, frame by frame (F1), nil when there's none.
+    public var rotoscope: Rotoscope?
 
     /// `firstPanel` for a project that opens on its Schizzo board.
     public static let boardPanel = "board"
@@ -127,7 +129,7 @@ public struct ProjectWorkspace: Codable, Hashable, Sendable {
 
     private enum CodingKeys: String, CodingKey {
         case schemaVersion, template, timeline, timelineHeight, snap, showsGrid, shapeSize, firstPanel, units, printBed, section, showsDimensions
-        case frameGuide, planeGuide, references
+        case frameGuide, planeGuide, references, rotoscope
     }
 
     /// Unknown or missing values fall back to the defaults: a damaged or future workspace never stops a project opening.
@@ -151,6 +153,7 @@ public struct ProjectWorkspace: Codable, Hashable, Sendable {
         frameGuide = try? container.decodeIfPresent(DrawingGuide.self, forKey: .frameGuide)
         planeGuide = try? container.decodeIfPresent(DrawingGuide.self, forKey: .planeGuide)
         references = ((try? container.decodeIfPresent([ReferenceCard].self, forKey: .references)) ?? []).map(\.clamped)
+        rotoscope = (try? container.decodeIfPresent(Rotoscope.self, forKey: .rotoscope))?.clamped
     }
 }
 

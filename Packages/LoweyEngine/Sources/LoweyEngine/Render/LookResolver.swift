@@ -44,6 +44,22 @@ enum LookResolver {
         frame.fog = SIMD4<Float>(look.fog.color.linear * exposure, density)
     }
 
+    /// Haze and god rays for a camera (F1): the air's thickness and colour, the sun's place on the frame, how much the
+    /// camera looks into it. Clear air leaves them zero.
+    static func air(_ look: Look, camera: RenderCamera, aspect: Float, into uniforms: inout PostUniforms) {
+        guard let air = look.atmosphere, !air.isClear else { return }
+        let exposure = Float(pow(2, look.lighting.exposure))
+        let toSun = simd_normalize((-look.lighting.sunDirection).float3)
+        let clip = camera.projection(aspect: aspect) * camera.viewMatrix * SIMD4<Float>(camera.position + toSun * 1000, 1)
+        var place = SIMD2<Float>(0.5, -1)
+        if clip.w > 1e-4 { place = SIMD2<Float>(clip.x / clip.w * 0.5 + 0.5, 0.5 - clip.y / clip.w * 0.5) }
+        let facing = max(simd_dot(camera.forward, toSun), 0)
+        uniforms.air = SIMD4<Float>(Float(air.density), Float(air.godRays), place.x, place.y)
+        let color = air.resolvedColor(sky: look.sky, sunColor: look.lighting.sunColor)
+        uniforms.airColor = SIMD4<Float>(color.linear * exposure, facing)
+        uniforms.sunGlow = SIMD4<Float>(look.lighting.sunColor.linear * Float(look.lighting.sunIntensity) * exposure, 0)
+    }
+
     /// One Look's shading, line, print and finish parameters. `extraOutline` is the project's Finish ▸ Outlines
     /// (lines on top of any Look, v1's depth outlines).
     static func uniforms(_ preset: LookPreset) -> LookUniforms {

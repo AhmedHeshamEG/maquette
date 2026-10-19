@@ -44,33 +44,6 @@ private struct DetailSection: View {
     }
 }
 
-private struct LightSection: View {
-    let editor: EditorModel
-    let object: SceneObject
-    let type: LightType
-
-    var body: some View {
-        PanelSection("Light") {
-            ColorPicker("Colour", selection: Binding(get: { (object[.lightColor]?.colorValue?.resolved(in: editor.look.palette) ?? .white).color },
-                                                     set: { editor.setProperty(.lightColor, .color(.rgba(RGBA($0))), coalesce: "lightcolor") }),
-                        supportsOpacity: false)
-            slider("Strength", .lightIntensity, 0 ... 6, 1)
-            if type != .directional { slider("Reach", .lightRange, 0.5 ... 30, 6) }
-            if type == .spot { slider("Cone", .spotAngle, 5 ... 120, 40) }
-            if type == .directional {
-                Hint("Only the sun casts shadows; lamps and spots light without them.")
-            }
-        }
-        .font(.hmm(.body))
-    }
-
-    private func slider(_ title: String, _ key: PropertyKey, _ range: ClosedRange<Double>, _ fallback: Double) -> some View {
-        LabeledSlider(title: title, value: object[key]?.floatValue ?? fallback, range: range, set: {
-            editor.setProperty(key, .float($0), coalesce: "\(key.rawValue)-\(object.id.raw)")
-        }, done: editor.endGesture)
-    }
-}
-
 private struct TextSection: View {
     let editor: EditorModel
     let object: SceneObject

@@ -37,12 +37,24 @@ public enum ScriptReference {
     {"do":"model","target":"Box","op":"pull","face":"top","distance":0.2}   {"do":"model","target":"Box","op":"loopCut","along":"x","cuts":2}
     {"do":"model","target":"Box","op":"smooth","levels":2}  ("subdivide" makes it real)   {"do":"model","target":"Box","op":"flat"}
     {"do":"model","target":"Tower","op":"bend","kind":"bend|twist|taper|bulge","amount":45,"axis":"y"}   (amount animates with "keys")
-    {"do":"model","target":"Box","op":"cage","counts":[3,3,3]}  then  {"op":"cage","point":[2,2,2],"offset":[0.3,0,0]}
+    {"do":"model","target":"Box","op":"cage","counts":[3,3,3]}  then  {"op":"cage","point":[2,2,2],"offset":[0.3,0,0]}   (counts: points per axis, 2–4; point: [i,j,k] from 0)
     {"do":"model","target":"Rock","op":"brush","brush":"grab|smooth|inflate","at":[0,1,0],"radius":0.3,"by":[0,0.2,0]}
     {"do":"model","target":"Sculpt","op":"cleanUp","faces":2000}   (even quads)   {"op":"knife","point":[0,0.5,0],"normal":[0,1,0]}
     {"do":"model","target":"Chair","op":"linkedCopy","offset":[1,0,0]}   {"op":"pivot","to":"base"}   {"op":"size","axis":"y","length":0.04}
     {"do":"model","target":"Block","op":"steps"}   (lists its modelling steps)   {"op":"step","step":1,"number":"diameter","value":0.008}   (H1: later steps replay)
-    {"do":"profile","target":"Sketch","region":0,"op":"revolve","axis":{"point":[0,0,0],"direction":[0,1,0]}}   ("sweep" with "path", "loft" with "through")
+    {"do":"sketch","name":"Side","plane":"xy","at":[0,0,0],"curves":[{"polyline":[[0,0],[0.4,0],[0.3,1]],"closed":true},{"circle":{"center":[0,0.5],"radius":0.1}}]}
+        (plane: xy facing front, xz the ground, yz the side, or {origin, normal}; or "on":"Box","face":"top"; curves: line, rectangle, circle, arc [start, through, end], polyline, spline)
+    {"do":"profile","target":"Sketch","region":0,"op":"revolve","axis":{"point":[0,0,0],"direction":[0,1,0]}}   ("pull" with "distance", negative cuts in; "sweep" with "path", "loft" with "through")
+    {"do":"boolean","op":"subtract|union|intersect","target":"Body","with":["Arch front","Arch back"]}   (cut-outs: wheel arches, windows; the others are used up)
+
+    Film (F1; "camera" defaults to the shot camera)
+    {"do":"light","type":"panel|bulb|spot|sun","name":"Window","at":[2,2,2],"size":[1.2,0.8],"aim":"Hero"}   (panel = a soft panel)
+    {"do":"lighting","recipe":"three-point|golden-hour|moonlit|neon|key-warm-world-cool|noir-single-source|golden-rim|monitor-glow|studio-soft","subject":"Hero"}
+    {"do":"film","op":"lens","camera":"Shot","mm":35,"sensor":"fullFrame|super35|apsC|microFourThirds|super16|phone|largeFormat|imax","aperture":2.8}
+    {"do":"film","op":"frame","shape":"16:9|2.39:1|9:16|4:5|1:1"}   (the Director view, Frame shot and every export)
+    {"do":"film","op":"focus","on":"Hero","at":{"word":"look"}}   (follows it; a later one pulls focus; "on":null = by distance)
+    {"do":"film","op":"rig","kind":"none|dolly|crane|orbit|handheld","travel":2,"lift":1.5,"swing":30,"arm":3,"shake":0.4,"keys":{"lift":[[0,0],[3,2]]}}
+    {"do":"film","op":"air","haze":0.4,"godRays":0.6,"color":"#FFD9A0"}   {"op":"environment","turn":40}  (an HDRI comes over add_media)   {"op":"shots"}
 
     Texture (U7; each a layer or a setting, one step each)
     {"do":"paint","target":"Crate","op":"material","material":"oak|steel|gold|brick|stone|fabric|…","scale":0.2}   {"op":"color","color":"#B5512E"}

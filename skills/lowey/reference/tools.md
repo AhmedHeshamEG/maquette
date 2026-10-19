@@ -132,13 +132,14 @@ Drawn FX that sell a moment: speedLines, impactBurst, sweatDrop, sparkle, smear 
 
 ## `add_media`
 
-A picture or video file from this laptop into the open shot: a thin card standing in the 3D world, or overlay=True to lay it flat over the frame. Videos play from `at` seconds (default: the playhead).
+A picture or video file from this laptop into the open shot: a thin card standing in the 3D world, or overlay=True to lay it flat over the frame. Videos play from `at` seconds (default: the playhead). environment=True takes a Radiance .hdr panorama (an HDRI) as the world's sky and light: its sun and sky colours light the scene; turn it with build's {"do": "film", "op": "environment", "turn": 40}.
 
 | Parameter | Type | Default |
 |---|---|---|
 | `path` | string | required |
 | `at` | number or null | `null` |
 | `overlay` | boolean | `false` |
+| `environment` | boolean | `false` |
 
 ## `render_manim`
 

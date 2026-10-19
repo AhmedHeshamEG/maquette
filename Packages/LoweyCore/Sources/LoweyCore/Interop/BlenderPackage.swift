@@ -273,6 +273,15 @@ enum BlenderScript {
             extras = obj.get("maquette")
             if obj.type == "LIGHT" and extras is not None and obj.name != "Sun":
                 intensity = float(extras.get("intensity", 1))
+                panel = extras.get("panel")
+                if panel is not None and len(panel) == 2:
+                    # A soft panel travels in glTF as a spot; here it is a rectangle again.
+                    area = bpy.data.lights.new(obj.name, type="AREA")
+                    area.shape = "RECTANGLE"
+                    area.size = float(panel[0])
+                    area.size_y = float(panel[1])
+                    area.color = obj.data.color
+                    obj.data = area
                 obj.data.energy = intensity * (5.0 if obj.data.type == "SUN" else 100.0)
         render = settings["render"]
         cameras = {obj.name: obj for obj in scene.objects if obj.type == "CAMERA"}

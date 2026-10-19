@@ -192,7 +192,6 @@ final class EditorModel {
 
     /// The camera the camera button's taps started from (a full round of taps comes back to the free view).
     @ObservationIgnored var cameraTourStart: ObjectID?
-    var deliveryFraming: Framing = .landscape
     var showsThirds = true
     var showsSafeAreas = false
     /// The heading of the work view in degrees (the joystick's compass).
@@ -276,6 +275,10 @@ final class EditorModel {
     var boardShown = false
     /// Pictures pinned from the board, floating over the stage (`workspace.json`).
     var references: [ReferenceCard] = []
+    /// The video behind the stage (F1), kept in the workspace.
+    var rotoscope: Rotoscope?
+    /// The camera button's Lens and frame popover (F1).
+    var showsLensPanel = false
     /// The history scrubber, while it's open (`EditorModel+HistoryScrubber`).
     var historyScrub: HistoryScrubState?
     var lastSaved: Date?

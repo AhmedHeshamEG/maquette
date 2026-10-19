@@ -331,6 +331,8 @@ public struct Timeline: Hashable, Sendable {
     public var takes: [Take] = []
     /// Who holds what from when: pick-up, hand-off and put-down (`Hold`).
     public var holds: [Hold] = []
+    /// The picture's shape (F1), nil until one is chosen (16:9).
+    public var frame: FrameShape?
 
     public init(
         fps: Int = 30, duration: Double = 10, stepping: Stepping = .onOnes, tracks: [Track] = [],
@@ -438,6 +440,7 @@ public struct Timeline: Hashable, Sendable {
 extension Timeline: Codable {
     private enum CodingKeys: String, CodingKey {
         case fps, duration, stepping, tracks, markers, loop, cuts, behaviors, clipTracks, audio, transcripts, effects, captions, flipbooks, takes, holds
+        case frame
     }
 
     public init(from decoder: Decoder) throws {
@@ -458,6 +461,7 @@ extension Timeline: Codable {
         flipbooks = try c.decodeIfPresent([FlipbookTrack].self, forKey: .flipbooks) ?? []
         takes = try c.decodeIfPresent([Take].self, forKey: .takes) ?? []
         holds = try c.decodeIfPresent([Hold].self, forKey: .holds) ?? []
+        frame = try c.decodeIfPresent(FrameShape.self, forKey: .frame)
     }
 
     public func encode(to encoder: Encoder) throws {
@@ -478,5 +482,6 @@ extension Timeline: Codable {
         if !flipbooks.isEmpty { try c.encode(flipbooks, forKey: .flipbooks) }
         if !takes.isEmpty { try c.encode(takes, forKey: .takes) }
         if !holds.isEmpty { try c.encode(holds, forKey: .holds) }
+        try c.encodeIfPresent(frame, forKey: .frame)
     }
 }

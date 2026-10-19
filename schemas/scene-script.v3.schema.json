@@ -769,6 +769,7 @@
             "add",
             "array",
             "blob",
+            "boolean",
             "camera",
             "cameraMove",
             "captions",
@@ -778,6 +779,7 @@
             "cut",
             "effect",
             "expression",
+            "film",
             "flipbook",
             "frameShot",
             "group",
@@ -804,6 +806,7 @@
             "scaleTo",
             "scatter",
             "set",
+            "sketch",
             "text",
             "transcript",
             "transform"
@@ -969,6 +972,38 @@
                 "type": "object"
               }
             }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "do": {
+                "const": "boolean"
+              }
+            }
+          },
+          "then": {
+            "description": "Combines shapes into the target (it keeps its name, look and place; the others are used up): subtract cuts wheel arches and windows, union joins, intersect keeps the overlap.",
+            "properties": {
+              "op": {
+                "enum": [
+                  "union",
+                  "subtract",
+                  "intersect"
+                ]
+              },
+              "target": {
+                "$ref": "#/$defs/target"
+              },
+              "with": {
+                "$ref": "#/$defs/target"
+              }
+            },
+            "required": [
+              "op",
+              "target",
+              "with"
+            ]
           }
         },
         {
@@ -1409,6 +1444,122 @@
           "if": {
             "properties": {
               "do": {
+                "const": "film"
+              }
+            }
+          },
+          "then": {
+            "description": "F1's film tools: a lens in millimetres on a camera body; the picture's shape; focus that follows a thing (a later one pulls focus); a rig (dolly, crane, orbit, handheld) with its moves keyed; haze and god rays; turning the HDRI; and the shots as a storyboard would list them.",
+            "properties": {
+              "op": {
+                "enum": [
+                  "lens",
+                  "frame",
+                  "focus",
+                  "rig",
+                  "air",
+                  "environment",
+                  "shots"
+                ]
+              },
+              "camera": {
+                "$ref": "#/$defs/target"
+              },
+              "mm": {
+                "type": "number"
+              },
+              "sensor": {
+                "enum": [
+                  "fullFrame",
+                  "super35",
+                  "apsC",
+                  "microFourThirds",
+                  "super16",
+                  "phone",
+                  "largeFormat",
+                  "imax"
+                ]
+              },
+              "aperture": {
+                "type": "number"
+              },
+              "shape": {
+                "enum": [
+                  "16:9",
+                  "2.39:1",
+                  "9:16",
+                  "4:5",
+                  "1:1"
+                ]
+              },
+              "on": {
+                "anyOf": [
+                  {
+                    "$ref": "#/$defs/target"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "at": {
+                "$ref": "#/$defs/time"
+              },
+              "kind": {
+                "enum": [
+                  "none",
+                  "dolly",
+                  "crane",
+                  "orbit",
+                  "handheld"
+                ]
+              },
+              "travel": {
+                "type": "number"
+              },
+              "lift": {
+                "type": "number"
+              },
+              "swing": {
+                "type": "number"
+              },
+              "arm": {
+                "type": "number"
+              },
+              "shake": {
+                "type": "number"
+              },
+              "keys": {
+                "type": "object"
+              },
+              "haze": {
+                "type": "number"
+              },
+              "godRays": {
+                "type": "number"
+              },
+              "color": {
+                "$ref": "#/$defs/color"
+              },
+              "turn": {
+                "type": "number"
+              },
+              "exposure": {
+                "type": "number"
+              },
+              "off": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "op"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "do": {
                 "const": "flipbook"
               }
             }
@@ -1702,13 +1853,15 @@
             }
           },
           "then": {
-            "description": "A lamp.",
+            "description": "A light: a bulb (point), a spot, a sun, or a soft panel (a rectangle, \"size\" in metres) aimed at a thing.",
             "properties": {
               "type": {
                 "enum": [
                   "point",
+                  "bulb",
                   "spot",
-                  "sun"
+                  "sun",
+                  "panel"
                 ]
               },
               "name": {
@@ -1725,6 +1878,15 @@
               },
               "range": {
                 "type": "number"
+              },
+              "size": {
+                "type": "array",
+                "items": {
+                  "type": "number"
+                }
+              },
+              "aim": {
+                "$ref": "#/$defs/point"
               }
             }
           }
@@ -1742,11 +1904,14 @@
             "properties": {
               "recipe": {
                 "enum": [
+                  "three-point",
+                  "golden-hour",
+                  "moonlit",
+                  "neon",
                   "key-warm-world-cool",
                   "noir-single-source",
                   "golden-rim",
                   "monitor-glow",
-                  "moonlit",
                   "studio-soft"
                 ]
               },
@@ -2704,7 +2869,7 @@
             }
           },
           "then": {
-            "description": "A sketch region made into a solid: swept along a path, revolved around an axis or lofted through others.",
+            "description": "A sketch region made into a solid: pulled out of its plane (a negative distance cuts into the thing it was drawn on), swept along a path, revolved around an axis or lofted through others.",
             "properties": {
               "target": {
                 "$ref": "#/$defs/target"
@@ -2714,10 +2879,14 @@
               },
               "op": {
                 "enum": [
+                  "pull",
                   "sweep",
                   "revolve",
                   "loft"
                 ]
+              },
+              "distance": {
+                "type": "number"
               },
               "path": {
                 "type": "array",
@@ -2909,6 +3078,70 @@
             "required": [
               "target",
               "property"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "do": {
+                "const": "sketch"
+              }
+            }
+          },
+          "then": {
+            "description": "Construction curves on a plane (xy facing front, xz the ground, yz the side, or an origin and a normal) or on the face of a thing; closed curves make the areas profile uses. Points are metres on the plane.",
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "plane": {
+                "anyOf": [
+                  {
+                    "enum": [
+                      "xy",
+                      "xz",
+                      "yz"
+                    ]
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "origin": {
+                        "$ref": "#/$defs/vec3"
+                      },
+                      "normal": {
+                        "$ref": "#/$defs/vec3"
+                      }
+                    }
+                  }
+                ]
+              },
+              "at": {
+                "$ref": "#/$defs/point"
+              },
+              "on": {
+                "$ref": "#/$defs/target"
+              },
+              "face": {
+                "enum": [
+                  "top",
+                  "bottom",
+                  "front",
+                  "back",
+                  "left",
+                  "right"
+                ]
+              },
+              "curves": {
+                "type": "array",
+                "items": {
+                  "type": "object"
+                }
+              }
+            },
+            "required": [
+              "curves"
             ]
           }
         },

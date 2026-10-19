@@ -151,6 +151,8 @@ struct Pipelines {
     let finish: MTLComputePipelineState
     let composite: MTLComputePipelineState
     let upscale: MTLComputePipelineState
+    /// Six views around the camera into one 360° picture (F1).
+    let equirect: MTLComputePipelineState
     let depthWrite: MTLDepthStencilState
     let depthRead: MTLDepthStencilState
     let depthAlways: MTLDepthStencilState
@@ -193,6 +195,7 @@ struct Pipelines {
         finish = try builder.compute("lw_finish")
         composite = try builder.compute("lw_composite")
         upscale = try builder.compute("lw_upscale")
+        equirect = try builder.compute("lw_equirect")
         depthWrite = try builder.depth(compare: .greater, write: true)
         depthRead = try builder.depth(compare: .greaterEqual, write: false)
         depthAlways = try builder.depth(compare: .always, write: false)

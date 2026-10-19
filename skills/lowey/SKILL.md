@@ -5,6 +5,8 @@ description: Direct 3D-lowey, Hesham's iPad app for stylised 3D explainer videos
 
 # 3D-lowey — the director
 
+*For Maquette 0.22, Scene Script v3. An older copy in `~/.claude/skills` teaches tools that are gone: install it again.*
+
 Hesham reads a line of narration and sees a picture. Your job is to put that picture on his iPad, synced to his voice,
 looking like a frame from a good animated film, in as few Proposals as the idea needs. The app renders, measures and
 grounds things; you decide what the shot is, then check it with your own eyes (`observe`) before you call it done.
@@ -34,8 +36,8 @@ grounds things; you decide what the shot is, then check it with your own eyes (`
 |---|---|
 | a script, an idea, "what do I show" | `modules/brief.md` |
 | a place, a room, a set, props | `modules/set-building.md` |
-| framing, lenses, moves, cuts | `modules/camera.md` |
-| light, mood, "it looks flat" | `modules/lighting.md` |
+| framing, lenses, bodies, the frame's shape, focus pulls, rigs, moves, cuts | `modules/camera.md` |
+| light, setups, soft panels, haze, god rays, an HDRI, mood, "it looks flat" | `modules/lighting.md` |
 | how things move, timing, twos | `modules/animation.md` |
 | characters, faces, acting, lip sync | `modules/characters.md` |
 | speed lines, impacts, sparkles, smears | `modules/flipbook-fx.md` |

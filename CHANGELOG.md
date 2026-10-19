@@ -3,6 +3,35 @@
 All notable changes. 1.x grew in four phases (v0.1 → v1.4); 2.0 is the remaster, released as betas first. Maquette
 continues from 2.0 and numbers its phases again from 0.1 (each phase bumps the minor version until 1.0).
 
+## [0.22] — Maquette — film (phase F1)
+
+Light like a film set, shoot with a real lens, and deliver in every shape a film goes out in.
+
+- **Light as a craft**: Model ▸ Add ▸ **Soft panel** (a softbox or a window: a rectangle that lights the way it faces)
+  beside the bulb, spot and sun. **Setups** on a light's panel: **three-point**, **golden hour**, **moonlight**, **neon**
+  (and the toon setups one step deeper), placed around the selection the way the camera sees it. **Haze** and **god
+  rays** on Look ▸ World ▸ Air. **Sky from a picture**: an HDRI (.hdr) shows behind everything and lights the world, its sun
+  and its sky; turn it until the shadow falls right.
+- **The lens and the frame** (the camera's panel, and the camera button's Lens and frame…, ⌥⌘L): a **camera body** (full
+  frame, Super 35, APS-C, Micro Four Thirds, Super 16, a phone, large format, IMAX) and the lens in its millimetres; the
+  **frame's shape**, 16:9, **2.39:1**, 9:16, **4:5**, 1:1, which the Director view, Frame shot and every export follow;
+  **focus on a thing** (the lens follows it) and **pull focus** to the next one on a word; the aperture for depth of field.
+- **Rigs**: put the camera on a **dolly**, a **crane**, an **orbit** or **in the hand** (a person breathing), its moves keyed
+  like any number.
+- **Shots**: **Paper ▸ Storyboard** (every shot's frame with its camera, lens, length and the words said over it) and
+  **Video ▸ Animatic** (each shot held for its length, with the sound).
+- **Spatial, 360° and HDR**: **spatial video** (where the iPad encodes it) and **spatial photos** that open in depth on Apple
+  Vision Pro and in Photos; **360° video** (4K, 6K) for YouTube and headsets and **360° panoramas**; **HDR** video (HLG)
+  with highlights past white; **wide colour** stills (Display P3, 16-bit).
+- **Rotoscope**: Actions ▸ Rotoscope puts a video behind the stage, frame-synced to the playhead, to pose or draw over. It's
+  never exported.
+- **The bridge** (`film`): the lens on a body, the frame, focus, rigs, the air, turning the HDRI, the shots; HDRIs over
+  `add_media`; `sketch` and `boolean` verbs and `profile` ▸ `pull` so bodies and cut-outs can be modelled; pictures come
+  back over MCP again. The lowey skill learns film and installs cleanly over an old copy.
+- **Fixed** (from the 0.19 device session): every bridge tool that returns a picture failed over MCP; cage point errors
+  name the cage's size; a car's attached parts no longer "float"; a low angle on a low car stays above the floor; a build
+  says who approved it, and v1's status sent auto-apply as a string; Dark studio brings its own dark ground.
+
 ## [0.21] — Maquette — animate & export (phase A1)
 
 Draw how a thing moves, see the motion in the timeline, and export in the format a pro asks for.

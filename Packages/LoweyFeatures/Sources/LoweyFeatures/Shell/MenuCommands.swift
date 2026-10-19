@@ -147,6 +147,13 @@ public struct LoweyMenuCommands: Commands {
                 editor.timelinePresence = .full
             }
             .keyboardShortcut("d", modifiers: [.command, .control])
+            Divider()
+            // The lens and the frame (F1).
+            Button("Lens and Frame…") { editor?.showsLensPanel = true }
+                .keyboardShortcut("l", modifiers: [.command, .option])
+                .disabled(editor?.editedCamera == nil)
+            Button("Focus on the Selection") { editor?.focusOnSelection(pull: false) }.keyboardShortcut("f", modifiers: [.command, .option])
+            Button("Pull Focus to the Selection") { editor?.focusOnSelection(pull: true) }.keyboardShortcut("f", modifiers: [.command, .control, .option])
         }
         // Live performance airs as 1.2 (held in App Store builds until then).
         if Held.isOn(.livePerformance) {

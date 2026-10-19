@@ -53,12 +53,20 @@ Faces are named by the way they face, edges by the axis they run along:
 - More lines to bend or pull: `{"op":"loopCut","along":"x","cuts":2}`; a cut where you want it: `{"op":"knife","point":[…],"normal":[…]}`.
 - Character in a prop: `{"op":"bend","kind":"bend|twist|taper|bulge","amount":45,"axis":"y"}`. The amount keys like any
   property, so a tower can twist on a word.
-- Bulges and dents: `{"op":"cage","counts":[3,3,3]}` then pull a point `{"op":"cage","point":[2,2,2],"offset":[0.2,0,0]}`,
-  or one brush dab `{"op":"brush","brush":"inflate","at":[x,y,z],"radius":0.2}`.
+- Bulges and dents: `{"op":"cage","counts":[3,3,3]}` (points per axis, 2–4) then pull a point
+  `{"op":"cage","point":[2,2,2],"offset":[0.2,0,0]}` (indices from 0, below the counts), or one brush dab
+  `{"op":"brush","brush":"inflate","at":[x,y,z],"radius":0.2}`.
 - A row of the same thing that changes together: `{"op":"linkedCopy","offset":[1.2,0,0]}`.
 - A sculpt for a game: `{"op":"cleanUp","faces":2000}` (even quads; it bakes everything in).
-- From a sketch region: `{"do":"profile","target":"Sketch","op":"revolve","axis":{"point":[0,0,0],"direction":[0,1,0]}}`
-  (a vase), `"sweep"` with a `"path"` (a rail), `"loft"` `"through"` other sketches (a hull).
+- A sketch first (0.22): `{"do":"sketch","name":"Side","plane":"xy","at":[0,0,0],"curves":[{"polyline":[[0,0],[0.4,0],[0.3,1]],"closed":true}]}`
+  (planes: `xy` facing front, `xz` the ground, `yz` the side; or `"on":"Body","face":"top"` to draw on a face; curves:
+  line, rectangle, circle, arc, polyline, spline, in metres on the plane). The reply says how many closed areas it made.
+- From a sketch region: `{"do":"profile","target":"Side","op":"revolve","axis":{"point":[0,0,0],"direction":[0,1,0]}}`
+  (a vase), `"pull"` with a `"distance"` (a slab; negative cuts into the face it was drawn on: a pocket),
+  `"sweep"` with a `"path"` (a rail), `"loft"` `"through"` other sketches (a car body from three side sections).
+- Cut-outs: shape the cutter, then `{"do":"boolean","op":"subtract","target":"Body","with":["Arch front","Arch back"]}`
+  (wheel arches, windows, a doorway); `union` joins, `intersect` keeps the overlap. The cutters are used up. Only
+  shapes and models made in the app combine; a placed Kit model is made editable in the app first.
 - Change your mind later (0.17): `{"do":"model","target":"Plinth","op":"steps"}` lists its modelling steps and their
   numbers in the reply; `{"op":"step","step":1,"number":"distance","value":0.5}` changes one and the steps after it
   follow. Prefer this to pulling again: the rounds and holes made after it stay where they belong. A step listed as

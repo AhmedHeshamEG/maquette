@@ -81,27 +81,42 @@ extension ScriptState {
         try run(.setProperties(changes), label: "\(kind.title) \(Self.short(amount))")
     }
 
-    /// `{"op": "cage", "counts": [3, 3, 3]}` puts one on; `"point": [i, j, k], "offset": [x, y, z]` pulls a point (its own
-    /// space); `"remove": true` takes it off.
+    /// `{"op": "cage", "counts": [3, 3, 3]}` puts one on (points per axis, 2–4 each); `"point": [i, j, k], "offset": [x, y, z]`
+    /// pulls a point (its own space); `"remove": true` takes it off.
     private mutating func modelCage(_ id: ObjectID, _ action: JSONValue) throws {
         guard let object = scene.objects[id] else { throw fail("no such object") }
         var shaping = object.shaping ?? ObjectShaping()
         if bool(action, "remove") == true {
             shaping.cage = nil
-        } else if let point = action["point"]?.arrayValue?.compactMap(\.numberValue), point.count == 3, var cage = shaping.cage {
-            let index = cage.index(Int(point[0]), Int(point[1]), Int(point[2]))
-            guard cage.offsets.indices.contains(index) else { throw fail("no such cage point") }
-            cage.offsets[index] = vec3(action["offset"]) ?? .zero
+        } else if let point = action["point"]?.arrayValue?.compactMap(\.numberValue) {
+            guard var cage = shaping.cage else { throw fail("put a cage on first: {\"op\": \"cage\", \"counts\": [3, 3, 3]}") }
+            let index = point.map { Int($0) }
+            guard index.count == 3, (0 ..< 3).allSatisfy({ (0 ..< cage.counts[$0]).contains(index[$0]) }) else {
+                throw fail(Self.cagePointProblem(index, counts: cage.counts))
+            }
+            cage.offsets[cage.index(index[0], index[1], index[2])] = vec3(action["offset"]) ?? .zero
             shaping.cage = cage
         } else {
             let counts = action["counts"]?.arrayValue?.compactMap { $0.numberValue.map(Int.init) } ?? [3, 3, 3]
             guard let bounds = PaintSource.unshaped(of: object)?.bounds ?? SceneBounds(library: context.library).localBounds(of: object) else {
                 throw fail("this has no shape to put a cage around")
             }
-            shaping.cage = DeformCage.around(bounds, counts: counts)
+            let cage = DeformCage.around(bounds, counts: counts)
+            if cage.counts != counts {
+                report.append("Cage points per axis are 2–4: \(Self.list(counts)) became \(Self.list(cage.counts))")
+            }
+            shaping.cage = cage
         }
         try run(.setShaping(id, shaping.isEmpty ? nil : shaping), label: "Cage")
     }
+
+    /// Names the cage's size and the indices it takes, so the next try lands.
+    static func cagePointProblem(_ point: [Int], counts: [Int]) -> String {
+        let ranges = counts.map { "0–\($0 - 1)" }.joined(separator: ", ")
+        return "no cage point \(list(point)): this cage has \(list(counts)) points per axis, so i, j, k are \(ranges)"
+    }
+
+    private static func list(_ values: [Int]) -> String { "[" + values.map(String.init).joined(separator: ", ") + "]" }
 
     /// One dab of a surface brush at a world point.
     private mutating func modelBrush(_ id: ObjectID, _ action: JSONValue) throws {
@@ -186,13 +201,18 @@ extension ScriptState {
 
     // MARK: Profiles
 
-    /// `{"do": "profile", "target": "Sketch", "region": 0, "op": "sweep" | "revolve" | "loft", …}`.
+    /// `{"do": "profile", "target": "Sketch", "region": 0, "op": "pull" | "sweep" | "revolve" | "loft", …}`.
     mutating func profile(_ action: JSONValue) throws {
         let sketch = try target(action["target"])
         let region = Int(number(action, "region") ?? 0)
         var ids = context.ids
         defer { context.ids = ids }
         switch string(action, "op") {
+        case "pull":
+            // Out of its face (or empty space) by a positive distance; a negative one cuts into the thing it was drawn on.
+            guard let distance = number(action, "distance"), abs(distance) > 1e-9 else { throw fail("pull needs “distance” (m; negative cuts in)") }
+            try run(ModelingOperations.pull(sketch: sketch, region: region, distance: distance, in: scene, ids: &ids),
+                    label: distance > 0 ? "Pull \(Self.short(distance)) m" : "Cut \(Self.short(-distance)) m")
         case "sweep":
             guard let path = action["path"]?.arrayValue?.compactMap({ vec3($0) }), path.count >= 2 else { throw fail("sweep needs “path”: points") }
             try run(ModelingOperations.sweep(sketch: sketch, region: region, along: path, closed: bool(action, "closed") ?? false, in: scene, ids: &ids),
@@ -208,7 +228,7 @@ extension ScriptState {
             let profiles = [(sketch, region)] + others.map { ($0, 0) }
             try run(ModelingOperations.loft(profiles, in: scene, ids: &ids), label: "Loft")
         default:
-            throw fail("profile needs “op”: sweep, revolve or loft")
+            throw fail("profile needs “op”: pull, sweep, revolve or loft")
         }
     }
 }

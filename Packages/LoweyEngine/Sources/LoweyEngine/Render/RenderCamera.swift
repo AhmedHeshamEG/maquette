@@ -2,46 +2,6 @@ import CoreGraphics
 import LoweyCore
 import simd
 
-/// Output aspect ratios of snapshots and videos.
-public enum Framing: String, CaseIterable, Sendable, Identifiable, Codable {
-    case landscape = "16:9"
-    case portrait = "9:16"
-    case square = "1:1"
-
-    public var id: String { rawValue }
-
-    /// Pixel size with the long side = `longSide` (always even, as encoders need).
-    public func pixelSize(longSide: Int) -> (width: Int, height: Int) {
-        let even = { (value: Int) in value - value % 2 }
-        let short = even(Int((Double(longSide) * 9 / 16).rounded()))
-        switch self {
-        case .landscape: return (even(longSide), short)
-        case .portrait: return (short, even(longSide))
-        case .square: return (even(longSide), even(longSide))
-        }
-    }
-
-    public var aspect: Double {
-        switch self {
-        case .landscape: 16.0 / 9.0
-        case .portrait: 9.0 / 16.0
-        case .square: 1
-        }
-    }
-
-    /// The frame drawn over the stage for this framing (what you see is what you export).
-    public func guideRect(in size: CGSize) -> CGRect {
-        let target = CGFloat(aspect)
-        var width = size.width * 0.86
-        var height = width / target
-        if height > size.height * 0.8 {
-            height = size.height * 0.8
-            width = height * target
-        }
-        return CGRect(x: (size.width - width) / 2, y: (size.height - height) / 2, width: width, height: height)
-    }
-}
-
 /// A camera as the renderer sees it: where, which way, how wide. Reverse-Z projection (depth 1 at the near plane,
 /// 0 at the far plane) for precision across big sets.
 public struct RenderCamera: Sendable, Hashable {

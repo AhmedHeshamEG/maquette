@@ -76,7 +76,8 @@ class FakeBridge(BaseHTTPRequestHandler):
             dry = script.get("dry_run", False)
             return self.reply(200, {"proposal_id": "p-1" if dry else None, "applied": not dry,
                                     "diff": [f"Adds 1: {script['actions'][0].get('name', '?')}"], "report": ["did it"],
-                                    "observe": OBSERVE, "message": "dry run" if dry else "Applied (one undo step)"})
+                                    "observe": OBSERVE, "message": "dry run" if dry else "Applied: Hesham said yes on the iPad (one undo step)",
+                                    "approved_by": None if dry else "ipad"})
         if path == "/v2/observe":
             return self.reply(200, OBSERVE)
         if path == "/v2/contact_sheet":
@@ -86,7 +87,7 @@ class FakeBridge(BaseHTTPRequestHandler):
             request = json.loads(body)
             if request["action"] == "undo":
                 return self.reply(200, {"undone": request.get("steps", 1)})
-            return self.reply(200, {"applied": True, "diff": ["Adds 1: Paper"], "report": [], "observe": OBSERVE, "message": "Applied"})
+            return self.reply(200, {"applied": True, "diff": ["Adds 1: Paper"], "report": [], "observe": OBSERVE, "message": "Applied without asking: auto-apply is on for this session (one undo step)"})
         if path == "/v1/library/import":
             return self.reply(200, {"imported": "tree.glb"})
         if path == "/v2/media":
@@ -160,7 +161,7 @@ def test_the_sixteen_tools_go_through_the_bridge(bridge_host, monkeypatch, tmp_p
     # 4: build — one batch, the diff, and an observe of the result with its pictures
     reply = mcp_server.build([{"do": "add", "asset": "kit.office-desk", "name": "Desk"},
                               {"do": "place", "target": "Lamp", "relation": "on", "reference": "Desk"}], title="Desk", views=["camera", "top"])
-    assert reply[0].startswith("Applied.") and "Observe:" in reply[0] and len(reply) == 3
+    assert reply[0].startswith("Applied: Hesham said yes on the iPad") and "Observe:" in reply[0] and len(reply) == 3
     assert _sent()["actions"][1]["relation"] == "on" and _sent()["title"] == "Desk"
     assert RECEIVED[-1][3] == "Claude (hmm-bridge)"
     dry = mcp_server.build([{"do": "add", "name": "Paper"}], dry_run=True)
@@ -197,6 +198,10 @@ def test_the_sixteen_tools_go_through_the_bridge(bridge_host, monkeypatch, tmp_p
     picture.write_bytes(b"PNG")
     assert '"added":"graph.mov"' in mcp_server.add_media(str(picture), at=3, overlay=True)
     assert RECEIVED[-1][0] == "/v2/media" and "as=overlay" in RECEIVED[-1][1] and "at=3" in RECEIVED[-1][1]
+    sky = tmp_path / "studio.hdr"
+    sky.write_bytes(b"#?RADIANCE")
+    mcp_server.add_media(str(sky), environment=True)
+    assert "as=environment" in RECEIVED[-1][1], "an HDRI goes to the world's sky"
     made = tmp_path / "Graph.mov"
     made.write_bytes(b"MOV")
     rendered = []
@@ -215,13 +220,37 @@ def test_the_sixteen_tools_go_through_the_bridge(bridge_host, monkeypatch, tmp_p
 
     # 16: commit and undo
     committed = mcp_server.commit(proposal_id="p-1")
-    assert committed[0].startswith("Applied.") and _sent() == {"action": "commit", "proposal_id": "p-1"}
+    assert committed[0].startswith("Applied without asking") and _sent() == {"action": "commit", "proposal_id": "p-1"}
     assert mcp_server.commit("undo", steps=2) == "Undone 2 step(s)." and _sent() == {"action": "undo", "steps": 2}
     assert mcp_server.commit().startswith("Error"), "commit needs a proposal id"
 
     # Resources and the director prompt
     assert "Scene Script v3" in mcp_server.actions_resource()
     assert "find_assets" in mcp_server.direct("A robot finds a question mark in a cave.")
+
+
+def test_pictures_come_back_through_the_mcp_protocol(bridge_host, monkeypatch):
+    """Over MCP, not as Python calls: words and pictures reach the client as content (SDK 2.x failed every picture tool)."""
+    monkeypatch.setenv("LOWEY_HOST", bridge_host)
+    monkeypatch.setenv("LOWEY_TOKEN", TOKEN)
+    import asyncio
+    import importlib
+
+    from lowey_tools import mcp_server
+    importlib.reload(mcp_server)
+
+    def call(name, arguments):
+        result = asyncio.run(mcp_server.mcp.call_tool(name, arguments))
+        content = getattr(result, "content", result)
+        content = content[0] if isinstance(content, tuple) else content
+        return [getattr(part, "type", None) for part in content]
+
+    assert call("find_assets", {"query": "desk", "thumbnails": 1}) == ["text", "image"]
+    assert call("build", {"actions": [{"do": "add", "name": "Paper"}], "views": ["camera", "top"]}) == ["text", "image", "image"]
+    assert call("observe", {"views": ["camera"]}) == ["text", "image"]
+    assert call("contact_sheet", {"frames": 6}) == ["text", "image"]
+    assert call("light", {"recipe": "golden-rim"})[0] == "text"
+    assert call("status", {}) == ["text"]
 
 
 def test_pair_with_only_the_code(bridge_host, monkeypatch):

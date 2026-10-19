@@ -51,21 +51,6 @@ struct ActOutSection: View {
     }
 }
 
-/// A video picked from Photos, copied where the app can read it.
-struct PickedMovie: Transferable {
-    let url: URL
-
-    static var transferRepresentation: some TransferRepresentation {
-        FileRepresentation(contentType: .movie) { movie in
-            SentTransferredFile(movie.url)
-        } importing: { received in
-            let copy = FileManager.default.temporaryDirectory.appendingPathComponent("act-\(UUID().uuidString).\(received.file.pathExtension)")
-            try FileManager.default.copyItem(at: received.file, to: copy)
-            return PickedMovie(url: copy)
-        }
-    }
-}
-
 /// The system camera, filming video (the front camera first: you're acting to the iPad).
 struct CameraRecorder: UIViewControllerRepresentable {
     let done: (URL?) -> Void

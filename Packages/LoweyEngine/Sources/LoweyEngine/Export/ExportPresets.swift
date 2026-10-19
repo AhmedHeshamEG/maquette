@@ -32,8 +32,8 @@ public enum ExportCategory: String, CaseIterable, Identifiable, Sendable, Codabl
 
 /// A file format and what it's for.
 public enum ExportFormat: String, CaseIterable, Identifiable, Sendable, Codable {
-    case mp4, hevc, prores, gif, frames, passes, captions
-    case png, picturePasses
+    case mp4, hevc, prores, gif, frames, passes, captions, animatic, spatialVideo, video360
+    case png, picturePasses, spatialPhoto, panorama
     case gltf, fbx, usdz, obj, stl, threeMF, blender, maps, lookShader
     case pdf
 
@@ -41,8 +41,8 @@ public enum ExportFormat: String, CaseIterable, Identifiable, Sendable, Codable 
 
     public var category: ExportCategory {
         switch self {
-        case .mp4, .hevc, .prores, .gif, .frames, .passes, .captions: .video
-        case .png, .picturePasses: .picture
+        case .mp4, .hevc, .prores, .gif, .frames, .passes, .captions, .animatic, .spatialVideo, .video360: .video
+        case .png, .picturePasses, .spatialPhoto, .panorama: .picture
         case .pdf: .paper
         default: .model
         }
@@ -57,7 +57,12 @@ public enum ExportFormat: String, CaseIterable, Identifiable, Sendable, Codable 
         case .frames: "PNG frames"
         case .passes, .picturePasses: "Render passes"
         case .captions: "Captions"
+        case .animatic: "Animatic"
+        case .spatialVideo: "Spatial video"
+        case .video360: "360° video"
         case .png: "PNG"
+        case .spatialPhoto: "Spatial photo"
+        case .panorama: "360° panorama"
         case .gltf: "glTF"
         case .fbx: "FBX"
         case .usdz: "USDZ"
@@ -75,17 +80,22 @@ public enum ExportFormat: String, CaseIterable, Identifiable, Sendable, Codable 
     public var purpose: String {
         switch self {
         case .mp4: "H.264: plays everywhere, the one to post."
-        case .hevc: "Smaller files at the same quality, and see-through video."
+        case .hevc: "Smaller files at the same quality, see-through video, and HDR."
         case .prores: "The editing master: every frame whole, with transparency, for Final Cut, Premiere and Resolve."
         case .gif: "A short loop that plays anywhere, even without sound."
         case .frames: "One picture a frame, with the soundtrack as WAV, for any editing app."
         case .passes: "The colour with transparency, and for compositing: the alpha, the depth and a mask per thing."
         case .captions: "Subtitles (.srt and .vtt) from the transcript."
+        case .animatic: "Each shot held on one frame for as long as it lasts, with the sound: the film before it moves."
+        case .spatialVideo: "In depth on Apple Vision Pro and in Photos: two eyes, a person's width apart."
+        case .video360: "All the way round the camera, for YouTube, Quest and any 360 player."
+        case .spatialPhoto: "The frame at the playhead in depth, for Apple Vision Pro and Photos."
+        case .panorama: "All the way round the camera at the playhead, for Facebook, Google Photos and any 360 viewer."
         case .png: "The frame at the playhead, through the shot camera."
         case .picturePasses: "The frame at the playhead with its alpha, its depth and a mask per thing."
         case .gltf, .fbx, .usdz, .obj, .stl, .threeMF, .blender, .maps: modelFormat?.purpose ?? ""
         case .lookShader: "This scene's Look for a game engine: its shader and material, with a licence to use it anywhere."
-        case .pdf: "To print or send: the frame on a page, or frames across the shot on one sheet."
+        case .pdf: "To print or send: the frame on a page, frames across the shot, or a storyboard of every shot."
         }
     }
 
@@ -110,34 +120,41 @@ public enum ExportFormat: String, CaseIterable, Identifiable, Sendable, Codable 
 /// What an export makes, once its preset is picked.
 public enum ExportKind: String, Sendable, Codable {
     case video, gif, frames, passes, captions, still, stillPasses, model, lookShader, paper
+    case animatic, spatialVideo, video360, spatialPhoto, panorama, storyboard
 }
 
 /// The named presets, each of one format.
 public enum ExportPreset: String, CaseIterable, Identifiable, Sendable, Codable {
     case hd1080, vertical, square, hd720
-    case youtube4K, hevc1080, transparent
+    case youtube4K, hevc1080, transparent, hdr1080, hdr4K
     case prores1080, prores4K
     case gifLoop, gifWide
     case frames1080, frames4K, framesTransparent
     case passes1080, passes4K
     case captions
-    case stillHD, still4K, stillTransparent, stillPasses
+    case stillHD, still4K, stillTransparent, stillP3, stillPasses
+    case animatic1080, spatial1080, video360x4K, video360x6K, spatialPhotoHD, panorama6K, panorama8K
     case gltfGodot, gltfWeb, gltfApps, fbxUnity, fbxUnreal, usdzQuickLook, objMaterials, stlPrint, threeMFPrint, blenderComputer, mapsPNG
     case shaderGodot, shaderUnity
-    case paperFrameA4, paperFrameLetter, paperFrameA3, paperFramesA4, paperFramesLetter
+    case paperFrameA4, paperFrameLetter, paperFrameA3, paperFramesA4, paperFramesLetter, storyboardA4, storyboardLetter
 
     public var id: String { rawValue }
 
     public var format: ExportFormat {
         switch self {
         case .hd1080, .vertical, .square, .hd720: .mp4
-        case .youtube4K, .hevc1080, .transparent: .hevc
+        case .youtube4K, .hevc1080, .transparent, .hdr1080, .hdr4K: .hevc
         case .prores1080, .prores4K: .prores
         case .gifLoop, .gifWide: .gif
         case .frames1080, .frames4K, .framesTransparent: .frames
         case .passes1080, .passes4K: .passes
         case .captions: .captions
-        case .stillHD, .still4K, .stillTransparent: .png
+        case .stillHD, .still4K, .stillTransparent, .stillP3: .png
+        case .animatic1080: .animatic
+        case .spatial1080: .spatialVideo
+        case .video360x4K, .video360x6K: .video360
+        case .spatialPhotoHD: .spatialPhoto
+        case .panorama6K, .panorama8K: .panorama
         case .stillPasses: .picturePasses
         case .gltfGodot, .gltfWeb, .gltfApps: .gltf
         case .fbxUnity, .fbxUnreal: .fbx
@@ -148,7 +165,7 @@ public enum ExportPreset: String, CaseIterable, Identifiable, Sendable, Codable 
         case .blenderComputer: .blender
         case .mapsPNG: .maps
         case .shaderGodot, .shaderUnity: .lookShader
-        case .paperFrameA4, .paperFrameLetter, .paperFrameA3, .paperFramesA4, .paperFramesLetter: .pdf
+        case .paperFrameA4, .paperFrameLetter, .paperFrameA3, .paperFramesA4, .paperFramesLetter, .storyboardA4, .storyboardLetter: .pdf
         }
     }
 
@@ -162,7 +179,12 @@ public enum ExportPreset: String, CaseIterable, Identifiable, Sendable, Codable 
         case .png: .still
         case .picturePasses: .stillPasses
         case .lookShader: .lookShader
-        case .pdf: .paper
+        case .pdf: self == .storyboardA4 || self == .storyboardLetter ? .storyboard : .paper
+        case .animatic: .animatic
+        case .spatialVideo: .spatialVideo
+        case .video360: .video360
+        case .spatialPhoto: .spatialPhoto
+        case .panorama: .panorama
         default: .model
         }
     }
@@ -194,14 +216,18 @@ public enum ExportPreset: String, CaseIterable, Identifiable, Sendable, Codable 
         case .paperFrameA3: (.a3, false)
         case .paperFramesA4: (.a4, true)
         case .paperFramesLetter: (.letter, true)
+        case .storyboardA4: (.a4, true)
+        case .storyboardLetter: (.letter, true)
         default: nil
         }
     }
 
     /// The settings a picture or video preset stands for (range, audio and quality come from the project and the sheet).
-    public func settings(range: TimeRange, fps: Int) -> ExportSettings {
+    /// Presets that are a size come out in the scene's `frame` (2.39:1 at 1080p is 1920 × 802); the shaped ones (Shorts,
+    /// Square, the GIF loops) keep their shape.
+    public func settings(range: TimeRange, fps: Int, frame: Framing = .landscape) -> ExportSettings {
         let video = { (framing: Framing, side: Int, codec: VideoCodecKind) in
-            ExportSettings(framing: framing, longSide: side, fps: fps, codec: codec, range: range)
+            ExportSettings(framing: framing == .landscape ? frame : framing, longSide: side, fps: fps, codec: codec, range: range)
         }
         let short = TimeRange(start: range.start, end: min(range.end, range.start + 6))
         switch self {
@@ -211,8 +237,22 @@ public enum ExportPreset: String, CaseIterable, Identifiable, Sendable, Codable 
         case .hd720: return video(.landscape, 1280, .h264)
         case .youtube4K, .still4K, .frames4K, .passes4K: return video(.landscape, 3840, .hevc)
         case .hevc1080: return video(.landscape, 1920, .hevc)
+        case .hdr1080: return video(.landscape, 1920, .hevcHDR)
+        case .hdr4K: return video(.landscape, 3840, .hevcHDR)
+        case .stillP3:
+            var settings = video(.landscape, 3840, .h264)
+            settings.wideColour = true
+            return settings
+        case .animatic1080: return video(.landscape, 1920, .h264)
+        case .spatial1080: return video(.landscape, 1920, .hevc)
+        case .spatialPhotoHD: return video(.landscape, 2560, .hevc)
+        case .video360x4K, .panorama6K, .video360x6K, .panorama8K:
+            let side = self == .video360x4K ? 3840 : self == .panorama8K ? 8192 : 5760
+            var settings = ExportSettings(framing: .landscape, longSide: side, fps: fps, codec: side > 4096 ? .hevc : .h264, range: range)
+            settings.panorama = true
+            return settings
         case .transparent:
-            return ExportSettings(framing: .landscape, longSide: 1920, fps: fps, codec: .hevcAlpha, range: range, transparent: true)
+            return ExportSettings(framing: frame, longSide: 1920, fps: fps, codec: .hevcAlpha, range: range, transparent: true)
         case .prores1080: return video(.landscape, 1920, .prores4444)
         case .prores4K: return video(.landscape, 3840, .prores4444)
         case .gifLoop:
@@ -220,7 +260,7 @@ public enum ExportPreset: String, CaseIterable, Identifiable, Sendable, Codable 
         case .gifWide:
             return ExportSettings(framing: .landscape, longSide: 640, fps: 15, codec: .h264, range: short)
         case .framesTransparent, .stillTransparent:
-            return ExportSettings(framing: .landscape, longSide: 1920, fps: fps, codec: .h264, range: range, transparent: true)
+            return ExportSettings(framing: frame, longSide: 1920, fps: fps, codec: .h264, range: range, transparent: true)
         default: return video(.landscape, 1920, .h264)
         }
     }
@@ -272,6 +312,12 @@ public struct ExportSettings: Sendable, Hashable, Codable {
     public var final: Bool = false
     /// Only these things are drawn (the rest of the scene is left out); nil draws everything.
     public var only: [ObjectID]?
+    /// 360° (F1): all the way round the camera, a 2:1 equirectangular frame `longSide` wide.
+    public var panorama: Bool = false
+    /// Display P3 colour in 16 bits (stills).
+    public var wideColour: Bool = false
+    /// Stereo (spatial video and photos): how far apart the eyes are against a person's (0.5 flatter … 2 deeper).
+    public var stereoDepth: Double = 1
 
     public init(framing: Framing, longSide: Int, fps: Int, codec: VideoCodecKind, range: TimeRange, transparent: Bool = false,
                 quality: Double = 0.5) {
@@ -287,7 +333,14 @@ public struct ExportSettings: Sendable, Hashable, Codable {
 
     public static let frameRates = [24, 25, 30, 60]
 
-    public var size: (width: Int, height: Int) { framing.pixelSize(longSide: longSide) }
+    public var size: (width: Int, height: Int) {
+        guard panorama else { return framing.pixelSize(longSide: longSide) }
+        let width = longSide - longSide % 4
+        return (width, width / 2)
+    }
+
+    /// How the frame's colour is written.
+    public var encoding: FrameEncoding { codec.isHDR ? .hdr : wideColour ? .displayP3 : .sRGB }
     public var frameCount: Int { max(Int((range.duration * Double(fps)).rounded()), 1) }
 
     public var encodeSettings: EncodeSettings {

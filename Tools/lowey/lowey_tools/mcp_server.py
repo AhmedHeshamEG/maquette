@@ -31,6 +31,15 @@ INSTRUCTIONS = (
 
 mcp = Server("3D-lowey", instructions=INSTRUCTIONS)
 
+
+def tool():
+    """A tool whose reply is content, never a structured result. SDK 2.x turns a return annotation into an output schema,
+    and words beside pictures (`[text, *pictures]`) don't fit one: every picture tool failed with "Error executing tool"."""
+    try:
+        return mcp.tool(structured_output=False)
+    except TypeError:  # SDKs older than 1.10 have no structured output
+        return mcp.tool()
+
 _bridge: Bridge | None = None
 
 VIEWS = ["camera", "top", "front", "side", "value", "silhouette"]
@@ -84,7 +93,7 @@ def _build(title: str, actions: list[dict[str, Any]], dry_run: bool = False, vie
 
 # -- 1–3: reading ------------------------------------------------------------------------------------------------------
 
-@mcp.tool()
+@tool()
 def status() -> str:
     """Which iPad is paired, the open project, scene and shot, the playhead, whether auto-apply is on."""
     try:
@@ -93,7 +102,7 @@ def status() -> str:
         return f"Error: {error}"
 
 
-@mcp.tool()
+@tool()
 def read_project(transcript: bool = False) -> str:
     """The project at a glance (a summary line first): scenes, shots (cameras, when the edit cuts to them, on which word),
     the cast, the Look, the palette, Kit Sets in use and the voiceover text. transcript=True adds every word's timing."""
@@ -106,7 +115,7 @@ def read_project(transcript: bool = False) -> str:
         return f"Error: {error}"
 
 
-@mcp.tool()
+@tool()
 def find_assets(query: str = "", set: str | None = None, limit: int = 8, thumbnails: int = 4) -> list[Any] | str:  # noqa: A002
     """Kit and library models by words ("desk lamp", "rock", "robot"), Kit first, optionally in one Set ("Room & Desk",
     "Nature", "Office & Computers", "Lab & Science", "Space", "City & Street", "Kitchen & Food", "Props & Signs",
@@ -127,7 +136,7 @@ def find_assets(query: str = "", set: str | None = None, limit: int = 8, thumbna
 
 # -- 4: build ------------------------------------------------------------------------------------------------------------
 
-@mcp.tool()
+@tool()
 def build(actions: list[dict[str, Any]], title: str = "From Claude", dry_run: bool = False, views: list[str] | None = None,
           subject: str | None = None) -> list[Any] | str:
     """Scene Script v3 (resource lowey://actions has every verb): add from the Kit, place by relation, scaleTo, recolor,
@@ -139,7 +148,7 @@ def build(actions: list[dict[str, Any]], title: str = "From Claude", dry_run: bo
 
 # -- 5–11: directing (each is one small build) --------------------------------------------------------------------------
 
-@mcp.tool()
+@tool()
 def frame_shot(subject: str, shot_type: str = "medium", composition: str = "center", lens: float | None = None,
                shot: str | None = None, other: str | None = None, at: Any = None, on_word: str | None = None) -> list[Any] | str:
     """The camera solver: shot_type extremeWide | wide | full | medium | closeUp | extremeCloseUp | overTheShoulder |
@@ -150,7 +159,7 @@ def frame_shot(subject: str, shot_type: str = "medium", composition: str = "cent
     return _build(f"Frame {subject}", [action], views=["camera"], subject=subject)
 
 
-@mcp.tool()
+@tool()
 def light(recipe: str, subject: str | None = None, intensity: float | None = None, warmth: float | None = None) -> list[Any] | str:
     """A lighting recipe placed for the shot camera: key-warm-world-cool (the default story light), noir-single-source,
     golden-rim, monitor-glow, moonlit, studio-soft. Overrides: intensity (×), warmth (-1 cool … 1 warm)."""
@@ -158,7 +167,7 @@ def light(recipe: str, subject: str | None = None, intensity: float | None = Non
     return _build(f"Light: {recipe}", [action], views=["camera", "value"], subject=subject)
 
 
-@mcp.tool()
+@tool()
 def set_look(look: str | None = None, mood: str | None = None, per_object: dict[str, str] | None = None,
              scene_only: bool = True) -> list[Any] | str:
     """The Look (ink, comic, sketch, clay, lowpoly), the mood (day, goldenHour, dusk, night, space, studio, darkStudio) and per-object
@@ -167,7 +176,7 @@ def set_look(look: str | None = None, mood: str | None = None, per_object: dict[
     return _build("Look", [action], views=["camera"])
 
 
-@mcp.tool()
+@tool()
 def animate(targets: str | list[str], what: str, at: Any = None, on_word: str | None = None, duration: float | None = None,
             how: str | None = None, to: Any = None, frame_rate: str | None = None) -> list[Any] | str:
     """Say the intent; the app picks the animation. what: enter | exit | emphasise | react | walk_to | look_at | talk | idle
@@ -187,7 +196,7 @@ def animate(targets: str | list[str], what: str, at: Any = None, on_word: str | 
     return _build(f"Animate: {what}", [action], views=["camera"])
 
 
-@mcp.tool()
+@tool()
 def camera_move(move: str, shot: str | None = None, subject: Any = None, strength: float | None = None, at: Any = None,
                 on_word: str | None = None, duration: float | None = None) -> list[Any] | str:
     """pushIn, pullOut, punchIn, snapZoom, orbit, dolly, truck, crane, whipPan, shake, reveal — eased, landing on the word."""
@@ -196,7 +205,7 @@ def camera_move(move: str, shot: str | None = None, subject: Any = None, strengt
     return _build(f"Camera: {move}", [action], views=["camera"])
 
 
-@mcp.tool()
+@tool()
 def add_overlay(kind: str, text: str | None = None, on_word: str | None = None, at: Any = None, style: dict[str, Any] | None = None,
                 name: str | None = None) -> list[Any] | str:
     """Titles, labels and comic language over the frame: title, label, arrow, highlight, cross, question, exclamation,
@@ -212,7 +221,7 @@ def add_overlay(kind: str, text: str | None = None, on_word: str | None = None, 
     return _build(f"Overlay: {overlay_name}", actions, views=["camera"])
 
 
-@mcp.tool()
+@tool()
 def flipbook(kind: str, anchor: Any, at: Any = None, on_word: str | None = None, until: Any = None, frames: int | None = None,
              color: str | None = None) -> list[Any] | str:
     """Drawn FX that sell a moment: speedLines, impactBurst, sweatDrop, sparkle, smear — anchored to an object (or a
@@ -224,17 +233,20 @@ def flipbook(kind: str, anchor: Any, at: Any = None, on_word: str | None = None,
 
 # -- 12–13: media from the laptop ---------------------------------------------------------------------------------------
 
-@mcp.tool()
-def add_media(path: str, at: float | None = None, overlay: bool = False) -> str:
+@tool()
+def add_media(path: str, at: float | None = None, overlay: bool = False, environment: bool = False) -> str:
     """A picture or video file from this laptop into the open shot: a thin card standing in the 3D world, or overlay=True
-    to lay it flat over the frame. Videos play from `at` seconds (default: the playhead)."""
+    to lay it flat over the frame. Videos play from `at` seconds (default: the playhead). environment=True takes a
+    Radiance .hdr panorama (an HDRI) as the world's sky and light: its sun and sky colours light the scene; turn it with
+    build's {"do": "film", "op": "environment", "turn": 40}."""
+    placement = "environment" if environment else "overlay" if overlay else "card"
     try:
-        return _compact(bridge().add_media(pathlib.Path(path).expanduser(), at=at, placement="overlay" if overlay else "card"))
+        return _compact(bridge().add_media(pathlib.Path(path).expanduser(), at=at, placement=placement))
     except (BridgeError, OSError) as error:
         return f"Error: {error}"
 
 
-@mcp.tool()
+@tool()
 def render_manim(code: str, scene: str, at: float | None = None, quality: str = "high", transparent: bool = True) -> str:
     """Render Manim on this laptop and lay it over the shot from `at` seconds (graphs, equations, diagrams). `code` is the
     Python source (or a path to a .py file); `scene` the Scene class. Transparent by default, floating over the 3D world."""
@@ -256,7 +268,7 @@ def render_manim(code: str, scene: str, at: float | None = None, quality: str = 
 
 # -- 14–15: seeing -------------------------------------------------------------------------------------------------------
 
-@mcp.tool()
+@tool()
 def observe(time: float | None = None, views: list[str] | None = None, subject: str | None = None, framing: str | None = None,
             report: bool = True) -> list[Any] | str:
     """Look at the shot: the camera view with set-of-marks numbers, plus any of top / front / side (orthographic layout
@@ -274,7 +286,7 @@ def observe(time: float | None = None, views: list[str] | None = None, subject: 
     return [text, *_images(reply, ["camera", *[view for view in wanted if view != "camera"]])]
 
 
-@mcp.tool()
+@tool()
 def contact_sheet(start: float | None = None, end: float | None = None, frames: int = 6, subject: str | None = None) -> list[Any] | str:
     """N frames of the shot in a grid with timecodes and notes, plus motion stats per moving thing (screen path, peak
     speed, direction changes, holds, leaves frame, arcs vs straight lines, constant-speed glides, moves landing on words)
@@ -290,7 +302,7 @@ def contact_sheet(start: float | None = None, end: float | None = None, frames: 
 
 # -- 16: commit / undo ---------------------------------------------------------------------------------------------------
 
-@mcp.tool()
+@tool()
 def commit(action: str = "commit", proposal_id: str | None = None, steps: int = 1) -> list[Any] | str:
     """action="commit": propose a dry run (its proposal_id) on the iPad for real. action="undo": undo `steps` changes."""
     try:

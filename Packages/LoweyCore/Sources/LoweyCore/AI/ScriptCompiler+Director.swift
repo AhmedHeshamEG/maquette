@@ -74,32 +74,18 @@ extension ScriptState {
             scene.worldTransform(of: id).position + scene.worldTransform(of: id).rotation
                 .act(Vec3(0, 0, -1)) * (scene.objects[id]?[.focusDistance]?.floatValue ?? 5)
         } ?? scene.viewpoint.target
-        let intensity = number(action, "intensity") ?? 1
-        var look = document.effectiveLook
-        if recipe == .moonlit || recipe == .noirSingleSource { look = look.applying(.night) }
-        look.lighting = recipe.lighting(from: look.lighting, eye: eye, subject: subject, intensity: intensity)
-        try run(.setLook(look, scope: scene.look != nil ? .scene : .project), label: "Lighting: \(recipe.rawValue) — \(recipe.reason)")
-        let old = scene.objects.values.filter { object in
-            if case .light = object.kind { return LightRecipe.lampNames.contains(object.name) }
-            return false
-        }.map(\.id)
-        if !old.isEmpty { try run(operations.delete(old, in: scene), label: nil) }
+        let options = LightSetups.Options(intensity: number(action, "intensity") ?? 1, warmth: number(action, "warmth") ?? 0)
         let size = box.map { max($0.size.y, $0.size.x, $0.size.z) } ?? 1.7
+        var ids = context.ids
+        let command = LightSetups.apply(recipe, look: document.effectiveLook, scope: scene.look != nil ? .scene : .project, eye: eye,
+                                        subject: subject, size: size, in: scene, ids: &ids, options: options)
+        context.ids = ids
+        try run(command, label: "Lighting: \(recipe.rawValue) — \(recipe.reason)")
         for lamp in recipe.lamps {
-            var color = lamp.color
-            if let warmth = number(action, "warmth") { color = Self.warmed(color, by: warmth) }
-            let at = LightRecipe.position(of: lamp, eye: eye, subject: subject, size: size)
-            try light(.object([
-                "type": .string("point"), "name": .string(lamp.name), "at": .array([.number(at.x), .number(at.y), .number(at.z)]),
-                "color": .string(color.hex), "intensity": .number(lamp.intensity * intensity), "range": .number(lamp.range * max(size, 0.5))
-            ]))
+            if let id = scene.objects.values.first(where: { $0.name == lamp.name && $0.kind == .light(lamp.type) })?.id {
+                remember(.object(["name": .string(lamp.name)]), id, name: lamp.name)
+            }
         }
-    }
-
-    /// Shifts a colour warmer (positive) or cooler (negative).
-    static func warmed(_ color: RGBA, by amount: Double) -> RGBA {
-        let shift = min(max(amount, -1), 1) * 0.12
-        return RGBA(min(max(color.r + shift, 0), 1), color.g, min(max(color.b - shift, 0), 1), color.a)
     }
 }
 

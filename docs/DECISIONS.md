@@ -2807,3 +2807,132 @@ checklist times a Final 1080p export and a passes export on the iPad.
 **D-431 — Kit 0.11.** `VideoEncoder.canEncode(_:)`: Cutaway offers ProRes the same way.
 
 **D-432 — Translations still ride along.** The new strings were translated into Italian and Arabic for the catalog check.
+
+## Maquette 0.22 — F1, film
+
+**D-433 — Pictures over MCP (step 0.1).** Every bridge tool that answered with words and pictures failed with a bare
+"Error executing tool": the MCP SDK 2.x builds an output schema from a tool's return annotation (`list[Any] | str`) and
+can't fit an `Image` into it. Every tool now replies as content (`structured_output=False`); a test calls them through the
+MCP protocol, not as Python functions, which is why CI never saw it. *Rejected:* returning pictures as base64 text (the
+model can't see them).
+
+**D-434 — The skill that's installed (step 0.2).** The skill in the repo already taught Scene Script v3; the copy Claude
+loaded was the 1.x one, left from before the rename. It was installed again; `SKILL.md` names the version it's for, and the
+README says to remove the old folder first (Copy-Item into an existing folder nests the new copy inside). *Rejected:* a CLI
+that installs the skill (one more thing to keep working for one person's laptop).
+
+**D-435 — Sketches, cut-outs and cage errors from a script (steps 0.3–0.5).** `sketch` draws curves on a named plane (xy,
+xz, yz, or an origin and normal) or on a thing's face; `profile` gains `pull` (a negative distance cuts into the face it was
+drawn on); `boolean` subtracts, joins or intersects shapes into a target (the others are used up, as in the app). A cage
+point out of range names the cage's size and the indices it takes; a count outside 2–4 says what it became. One axis out of
+range used to land on another point silently; each axis is checked now.
+
+**D-436 — A group stands as one thing (step 0.6).** The Ground check judged each part of a grouped thing against the floor,
+so a car's rims, lights and wing "floated". The group's lowest parts take the group's verdict; a part touching a chain of
+parts that reaches them (within 2 cm) is attached; a part touching nothing keeps its own verdict. *Rejected:* judging only
+the group (a balloon tied to nothing would pass).
+
+**D-437 — The lens stays above the floor (step 0.7).** A low angle on a low, wide subject sat the camera under the ground.
+Frame shot keeps the lens a quarter of the subject's height (at most 30 cm) above the floor it stands on and looks up from
+there.
+
+**D-438 — Who said yes (step 0.8).** No path was found that applies a build without asking: status and build read one
+switch, and every other path waits for the banner. A real bug nearby: v1's status sent `"autoApply": "false"` as a string,
+which every client language reads as true. Replies now say who approved (`approved_by`: `ipad` or `autoApply`, and the
+message in words), so a repeat is visible in the reply itself.
+
+**D-439 — A mood brings its ground (step 0.9).** Applying a mood kept the ground's colour, so a project made in Day and
+turned Dark studio kept a green floor under a black sky. A mood now brings its own ground unless the ground was changed by
+hand (it no longer matches the old mood's or the default).
+
+**D-440 — The soft panel.** A fourth light, `area`: a rectangle that lights out of its front, from the nearest point of its
+rectangle, fading at the sides like a softbox's spill; brighter than a bulb of the same strength to light as much. It bands
+like every light in the Look. In glTF it travels as a wide spot with its size in the node's extras (KHR_lights_punctual has
+no area light) and comes back a panel; in the Blender package it's a rectangular area light. Bulb is the point light's name
+now. *Rejected:* linearly transformed cosines (true area integrals: two lookup textures and a cost a toon Look doesn't
+show); shadows from panels (only the sun casts them, as before).
+
+**D-441 — Setups.** Three-point (soft key and fill panels, a spot rim), golden hour (a low warm sun, a soft fill, haze and
+god rays), moonlight (the old `moonlit`) and neon (night, a magenta panel and a cyan one, light haze), beside the six toon
+recipes ("More setups"). One Core operation for the light's panel and the bridge: placed around the selection as the shot
+camera sees it, spots and panels aimed at it, the mood and the air it needs, the last setup's lamps replaced (their keys
+with them). *Rejected:* setups as a group object that keeps its lamps together (one more kind of thing; the lamps are
+ordinary lights to move afterwards).
+
+**D-442 — Haze and god rays.** The Look's `atmosphere`, applied in the finish pass from the depth the prepass already has:
+far things fade into the haze's colour, which glows on the sun's side of the frame; god rays are 24 taps from each pixel
+toward the sun's place on the frame, counting sky. One pass, the same on every tier. *Rejected:* froxel volumetrics (a 3D
+grid of light per frame: Tier B can't keep it smooth); rays from lamps (the sun is what throws them).
+
+**D-443 — HDRIs.** Radiance `.hdr` read in pure Swift (flat and run-length scanlines), shrunk as it's read so a 16k map
+never sits in memory. It shows behind everything (turned, brightened) and lights the world through what every Look already
+reads: the sun found in the picture (direction, colour, its share of the light), the sky's three colours from the picture's
+bands, the ambient from the rest. *Rejected:* EXR (no decoder without a library); image-based reflections and diffuse
+light (the Looks are banded toon shading; a mirror-perfect environment would fight them).
+
+**D-444 — Camera bodies.** The field of view stays the truth (every key, move and export already speaks it); a body only
+changes what the millimetres say, by its crop factor against full frame. Eight bodies, from a phone to IMAX 70 mm.
+*Rejected:* storing the focal length and the body (two numbers that could disagree with every existing field-of-view key).
+
+**D-445 — The frame's shape.** 16:9, 2.39:1, 9:16, 4:5, 1:1, kept on the timeline (`frame`, undoable with it); the Director
+view, Frame shot and every export that is a size (1080p, 4K, ProRes, frames, passes, stills) come out in it; the shaped
+presets (Shorts, Square, the GIF loops) keep theirs. 2.39 keeps 16:9's width and loses height, as a cinema frame does; 4:5
+is a tall frame. `Framing` is Core's `FrameShape` now. *Rejected:* a shape per camera (a cut film has one).
+
+**D-446 — Focus on a thing.** `focusOn` keeps a thing sharp as it moves (its head for a character); a later key pulls
+focus over 0.8 s, eased in focus distance, the way a ring turns. Focus on selection and Pull focus here replace keyed
+distances in the panel (old keyed pulls still play). The bridge says when the aperture is off and nothing would show.
+
+**D-447 — Rigs.** A camera rides a dolly (travel along the way it faces, level), a crane (lift, swing around a base behind
+it, arm length; it keeps what it framed in frame), an orbit (swing and lift around what it watches or its focus point) or
+the hand (smooth noise on turn and place, seeded by the camera, after it turns to look). They're keyed numbers on top of any
+camera move, so a crane up is two keys of one slider. *Rejected:* rig objects (a track to lay, an arm to place: another
+thing to select and keep beside the camera).
+
+**D-448 — Shots, storyboards, animatics.** Shots in one scene were already cuts on the camera track; `Timeline.shots` lists
+them. A storyboard is Paper ▸ Storyboard: three panels across a landscape sheet, each the shot's key moment (a third in,
+after the cut and before anything leaves) with its number, camera, millimetres, length, rig, whether it moves, and the
+words said over it. The animatic holds each shot's key moment for its length with the whole soundtrack. *Rejected:* the
+first frame of each shot (a whip pan or a transition is still landing).
+
+**D-449 — Spatial video and photos.** Two parallel cameras a person's 63 mm apart (times a Depth option, 0.5–2), MV-HEVC
+with the eyes tagged, the baseline, field of view and a small disparity adjustment (the screen just behind the nearest
+things), written by the kit; a HEIC stereo pair with each eye's camera for photos. Spatial video is offered where the iPad
+encodes MV-HEVC. *Rejected:* toed-in eyes (keystone); side-by-side files (Vision Pro and Photos don't play them in depth).
+
+**D-450 — 360°.** Six 90° views around the shot camera, level and facing where it faces, laid flat on the GPU (the face
+maths is Core's, tested there); titles and flipbooks stay out of a world view. 360° video gets the Spherical Video V1 box
+(the kit edits the finished MP4: the track and movie grow, chunk offsets move when the movie comes first); panoramas are
+JPEGs with Photo Sphere tags. Screen-space lines can show a faint seam at a cube edge (backlog). *Rejected:* Spherical V2
+(it lives inside the sample description; rewriting `stsd` is riskier for the same players); stereo 360 (twelve views a
+frame).
+
+**D-451 — HDR.** HEVC ▸ HDR 1080p and 4K: 10-bit HLG in BT.2020, where the iPad writes it. The finish keeps highlights up to
+3.78× white instead of rolling them off, and the composite encodes HLG with diffuse white at 75 %. Final doesn't apply (its
+averaging is 8-bit); the preset says so. *Rejected:* PQ (it needs mastering metadata and a reference display; HLG plays
+well on SDR screens too).
+
+**D-452 — Wide colour.** PNG ▸ Wide colour 4K: Display P3, 16 bits a channel. *Rejected:* P3 video (HDR is the wide-colour
+video).
+
+**D-453 — The rotoscope.** A video behind the stage (Actions ▸ Rotoscope), kept in the workspace: its frame is the whole
+frame under the playhead, composited where nothing is drawn (or faintly over everything), cover-fit inside the Director
+view's frame. Never exported. *Rejected:* a card in the scene (it would export and be selectable); a background plate in
+exports (compositing over live footage is Cutaway's job).
+
+**D-454 — The bridge's `film`.** lens (millimetres on a body, aperture), frame, focus (on, at), rig (kind, numbers, keys),
+air, environment (turn, brightness, off) and shots (listed as a storyboard would). An HDRI comes over `add_media` with
+`environment` and applies like the other media (one undo step). Exports and the rotoscope stay in the app: where a file
+goes is the person's, and the rotoscope is a view aid. The lowey skill's camera and lighting modules teach it.
+
+**D-455 — Schema 21.** The `area` light and its size, cameras' `sensor`, `rig…` and `focusOn`, timelines' `frame`, the
+Look's `atmosphere`, the sky's `environment…`. 0.21 refuses a schema-21 file with its usual message.
+
+**D-456 — Kit 0.12.** HDR (`hevcHDR`), `SpatialVideoEncoder`, spatial photos and panoramas, `SphericalVideo`: Cutaway
+exports the same way.
+
+**D-457 — Every tier.** Haze and god rays are one pass; the HDRI is 4096 wide on M-chips and 2048 elsewhere; a panel costs
+what a spot does. Spatial frames draw twice and 360° frames six times, export only, the same picture on every iPad, slower
+on a smaller one. The device checklist times a 360° 4K export and a spatial export on the iPad.
+
+**D-458 — Translations still ride along.** The new strings were translated into Italian and Arabic for the catalog check.

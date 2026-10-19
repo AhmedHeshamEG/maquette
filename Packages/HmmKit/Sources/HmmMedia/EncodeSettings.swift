@@ -8,6 +8,8 @@ public enum VideoCodecKind: String, Codable, Sendable, CaseIterable, Identifiabl
     case hevcAlpha
     /// ProRes 4444 (.mov): editing masters with alpha.
     case prores4444
+    /// 10-bit HEVC in HDR: HLG, BT.2020 (.mov). Its frames are half floats already in HLG (`isHDR`).
+    case hevcHDR
 
     public var id: String { rawValue }
 
@@ -17,19 +19,25 @@ public enum VideoCodecKind: String, Codable, Sendable, CaseIterable, Identifiabl
         case .hevc: "HEVC"
         case .hevcAlpha: "HEVC with transparency"
         case .prores4444: "ProRes 4444"
+        case .hevcHDR: "HEVC HDR (HLG)"
         }
     }
 
     public var hasAlpha: Bool { self == .hevcAlpha || self == .prores4444 }
 
-    /// .mp4 for the delivery codecs, .mov when alpha or ProRes needs it.
-    public var fileExtension: String { hasAlpha ? "mov" : "mp4" }
+    /// High dynamic range: the encoder's buffers are RGBA half floats holding HLG-encoded BT.2020 colour, so a renderer
+    /// writes brighter-than-white highlights and wide colour straight into them.
+    public var isHDR: Bool { self == .hevcHDR }
+
+    /// .mp4 for the delivery codecs, .mov when alpha, ProRes or HDR's colour tags need it.
+    public var fileExtension: String { hasAlpha || isHDR ? "mov" : "mp4" }
 
     /// Average bits per pixel per frame for a good-looking delivery file.
     var bitsPerPixel: Double {
         switch self {
         case .h264: 0.12
         case .hevc, .hevcAlpha: 0.08
+        case .hevcHDR: 0.11
         case .prores4444: 1.2
         }
     }

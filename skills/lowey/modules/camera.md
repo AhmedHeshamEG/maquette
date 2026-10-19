@@ -37,6 +37,25 @@ Compositions: `leftThird` / `rightThird` (default for anything that looks or mov
 
 One move per shot, landing on its word. Holds between moves. The contact sheet flags constant-speed moves.
 
+## Film (0.22): the lens, the frame, focus, rigs
+
+`build` with `{"do":"film", …}`; "camera" defaults to the shot camera.
+
+- **A body and real millimetres**: `{"op":"lens","camera":"Shot","sensor":"super35","mm":32,"aperture":2.8}`. Bodies:
+  fullFrame, super35 (cinema), apsC, microFourThirds, super16 (film), phone, largeFormat, imax. The picture is the
+  field of view; the body only changes what the millimetres say, so match the lens to the body you name.
+- **The frame's shape**: `{"op":"frame","shape":"2.39:1"}` (16:9, 2.39:1, 9:16, 4:5, 1:1). The Director view, Frame
+  shot and every export follow it. 2.39 keeps 16:9's width and loses height: frame wider, not tighter.
+- **Focus that follows**: `{"op":"focus","on":"Hero"}` keeps a thing sharp as it moves; a second one later is a pull:
+  `{"op":"focus","on":"Letter","at":{"word":"letter"}}` (0.8 s, eased). Depth of field needs an aperture (2–4 for a
+  shallow look). Pull focus on the word the audience should look at, never twice in a sentence.
+- **Rigs** ride on top of any keyed move: `{"op":"rig","kind":"crane","arm":3,"keys":{"lift":[[0,0],[4,2.5]]}}`.
+  dolly (`travel`, metres along where it faces), crane (`lift`, `swing`, `arm`; it keeps its subject in frame),
+  orbit (`swing`, `lift`, around what it looks at or its focus point), handheld (`shake` 0…1, a person breathing;
+  0.2–0.4 for documentary, 0.7+ for panic). `shake` adds to any rig.
+- **Shots**: `{"op":"shots"}` lists them as a storyboard would (number, camera, lens, length, the words). Storyboards,
+  the animatic, spatial video for Vision Pro, 360° and HDR are exports, made in the app by the person.
+
 ## Cuts
 
 Cut on the first word of a new idea (`frame_shot ... on_word`). Straight cuts by default; `dipToBlack` when time passes.

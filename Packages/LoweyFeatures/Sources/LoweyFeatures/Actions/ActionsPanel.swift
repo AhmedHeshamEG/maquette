@@ -43,6 +43,7 @@ struct ActionsPanel: View {
                                 editor.pasteReference()
                             }
                         }
+                        RotoscopeTile(editor: editor)
                         TileButton(title: "History", systemName: "clock.arrow.circlepath", identifier: "open-history") { editor.openHistory() }
                     }
                 }

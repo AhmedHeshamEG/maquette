@@ -76,9 +76,31 @@ public final class FrameRenderer {
         var cvTexture: CVMetalTexture?
         let usage: MTLTextureUsage = [.shaderRead, .shaderWrite, .renderTarget]
         let attributes = [kCVMetalTextureUsage as String: usage.rawValue] as CFDictionary
-        CVMetalTextureCacheCreateTextureFromImage(nil, textureCache, buffer, attributes, RenderDevice.outputFormat, width, height, 0, &cvTexture)
+        // An HDR encoder's buffers are half floats; every other one is BGRA.
+        let format: MTLPixelFormat = CVPixelBufferGetPixelFormatType(buffer) == kCVPixelFormatType_64RGBAHalf ? .rgba16Float : RenderDevice.outputFormat
+        CVMetalTextureCacheCreateTextureFromImage(nil, textureCache, buffer, attributes, format, width, height, 0, &cvTexture)
         guard let cvTexture, let texture = CVMetalTextureGetTexture(cvTexture) else { throw RenderError.texture }
         return texture
+    }
+
+    /// A frame in Display P3 with 16 bits a channel (F1's wide-colour stills): drawn into half floats, read back, tagged.
+    public func wideImage(_ request: FrameRequest, width: Int, height: Int) async throws -> CGImage {
+        var wide = request
+        wide.encoding = .displayP3
+        let texture = try device.makeTexture(.rgba16Float, width: width, height: height, usage: [.shaderWrite, .shaderRead], storage: .shared,
+                                             label: "wide colour output")
+        _ = try await run(wide, into: texture)
+        var halves = [Float16](repeating: 0, count: width * height * 4)
+        texture.getBytes(&halves, bytesPerRow: width * 8, from: MTLRegionMake2D(0, 0, width, height), mipmapLevel: 0)
+        let words = halves.map { UInt16((min(max(Float($0), 0), 1) * 65535).rounded()) }
+        let alpha: CGImageAlphaInfo = request.transparent ? .premultipliedLast : .noneSkipLast
+        guard let provider = CGDataProvider(data: words.withUnsafeBufferPointer { Data(buffer: $0) } as CFData),
+              let space = CGColorSpace(name: CGColorSpace.displayP3),
+              let image = CGImage(width: width, height: height, bitsPerComponent: 16, bitsPerPixel: 64, bytesPerRow: width * 8, space: space,
+                                  bitmapInfo: CGBitmapInfo(rawValue: CGBitmapInfo.byteOrder16Little.rawValue | alpha.rawValue),
+                                  provider: provider, decode: nil, shouldInterpolate: true, intent: .defaultIntent)
+        else { throw RenderError.readback }
+        return image
     }
 
     public static func image(bgra bytes: [UInt8], width: Int, height: Int, transparent: Bool) throws -> CGImage {

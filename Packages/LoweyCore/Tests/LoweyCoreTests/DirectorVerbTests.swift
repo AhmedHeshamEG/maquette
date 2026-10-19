@@ -76,7 +76,7 @@ final class DirectorVerbTests: XCTestCase {
         XCTAssertEqual(lamps.map(\.name), ["Key light"])
         XCTAssertEqual(try XCTUnwrap(lamps.first?[.lightIntensity]?.floatValue), 3.2 * 1.5, accuracy: 1e-6)
         XCTAssertLessThan(second.document.effectiveLook.lighting.sunIntensity, 0.2)
-        XCTAssertEqual(LightRecipe.allCases.count, 6)
+        XCTAssertEqual(LightRecipe.allCases.count, 9, "the six toon recipes and F1's three-point, golden hour and neon")
         for recipe in LightRecipe.allCases {
             XCTAssertNoThrow(try run("{\"do\": \"lighting\", \"recipe\": \"\(recipe.rawValue)\"}"), recipe.rawValue)
             XCTAssertFalse(recipe.reason.isEmpty)

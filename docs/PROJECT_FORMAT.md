@@ -587,6 +587,26 @@ character turns its head toward it, anything else turns whole.
 
 Schema 20 only added optional keys; files from schema 19 open unchanged, and Maquette 0.20 refuses schema 20.
 
+## Film (schema 21)
+
+- **A soft panel** is a light of kind `{"light": "area"}` with `lightWidth` and `lightHeight` (metres; 1 and 0.6 when
+  missing): a rectangle that lights the way it faces (its −z), only out of its front. In glTF it travels as a spot with
+  an 80° cone and `extras.maquette.panel: [width, height]`, and reads back as a panel; the Blender package makes it a
+  rectangular area light.
+- **Cameras** carry `sensor` (`fullFrame` when missing, `super35`, `apsC`, `microFourThirds`, `super16`, `phone`,
+  `largeFormat`, `imax`: the body the millimetres are read on; `fieldOfView` stays the truth); `rig` (`dolly`, `crane`,
+  `orbit`, `handheld`; missing: on a tripod) with `rigTravel`, `rigLift` (m), `rigSwing` (degrees), `rigArm` (m, 3) and
+  `rigShake` (0–1), all but `rigArm` keyable; and `focusOn`, the id of the thing the lens keeps sharp (a string, keyable
+  and stepped, `""` = by distance). A new `focusOn` key pulls focus over 0.8 s.
+- **The timeline** carries `frame`, the picture's shape (`"2.39:1"`, `"9:16"`, `"4:5"`, `"1:1"`; missing: 16:9).
+- **The Look** carries `atmosphere` (missing: clear air): `{"haze": 0.4, "godRays": 0.6, "color": {…}}` (0–1 each;
+  `color` missing takes the sky's horizon warmed by the sun). Its `sky` can carry `environment` (an HDRI under
+  `assets/`, `environment/<name>.hdr`, a Radiance file), `environmentTurn` (degrees, left positive) and
+  `environmentExposure` (stops); the sun and the sky's three colours are the picture's, read when it came in.
+
+Schema 21 only added optional keys and a light kind; files from schema 20 open unchanged, and Maquette 0.21 refuses
+schema 21.
+
 
 ## workspace.json
 
@@ -611,6 +631,7 @@ falls back to its default; unknown keys are ignored. Plain JSON, no envelope.
 | `frameGuide` | object? | Since 0.5: the drawing guide over the frame for flipbooks. `kind` (`grid`, `isometric`, `perspective`, `symmetry`), `assisted`, `spacing` (frame heights), `origin` (`{"x","y"}`, frame heights from the centre, y up), `angle` (degrees), `vanishingPoints` (1–3, same units), `symmetry` (`vertical`, `horizontal`, `quadrant`, `radial`), `segments`, `mirrorRadial`. Missing: off. |
 | `planeGuide` | object? | Since 0.5: the same, laid on a flat sheet for ink (`grid`, `isometric`, `symmetry`; `spacing` in metres). Missing: off. |
 
+| `rotoscope` | object? | Since 0.22: the video behind the stage. `video` (a file under `assets/`), `opacity` (0–1), `start` (seconds on the timeline where the video's first frame is), `shown`, `inFront` (true: faintly over the scene, else behind it). The stage only; exports never show it. Missing: none. |
 | `references` | array | Since 0.9: pictures pinned from the board, floating over the stage. Each: `id`, `image` (a file under `assets/`, `references/<hash>.png`), `title`, `x` and `y` (the card's middle as fractions of the stage, 0–1), `width` (points, 120–900), `aspect` (height ÷ width); since 0.13 `folded` (true: a small chip) and `window` (true: opened from Actions ▸ Reference, not pinned from the board, so it stays while the Board is off). Values out of range are brought back in; missing: none. |
 
 ## board/ (the Schizzo board)

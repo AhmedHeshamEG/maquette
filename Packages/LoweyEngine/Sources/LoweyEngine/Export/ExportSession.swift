@@ -93,8 +93,10 @@ public final class ExportSession {
         return try await frameImage(at: time, settings: settings)
     }
 
-    /// A video: H.264 / HEVC .mp4, or HEVC with alpha / ProRes 4444 .mov. Verified before it returns.
-    public func video(_ settings: ExportSettings, audio: [Float]?, to url: URL, progress: @escaping (Double) -> Void) async throws -> URL {
+    /// A video: H.264 / HEVC .mp4, or HEVC with alpha / ProRes 4444 / HDR .mov. Verified before it returns. `shown` picks
+    /// the moment drawn for each frame's time (an animatic holds each shot's key moment; the sound runs on).
+    public func video(_ settings: ExportSettings, audio: [Float]?, to url: URL, shown: ((Double) -> Double)? = nil,
+                      progress: @escaping (Double) -> Void) async throws -> URL {
         await loadModels()
         let size = settings.size
         let encoder = try VideoEncoder(url: url, settings: settings.encodeSettings, audio: audio)
@@ -102,12 +104,16 @@ public final class ExportSession {
             for frame in 0 ..< settings.frameCount {
                 try Task.checkCancellation()
                 try await waitUntilRenderable()
-                let time = settings.range.start + Double(frame) / Double(settings.fps)
+                let clock = settings.range.start + Double(frame) / Double(settings.fps)
+                let time = shown?(clock) ?? clock
                 let buffer = try encoder.makePixelBuffer()
-                if settings.final {
+                // Final averages 8-bit frames, so an HDR file draws each frame once (its highlights are the point).
+                if settings.final, settings.encoding != .hdr {
                     try await FinalFrames.copy(frameBytes(at: time, settings: settings), width: size.width, height: size.height, into: buffer)
                 } else {
-                    _ = try await frames.render(frameRequest(at: time, settings: settings), into: buffer)
+                    var request = try await frameRequest(at: time, settings: settings)
+                    request.encoding = settings.encoding
+                    _ = try await frames.render(request, into: buffer)
                 }
                 try await encoder.append(buffer, frame: frame)
                 progress(Double(frame + 1) / Double(settings.frameCount))

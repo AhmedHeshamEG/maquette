@@ -58,7 +58,7 @@ struct ScriptSheet: View {
     static let reference = """
     lowey.add(shape, { name, position, rotation, scale, color, glow, parent }) → id
     lowey.group(name, { position, rotation, parent }) → id
-    lowey.light("point" | "spot" | "directional", { position, color, intensity, range }) → id
+    lowey.light("point" | "spot" | "directional" | "area", { position, color, intensity, range }) → id
     lowey.set(id, property, value)            lowey.key(id, property, time, value, easing?)
     lowey.preset(ids, "popIn", time, { duration, amplitude, delay, order: "x" | "distance", from })
     lowey.behavior(id, { type: "windSway", angle: 5 }, { start, end })

@@ -24,15 +24,10 @@ struct CameraSection: View {
                         editor.setDirectorView(true)
                     }
                 }
-                Picker("Framing", selection: $editor.deliveryFraming) {
-                    ForEach(Framing.allCases) { Text($0.rawValue).tag($0) }
-                }
-                .pickerStyle(.segmented)
-                Toggle("Thirds", isOn: $editor.showsThirds)
-                Toggle("Safe areas", isOn: $editor.showsSafeAreas)
             }
             frameShot
-            lens
+            CameraLensPanel(editor: editor, camera: camera)
+            portrait
             moves
             TransitionSection(editor: editor)
             PanelSection("iPad as camera") {
@@ -83,20 +78,10 @@ struct CameraSection: View {
         }
     }
 
-    private var lens: some View {
+    /// The same camera framed for 9:16: how much tighter, and where the tall frame sits in the wide one.
+    private var portrait: some View {
         let lens = editor.lens(of: camera)
-        return PanelSection("Lens") {
-            LabeledSlider(title: "Focal length", value: lens?.focalLength ?? 35, range: 12 ... 200, format: { "\(Int($0)) mm" },
-                          set: { editor.setFocalLength($0, gesture: "focal") }, done: editor.endGesture)
-            LabeledSlider(title: "Focus", value: lens?.focusDistance ?? 5, range: 0.2 ... 60, format: { "\(NumberFormat.short($0)) m" },
-                          set: { editor.setCameraProperty(.focusDistance, $0, gesture: "focus") }, done: editor.endGesture)
-            LabeledSlider(title: "Aperture", value: lens?.aperture ?? 0, range: 0 ... 22, format: { $0 < 0.9 ? "Off" : "f/\(NumberFormat.short($0))" },
-                          set: { editor.setCameraProperty(.aperture, $0 < 0.9 ? 0 : $0, gesture: "aperture") }, done: editor.endGesture)
-            HStack(spacing: HmmSpacing.xs) {
-                HmmPillButton("Focus on selection", systemName: "scope") { editor.focus(onSelection: false) }
-                HmmPillButton("Focus pull", systemName: "camera.metering.center.weighted") { editor.focus(onSelection: true) }
-            }
-            .shown(!editor.selection.allSatisfy { $0 == camera })
+        return PanelSection("9:16 framing") {
             LabeledSlider(title: "9:16 zoom", value: lens?.portraitZoom ?? 1, range: 0.5 ... 2, format: { String(format: "%.2g×", $0) },
                           set: { editor.setCameraProperty(.portraitZoom, $0, gesture: "pzoom") }, done: editor.endGesture)
             LabeledSlider(title: "9:16 pan", value: lens?.portraitShift ?? 0, range: -1 ... 1, format: NumberFormat.percent,

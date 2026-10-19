@@ -35,6 +35,28 @@ final class PerceptionTests: XCTestCase {
         XCTAssertTrue(report.summary.contains("Fails"), report.summary)
     }
 
+    func testPartsOfAGroundedGroupAreAttachedNotFloating() throws {
+        // A car: wheels on the ground, the body on the wheels, a wing on the body; and a balloon tied to nothing.
+        let parts = [cube("wheel", at: Vec3(-0.6, 0, 0), size: 0.3), cube("body", at: Vec3(0, 0.3, 0), size: 1),
+                     cube("wing", at: Vec3(0, 1.3, 0), size: 0.2), cube("balloon", at: Vec3(0, 3, 0), size: 0.3)]
+        var document = document([])
+        var car = SceneObject(id: "car", name: "Car", kind: .group)
+        car.children = parts.map(\.id)
+        document.scene.objects["car"] = car
+        document.scene.roots.insert("car", at: 0)
+        for var part in parts {
+            part.parent = "car"
+            document.scene.objects[part.id] = part
+        }
+        let report = ShotObserver(document: document).observe(at: 0)
+        for name in ["Wheel", "Body", "Wing"] {
+            XCTAssertEqual(report.object(named: name)?.grounded, true, name)
+        }
+        XCTAssertEqual(report.object(named: "Balloon")?.grounded, false, "touching nothing, it really floats")
+        let ground = try XCTUnwrap(report.checks.first { $0.name == "Ground" })
+        XCTAssertFalse(ground.detail.contains("Wing"), ground.detail)
+    }
+
     func testACubeOnTheGroundIsCentredAndFullyVisible() throws {
         let report = ShotObserver(document: document([cube("box", at: .zero)])).observe(at: 0)
         let box = try XCTUnwrap(report.object(named: "Box"))

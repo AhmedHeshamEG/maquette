@@ -38,8 +38,9 @@ struct ModelAddPage: View {
             }
             PanelSection("Light") {
                 TileGrid {
-                    TileButton(title: "Lamp", systemName: "lightbulb.fill", identifier: "add-lamp") { place { editor.addLight(.point) } }
+                    TileButton(title: "Bulb", systemName: "lightbulb.fill", identifier: "add-lamp") { place { editor.addLight(.point) } }
                     TileButton(title: "Spot", systemName: "light.overhead.right.fill", identifier: "add-spot") { place { editor.addLight(.spot) } }
+                    TileButton(title: "Soft panel", systemName: "light.panel.fill", identifier: "add-panel") { place { editor.addLight(.area) } }
                     TileButton(title: "Sun", systemName: "sun.max.fill", identifier: "add-sun") { place { editor.addLight(.directional) } }
                 }
             }

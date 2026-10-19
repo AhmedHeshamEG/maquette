@@ -50,6 +50,8 @@ extension LoweyRenderer {
         dispatch(encoder, device.pipelines.lines, width: width, height: height)
 
         var uniforms = LookResolver.post(post, sceneLook: sceneLook, frame: request.frameIndex, size: SIMD2<Float>(Float(width), Float(height)))
+        LookResolver.air(request.input.document.effectiveLook, camera: shot.camera, aspect: Float(width) / Float(max(height, 1)), into: &uniforms)
+        uniforms.sunGlow.w = request.encoding == .hdr ? 1 : 0
         encodeBloom(encoder, source: targets.lined, targets: targets, uniforms: &uniforms)
 
         // Lens: blur, or misregistration in a Look that asks for it; chromatic aberration.
@@ -72,6 +74,7 @@ extension LoweyRenderer {
         encoder.setTexture(targets.ids, index: 2)
         encoder.setTexture(targets.bloomUp[0], index: 3)
         encoder.setTexture(shot.destination, index: 4)
+        encoder.setTexture(targets.normalDepth, index: 5)
         encoder.setBytes(&uniforms, length: MemoryLayout<PostUniforms>.stride, index: 0)
         encoder.setBytes(&looks, length: MemoryLayout<LookUniforms>.stride * looks.count, index: 1)
         dispatch(encoder, device.pipelines.finish, width: width, height: height)
@@ -129,6 +132,16 @@ extension LoweyRenderer {
         let layerMask = (flipbooks[.multiply] == nil ? 0 : 1) + (flipbooks[.screen] == nil ? 0 : 2) + (flipbooks[.add] == nil ? 0 : 4)
             + (flipbooks[.normal] == nil ? 0 : 8)
         uniforms.options = SIMD4<Float>(overlay == nil ? 0 : 1, request.transparent ? 1 : 0, request.transparent ? 0 : 1, Float(layerMask))
+        uniforms.output = switch request.encoding {
+        case .sRGB: .zero
+        case .hdr: SIMD4<Float>(1, 3.78, 0, 0)
+        case .displayP3: SIMD4<Float>(2, 1, 0, 0)
+        }
+        let video = request.rotoscope.flatMap { textures.texture(for: $0.image, key: "rotoscope", maxSide: 2048, holdsImage: true) }
+        if let frame = request.rotoscope, video != nil {
+            uniforms.rotoscope = SIMD4<Float>(1, Float(frame.opacity), frame.inFront ? 1 : 0,
+                                              Float(frame.image.width) / Float(max(frame.image.height, 1)))
+        }
         encoder.setTexture(targets.finished, index: 0)
         encoder.setTexture(request.transition == nil ? targets.finished : targets.finishedOther, index: 1)
         encoder.setTexture(overlay ?? editorMeshes.white, index: 2)
@@ -137,6 +150,8 @@ extension LoweyRenderer {
         encoder.setTexture(flipbooks[.screen] ?? editorMeshes.white, index: 5)
         encoder.setTexture(flipbooks[.add] ?? editorMeshes.white, index: 6)
         encoder.setTexture(flipbooks[.normal] ?? editorMeshes.white, index: 7)
+        encoder.setTexture(video ?? editorMeshes.white, index: 8)
+        encoder.setTexture(targets.ids, index: 9)
         encoder.setBytes(&uniforms, length: MemoryLayout<CompositeUniforms>.stride, index: 0)
         dispatch(encoder, device.pipelines.composite, width: output.width, height: output.height)
         encoder.endEncoding()

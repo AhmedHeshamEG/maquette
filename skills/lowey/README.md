@@ -7,11 +7,16 @@ rubric, fix, animate, check the motion with `contact_sheet`, and hand Hesham one
 ## Install
 
 ```powershell
-pip install "git+https://github.com/AhmedHeshamEG/3D-lowey#subdirectory=Tools/lowey"   # hmm-bridge
+pip install "git+https://github.com/AhmedHeshamEG/maquette#subdirectory=Tools/lowey"   # hmm-bridge
 hmm-bridge pair 123456                                   # the code the iPad shows
 claude mcp add lowey -- hmm-bridge mcp
+Remove-Item -Recurse -Force $HOME\.claude\skills\lowey -ErrorAction SilentlyContinue
 Copy-Item -Recurse skills\lowey $HOME\.claude\skills\lowey
 ```
+
+Install it again after every update: Copy-Item into an existing folder nests the new copy inside the old one, and an
+old skill teaches tools the server no longer has (`run_script`, `snapshot`, v2 verbs). `SKILL.md` names the app
+version it was written for on its first line under the title; the MCP server's `status` tool names the app's.
 
 ## What's in it
 

@@ -27,6 +27,7 @@ struct LookPanel: View {
                     PaletteSection(editor: editor)
                 case .world:
                     moods
+                    AirSection(editor: editor)
                     DisclosureGroup("Fine tune the world", isExpanded: $showsFineTune) {
                         WorldSection(editor: editor).padding(.top, HmmSpacing.xs)
                     }

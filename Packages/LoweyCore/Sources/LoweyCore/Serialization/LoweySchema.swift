@@ -64,7 +64,9 @@ public enum LoweySchema {
     ///     states), the `setPart` command, the `characterStart`, `mouthShape` and `browState` properties.
     /// 20: Maquette 0.21's animation: timelines' `holds` (pick-up, hand-off, put-down), the `setHolds` command, the
     ///     `lookAt` property.
-    public static let currentVersion = 20
+    /// 21: Maquette 0.22's film: the `area` light (a soft panel) and its `lightWidth` / `lightHeight`, cameras' `sensor`,
+    ///     `rig…` and `focusOn` properties, timelines' `frame`, the Look's `atmosphere` and the sky's `environment…`.
+    public static let currentVersion = 21
 
     public static let migrations: [Migration] = [
         Migration(kind: .scene, from: 0, transform: liftSceneV0),
@@ -142,7 +144,11 @@ public enum LoweySchema {
         // 19 → 20 adds optional holds and a property; nothing older changes shape.
         Migration(kind: .scene, from: 19) { $0 },
         Migration(kind: .project, from: 19) { $0 },
-        Migration(kind: .library, from: 19) { $0 }
+        Migration(kind: .library, from: 19) { $0 },
+        // 20 → 21 adds a light type, optional fields and properties; nothing older changes shape.
+        Migration(kind: .scene, from: 20) { $0 },
+        Migration(kind: .project, from: 20) { $0 },
+        Migration(kind: .library, from: 20) { $0 }
     ] + unchangedSince(.brushes) + unchangedSince(.materials)
 
     /// A file kind whose payload hasn't changed shape at any version: every step keeps it as it is (D-339; the

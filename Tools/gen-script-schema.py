@@ -28,7 +28,8 @@ relations = ["on", "beside_left", "beside_right", "in_front_of", "behind", "abov
              "around", "row", "grid", "scatter_in", "stack"]
 shot_types = ["extremeWide", "wide", "full", "medium", "closeUp", "extremeCloseUp", "overTheShoulder", "twoShot", "insert"]
 compositions = ["center", "leftThird", "rightThird", "lowAngle", "highAngle"]
-recipes = ["key-warm-world-cool", "noir-single-source", "golden-rim", "monitor-glow", "moonlit", "studio-soft"]
+recipes = ["three-point", "golden-hour", "moonlit", "neon", "key-warm-world-cool", "noir-single-source", "golden-rim", "monitor-glow",
+           "studio-soft"]
 intents = ["enter", "exit", "emphasise", "react", "walk_to", "look_at", "talk", "idle"]
 looks = ["ink", "comic", "sketch", "clay", "lowpoly"]
 fx = ["speedLines", "impactBurst", "sweatDrop", "sparkle", "smear"]
@@ -71,7 +72,9 @@ verbs = {
                    "reset": b, "measure": {"enum": ["height", "head", "body", "waist", "arms", "legs"]}, "by": n, "to": n,
                    "line": s, "language": s}, []),
     "particles": ("An emitter.", {"preset": s, "name": s, "at": point, "amount": n, "time": time}, ["preset"]),
-    "light": ("A lamp.", {"type": {"enum": ["point", "spot", "sun"]}, "name": s, "at": point, "color": color, "intensity": n, "range": n}, []),
+    "light": ("A light: a bulb (point), a spot, a sun, or a soft panel (a rectangle, \"size\" in metres) aimed at a thing.",
+              {"type": {"enum": ["point", "bulb", "spot", "sun", "panel"]}, "name": s, "at": point, "color": color, "intensity": n,
+               "range": n, "size": {"type": "array", "items": n}, "aim": point}, []),
     "camera": ("A camera.", {"name": s, "from": point, "lookAt": point, "focalLength": n, "fov": n, "aperture": n, "active": b}, []),
     "frameShot": ("The camera solver: shot type and composition on a subject (a new camera when \"camera\" doesn't exist).",
                   {"subject": tgt, "shotType": {"enum": shot_types}, "composition": {"enum": compositions}, "lens": n, "other": tgt,
@@ -125,10 +128,21 @@ verbs = {
                "distance": n, "along": {"enum": ["x", "y", "z"]}, "cuts": n, "normal": v3, "faces": n, "quadsOnly": b,
                "to": {"enum": ["middle", "base"]}, "length": n,
                "step": n, "number": {"anyOf": [s, n]}, "value": n}, ["target", "op"]),
-    "profile": ("A sketch region made into a solid: swept along a path, revolved around an axis or lofted through others.",
-                {"target": tgt, "region": n, "op": {"enum": ["sweep", "revolve", "loft"]}, "path": {"type": "array", "items": v3},
-                 "closed": b, "axis": {"type": "object", "properties": {"point": v3, "direction": v3}}, "degrees": n, "through": tgt},
+    "profile": ("A sketch region made into a solid: pulled out of its plane (a negative distance cuts into the thing it was "
+                "drawn on), swept along a path, revolved around an axis or lofted through others.",
+                {"target": tgt, "region": n, "op": {"enum": ["pull", "sweep", "revolve", "loft"]}, "distance": n,
+                 "path": {"type": "array", "items": v3}, "closed": b,
+                 "axis": {"type": "object", "properties": {"point": v3, "direction": v3}}, "degrees": n, "through": tgt},
                 ["target", "op"]),
+    "sketch": ("Construction curves on a plane (xy facing front, xz the ground, yz the side, or an origin and a normal) or on "
+               "the face of a thing; closed curves make the areas profile uses. Points are metres on the plane.",
+               {"name": s, "plane": {"anyOf": [{"enum": ["xy", "xz", "yz"]},
+                                              {"type": "object", "properties": {"origin": v3, "normal": v3}}]},
+                "at": point, "on": tgt, "face": {"enum": ["top", "bottom", "front", "back", "left", "right"]},
+                "curves": {"type": "array", "items": {"type": "object"}}}, ["curves"]),
+    "boolean": ("Combines shapes into the target (it keeps its name, look and place; the others are used up): subtract cuts "
+                "wheel arches and windows, union joins, intersect keeps the overlap.",
+                {"op": {"enum": ["union", "subtract", "intersect"]}, "target": tgt, "with": tgt}, ["op", "target", "with"]),
     "paint": ("U7's texturing on one thing: a fill layer of a colour, a material or wear; a decal; whole faces; the layers; "
               "a mask; mirrored strokes; the texture's size; hand-marked seams; normals baked from a detailed copy; fur.",
               {"target": tgt, "op": {"enum": ["color", "material", "wear", "decal", "faces", "layers", "mask", "mirror", "size", "seams",
@@ -163,6 +177,15 @@ verbs = {
                 "target": tgt, "points": {"type": "array", "items": v3}, "times": {"type": "array", "items": n}, "speed": n,
                 "duration": n, "at": {"anyOf": [time, tgt]}, "from": time, "facesTheWay": b, "banks": b, "upright": b,
                 "path": tgt, "line": tgt, "loop": b, "by": tgt, "joint": s, "quarterTurns": n}, ["target", "op"]),
+    "film": ("F1's film tools: a lens in millimetres on a camera body; the picture's shape; focus that follows a thing (a "
+             "later one pulls focus); a rig (dolly, crane, orbit, handheld) with its moves keyed; haze and god rays; turning "
+             "the HDRI; and the shots as a storyboard would list them.",
+             {"op": {"enum": ["lens", "frame", "focus", "rig", "air", "environment", "shots"]}, "camera": tgt, "mm": n,
+              "sensor": {"enum": ["fullFrame", "super35", "apsC", "microFourThirds", "super16", "phone", "largeFormat", "imax"]},
+              "aperture": n, "shape": {"enum": ["16:9", "2.39:1", "9:16", "4:5", "1:1"]}, "on": {"anyOf": [tgt, {"type": "null"}]},
+              "at": time, "kind": {"enum": ["none", "dolly", "crane", "orbit", "handheld"]}, "travel": n, "lift": n, "swing": n,
+              "arm": n, "shake": n, "keys": {"type": "object"}, "haze": n, "godRays": n, "color": color, "turn": n, "exposure": n,
+              "off": b}, ["op"]),
     "command":("A raw EditCommand.", {"command": ref("command")}, ["command"]),
 }
 

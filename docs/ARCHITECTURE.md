@@ -669,6 +669,38 @@ flowchart LR
 - **CI**: the `look-shader` job renders the exported Ink material with `Tools/godot/render_look.gd` and compares it with
   `Tools/godot/golden/ink-look.png` (`Tools/check_look_render.py`).
 
+## Film (0.22)
+
+```mermaid
+flowchart LR
+    Cam[Camera: sensor · rig… · focusOn] --> Anim[Animator: … holds → CameraRig.apply → LookAt → CameraRig.shake → FocusPull]
+    Look[Look: atmosphere · sky.environment] --> FU[FrameUniforms.environment<br/>PostUniforms.air]
+    FU --> Sky[lw_shadeSky: the HDRI turned] & Finish[lw_finish: lw_air haze and rays]
+    Shots[Timeline.shots] --> SB[Storyboard.pdf] & Ani[ExportSession.animatic]
+    Exp[ExportSession+Film] --> Stereo[eyes → SpatialVideoEncoder / spatialPhoto]
+    Exp --> Pano[six faces → lw_equirect → VideoEncoder + SphericalVideo]
+    Exp --> HDR[FrameEncoding.hdr → rgba16Float buffer → lw_encodeOutput HLG]
+```
+
+- **Core `Film/`**: `FrameShape` (the picture's shapes, `Timeline.frame`; the engine's `Framing` is an alias),
+  `CameraSensor` (bodies by crop factor, `CameraLens.focalLength(on:)`), `CameraRig` (place on the rig, the hand after
+  looks), `FocusPull` and `FocusOperations` (`focusOn`, pulls), `Shot` and `Timeline.shots`, `LightSetups` (a recipe as
+  one batch; `Look/LightRecipes` has the lamps, now with kinds and sizes), `Atmosphere`, `RadianceHDR` and
+  `EnvironmentLight` (read and analyse an HDRI), `Storyboard` (panels and sheets on `PDFWriter`), `StereoRig` and
+  `Panorama` (eyes; the cube's faces and the flat picture's directions), `Rotoscope` (`ProjectWorkspace.rotoscope`).
+  `AI/ScriptCompiler+Film` (the `film` verb), `+Sketch` (`sketch`, `boolean`). `LightType.area`, glTF's panel extras,
+  the Blender package's area light.
+- **Engine**: `SceneCompiler.lightData` packs panels (`LightData.axis`); `Shading.metal`'s `lw_localLights` lights from a
+  panel's nearest point; `Renderer+Environment` (the HDRI as a half-float texture, cached; sky texture 9);
+  `LookResolver.air` (the sun's place on the frame) and `Post.metal`'s `lw_air`; `FrameRequest.encoding` (`FrameEncoding`:
+  sRGB, HDR, Display P3) and `Composite.metal`'s `lw_encodeOutput`; `FrameRequest.rotoscope` and `lw_rotoscope` (ids at
+  texture 9, the video at 8); `Panorama.metal`'s `lw_equirect`; `ExportSession+Film` (animatic, spatial video and photo,
+  panoramas and 360° video, wide colour); `FrameRenderer.wideImage` and half-float buffer textures; F1's presets.
+- **Kit**: HmmMedia's `hevcHDR`, `SpatialVideoEncoder`, `ImageWriters.spatialPhoto` / `panorama`, `SphericalVideo`.
+- **Features**: `Inspector/LightSection` (setups), `Inspector/CameraLensPanel` (on the camera's panel and the camera
+  button's popover), `Look/AirSection`, `Actions/RotoscopePanel`, `Workspace/UI/PickedMovie`, `EditorModel+Film`,
+  `EditorModel+ExportFilm`; `deliveryFraming` is the timeline's frame.
+
 ## LoweyRender 2
 
 ```mermaid
