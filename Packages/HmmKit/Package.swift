@@ -27,7 +27,8 @@ let package = Package(
         .library(name: "HmmBoard", targets: ["HmmBoard"]),
         .library(name: "HmmBrushRender", targets: ["HmmBrushRender"]),
         .library(name: "HmmBoardUI", targets: ["HmmBoardUI"]),
-        .library(name: "HmmHeld", targets: ["HmmHeld"])
+        .library(name: "HmmHeld", targets: ["HmmHeld"]),
+        .library(name: "HmmVector", targets: ["HmmVector"])
     ],
     targets: [
         .target(name: "HmmDesign"),
@@ -50,6 +51,8 @@ let package = Package(
         .target(name: "HmmBoardUI", dependencies: ["HmmBoard", "HmmBrush", "HmmBrushRender", "HmmCommands", "HmmDesign", "HmmDiagnostics", "HmmDocuments"]),
         // Held features: built before launch, aired later as free updates; the list travels in the Info.plist.
         .target(name: "HmmHeld"),
+        // Vector drawings (SVG) read as filled outlines, for logos and shapes.
+        .target(name: "HmmVector"),
         .testTarget(name: "HmmCommandsTests", dependencies: ["HmmCommands"]),
         .testTarget(name: "HmmDocumentsTests", dependencies: ["HmmDocuments", "HmmCommands"]),
         .testTarget(name: "HmmTranscriptTests", dependencies: ["HmmTranscript"]),
@@ -61,7 +64,8 @@ let package = Package(
         .testTarget(name: "HmmBrushTests", dependencies: ["HmmBrush"]),
         .testTarget(name: "HmmBoardTests", dependencies: ["HmmBoard", "HmmBrush", "HmmCommands", "HmmDocuments"]),
         .testTarget(name: "HmmBoardUITests", dependencies: ["HmmBoardUI", "HmmBoard", "HmmBrush", "HmmBrushRender"]),
-        .testTarget(name: "HmmHeldTests", dependencies: ["HmmHeld"])
+        .testTarget(name: "HmmHeldTests", dependencies: ["HmmHeld"]),
+        .testTarget(name: "HmmVectorTests", dependencies: ["HmmVector"])
     ],
     swiftLanguageModes: [.v6]
 )

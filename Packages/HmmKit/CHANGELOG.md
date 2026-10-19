@@ -3,6 +3,20 @@
 All notable changes to hmm-kit. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the
 project uses [Semantic Versioning](https://semver.org/).
 
+## [0.13.0] - 2026-10-19
+
+Built with Maquette 0.23.
+
+### Added
+- **HmmVector** (new, pure Swift): `SVG.read` turns an SVG file into filled shapes (`VectorDrawing`): every path command
+  with arcs, rectangles (rounded), circles, ellipses, polygons, nested groups and `<svg>`, transforms, `<use>` and
+  symbols, paint that inherits, `<style>` rules by class, id and tag, and gradients as the average of their stops. Curves
+  are flattened within a tolerance. Strokes, text and pictures can't become filled outlines, so they are counted in
+  `skipped` for the app to name.
+- **HmmMedia**: `SoundLevels` and `SoundAnalysis` (pure Swift): a sound's loudness and bass sixty times a second, its
+  beats and tempo (autocorrelation of onsets, a grid locked onto each kick), a pulse on each beat; base64 in JSON.
+  `SoundReader` reads any file AVFoundation opens as mono samples and measures it.
+
 ## [0.12.0] - 2026-10-19
 
 Built with Maquette 0.22.
