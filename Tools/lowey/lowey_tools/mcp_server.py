@@ -234,12 +234,14 @@ def flipbook(kind: str, anchor: Any, at: Any = None, on_word: str | None = None,
 # -- 12–13: media from the laptop ---------------------------------------------------------------------------------------
 
 @tool()
-def add_media(path: str, at: float | None = None, overlay: bool = False, environment: bool = False) -> str:
+def add_media(path: str, at: float | None = None, overlay: bool = False, environment: bool = False, font: bool = False,
+              logo: bool = False) -> str:
     """A picture or video file from this laptop into the open shot: a thin card standing in the 3D world, or overlay=True
     to lay it flat over the frame. Videos play from `at` seconds (default: the playhead). environment=True takes a
     Radiance .hdr panorama (an HDRI) as the world's sky and light: its sun and sky colours light the scene; turn it with
-    build's {"do": "film", "op": "environment", "turn": 40}."""
-    placement = "environment" if environment else "overlay" if overlay else "card"
+    build's {"do": "film", "op": "environment", "turn": 40}. font=True brings an OTF/TTF font into the project for 3D
+    text (build's {"do": "text", "font": "fonts/…"}); logo=True stands an SVG logo up as solids, one a colour."""
+    placement = "font" if font else "logo" if logo else "environment" if environment else "overlay" if overlay else "card"
     try:
         return _compact(bridge().add_media(pathlib.Path(path).expanduser(), at=at, placement=placement))
     except (BridgeError, OSError) as error:

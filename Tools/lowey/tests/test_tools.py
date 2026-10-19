@@ -202,6 +202,14 @@ def test_the_sixteen_tools_go_through_the_bridge(bridge_host, monkeypatch, tmp_p
     sky.write_bytes(b"#?RADIANCE")
     mcp_server.add_media(str(sky), environment=True)
     assert "as=environment" in RECEIVED[-1][1], "an HDRI goes to the world's sky"
+    brand = tmp_path / "Brand.otf"
+    brand.write_bytes(b"OTTO")
+    mcp_server.add_media(str(brand), font=True)
+    assert "as=font" in RECEIVED[-1][1], "a font goes to the project's fonts"
+    mark = tmp_path / "mark.svg"
+    mark.write_bytes(b"<svg/>")
+    mcp_server.add_media(str(mark), logo=True)
+    assert "as=logo" in RECEIVED[-1][1], "an SVG stands up as a logo"
     made = tmp_path / "Graph.mov"
     made.write_bytes(b"MOV")
     rendered = []
