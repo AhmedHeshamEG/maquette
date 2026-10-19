@@ -97,7 +97,9 @@
                 CMTaggedBuffer(tags: [.stereoView(.leftEye), .videoLayerID(0)], pixelBuffer: left),
                 CMTaggedBuffer(tags: [.stereoView(.rightEye), .videoLayerID(1)], pixelBuffer: right)
             ]
-            guard adaptor.appendTaggedBuffers(eyes, withPresentationTime: time) else {
+            // Through `TaggedBufferAppending`: iOS 26 deprecates the call for an async receiver whose stereo tagging isn't
+            // documented yet; the call itself still writes MV-HEVC.
+            guard (adaptor as TaggedBufferAppending).appendTaggedBuffers(eyes, withPresentationTime: time) else {
                 throw EncodeError.writer(writer.error?.localizedDescription ?? "couldn't append frame \(frame)")
             }
             try await sound?.append(upTo: Int((Double(frame + 1) / Double(settings.fps) * Double(settings.audioSampleRate)).rounded()))
@@ -119,6 +121,14 @@
             try? FileManager.default.removeItem(at: url)
         }
     }
+
+    /// The tagged-buffer adaptor's append, named by a protocol so iOS 26's deprecation of it doesn't stop a warnings-as-errors
+    /// build (the method is unchanged; its replacement is a different, async API).
+    protocol TaggedBufferAppending {
+        func appendTaggedBuffers(_ taggedBuffers: [CMTaggedBuffer], withPresentationTime presentationTime: CMTime) -> Bool
+    }
+
+    extension AVAssetWriterInputTaggedPixelBufferGroupAdaptor: TaggedBufferAppending {}
 
     /// An AAC sound track fed from interleaved stereo Float32, as frames go in (shared by the flat and spatial encoders).
     final class VideoEncoderSound {
