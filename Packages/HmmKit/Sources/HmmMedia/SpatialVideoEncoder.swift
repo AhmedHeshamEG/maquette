@@ -70,7 +70,11 @@
             ])
             guard writer.canAdd(input) else { throw EncodeError.writer("can't add the spatial video track") }
             writer.add(input)
-            sound = try audio.flatMap { $0.isEmpty ? nil : try VideoEncoderSound(writer: writer, audio: $0, sampleRate: settings.audioSampleRate) }
+            if let audio, !audio.isEmpty {
+                sound = try VideoEncoderSound(writer: writer, audio: audio, sampleRate: settings.audioSampleRate)
+            } else {
+                sound = nil
+            }
             guard writer.startWriting() else { throw EncodeError.writer(writer.error?.localizedDescription ?? "couldn't start") }
             writer.startSession(atSourceTime: .zero)
         }
