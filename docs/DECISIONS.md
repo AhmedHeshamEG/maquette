@@ -3031,3 +3031,117 @@ in the background. The same features everywhere; the device checklist times 1000
 backlog.
 
 **D-475 — Translations still ride along.** The new strings were translated into Italian and Arabic for the catalog check.
+
+## Maquette 0.24 — L2, Looks & the library
+
+The inbox had nothing for this phase (the queued video-planning session stays queued), and D1 left no device notes yet.
+
+**D-476 — Seven Looks, not six.** Painterly, Watercolour, Gouache, Paperman, Anime cel, Clean product and Pixel join Ink,
+Comic, Sketch, Clay and Low-poly: twelve, in the panel's order the toon family, paint, film, solid, pixels. The plan's
+"Watercolour & gouache" became two Looks: one is transparent (the paper shows, washes pool at their edges), the other
+opaque and flat; one Look with a slider between them would be neither. *Rejected:* one combined Look.
+
+**D-477 — The paint pass.** Painterly, Watercolour and Gouache lay paint over the whole picture after the lines, so the
+lines are painted too: a structure tensor of the picture's brightness gives each pixel a direction, then an anisotropic
+Kuwahara filter (eight sectors on an ellipse along that direction) turns it into strokes that follow the forms, with
+faint bristles along them; watercolour adds wet edges from the brightness gradient, granulation in the dark paint and the
+paper in the light. Each pixel takes its own Look's amounts from the ID buffer, so a painted thing can stand in an Ink
+world. The pass runs only when a Look in the frame paints, its two textures are made on first use, and Tier B and C
+previews sample two rings a sector instead of three. `LookPreset.paint`. *Rejected:* placing stroke quads (thousands a
+frame, never the same on two tiers); paint in the surface shader (strokes must cross edges and lines).
+
+**D-478 — Paperman is a film, not a sketch.** Soft (clay) light in black and white, thin clean ink, grain and a vignette,
+accents keeping their colour. Sketch stays pencil on paper.
+
+**D-479 — Clean product.** Soft light and shadows, no lines, and `reflection`: every surface mirrors the room's gradient
+(the sky above, the floor below) by its fresnel, as lacquer does. *Rejected:* image-based reflections of the HDRI (the
+Looks are banded; D-443 holds).
+
+**D-480 — Anime cel.** Two hard tones, `shadowTint` (a lavender laid over the shadow band, how much in its alpha), a hard
+rim and highlight, lines in each thing's own colour, on twos.
+
+**D-481 — Pixel.** `LookPreset.pixel`: blocks of `size` points at 1080p and `colors` levels a channel, stepped in display
+gamma. Blocks are a whole-frame thing, so they come from the scene's Look (a block can't be half Pixel and half Ink); the
+lines are drawn first and turn chunky with everything. Blocks follow the frame's height: a 4K export looks like the stage.
+
+**D-482 — The Finish on any Look.** `PostSettings` gains `misregistration` (the camera's depth of field drawn as slipped
+colour plates, as Comic does), `boil` (lines tremble on twos, the larger of it and the Look's) and `benDay` (flat colour
+printed as dots on paper, bigger where it's darker), and three print textures: newsprint, risograph, canvas. Files from
+before read with every new field off. *Rejected:* per-object Ben-Day (dots of two sizes meeting at an edge look broken).
+
+**D-483 — The drawn set.** Screen effects gain an impact frame (two tones flipping each drawing, a burst of rays from the
+hit), focus lines (tapered ink closing in on a point, a clear oval round it) and Kirby dots (black blobs crackling out
+from a point). They aim at `center` or follow a `target`: the middle of its box as the shot's camera sees it, every frame.
+Added from Look ▸ Finish (or ⌃⌘I, ⌃⌘U, ⌃⌘K) they follow the selected thing. Drawn on twos. *Rejected:* drawing them in
+3D (they are marks on the frame, as a comic artist's are).
+
+**D-484 — Studios in one grammar.** hmm-kit's `HmmStudio`: the made thing at the top, changing as you go, its settings
+in pages under it, About last (`HmmStudioAbout`). The Look Studio is new (the My Look rows moved into it: Light, Lines,
+Paint, Print, Motion, About); the Effect Studio is new (a saved particle effect playing from the same simulator the stage
+uses, seen from the side; Amount, Motion, Look, About); the Part Studio is new (a saved character part: its job and
+About; its shape is changed on a character, then saved again). Brush and Material Studio keep their own views, which
+already are this shape. *Rejected:* moving the Brush Studio onto the shell now (its pad is a drawing surface, not a picture).
+
+**D-485 — One `.maquettepack`, two contents.** The extension already carried a whole project; it now carries library
+things too, and what's inside decides: `pack.json` makes it a library pack, `project.json` a project. Opening either from
+Files, AirDrop or the share sheet does the right thing. A pack is `pack.json` (hmm-kit's `HmmPackManifest`), a licence file
+in words, one versioned envelope an item and the pictures and models they name; reading takes only the kinds it knows
+(brush, look, material, effect, part, motion, thing) and counts the rest out, refuses another app's pack, a newer format
+and any path outside itself. Things that arrive get a fresh id where one is taken, brushes come as a set named after the
+pack, pictures are filed under what they are. *Rejected:* a second extension (two files people can't tell apart); scripts
+in packs (law 12: data only).
+
+**D-486 — Who made it, in words.** A pack's author and licence are chosen when it's shared and remembered for the next
+one: Use in anything · Credit me · Personal use only · My own words. Every thing keeps where it came from
+(`LibraryManifest.origins`, brushes and materials included) and shows it on its About page; passed on in another pack, it
+keeps its own author and licence whatever the new pack says. *Rejected:* a licence per thing chosen by hand (nobody
+would), legal codes (CC BY-NC means nothing to a hobbyist).
+
+**D-487 — Bring your drawing.** A layered PSD, PSB or Procreate file stands up as a diorama: each layer a sheet 0.4 % of
+the drawing's long side thick, cut to the outline of what it shows (the alpha read as cells, walked into loops with their
+holes, straightened) and painted with its picture on the front through the usual unwrap, the bottom layer at the back,
+each one above 6 % nearer; groups stay groups, hidden layers come in hidden, opacity kept; the sides and back take the
+picture's average colour. Sheets are modelled shapes, so pins, dots, paint and Looks all work on them. Layers that mixed
+(multiply, screen…) show as they are, and the toast says how many; adjustment and empty layers are counted out. The PSD
+reader handles RGB and grey, 8 and 16 bits, raw, RLE and zip channels, Unicode names, groups and PSB. *Rejected:*
+picture cards with see-through pixels (the renderer has no cut-outs, and a card can't be rigged by its outline).
+
+**D-488 — SPIKE: `.procreate` read directly: passed.** A `.procreate` is a zip of `Document.archive` (a keyed archive) and
+each layer's 256-pixel tiles: newer files LZ4 in Apple's `bv41` framing, whose blocks share one window; older ones LZO1X.
+Tiles are premultiplied RGBA stored bottom row first, then the canvas turns by its `orientation` (3 and 4 a quarter turn
+each way) and flips. A mask is one grey byte a pixel and, where it has no tile, shows everything. On silicate's
+`Mask_Test_File.procreate` (MIT) the reader's picture matches the thumbnail Procreate saved inside it within 1.5 levels of
+255; an older file's LZO tile matches python-lzo byte for byte. The Procreate format isn't published: if a future version
+changes, the reader says it can't read the file and PSD (Procreate's own export) still works.
+
+**D-489 — Grounds.** `Ground.surface`: desert, grass, snow, rock, sand, pavement, water's edge, room floor, drawn by the
+ground's shader from where each point is (no texture, no seam, no repeat to spot), lit and banded by the Look like
+everything on them; the ground's colour is the material's first colour. The water at the water's edge moves and shines
+and is a picture, not a fluid. Library ▸ Things ▸ Grounds, one tap, one undo step; the room floor reaches 12 m.
+
+**D-490 — Stacks are folders.** A stack on Home is a folder beside the projects, one level deep, so the Files app shows the
+same arrangement and a folder made there is a stack. Moving, renaming and unstacking move files; each stack keeps its own
+sort; 0.23's stacks (in `gallery.json` by id) are moved into folders the first time Home reads them. Renaming and
+duplicating a project keep it in its folder. *Rejected:* deeper folders (the plan says one level; Procreate's stacks are one).
+
+**D-491 — The Keeper's Tower.** `KeepersTowerSample`: a leaning stone tower on a dark outcrop of rock, one amber lamp in
+its lantern, a tiny keeper with a lantern at its foot, at night in Ink with haze, an orbit through its own camera. It's the
+first sample made on a first launch and the Samples stack shows it turning (drawn once a version into the caches).
+The New project card stays first.
+
+**D-492 — The bridge's L2.** Scene Script's `look` takes every Look by name in any case, `ground` and `finish`; `effect`
+takes the drawn set with `target` or `center`; `add_media` takes `drawing=True`. Packs stay in the app: where a file goes
+is the person's. The lowey skill's Looks guide teaches all of it.
+
+**D-493 — Schema 23.** Looks' `paint` and `pixel`, shading's `shadowTint` and `reflection`, the Finish's `misregistration`,
+`boil`, `benDay` and three textures, three screen effects with `center` and `target`, the ground's `surface`, the
+library's `styles`, `effects`, `parts` and `origins`. 0.23 refuses a schema-23 file with its usual message.
+
+**D-494 — Kit 0.14.** Packs and licences, stacks as folders, the Studio grammar.
+
+**D-495 — Every tier.** The paint pass is two compute passes at full resolution, 48 taps a pixel (32 on Tier B and C
+previews), only in frames that paint; grounds, Ben-Day, textures, pixels and the drawn set are a few lines of the passes
+that already run. A diorama is its layers' sheets (a 30-layer drawing is 30 things); reading a drawing and painting the
+sheets happen off the main thread. The device checklist times Painterly at full screen on a Tier B iPad.
+
+**D-496 — Translations still ride along.** The new strings were translated into Italian and Arabic for the catalog check.

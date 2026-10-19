@@ -36,6 +36,16 @@ and refuses a pack whose own licence file doesn't say CC0; each asset's `asset.j
 
 CC0 asks for nothing; Kenney and Quaternius are credited in the app (Settings ▸ About ▸ Licences) all the same.
 
+## Test fixtures (not shipped in the app)
+
+`Packages/LoweyCore/Tests/LoweyCoreTests/Fixtures/layered/` (see its README):
+
+| Files | Source | License |
+|---|---|---|
+| `2layers.psd`, `group.psd`, `hidden-layer.psd`, `16bit5x5.psd`, `1layer.psb`, `pixel-layer.psd` | [psd-tools](https://github.com/psd-tools/psd-tools) test files | MIT |
+| `mask-test.procreate`, `old-tile.chunk` | [silicate](https://github.com/axaril/silicate) test files | MIT |
+| `diorama-5.psd` | made for these tests with ImageMagick | ours |
+
 Build/CI tools (not shipped in the app): XcodeGen (MIT), SwiftLint (MIT), SwiftFormat (MIT), pytest (MIT).
 
 [hmm-kit](https://github.com/AhmedHeshamEG/hmm-kit) (in `Packages/HmmKit`) is the same author's shared package, not a

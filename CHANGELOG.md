@@ -3,6 +3,32 @@
 All notable changes. 1.x grew in four phases (v0.1 → v1.4); 2.0 is the remaster, released as betas first. Maquette
 continues from 2.0 and numbers its phases again from 0.1 (each phase bumps the minor version until 1.0).
 
+## [0.24] — Maquette — Looks & the library (phase L2)
+
+Seven new Looks, a Finish for any of them, your drawings standing up in 3D, and a library you can share.
+
+- **Seven Looks**: **Painterly** (strokes that follow the forms), **Watercolour** (washes that pool at their edges, the
+  paper showing), **Gouache** (opaque, matte, flat), **Paperman** (soft black and white, thin ink, one colour kept),
+  **Anime cel** (two hard tones, a lavender shadow, lines in each thing's colour), **Clean product** (soft light, a lacquer
+  that mirrors the room, no lines) and **Pixel** (square blocks, a few colours). Twelve Looks in all, each one per scene or
+  per thing.
+- **Look ▸ Finish on any Look**: **Print**: Ben-Day dots, lines that boil, focus as slipped colour plates; three new
+  textures: newsprint, risograph, canvas. **The drawn set** at the playhead, aimed at the selection: an **impact frame**,
+  **focus lines**, **Kirby dots** (⌃⌘I, ⌃⌘U, ⌃⌘K). Next and previous Look: ⌥⌘K, ⌥⇧⌘K.
+- **Studios**: the **Look Studio** (a My Look's Light, Lines, Paint, Print, Motion and About), the **Effect Studio** and the
+  **Part Studio**, each with the thing at the top and an About page saying who made it.
+- **Packs**: Library ▸ Yours ▸ **Share a pack**: Looks, brushes, materials, effects, parts, motions and things in one
+  `.maquettepack`, with your name and a licence in words (Use in anything, Credit me, Personal use only, your own words).
+  Opened on another iPad, everything lands in Yours with its author. Packs carry data only.
+- **Save to Yours**: a My Look, a particle effect, a character's part, kept for every project.
+- **Bring your drawing**: Model ▸ Add ▸ **Drawing (PSD, Procreate)**, or drop one on the stage: a layered PSD, PSB or
+  `.procreate` file becomes a diorama, one painted sheet a layer cut to its outline, groups kept.
+- **Grounds**: Library ▸ Things ▸ **Grounds**: desert, grass, snow, rock, sand, pavement, water's edge, room floor.
+- **Home**: stacks are real folders (the Files app shows them), each with its own sort; **Move to…** on a project. The
+  Samples stack shows **the Keeper's Tower** turning, made on a first launch.
+- **The bridge**: `look` takes every Look and `ground` and `finish`; `effect` takes the drawn set with a `target`;
+  `add_media(drawing=True)`. The lowey skill's Looks guide covers them.
+
 ## [0.23] — Maquette — motion design (phase D1)
 
 Brand loops on the iPad: a client's logo stood up, the brand font, letters that animate, copies that ripple to the music,

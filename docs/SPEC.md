@@ -29,6 +29,7 @@ reference and stays.
 | Characters (K1): Characters ▸ New from five starts, parts with jobs from our own set (or drawn, or modelled) on a character or any thing, the rig built itself, 14 mouths and brows as bends, Say a line, proportions by handles, act it out, GLB for Godot / Unity / Unreal with blend shapes and named clips, sprite sheets, pixel art, turnarounds | **0.20.** D-386 … D-406. Rigid pieces (D-391); people act, animals don't yet (D-397). |
 | Film (F1): the soft panel, setups (three-point, golden hour, moonlight, neon), haze and god rays, an HDRI as the sky and the light; camera bodies and real millimetres, the frame's shape (16:9, 2.39:1, 9:16, 4:5, 1:1), focus on a thing and focus pulls, rigs (dolly, crane, orbit, handheld); storyboards and animatics; spatial video and photos, 360° video and panoramas, HDR, wide colour; the rotoscope | **0.22.** D-433 … D-458. 360° is six views laid flat (D-450); HDR is HLG (D-451); only the sun throws god rays (D-442). |
 | Motion design (D1): logos from SVG as solids, fonts brought in, letters that animate (seven presets), clones (grid, circle, line, a path) with effects (random, delay, push) through fields (everywhere, near a point, a ripple), links between things and to a sound's loudness, bass or beat, morphs, the seamless-loop check and Close the loop | **0.23.** D-459 … D-475. Copies live only in the shown scene (D-463); morphs are between shapes made here (D-467); 3D files carry copies and letters at rest (D-474). |
+| Looks & the library (L2): Painterly, Watercolour, Gouache, Paperman, Anime cel, Clean product, Pixel; the Finish on any Look (Ben-Day, boil, misregistration, newsprint, riso, canvas; impact frames, focus lines, Kirby dots aimed at a thing); the Look, Effect and Part Studios; `.maquettepack` packs with an author and a licence; PSD, PSB and Procreate drawings as dioramas; eight grounds; stacks as folders; the Keeper's Tower sample turning | **0.24.** D-476 … D-496. The paint pass is a whole-frame pass (D-477); Pixel is the scene's (D-481); packs carry data only (D-485). |
 | Texture (the full colour picker, layers, smudge on paint) | U7 |
 | Mechanisms + AR, web layer (held) | M12 |
 | Content and finish: the house kit, waiting designed, the Board's finish | M14 |
@@ -39,6 +40,26 @@ reference and stays.
 Cast is gone (D-227): what said *Cast ▸ Voice & face*, *Triggers* and *Life* below is the selected character's
 button beside Record in the timeline's Perform; *Cast ▸ Rig* is Rig; *Make it part of* is in Rig. Everything below
 still works the same way.
+
+### Looks & the library (0.24)
+
+- **Looks** (D-476 … D-481): Look ▸ Style: Ink, Comic, Sketch, Painterly, Watercolour, Gouache, Paperman, Anime cel, Clay,
+  Clean product, Low-poly, Pixel; then My Looks and Your Looks. Hold a Look: Duplicate, Open in the Look Studio, Save to
+  Yours, Share as a pack, Delete.
+- **The Look Studio** (D-484): Light (bands or soft, shadow tint, reflection), Lines, Paint (stroke size, strokes, wet edges,
+  granulation, paper; pixel size and colours), Print, Motion, About.
+- **The Finish** (D-482, D-483): Look ▸ Finish: textures (paper, collage, old film, newsprint, risograph, canvas), Print
+  (Ben-Day dots, line boil, focus by misregistration), screen effects at the playhead with Impact frame, Focus lines and
+  Kirby dots, which follow the selected thing.
+- **Grounds** (D-489): Library ▸ Things ▸ Grounds.
+- **Yours and packs** (D-485, D-486): Library ▸ Yours: Share a pack (pick things, your name, the pack's name, what others
+  may do), Bring in a pack; your Looks, effects and parts (hold: Open in the Effect or Part Studio, Share, Delete). The
+  particle effect's panel and a character's part: Save to Yours.
+- **Drawings** (D-487, D-488): Model ▸ Add ▸ Drawing (PSD, Procreate); a drawing dropped on the stage or opened from Files.
+- **Home** (D-490, D-491): stacks are folders; a project's menu ▸ Move to…; a stack's menu ▸ Sort inside; the Samples stack
+  with the Keeper's Tower turning.
+- **The bridge** (D-492): `look` (any Look, `ground`, `finish`), `effect` (`impact`, `focusLines`, `kirbyDots`; `target`,
+  `center`), `add_media(drawing=True)`.
 
 ### Motion design (0.23)
 

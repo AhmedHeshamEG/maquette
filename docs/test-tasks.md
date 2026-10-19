@@ -3,6 +3,17 @@
 One task per feature for the two test weeks (between M14 and M16), written for its person in `studio-h/USERS.md`. A
 task says what to make, never which buttons to press; the tester says where they got stuck.
 
+## 0.24 (L2): Looks & the library
+
+- **The Procreate person:** a layered drawing of their own, from Procreate, standing as a diorama the camera pushes into,
+  in the Watercolour Look.
+- **The anime animator:** a three-second hit: a character punches, an impact frame on the hit and focus lines that follow
+  the other one flying back, in Anime cel.
+- **The illustrator:** their own Look made from Painterly, saved, and sent to a friend as a pack with their name and
+  "Credit me".
+- **The explainer maker:** the Keeper's Tower on snow in Paperman, the lamp the one colour.
+- **Everyone:** three projects in a stack, the stack found in the Files app, one moved out of it on the iPad.
+
 ## 0.23 (D1): motion design
 
 - **The motion designer:** a client's SVG logo extruded in the brand's font with its name flying in, cloned into a grid that
