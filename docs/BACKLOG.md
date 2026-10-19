@@ -19,6 +19,9 @@ phase plan (the pass U1 … U5, M12, M14, M16, then 1.0) lives in studio-h's `PH
 - [ ] The Effect Studio's preview is from the side, on a dark card; the effect seen in the project's Look is the stage.
 - [ ] A thing shared in a pack carries its build and the library models it uses; paint laid on it in a project isn't
       carried yet, and its motions are shared as motions.
+- [ ] Every frame is drawn 4 % zoomed in so a shake's edges never show, shaking or not (softening it a touch); the Pixel
+      Look turns that off. Zooming only while a shake runs would change every golden, so it waits for a render pass that
+      re-records them.
 - [ ] Watercolour and Gouache are whole-frame paint over each thing's own amounts; a painted thing next to an unpainted
       one shows paint creeping a few pixels over the edge.
 

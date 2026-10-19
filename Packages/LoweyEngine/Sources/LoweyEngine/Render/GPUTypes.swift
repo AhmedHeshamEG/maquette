@@ -116,6 +116,8 @@ struct CompositeUniforms {
     var drawnPlace = SIMD4<Float>(0.5, 0.5, 0.5, 0.5)
     /// x = how far Kirby dots have spread (0…1).
     var drawnSpread = SIMD4<Float>.zero
+    /// x = how far the frame is zoomed so a shake's edges never show (1 under the Pixel Look: its blocks stay whole).
+    var margin = SIMD4<Float>(1.04, 0, 0, 0)
 }
 
 /// The painted Looks' pass (L2): the frame's size, pixels per point, how many rings each sector samples.

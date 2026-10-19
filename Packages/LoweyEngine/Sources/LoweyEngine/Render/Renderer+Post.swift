@@ -145,6 +145,7 @@ extension LoweyRenderer {
             uniforms.transition = SIMD4<Float>(kind, Float(progress), Float(Easing.easeInOut.apply(progress)), 0)
         }
         let screen = request.screen
+        if request.input.document.lookPreset.pixel != nil { uniforms.margin.x = 1 }
         uniforms.shake = SIMD4<Float>(Float(screen.shake.x), Float(screen.shake.y), Float(screen.shake.z), Float(screen.zoomBlur))
         uniforms.effects = SIMD4<Float>(Float(screen.glitch), Float(screen.speedLines), Float(screen.flash), Float(screen.glitchSeed % 9973))
         uniforms.drawn = SIMD4<Float>(Float(screen.impact), Float(screen.focusLines), Float(screen.kirbyDots), Float(screen.drawnSeed % 9973))

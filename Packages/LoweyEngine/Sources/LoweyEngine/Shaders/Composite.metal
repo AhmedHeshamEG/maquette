@@ -17,6 +17,7 @@ struct CompositeUniforms {
     float4 drawn;        // the drawn set (L2): x = impact frame, y = focus lines, z = Kirby dots, w = the drawing's seed (twos)
     float4 drawnPlace;   // xy = where focus lines and an impact aim, zw = where Kirby dots crackle (0…1 from the top left)
     float4 drawnSpread;  // x = how far Kirby dots have spread (0…1)
+    float4 margin;       // x = how far the frame is zoomed so a shake's edges never show (1 under the Pixel Look)
 };
 
 constexpr sampler lw_compositeSampler(coord::normalized, address::clamp_to_edge, filter::linear);
@@ -84,7 +85,7 @@ static inline float4 lw_screenEffects(float2 uv, texture2d<float, access::sample
     float2 centered = (uv - 0.5) * float2(aspect, 1.0);
     float roll = u.shake.z;
     float2x2 rotation = float2x2(float2(cos(roll), sin(roll)), float2(-sin(roll), cos(roll)));
-    centered = rotation * centered / 1.04 - u.shake.xy;
+    centered = rotation * centered / u.margin.x - u.shake.xy;
     float2 shaken = centered / float2(aspect, 1.0) + 0.5;
     float4 color = lw_transition(to, from, shaken, u);
     if (u.shake.w > 0.0) {
