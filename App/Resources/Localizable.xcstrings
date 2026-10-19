@@ -11105,6 +11105,22 @@
         }
       }
     },
+    "Focus on the Selection": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Metti a fuoco la selezione"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ركّز على المحدد"
+          }
+        }
+      }
+    },
     "Focus pull": {
       "localizations": {
         "it": {
@@ -15310,6 +15326,22 @@
       }
     },
     "Lens and frame…": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Obiettivo e formato…"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "العدسة والإطار…"
+          }
+        }
+      }
+    },
+    "Lens and Frame…": {
       "localizations": {
         "it": {
           "stringUnit": {
@@ -22425,6 +22457,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "انقل التركيز هنا"
+          }
+        }
+      }
+    },
+    "Pull Focus to the Selection": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sposta il fuoco sulla selezione"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "انقل التركيز إلى المحدد"
           }
         }
       }
