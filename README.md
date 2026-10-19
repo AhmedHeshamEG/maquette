@@ -4,6 +4,11 @@ Shapr3D's ease, Procreate's feel, Dreams' animation and ToonSquid's rigging, in 
 or art degree. Build a set like Lego, drop in characters, direct them with a camera, sync them to your voice, and
 export the video. By **studio h.**; the continuation of 3D-lowey 2.0. All rights reserved (see [LICENSE](LICENSE)).
 
+**0.23** (phase D1): **motion design**. A client's SVG logo stood up as solids, the brand's own font, letters that fly
+in, bounce, cascade or ride a wave; live copies in a grid, a circle, a line or along a path, rippled by effects through
+fields; one thing's motion driving another's (gears), things that move to a song's loudness, bass or beat; a shape
+morphing into another; and an export that says whether it loops seamlessly, and closes the loop when it doesn't.
+
 **0.22** (phase F1): **film**. Light like a set: a soft panel beside the bulb, spot and sun, setups (three-point,
 golden hour, moonlight, neon), haze and god rays, and an HDRI that shows behind everything and lights the world. A real
 lens: camera bodies and their millimetres, the frame's shape (16:9, 2.39:1, 9:16, 4:5, 1:1), focus that follows a thing and

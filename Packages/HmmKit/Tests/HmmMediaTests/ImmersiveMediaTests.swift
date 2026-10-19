@@ -17,8 +17,10 @@
                 try await encoder.append(buffer, frame: frame)
             }
             try await encoder.finish()
-            let track = try XCTUnwrap(AVURLAsset(url: url).loadTracks(withMediaType: .video).first)
-            let description = try XCTUnwrap(track.load(.formatDescriptions).first)
+            let tracks = try await AVURLAsset(url: url).loadTracks(withMediaType: .video)
+            let track = try XCTUnwrap(tracks.first)
+            let descriptions = try await track.load(.formatDescriptions)
+            let description = try XCTUnwrap(descriptions.first)
             let transfer = CMFormatDescriptionGetExtension(description, extensionKey: kCMFormatDescriptionExtension_TransferFunction) as? String
             XCTAssertEqual(transfer, kCMFormatDescriptionTransferFunction_ITU_R_2100_HLG as String)
         }
@@ -58,7 +60,8 @@
                 try await encoder.append(left: encoder.makePixelBuffer(), right: encoder.makePixelBuffer(), frame: frame)
             }
             try await encoder.finish()
-            let track = try XCTUnwrap(AVURLAsset(url: url).loadTracks(withMediaType: .video).first)
+            let tracks = try await AVURLAsset(url: url).loadTracks(withMediaType: .video)
+            let track = try XCTUnwrap(tracks.first)
             let characteristics = try await track.load(.mediaCharacteristics)
             XCTAssertTrue(characteristics.contains(.containsStereoMultiviewVideo))
         }

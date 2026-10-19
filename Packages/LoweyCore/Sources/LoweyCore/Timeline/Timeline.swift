@@ -333,6 +333,8 @@ public struct Timeline: Hashable, Sendable {
     public var holds: [Hold] = []
     /// The picture's shape (F1), nil until one is chosen (16:9).
     public var frame: FrameShape?
+    /// Things driving things, and sounds driving things (`MotionLink`, D1).
+    public var links: [MotionLink] = []
 
     public init(
         fps: Int = 30, duration: Double = 10, stepping: Stepping = .onOnes, tracks: [Track] = [],
@@ -377,6 +379,7 @@ public struct Timeline: Hashable, Sendable {
         result.formUnion(behaviors.map(\.target))
         result.formUnion(clipTracks.map(\.target))
         result.formUnion(holds.map(\.target))
+        result.formUnion(links.map(\.target))
         return result
     }
 
@@ -440,7 +443,7 @@ public struct Timeline: Hashable, Sendable {
 extension Timeline: Codable {
     private enum CodingKeys: String, CodingKey {
         case fps, duration, stepping, tracks, markers, loop, cuts, behaviors, clipTracks, audio, transcripts, effects, captions, flipbooks, takes, holds
-        case frame
+        case frame, links
     }
 
     public init(from decoder: Decoder) throws {
@@ -462,6 +465,7 @@ extension Timeline: Codable {
         takes = try c.decodeIfPresent([Take].self, forKey: .takes) ?? []
         holds = try c.decodeIfPresent([Hold].self, forKey: .holds) ?? []
         frame = try c.decodeIfPresent(FrameShape.self, forKey: .frame)
+        links = try c.decodeIfPresent([MotionLink].self, forKey: .links) ?? []
     }
 
     public func encode(to encoder: Encoder) throws {
@@ -483,5 +487,6 @@ extension Timeline: Codable {
         if !takes.isEmpty { try c.encode(takes, forKey: .takes) }
         if !holds.isEmpty { try c.encode(holds, forKey: .holds) }
         try c.encodeIfPresent(frame, forKey: .frame)
+        if !links.isEmpty { try c.encode(links, forKey: .links) }
     }
 }

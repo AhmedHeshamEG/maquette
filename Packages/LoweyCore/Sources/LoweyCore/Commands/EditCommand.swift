@@ -131,6 +131,10 @@ public indirect enum EditCommand: Hashable, Sendable {
     case setPart(ObjectID, CharacterPart?)
     /// Replaces the scene's holds: who holds what from when (`Timeline.holds`).
     case setHolds([Hold])
+    /// Replaces a thing's clones, morph and animated letters (`MotionDesign`; nil removes them).
+    case setMotionDesign(ObjectID, MotionDesign?)
+    /// Replaces the scene's links: things and sounds driving things (`Timeline.links`).
+    case setLinks([MotionLink])
     /// Replace the project's own Looks ("My Look").
     case setCustomLooks([LookPreset])
     /// The project's brushes (`ProjectInfo.brushes`): a stroke's first use of a brush adds its frozen copy.
@@ -181,6 +185,8 @@ public indirect enum EditCommand: Hashable, Sendable {
         case .setScenePhysics: return "Physics"
         case .setPart: return "Character"
         case .setHolds: return "Hold"
+        case .setMotionDesign: return "Motion design"
+        case .setLinks: return "Link"
         case .setCustomLooks: return "Edit looks"
         case .setBrushes: return "Draw"
         case let .setFlipbooks(edits): return edits.allSatisfy { $0.track == nil } ? "Delete flipbook" : "Draw"

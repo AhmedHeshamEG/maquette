@@ -607,6 +607,36 @@ Schema 20 only added optional keys; files from schema 19 open unchanged, and Maq
 Schema 21 only added optional keys and a light kind; files from schema 20 open unchanged, and Maquette 0.21 refuses
 schema 21.
 
+## Motion design (schema 22)
+
+- **Things** can carry `motionDesign` (absent: none), with any of:
+  - `clones`: `{"layout": {"grid": {"columns": 5, "rows": 5, "layers": 1, "spacing": [1.4, 1.4, 1.4]}}, "effects": […],
+    "seed": 1}`. Layouts: `grid` (columns along the thing's x, rows along its z, layers up its y, centred on it), `circle`
+    (`count`, `radius`, `facesOut`), `line` (`count`, `step`, in the thing's own directions), `path` (`count`, `path`: the
+    id of a drawn line, `along`). An effect: `{"id": "…", "kind": "random" | "delay" | "push", "move": [x, y, z] (m),
+    "turn": [x, y, z] (degrees), "grow": 0.2 (a fraction), "delay": 0.1 (s), "field": …}`; a field is `{"everywhere": {}}`,
+    `{"sphere": {"centre": [x, y, z], "radius": 2}}` or `{"wave": {"speed": 3, "width": 1.5, "every": 2}}` (`every` 0:
+    once). The copies are never stored: they're made in the shown scene with ids `<thing>~clone<n>` and `cloneOf`, at most
+    1000.
+  - `morph`: `{"target": "<id>"}`: the thing becomes that thing's shape as its `morph` property (0–1, keyed) rises.
+  - `letters` (3D text): `{"preset": "flyIn" | "bounce" | "cascade" | "pop" | "spin" | "typewriter" | "wave", "order":
+    "forward" | "backward" | "middle" | "random", "start": 1.0, "stagger": 0.06, "length": 0.6}` (seconds; `length` is one
+    wave for `wave`).
+- **Properties**: `morph` (0–1) and `effectStrength` (how strongly the clone effects act, 1 when missing), both keyable.
+- **3D text** carries `font` (absent: the style's): a font file under `assets/`, `fonts/<name>.otf` (or .ttf, .ttc).
+- **The timeline** carries `links` (absent: none):
+  `[{"id": "…", "target": "<id>", "channel": "turnY", "driver": {"thing": {"id": "<id>", "channel": "turnY"}}, "amount": -1,
+  "delay": 0}]`, or a sound as the driver: `{"sound": {"clip": "<audio clip id>", "feature": "beat"}}` (`loudness`, `bass`,
+  `beat`). Channels: `moveX`, `moveY`, `moveZ`, `turnX`, `turnY`, `turnZ`, `size`, `glow`, `opacity`, `effect`, `morph`,
+  `reveal`. The target's channel gets `amount` × the driver's change since its edited place (metres, degrees, a
+  fraction), or × the sound's value (0–1).
+- **Audio clips** can carry `levels` (absent: not measured yet): `{"loudness": "<base64, one byte every 1/60 s>", "bass":
+  "<the same>", "beats": [0.5, 1.0, …] (seconds into the file), "tempo": 120}`.
+- Two journal commands: `setMotionDesign` (`{"op": "setMotionDesign", "id": "…", "motionDesign": {…}}`, none removes it)
+  and `setLinks` (`{"op": "setLinks", "links": […]}`, the whole list).
+
+Schema 22 only added optional keys; files from schema 21 open unchanged, and Maquette 0.22 refuses schema 22.
+
 
 ## workspace.json
 

@@ -57,7 +57,10 @@ public enum ProjectHistory {
         // 19 → 20 only adds the optional holds field and the `setHolds` command.
         19: { $0 },
         // 20 → 21 only adds a light type and optional fields (inside `insert`, `setProperties`, `setTimeline`, `setLook`).
-        20: { $0 }
+        20: { $0 },
+        // 21 → 22 only adds the optional motion design, links, levels and font, and the `setMotionDesign` and `setLinks`
+        // commands.
+        21: { $0 }
     ]
     /// The first schema journals were written with (Maquette 0.1).
     public static let firstJournalSchema = 4

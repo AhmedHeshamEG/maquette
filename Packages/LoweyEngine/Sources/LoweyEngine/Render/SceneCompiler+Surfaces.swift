@@ -22,6 +22,11 @@ extension SceneCompiler {
             }
             return
         }
+        // On its way into another thing's shape (D1).
+        if !state.ghost, let morph = object.motionDesign?.morph,
+           compileMorph(object, morph: morph, state: state, base: base, casts: casts, input: input, scene: &scene) {
+            return
+        }
         switch object.kind {
         case let .primitive(shape):
             compilePrimitive(shape, object: object, state: state, base: base, casts: casts, input: input, scene: &scene)
@@ -41,7 +46,7 @@ extension SceneCompiler {
                 addSurface(mesh, object: object, state: state, world: world, base: base, casts: casts, input: input, scene: &scene)
             }
         case let .text(recipe):
-            compileText(recipe, object: object, world: world, base: base, casts: casts, scene: &scene)
+            compileText(recipe, object: object, world: world, base: base, casts: casts, input: input, scene: &scene)
         case let .asset(assetID):
             compileAsset(assetID, object: object, state: state, base: base, input: input, casts: casts, scene: &scene)
         case let .prefab(prefabID):
@@ -142,21 +147,6 @@ extension SceneCompiler {
         }) else { return }
         addSurface(mesh, object: object, state: state, world: state.world.matrix, base: base, casts: casts && shape != .plane, input: input,
                    scene: &scene)
-    }
-
-    // MARK: Text
-
-    func compileText(_ recipe: TextRecipe, object: SceneObject, world: simd_float4x4, base: ObjectUniforms, casts: Bool,
-                     scene: inout RenderScene) {
-        let reveal = min(max(object[.reveal]?.floatValue ?? 1, 0), 1)
-        var shown = recipe
-        shown.text = String(recipe.text.prefix(Int((Double(recipe.text.count) * reveal).rounded(.down))))
-        guard !shown.text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return }
-        let key: MeshKey = shown.coreMeshable ? .blockText(shown) : .systemText(shown)
-        guard let mesh = mesh(key, label: "text", make: {
-            shown.coreMeshable ? BlockFont.mesh(for: shown) : TextMesher.mesh(for: shown)
-        }) else { return }
-        add(mesh, world: world, uniforms: base, castsShadow: casts, scene: &scene)
     }
 
     // MARK: Cards

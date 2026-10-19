@@ -77,6 +77,16 @@ struct InspectorPanel: View {
                     RealSection(editor: editor, object: object)
                 }
             }
+            if let clones = object.motionDesign?.clones {
+                DisclosureRow("Clones: \(clones.count)", systemName: "square.grid.3x3.square", identifier: "object-clones") {
+                    CloneSection(editor: editor, object: object, clones: clones)
+                }
+            }
+            if let morph = object.motionDesign?.morph {
+                DisclosureRow("Morph", systemName: "wand.and.rays", identifier: "object-morph") {
+                    MorphRow(editor: editor, object: object, morph: morph)
+                }
+            }
             DisclosureRow("More ways to move", systemName: "figure.run", identifier: "more-motion") {
                 MoreWaysToMove(editor: editor)
             }

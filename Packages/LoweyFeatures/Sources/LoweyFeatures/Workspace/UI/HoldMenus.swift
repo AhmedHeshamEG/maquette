@@ -178,6 +178,11 @@ extension EditorModel {
             items.append(HmmHoldMenu.Item("Group", systemName: "square.on.square", action: on(ids) { $0.groupSelection() }))
         }
         items.append(HmmHoldMenu.Item("Array", systemName: "square.grid.3x3", children: arrayItems(ids)))
+        // Live copies that move together, and becoming another shape (D1).
+        if objects.count == 1 {
+            items.append(HmmHoldMenu.Item("Clone…", systemName: "square.grid.3x3.square", action: on(ids) { $0.cloneSelection() }))
+            items.append(HmmHoldMenu.Item("Morph into…", systemName: "wand.and.rays", action: on(ids) { $0.beginMorph() }))
+        }
         items.append(HmmHoldMenu.Item("To the ground", systemName: "arrow.down.to.line", action: on(ids) { $0.dropSelectionToGround() }))
         items.append(HmmHoldMenu.Item("Settle", systemName: "cube.transparent", action: on(ids) { $0.settleSelection() }))
         if objects.count == 1, case .primitive = objects[0].kind {

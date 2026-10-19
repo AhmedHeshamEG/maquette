@@ -71,6 +71,9 @@ public struct LoweyMenuCommands: Commands {
                 .keyboardShortcut("[", modifiers: .command)
             Button("Loop Cut") { stageEditor?.loopCutPickedEdge() }.keyboardShortcut("r", modifiers: [.command, .control])
             Button("Linked Copy") { stageEditor?.makeLinkedCopy() }.keyboardShortcut("d", modifiers: [.command, .shift])
+            Divider()
+            Button("Clone") { stageEditor?.cloneSelection() }.keyboardShortcut("c", modifiers: [.command, .control])
+            Button("Morph Into…") { stageEditor?.beginMorph() }.keyboardShortcut("o", modifiers: [.command, .control])
             Button("Pivot to the Middle") { stageEditor?.movePivot(to: .middle) }
         }
         CommandMenu("Texture") {
@@ -112,6 +115,7 @@ public struct LoweyMenuCommands: Commands {
             Divider()
             Button("History and Steps") { editor?.openHistory() }.keyboardShortcut("y", modifiers: .command)
             Button("Export…") { editor?.sheet = .export }.keyboardShortcut("e", modifiers: .command)
+            Button("Close the Loop") { stageEditor?.closeTheLoop() }.keyboardShortcut("e", modifiers: [.command, .control])
             Button("Paste a Scene Script") { editor?.importScriptFromClipboard() }.keyboardShortcut("v", modifiers: [.command, .option])
             Button("AI & Laptop Bridge…") { editor?.sheet = .bridge }.keyboardShortcut("b", modifiers: [.command, .shift])
             Button("Scripts…") { editor?.openScript(nil) }

@@ -216,6 +216,18 @@ extension BridgeModel {
             notify("scene")
             return .json(["environment": key, "sun": "azimuth \(Int(editor.look.lighting.sunAzimuth))°, elevation \(Int(editor.look.lighting.sunElevation))°"])
         }
+        // A font for 3D text, or an SVG logo stood up (D1).
+        if request.query["as"] == "font" {
+            guard let file = editor.bringFont(url) else { return .error(422, "That isn't a font (OTF, TTF or TTC)") }
+            return .json(["font": file])
+        }
+        if request.query["as"] == "logo" {
+            let before = editor.selection
+            editor.importLogo(url)
+            guard let id = editor.singleSelection?.id, editor.selection != before else { return .error(422, "That SVG has no filled shapes") }
+            notify("scene")
+            return .json(["added": name, "id": id.raw, "name": editor.baseScene.objects[id]?.name ?? name])
+        }
         let placement = MediaPlacement(rawValue: request.query["as"] ?? "card") ?? .card
         guard let id = await editor.importMedia(url, at: request.query["at"].flatMap(Double.init), as: placement) else {
             return .error(422, "Couldn't add \(name)")

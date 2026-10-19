@@ -69,6 +69,10 @@ extension ScriptState {
         guard let words = string(action, "text") else { throw fail("text needs “text”") }
         var recipe = TextRecipe(text: words, style: string(action, "style").flatMap(TextRecipe.Style.init(rawValue:)) ?? .blocky)
         if let size = number(action, "size") { recipe.size = size }
+        if let font = string(action, "font") {
+            guard context.file(font) != nil else { throw fail("no font “\(font)” in the project (bring one in with add_media)") }
+            recipe.font = font
+        }
         var object = SceneObject(id: context.ids.next(), name: name(action, fallback: "Text"), kind: .text(recipe))
         object[.color] = .color(.palette(0))
         object = try operations.placeOnGround(object, at: point(action["at"]) ?? context.focus)

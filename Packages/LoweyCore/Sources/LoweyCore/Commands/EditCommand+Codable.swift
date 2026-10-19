@@ -6,13 +6,14 @@ extension EditCommand: Codable {
     private enum Key: String, CodingKey {
         case op, fragment, parent, index, ids, entries, changes, id, name, kind, look, scope, camera, timeline, label, commands, tracks
         case dabs, looks, flipbooks, scene, brushes, paint, tiles, rig, takes, sheets, shaping, modelHistory, physics, part, holds
+        case motionDesign, links
     }
 
     private enum Op: String, Codable {
         case insert, delete, restore, setProperties, rename, setKind, reparent, setLook, renameScene
         case setActiveCamera, setTimeline, setTracks, batch, setShadowPaint, setCustomLooks, setFlipbooks, replaceScene
         case setBrushes, setPaint, paintTiles, setRig, setTakes, setSheets, setShaping, setModelHistory, setPhysics, setScenePhysics
-        case setPart, setHolds
+        case setPart, setHolds, setMotionDesign, setLinks
     }
 
     public init(from decoder: Decoder) throws {
@@ -69,10 +70,22 @@ extension EditCommand: Codable {
             self = try .setPart(c.decode(ObjectID.self, forKey: .id), c.decodeIfPresent(CharacterPart.self, forKey: .part))
         case .setHolds:
             self = try .setHolds(c.decode([Hold].self, forKey: .holds))
+        case .setTakes, .setSheets, .setMotionDesign, .setLinks:
+            self = try Self.decodeEdits(op, from: c)
+        }
+    }
+
+    /// Takes, sheets, a thing's motion design and the scene's links.
+    private static func decodeEdits(_ op: Op, from c: KeyedDecodingContainer<Key>) throws -> EditCommand {
+        switch op {
         case .setTakes:
-            self = try .setTakes(c.decode([TakeEdit].self, forKey: .takes))
+            try .setTakes(c.decode([TakeEdit].self, forKey: .takes))
         case .setSheets:
-            self = try .setSheets(c.decode([SheetEdit].self, forKey: .sheets))
+            try .setSheets(c.decode([SheetEdit].self, forKey: .sheets))
+        case .setMotionDesign:
+            try .setMotionDesign(c.decode(ObjectID.self, forKey: .id), c.decodeIfPresent(MotionDesign.self, forKey: .motionDesign))
+        default:
+            try .setLinks(c.decode([MotionLink].self, forKey: .links))
         }
     }
 
@@ -143,6 +156,14 @@ extension EditCommand: Codable {
         case .setShadowPaint, .setCustomLooks, .setFlipbooks, .replaceScene, .setBrushes, .setRig, .setTakes, .setSheets, .setShaping,
              .setModelHistory, .setPhysics, .setScenePhysics, .setPart, .setHolds:
             try encodeWholeValue(into: &c)
+        case .setPaint, .paintTiles, .setMotionDesign, .setLinks:
+            try encodeObjectEdits(into: &c)
+        }
+    }
+
+    /// Paint, its tiles, a thing's motion design and the scene's links.
+    private func encodeObjectEdits(into c: inout KeyedEncodingContainer<Key>) throws {
+        switch self {
         case let .setPaint(id, paint):
             try c.encode(Op.setPaint, forKey: .op)
             try c.encode(id, forKey: .id)
@@ -151,6 +172,15 @@ extension EditCommand: Codable {
             try c.encode(Op.paintTiles, forKey: .op)
             try c.encode(id, forKey: .id)
             try c.encode(changes, forKey: .tiles)
+        case let .setMotionDesign(id, design):
+            try c.encode(Op.setMotionDesign, forKey: .op)
+            try c.encode(id, forKey: .id)
+            try c.encodeIfPresent(design, forKey: .motionDesign)
+        case let .setLinks(links):
+            try c.encode(Op.setLinks, forKey: .op)
+            try c.encode(links, forKey: .links)
+        default:
+            break
         }
     }
 

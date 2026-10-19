@@ -98,6 +98,8 @@ public struct Quat: Hashable, Sendable {
         )
     }
 
+    public static func *= (lhs: inout Quat, rhs: Quat) { lhs = lhs * rhs }
+
     /// Spherical interpolation along the shortest arc.
     public func slerp(to target: Quat, _ t: Double) -> Quat {
         var end = target

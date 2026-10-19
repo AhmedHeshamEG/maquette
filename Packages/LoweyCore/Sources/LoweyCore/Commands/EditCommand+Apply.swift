@@ -91,6 +91,9 @@ public extension EditCommand {
         case .setFlipbooks, .setTakes, .setSheets, .setHolds:
             return applyListEdits(to: &document)
 
+        case .setMotionDesign, .setLinks:
+            return try applyDesign(to: &document)
+
         case let .replaceScene(scene):
             return Self.applyReplaceScene(scene, in: &document)
 
@@ -269,6 +272,21 @@ public extension EditCommand {
             document.scene.timeline.tracks = tracks
         }
         return (.setTracks(inverse.reversed()), ChangeSet(objects: changed, scene: true))
+    }
+
+    /// A thing's clones, morph and letters; the scene's links.
+    private func applyDesign(to document: inout Document) throws -> Applied {
+        switch self {
+        case let .setMotionDesign(id, design):
+            let old = try Self.replaceField(\.motionDesign, of: id, to: design, in: &document)
+            return (.setMotionDesign(id, old), ChangeSet(objects: [id]))
+        case let .setLinks(links):
+            let old = document.scene.timeline.links
+            document.scene.timeline.links = links
+            return (.setLinks(old), ChangeSet(objects: Set((links + old).map(\.target)), scene: true))
+        default:
+            return (self, ChangeSet())
+        }
     }
 
     /// Flipbooks, takes and sheets: lists edited by id; holds, the scene's whole list.

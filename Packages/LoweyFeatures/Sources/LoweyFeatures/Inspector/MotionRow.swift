@@ -4,8 +4,9 @@ import SwiftUI
 
 /// Make it move (CONTEXT §4.1): every motion once, in one strip. The loops come first (spin, float, bounce, wiggle,
 /// swing, follow a path): one tap and the thing moves on the stage straight away, a second tap stops it, one slider
-/// sets how fast and Make keyframes turns what's running into keys. Then the moves that happen once, at the playhead
-/// (pop in, grow, shake, fade, slide in…). The four that used to be in both lists are loops now.
+/// sets how fast and Make keyframes turns what's running into keys. Link: moved by another thing (D1). Then the moves
+/// that happen once, at the playhead (pop in, grow, shake, fade, slide in…). The four that used to be in both lists are
+/// loops now.
 struct MakeItMove: View {
     let editor: EditorModel
 
@@ -27,6 +28,7 @@ struct MakeItMove: View {
                         }
                         .frame(width: 76)
                     }
+                    if editor.singleSelection != nil { linkTile.frame(width: 76) }
                     Divider().frame(height: 44)
                     ForEach(Self.once) { preset in
                         TileButton(title: preset.title, systemName: MoreWaysToMove.icon(for: preset), identifier: "preset-\(preset.rawValue)") {
@@ -70,6 +72,18 @@ struct MakeItMove: View {
         } else if !paths.isEmpty || editor.hasLoopMotion(.followPath) {
             tile(.followPath, path: paths.first)
         }
+    }
+
+    /// Link (D1): moved by another thing, the next tap names which; the sound and the numbers are in More ways to move.
+    private var linkTile: some View {
+        Menu {
+            ForEach(LinkPreset.allCases) { preset in
+                Button(LocalizedStringKey(preset.title), systemImage: preset.systemImage) { editor.beginLink(preset) }
+            }
+        } label: {
+            TileLabel(title: "Link", systemName: "link")
+        }
+        .accessibilityIdentifier("motion-link")
     }
 
     static func icon(for motion: LoopMotion) -> String {

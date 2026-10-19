@@ -55,7 +55,8 @@ verbs = {
     "rename": ("Rename.", {"target": tgt, "name": s}, ["target", "name"]),
     "transform": ("Absolute transform (edge cases).", {"target": tgt, "position": v3, "rotation": v3, "scale": {"anyOf": [n, v3]},
                                                        "relative": b, "at": time, "easing": s}, ["target"]),
-    "text": ("3D words.", {"text": s, "name": s, "at": point, "size": n, "style": s, "color": color, "glow": n}, ["text"]),
+    "text": ("3D words; `font` names a font file brought into the project (fonts/…).",
+             {"text": s, "name": s, "at": point, "size": n, "style": s, "font": s, "color": color, "glow": n}, ["text"]),
     "blob": ("A Blob character (a likeness or a recipe).", {"name": s, "likeness": s, "at": point, "facing": n, "label": s,
                                                            "recipe": {"type": "object"}}, []),
     "character": ("A humanoid puppet from a recipe; or, with \"op\", K1's character maker: \"new\" from a start (person, fourLegs, "
@@ -186,6 +187,23 @@ verbs = {
               "at": time, "kind": {"enum": ["none", "dolly", "crane", "orbit", "handheld"]}, "travel": n, "lift": n, "swing": n,
               "arm": n, "shake": n, "keys": {"type": "object"}, "haze": n, "godRays": n, "color": color, "turn": n, "exposure": n,
               "off": b}, ["op"]),
+    "design": ("D1's motion design: an SVG logo stood up as solids (one a colour); copies of a thing in a grid, a circle, a "
+               "line or along a path, moved by effects (random, delay, push) through fields (everywhere, near a point, a "
+               "ripple); links that let a thing's motion or a sound (loudness, bass, beat) drive another thing; a morph into "
+               "another thing's shape; letters that animate; and the loop check, which can close the loop.",
+               {"op": {"enum": ["logo", "clone", "effect", "link", "morph", "letters", "loop"]}, "target": tgt, "name": s,
+                "svg": s, "file": s, "width": n, "depth": n, "at": time,
+                "layout": {"enum": ["grid", "circle", "line", "path"]}, "count": n, "columns": n, "rows": n, "layers": n,
+                "spacing": {"anyOf": [v3, n]}, "radius": n, "facesOut": b, "step": v3, "path": tgt, "along": b,
+                "kind": {"enum": ["random", "delay", "push"]}, "move": v3, "turn": v3, "grow": n, "delay": n,
+                "field": {"enum": ["everywhere", "sphere", "ripple"]}, "centre": v3, "speed": n, "every": n, "clear": b,
+                "channel": {"enum": ["moveX", "moveY", "moveZ", "turnX", "turnY", "turnZ", "size", "glow", "opacity", "effect",
+                                     "morph", "reveal"]},
+                "from": tgt, "fromChannel": {"enum": ["moveX", "moveY", "moveZ", "turnX", "turnY", "turnZ", "size"]},
+                "sound": s, "feature": {"enum": ["loudness", "bass", "beat"]}, "amount": n, "into": tgt, "duration": n,
+                "preset": {"enum": ["flyIn", "bounce", "cascade", "pop", "spin", "typewriter", "wave", "none"]},
+                "order": {"enum": ["forward", "backward", "middle", "random"]}, "stagger": n, "length": n, "close": b,
+                "off": b}, ["op"]),
     "command":("A raw EditCommand.", {"command": ref("command")}, ["command"]),
 }
 

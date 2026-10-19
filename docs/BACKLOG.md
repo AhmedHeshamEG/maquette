@@ -3,6 +3,24 @@
 What's known and not done yet, so nothing lives only in someone's head. What Maquette is: [SPEC.md](SPEC.md). The
 phase plan (the pass U1 … U5, M12, M14, M16, then 1.0) lives in studio-h's `PHASES.md`; ideas go to its `IDEAS.md`.
 
+## Left from D1 (Maquette 0.23)
+
+- [ ] The device checklist in the "Maquette 0.23 — D1" PR (a client's SVG logo, a font brought in from Files, letters flying
+      in on the stage, 1000 rippling copies on a Tier B iPad, a gear pair, a ripple on the beat of a real song, a cube
+      morphing into a ball, a ProRes 4444 loop played on repeat in a video editor).
+- [ ] 3D files carry clones where they stand and letters at rest; their motion as keys (one node a copy, a letter) is to do
+      (D-474).
+- [ ] Morph needs shapes made in the app: a placed Kit model is made editable first (D-467). Morphing to a model's parts
+      straight away, and painted surfaces carried through a morph, are to do.
+- [ ] SVG strokes, text and pictures are counted, not imported (D-460). Outlining strokes needs a 2D boolean.
+- [ ] Clone copies aren't paintable or riggable one by one, by design; "Make them real" (copies into things) would be the
+      way, if testers ask.
+- [ ] The Stepper titles with a count ("Across 5") are keyed `%@` by the strings tool and `%lld` by SwiftUI, so their
+      Italian and Arabic don't show; they're English at 1.0 anyway (the languages come with the Mac).
+- [ ] Letters animate in; letters leaving the same way at a set time is to do.
+- [ ] A sound is measured when something first moves to it; a clip trimmed or replaced later keeps its measure (it's the
+      file's, so trims are fine; a replaced file needs measuring again).
+
 ## Left from F1 (Maquette 0.22)
 
 - [ ] The device checklist in the "Maquette 0.22 — F1" PR (the bridge's pictures over MCP with Claude Code, a spatial
