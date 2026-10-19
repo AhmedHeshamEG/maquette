@@ -3,6 +3,18 @@
 One task per feature for the two test weeks (between M14 and M16), written for its person in `studio-h/USERS.md`. A
 task says what to make, never which buttons to press; the tester says where they got stuck.
 
+## 0.22 (F1): film
+
+- **The explainer maker:** three shots of the keeper at the Keeper's Tower in one scene, lit with a setup, a focus pull from
+  the keeper to the lamp on the word "light", exported as one cut film and as a storyboard PDF.
+- **The anime animator:** a 2.39:1 crane shot rising up the tower on Super 35, with a little handheld shake at the top, and
+  its animatic.
+- **The hobby sculptor:** a creature lit by an HDRI of a beach, turned so the shadow falls behind it, as a 4K panorama.
+- **The architect:** a room lit through a window by a soft panel with golden-hour haze and god rays.
+- **The flipbook animator:** a character posed over a video of a person jumping, frame by frame, with the rotoscope.
+- **Everyone:** the tower as a spatial photo, opened on an iPhone's Photos or a Vision Pro; and an HDR 4K export watched
+  on an HDR screen.
+
 ## 0.21 (A1): animate & export
 
 - **The explainer maker:** a cart rolling down from the Keeper's Tower along a drawn path, slowing at the bottom, while the

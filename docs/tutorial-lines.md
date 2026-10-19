@@ -96,3 +96,19 @@ Learn place links to (CONTEXT §8). A phase adds the lines of what it built; M16
   finger on a thing while drawing to take its colour."
 - **The explainer maker:** "Titles are 3D text: switch on Stick to the camera and it stays on the picture while the
   camera flies."
+
+## 0.22 (F1): film
+
+- **The explainer maker:** "Select the speaker and a light, then tap Three-point: a soft key, a fill and a rim, placed
+  the way the camera sees them. Golden hour brings the low sun and the haze with it."
+- **The explainer maker:** "Select the camera and the speaker, tap Focus on selection: the lens follows them. On the
+  word that matters, select the screen and tap Pull focus here."
+- **The anime animator:** "Hold the camera button for Lens and frame: pick 2.39:1 and a 40 mm on Super 35, then put the
+  camera on a crane and key its lift at two moments."
+- **The hobby sculptor:** "Look, World, Choose an HDRI: your creature stands in that place's light. Turn it until the sun
+  is where you want the shadow."
+- **The architect:** "Model, Add, Soft panel: a window's light. Size it like the window and turn it to face the room."
+- **The flipbook animator:** "Actions, Rotoscope: a video of yourself behind the stage. Its frame follows the playhead;
+  pose or draw over it, frame by frame."
+- **Everyone:** "Export, Paper, Storyboard: every shot on a page with its lens and its words. Video, Animatic: the same
+  film held shot by shot, with the sound."

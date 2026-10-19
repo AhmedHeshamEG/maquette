@@ -3,6 +3,26 @@
 What's known and not done yet, so nothing lives only in someone's head. What Maquette is: [SPEC.md](SPEC.md). The
 phase plan (the pass U1 … U5, M12, M14, M16, then 1.0) lives in studio-h's `PHASES.md`; ideas go to its `IDEAS.md`.
 
+## Left from F1 (Maquette 0.22)
+
+- [ ] The device checklist in the "Maquette 0.22 — F1" PR (the bridge's pictures over MCP with Claude Code, a spatial
+      video and photo in Photos or on a Vision Pro, an HDR export on an HDR screen, a 360° video on YouTube, god rays and
+      haze on the iPad, an HDRI's sun against its picture, the rotoscope's frame against the playhead; a 360° 4K export and
+      a spatial export timed on the iPad).
+- [ ] The build that applied with auto-apply off (step 0.8) wasn't reproduced; the reply now says who approved. Watch for it.
+- [ ] 360° frames are six views: screen-space lines and contact shading can show a faint seam at a cube edge (D-450).
+      Lines from a cube-aware pass, or a seventh overlapping view, if it shows.
+- [ ] Spatial and 360° exports draw each view once: Final's motion blur and supersampling aren't applied (D-449, D-450).
+- [ ] HDR files draw each frame once (Final's averaging is 8-bit) (D-451).
+- [ ] Only the sun throws god rays; lamps and panels don't (D-442).
+- [ ] An HDRI lights the world through the sun and the sky's colours; metal mirrors the sky's gradient, not the picture
+      (D-443). Reflections of the HDRI on glossy things are to do.
+- [ ] HDRIs are Radiance .hdr; OpenEXR needs a decoder (D-443).
+- [ ] A soft panel's helper on the stage is a bulb; drawing its rectangle (and dragging its size) is to do.
+- [ ] Spatial video and photos for Vision Pro: the disparity adjustment is a fixed 2 %; a "screen depth" option if testers
+      want it.
+- [ ] The rotoscope plays whole frames at the timeline's rate; a video at another rate shows its nearest frame (D-453).
+
 ## Left from A1 (Maquette 0.21)
 
 - [ ] The device checklist in the "Maquette 0.21 — A1" PR (a path drawn with the Pencil and its timing, facing and
