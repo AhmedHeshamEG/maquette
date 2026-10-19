@@ -7,9 +7,9 @@ import UIKit
 /// 3D text in any script (Arabic included) from the system fonts: CoreText lays the lines out, every glyph outline
 /// is flattened, triangulated with its holes (`Outlines`) and extruded. Base-centred like every Lowey object.
 enum TextMesher {
-    static func mesh(for recipe: TextRecipe) -> MeshData {
+    static func mesh(for recipe: TextRecipe, fonts: FontFiles? = nil) -> MeshData {
         let size = CGFloat(max(recipe.size, 0.01))
-        let font = font(recipe.style, size: size)
+        let font = recipe.font.flatMap { fonts?.font($0, size: size) } ?? Self.font(recipe.style, size: size)
         let lines = recipe.text.split(separator: "\n", omittingEmptySubsequences: false).map(String.init)
         var contoursByLine: [[[Vec2]]] = []
         var widths: [Double] = []

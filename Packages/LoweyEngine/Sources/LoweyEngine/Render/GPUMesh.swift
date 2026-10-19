@@ -100,6 +100,10 @@ indirect enum MeshKey: Hashable {
     case ink(DrawingRecipe, eye: SIMD3<Int32>, reveal: Int32)
     /// Hair cards grown on the mesh with this fingerprint, for these fur settings.
     case furCards(String, FurSettings)
+    /// One letter (its index among the text's characters) of animated 3D text.
+    case letter(TextRecipe, index: Int)
+    /// A morph's target shape in the morphing thing's space, at this size ratio (per mille).
+    case morphTarget(ObjectKind, ratio: SIMD3<Int32>)
 
     /// Millimetre quantisation for size-dependent meshes (bevels, cards).
     static func mm(_ value: Double) -> Int32 {

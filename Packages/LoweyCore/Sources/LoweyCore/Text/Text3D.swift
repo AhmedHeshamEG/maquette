@@ -112,12 +112,22 @@ public enum BlockFont {
 
     /// Mesh of `recipe` (text in the XY plane facing +Z, standing on y = 0).
     public static func mesh(for recipe: TextRecipe) -> MeshData {
+        var mesh = MeshData()
+        for letter in letters(for: recipe) {
+            mesh.append(letter.mesh)
+        }
+        return mesh
+    }
+
+    /// Each character's blocks on its own (letters that animate), with its index in `recipe.text`; spaces have none.
+    public static func letters(for recipe: TextRecipe) -> [(index: Int, mesh: MeshData)] {
         let pixel = Float(recipe.size / Double(rows))
         let depth = Float(max(recipe.size * recipe.depth, 0.001))
         let advance = Float(columns + 1)
         let lines = recipe.text.uppercased().split(separator: "\n", omittingEmptySubsequences: false)
         let lineHeight = Float(rows + 2)
-        var mesh = MeshData()
+        var result: [(index: Int, mesh: MeshData)] = []
+        var characterIndex = 0
         for (lineIndex, line) in lines.enumerated() {
             let width = (Float(line.count) * advance - 1) * pixel
             let startX: Float = switch recipe.alignment {
@@ -127,28 +137,38 @@ public enum BlockFont {
             }
             let baseY = Float(lines.count - 1 - lineIndex) * lineHeight * pixel
             for (index, character) in line.enumerated() {
+                defer { characterIndex += 1 }
                 guard let glyph = glyphs[character] else { continue }
-                let originX = startX + Float(index) * advance * pixel
-                for (row, bits) in glyph.enumerated() {
-                    let y = baseY + Float(rows - 1 - row) * pixel
-                    // One block per horizontal run of filled pixels.
-                    var column = 0
-                    let cells = Array(bits)
-                    while column < cells.count {
-                        guard cells[column] == "#" else {
-                            column += 1
-                            continue
-                        }
-                        var end = column
-                        while end + 1 < cells.count, cells[end + 1] == "#" {
-                            end += 1
-                        }
-                        let x0 = originX + Float(column) * pixel
-                        let x1 = originX + Float(end + 1) * pixel
-                        appendBlock(&mesh, min: SIMD3<Float>(x0, y, -depth / 2), max: SIMD3<Float>(x1, y + pixel, depth / 2))
-                        column = end + 1
-                    }
+                let origin = SIMD2<Float>(startX + Float(index) * advance * pixel, baseY)
+                let mesh = blocks(glyph, origin: origin, pixel: pixel, depth: depth)
+                if !mesh.isEmpty { result.append((characterIndex, mesh)) }
+            }
+            characterIndex += 1 // the line break
+        }
+        return result
+    }
+
+    /// One glyph's merged runs of filled pixels.
+    static func blocks(_ glyph: [String], origin: SIMD2<Float>, pixel: Float, depth: Float) -> MeshData {
+        var mesh = MeshData()
+        for (row, bits) in glyph.enumerated() {
+            let y = origin.y + Float(rows - 1 - row) * pixel
+            // One block per horizontal run of filled pixels.
+            var column = 0
+            let cells = Array(bits)
+            while column < cells.count {
+                guard cells[column] == "#" else {
+                    column += 1
+                    continue
                 }
+                var end = column
+                while end + 1 < cells.count, cells[end + 1] == "#" {
+                    end += 1
+                }
+                let x0 = origin.x + Float(column) * pixel
+                let x1 = origin.x + Float(end + 1) * pixel
+                appendBlock(&mesh, min: SIMD3<Float>(x0, y, -depth / 2), max: SIMD3<Float>(x1, y + pixel, depth / 2))
+                column = end + 1
             }
         }
         return mesh

@@ -26,6 +26,12 @@ final class SceneCompiler {
     var activeHull: Float = 0
     /// How many fur shells a surface draws (the stage's tier; exports draw them all).
     var furShells = FurSettings.exportShells
+    /// Fonts brought into the project, read through the frame's files.
+    let fonts = FontFiles()
+    /// Animated texts' letters, meshed once per recipe.
+    var letterSets: [TextRecipe: [TextLetter]] = [:]
+    /// Morphs' corner matches, worked out once per pair of shapes.
+    var morphPairs: [MorphKey: MorphPair] = [:]
 
     init(device: MTLDevice, meshes: MeshCache, textures: TextureStore, models: ModelLibrary, stamper: BrushStamper, paints: PaintTextures) {
         self.device = device
@@ -57,6 +63,7 @@ final class SceneCompiler {
     func compile(_ input: RenderInput, cameraPosition: SIMD3<Float>) -> RenderScene {
         var scene = RenderScene()
         eye = cameraPosition
+        fonts.read = input.paintFile
         _ = scene.lookIndex(input.document.lookPreset)
         var lights: [(LightData, Float)] = []
         func visit(_ id: ObjectID, in objects: [ObjectID: SceneObject], _ inherited: Inherited) {
@@ -66,7 +73,10 @@ final class SceneCompiler {
             state.opacity *= object.opacity
             state.lookOverride = object.lookOverride ?? inherited.lookOverride
             state.accent = inherited.accent || object.isAccent
-            state.selected = inherited.selected || input.selection.contains(id)
+            // A cloner's copies pick and select as the thing they copy.
+            let copied = object.cloneSource
+            if let copied, inherited.pickAs == nil { state.pickAs = copied }
+            state.selected = inherited.selected || input.selection.contains(id) || copied.map { input.selection.contains($0) } ?? false
             if let smear = input.smears[id] { state.deform = Self.matrix(smear) * (inherited.deform ?? matrix_identity_float4x4) }
             outline(object, state: &state, input: input)
             activeDeform = state.deform
