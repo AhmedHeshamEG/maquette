@@ -198,6 +198,10 @@ def test_the_sixteen_tools_go_through_the_bridge(bridge_host, monkeypatch, tmp_p
     picture.write_bytes(b"PNG")
     assert '"added":"graph.mov"' in mcp_server.add_media(str(picture), at=3, overlay=True)
     assert RECEIVED[-1][0] == "/v2/media" and "as=overlay" in RECEIVED[-1][1] and "at=3" in RECEIVED[-1][1]
+    sky = tmp_path / "studio.hdr"
+    sky.write_bytes(b"#?RADIANCE")
+    mcp_server.add_media(str(sky), environment=True)
+    assert "as=environment" in RECEIVED[-1][1], "an HDRI goes to the world's sky"
     made = tmp_path / "Graph.mov"
     made.write_bytes(b"MOV")
     rendered = []

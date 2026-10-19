@@ -36,8 +36,8 @@ grounds things; you decide what the shot is, then check it with your own eyes (`
 |---|---|
 | a script, an idea, "what do I show" | `modules/brief.md` |
 | a place, a room, a set, props | `modules/set-building.md` |
-| framing, lenses, moves, cuts | `modules/camera.md` |
-| light, mood, "it looks flat" | `modules/lighting.md` |
+| framing, lenses, bodies, the frame's shape, focus pulls, rigs, moves, cuts | `modules/camera.md` |
+| light, setups, soft panels, haze, god rays, an HDRI, mood, "it looks flat" | `modules/lighting.md` |
 | how things move, timing, twos | `modules/animation.md` |
 | characters, faces, acting, lip sync | `modules/characters.md` |
 | speed lines, impacts, sparkles, smears | `modules/flipbook-fx.md` |
