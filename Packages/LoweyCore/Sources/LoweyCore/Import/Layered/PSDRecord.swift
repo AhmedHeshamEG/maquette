@@ -38,7 +38,7 @@ struct PSDRecord {
             try record.channels.append((reader.i16(), large ? reader.u64() : reader.u32()))
         }
         guard try reader.ascii(4) == "8BIM" else { throw .damaged("a layer's mixing") }
-        record.blend = PSDTags.blend(try reader.ascii(4))
+        record.blend = try PSDTags.blend(reader.ascii(4))
         record.opacity = try reader.u8()
         try reader.skip(1)
         record.hidden = try reader.u8() & 0x02 != 0
@@ -48,7 +48,7 @@ struct PSDRecord {
         try reader.skipBlock()
         try reader.skipBlock()
         let nameLength = try reader.u8()
-        record.name = PSDTags.legacyName(try reader.slice(nameLength))
+        record.name = try PSDTags.legacyName(reader.slice(nameLength))
         try reader.skip((nameLength + 4) / 4 * 4 - 1 - nameLength)
         try record.readTags(&reader, end: end, large: large)
         reader.position = end
@@ -182,7 +182,7 @@ enum PSDPixels {
     }
 
     static func raw(_ reader: inout BigEndianReader, width: Int, height: Int, depth: Int) throws(LayeredReadFailure) -> [UInt8] {
-        eight(Array(try reader.slice(width * height * depth / 8)), depth: depth, count: width * height)
+        try eight(Array(reader.slice(width * height * depth / 8)), depth: depth, count: width * height)
     }
 
     /// PackBits rows (Apple's run-length code): a count byte, then literal bytes or one byte repeated.

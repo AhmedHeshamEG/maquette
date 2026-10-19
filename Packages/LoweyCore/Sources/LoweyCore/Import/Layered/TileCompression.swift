@@ -155,7 +155,7 @@ private struct LZODecoder {
                     state = .match
                     continue
                 }
-                let distance = 1 + 0x0800 + (t >> 2) + (try next() << 2)
+                let distance = try 1 + 0x0800 + (t >> 2) + (next() << 2)
                 try copy(from: distance, count: 3)
                 state = .matchDone
             case .match:
@@ -175,7 +175,7 @@ private struct LZODecoder {
     /// One match from its token `t`; true at the end of the stream.
     private mutating func matchOrEnd(_ t: inout Int) throws(LayeredReadFailure) -> Bool {
         if t >= 64 {
-            let distance = 1 + ((t >> 2) & 7) + (try next() << 3)
+            let distance = try 1 + ((t >> 2) & 7) + (next() << 3)
             try copy(from: distance, count: (t >> 5) + 1)
         } else if t >= 32 {
             var count = t & 31
@@ -191,7 +191,7 @@ private struct LZODecoder {
             if distance == 0 { return true }
             try copy(from: distance + 0x4000, count: count + 2)
         } else {
-            let distance = 1 + (t >> 2) + (try next() << 2)
+            let distance = try 1 + (t >> 2) + (next() << 2)
             try copy(from: distance, count: 2)
         }
         return false

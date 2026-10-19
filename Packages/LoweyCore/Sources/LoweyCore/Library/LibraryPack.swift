@@ -94,7 +94,7 @@ public enum LibraryPack {
                                                       author: origin?.author, licence: origin?.licence))
         }
         let manifest = HmmPackManifest(app: app, name: name, author: author, licence: licence, created: created, items: manifestItems)
-        entries.insert((HmmPackManifest.fileName, try manifest.encoded()), at: 0)
+        try entries.insert((HmmPackManifest.fileName, manifest.encoded()), at: 0)
         entries.insert((HmmPackManifest.licenceFileName, Data(manifest.licenceText.utf8)), at: 1)
         return ZipWriter.storedArchive(entries)
     }
@@ -143,7 +143,7 @@ public enum LibraryPack {
     }
 
     public static func read(_ data: Data, now: Date = Date()) throws -> Contents {
-        let entries = Dictionary(try ZipReader.entries(data).map { ($0.name, $0.data) }, uniquingKeysWith: { first, _ in first })
+        let entries = try Dictionary(ZipReader.entries(data).map { ($0.name, $0.data) }, uniquingKeysWith: { first, _ in first })
         guard let manifestData = entries[HmmPackManifest.fileName] else { throw HmmPackManifest.Problem.empty }
         let manifest = try HmmPackManifest.decode(manifestData)
         try manifest.validate(app: app)

@@ -10,8 +10,8 @@ public enum ProcreateReader {
     public static func read(_ data: Data) throws(LayeredReadFailure) -> LayeredImage {
         let entries: [String: Data]
         do {
-            entries = Dictionary(try ZipReader.entries(data) { !$0.hasPrefix("video/") }.map { ($0.name, $0.data) },
-                                 uniquingKeysWith: { first, _ in first })
+            entries = try Dictionary(ZipReader.entries(data) { !$0.hasPrefix("video/") }.map { ($0.name, $0.data) },
+                                     uniquingKeysWith: { first, _ in first })
         } catch {
             throw .notLayered
         }

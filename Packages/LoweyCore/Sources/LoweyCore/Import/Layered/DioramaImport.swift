@@ -45,7 +45,8 @@ public enum DioramaImport {
             if layer.blend != .normal { mixesLost += 1 }
             objects.append(object)
         }
-        guard objects.contains(where: { if case .mesh = $0.kind { true } else { false } }) else {
+        // Only groups made means nothing on any layer showed.
+        guard objects.contains(where: { $0.kind != .group }) else {
             throw LayeredReadFailure.unsupported("a drawing with nothing on its layers")
         }
         for index in objects.indices {

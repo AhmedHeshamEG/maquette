@@ -23,8 +23,8 @@ public enum KeepersTowerSample {
         var scene = Scene(id: ids.isSequential ? "tower-scene" : .make(), name: "The tower at night")
         scene.look = look
         scene.timeline = Timeline(fps: 24, duration: 12)
-        let script = try LoweyJSON.decode(SceneScript.self, from: Data(self.script.utf8))
-        let result = try ScriptCompiler.compile(script, document: Document(project: info, scene: scene), context: ScriptContext(ids: ids))
+        let parsed = try LoweyJSON.decode(SceneScript.self, from: Data(script.utf8))
+        let result = try ScriptCompiler.compile(parsed, document: Document(project: info, scene: scene), context: ScriptContext(ids: ids))
         scene = result.document.scene
         scene.viewpoint = Viewpoint(target: Vec3(0.6, 4.5, 0), yaw: 32, pitch: 8, distance: 17)
         return (info, [scene])

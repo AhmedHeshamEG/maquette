@@ -57,7 +57,7 @@ final class LooksL2Tests: XCTestCase {
         XCTAssertEqual(try JSONDecoder().decode(PostSettings.self, from: JSONEncoder().encode(finish)), finish)
         finish = PostSettings()
         XCTAssertTrue(finish.isNeutral)
-        let plain = String(decoding: try JSONEncoder().encode(finish), as: UTF8.self)
+        let plain = try String(decoding: JSONEncoder().encode(finish), as: UTF8.self)
         XCTAssertFalse(plain.contains("benDay"))
         XCTAssertEqual(PostSettings.Texture.allCases.map(\.shaderIndex), Array(0 ..< 7), "the shader's numbers follow the list")
     }
@@ -101,7 +101,7 @@ final class LooksL2Tests: XCTestCase {
 
     func testTheLibraryKeepsYourLooksEffectsPartsAndWhereThingsCameFrom() throws {
         var library = LibraryManifest()
-        XCTAssertFalse(String(decoding: try LoweyJSON.encode(library), as: UTF8.self).contains("styles"))
+        XCTAssertFalse(try String(decoding: LoweyJSON.encode(library), as: UTF8.self).contains("styles"))
         library.styles = [LookPreset.painterly.duplicated(id: "mine", name: "My Painterly")]
         library.effects = [SavedEffect(id: "e", name: "Blue fire", recipe: .preset(.fire), added: Date(timeIntervalSince1970: 1))]
         library.parts = [SavedPart(id: "p", name: "Horn", job: .extra, fragment: SceneFragment(objects: [], roots: []),

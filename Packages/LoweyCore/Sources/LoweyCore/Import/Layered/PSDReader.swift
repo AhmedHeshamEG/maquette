@@ -60,7 +60,7 @@ public enum PSDReader {
         let infoLength = try header.large ? reader.u64() : reader.u32()
         var image = LayeredImage(width: header.width, height: header.height, layers: [])
         if infoLength > 0 {
-            var info = BigEndianReader(Data(try reader.slice(infoLength)))
+            var info = try BigEndianReader(Data(reader.slice(infoLength)))
             image = try layerInfo(&info, header: header)
             return image
         }
@@ -73,7 +73,7 @@ public enum PSDReader {
             let length = try header.large && PSDTags.longKeys.contains(key) ? reader.u64() : reader.u32()
             let start = reader.position
             if key == "Lr16" || key == "Lr32" || key == "Layr" {
-                var info = BigEndianReader(Data(try reader.slice(length)))
+                var info = try BigEndianReader(Data(reader.slice(length)))
                 return try layerInfo(&info, header: header)
             }
             reader.position = start + length
@@ -83,7 +83,7 @@ public enum PSDReader {
     }
 
     private static func layerInfo(_ reader: inout BigEndianReader, header: Header) throws(LayeredReadFailure) -> LayeredImage {
-        let count = abs(try reader.i16())
+        let count = try abs(reader.i16())
         var records: [PSDRecord] = []
         for _ in 0 ..< count {
             try records.append(PSDRecord.read(&reader, large: header.large))

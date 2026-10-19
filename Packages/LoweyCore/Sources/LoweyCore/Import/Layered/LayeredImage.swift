@@ -125,7 +125,7 @@ struct BigEndianReader {
     }
 
     mutating func i16() throws(LayeredReadFailure) -> Int {
-        Int(Int16(truncatingIfNeeded: try u16()))
+        try Int(Int16(truncatingIfNeeded: u16()))
     }
 
     mutating func u32() throws(LayeredReadFailure) -> Int {
@@ -133,7 +133,7 @@ struct BigEndianReader {
     }
 
     mutating func i32() throws(LayeredReadFailure) -> Int {
-        Int(Int32(truncatingIfNeeded: try u32()))
+        try Int(Int32(truncatingIfNeeded: u32()))
     }
 
     mutating func u64() throws(LayeredReadFailure) -> Int {
