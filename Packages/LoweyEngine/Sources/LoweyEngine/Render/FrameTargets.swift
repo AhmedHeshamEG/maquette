@@ -83,4 +83,20 @@ final class FrameTargets {
 
     /// The shaded image at native resolution (the upscaled one when the render scale is below 1).
     var nativeColor: MTLTexture { upscaled ?? color }
+
+    /// The paint pass's textures (L2): made the first time a painted Look is drawn at this size, so a frame that
+    /// paints nothing never pays for them.
+    private(set) var paintTensor: MTLTexture?
+    private(set) var painted: MTLTexture?
+
+    func paintTargets(device: RenderDevice) -> (tensor: MTLTexture, painted: MTLTexture)? {
+        if let paintTensor, let painted { return (paintTensor, painted) }
+        let rw: MTLTextureUsage = [.shaderRead, .shaderWrite]
+        guard let tensor = try? device.makeTexture(RenderDevice.colorFormat, width: width, height: height, usage: rw, label: "paint tensor"),
+              let output = try? device.makeTexture(RenderDevice.colorFormat, width: width, height: height, usage: rw, label: "painted")
+        else { return nil }
+        paintTensor = tensor
+        painted = output
+        return (tensor, output)
+    }
 }

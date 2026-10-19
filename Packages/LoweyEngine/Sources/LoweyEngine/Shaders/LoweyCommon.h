@@ -74,6 +74,9 @@ struct LookUniforms {
     float4 comic;      // x = halftone, y = dot spacing (pt @1080p), z = object-space dots, w = misregistration
     float4 finish;     // x = paper grain, y = paper tint, z = vignette, w = saturation
     float4 grade;      // x = lift, y = gamma, z = gain, w = accent keeps colour
+    float4 paint;      // x = brush strokes, y = stroke size (pt @1080p), z = wet edges, w = granulation (L2)
+    float4 paper;      // x = paper shows through, y = reflection, z = pixel block (pt @1080p, 0 = off), w = colour levels
+    float4 shadowTint; // rgb = shadow tint (linear), w = how much
 };
 
 struct ObjectUniforms {

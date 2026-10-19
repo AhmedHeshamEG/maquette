@@ -14,6 +14,9 @@ struct CompositeUniforms {
     float4 options;      // x = overlay present, y = premultiplied alpha output, z = opaque output, w = flipbook layers (1 multiply, 2 screen, 4 add, 8 normal)
     float4 output;       // x = encoding (0 sRGB, 1 HLG in BT.2020, 2 Display P3), y = brightest highlight kept (× white)
     float4 rotoscope;    // x = on, y = opacity, z = 1 over the scene (else behind it), w = the video's aspect (w / h)
+    float4 drawn;        // the drawn set (L2): x = impact frame, y = focus lines, z = Kirby dots, w = the drawing's seed (twos)
+    float4 drawnPlace;   // xy = where focus lines and an impact aim, zw = where Kirby dots crackle (0…1 from the top left)
+    float4 drawnSpread;  // x = how far Kirby dots have spread (0…1)
 };
 
 constexpr sampler lw_compositeSampler(coord::normalized, address::clamp_to_edge, filter::linear);
@@ -112,6 +115,55 @@ static inline float4 lw_screenEffects(float2 uv, texture2d<float, access::sample
     }
     if (u.effects.z > 0.0) {
         color.rgb = mix(color.rgb, u.flashColor.rgb, saturate(u.effects.z));
+    }
+    return color;
+}
+
+/// The drawn set (L2, D-483), inked over the frame like a comic artist's marks, redrawn on twos.
+static inline float3 lw_drawnEffects(float3 color, float2 uv, constant CompositeUniforms &u) {
+    float aspect = u.size.x * u.size.w;
+    float seed = u.drawn.w;
+    float3 ink = float3(0.012, 0.01, 0.015);
+    if (u.drawn.x > 0.0) {
+        // Impact frame: the picture in two tones, flipping between dark-on-light and light-on-dark each drawing, with a
+        // burst of rays from the hit.
+        float flip = fmod(seed, 2.0) < 1.0 ? 1.0 : 0.0;
+        float lit = step(0.32, lw_luminance(color));
+        float tone = mix(lit, 1.0 - lit, flip);
+        float2 fromHit = (uv - u.drawnPlace.xy) * float2(aspect, 1.0);
+        float ray = lw_hash(float2(floor(atan2(fromHit.y, fromHit.x) * 40.0), seed));
+        float burst = step(0.82, ray) * smoothstep(0.08, 0.3, length(fromHit));
+        float3 impact = mix(ink, float3(1.0), saturate(tone + burst * (1.0 - tone)));
+        color = mix(color, impact, saturate(u.drawn.x));
+    }
+    if (u.drawn.y > 0.0) {
+        // Focus lines: tapered ink strokes closing in on the point, a clear oval left round it.
+        float2 fromCenter = (uv - u.drawnPlace.xy) * float2(aspect, 1.0);
+        float angle = atan2(fromCenter.y, fromCenter.x);
+        float bin = floor((angle + M_PI_F) / (2.0 * M_PI_F) * 150.0);
+        float keep = lw_hash(float2(bin, seed));
+        float inner = 0.22 + lw_hash(float2(bin, seed + 7.0)) * 0.22 + (1.0 - u.drawn.y) * 0.5;
+        float within = fract((angle + M_PI_F) / (2.0 * M_PI_F) * 150.0) - 0.5;
+        float radius = length(fromCenter);
+        float width = 0.42 * smoothstep(inner, inner + 0.35, radius);
+        float stroke = step(0.45, keep) * (1.0 - smoothstep(width - 0.08, width + 0.02, abs(within)));
+        color = mix(color, ink, stroke * saturate(u.drawn.y));
+    }
+    if (u.drawn.z > 0.0) {
+        // Kirby dots: black blobs crackling out from the point, smaller the farther they go.
+        float2 fromCenter = (uv - u.drawnPlace.zw) * float2(aspect, 1.0);
+        float reach = 0.06 + u.drawnSpread.x * 0.22;
+        float mark = 0.0;
+        for (int index = 0; index < 16; index++) {
+            float i = float(index);
+            float angle = i / 16.0 * 2.0 * M_PI_F + (lw_hash(float2(i, 3.0)) - 0.5) * 0.5;
+            float away = reach * (0.7 + lw_hash(float2(i, 5.0)) * 0.6);
+            float2 place = float2(cos(angle), sin(angle)) * away;
+            float size = (0.016 + lw_hash(float2(i, 9.0)) * 0.02) * (1.15 - u.drawnSpread.x * 0.6);
+            float wobble = (lw_noise(fromCenter * 90.0 + i * 3.1 + seed) - 0.5) * size * 0.5;
+            mark = max(mark, 1.0 - smoothstep(size - 0.002, size + 0.002, length(fromCenter - place) + wobble));
+        }
+        color = mix(color, ink, mark * saturate(u.drawn.z));
     }
     return color;
 }
@@ -222,6 +274,7 @@ kernel void lw_composite(texture2d<float, access::sample> to [[texture(0)]],
     if (gid.x >= uint(u.size.x) || gid.y >= uint(u.size.y)) { return; }
     float2 uv = (float2(gid) + 0.5) * u.size.zw;
     float4 color = lw_screenEffects(uv, to, from, u);
+    if (u.drawn.x > 0.0 || u.drawn.y > 0.0 || u.drawn.z > 0.0) { color.rgb = lw_drawnEffects(color.rgb, uv, u); }
     uint layers = uint(u.options.w + 0.5);
     if (layers != 0u) {
         color = lw_flipbookLayers(color, uv, multiply, screen, add, layers);

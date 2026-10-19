@@ -72,7 +72,9 @@ extension LoweyRenderer {
                             commandBuffer: commandBuffer)
         }
         encodeAO(frame: frame, targets: targets, look: gpu.looks[0], commandBuffer: commandBuffer)
-        let groundColor = request.input.document.effectiveLook.ground.color.linear * frame.skyHorizon.w
+        let ground = request.input.document.effectiveLook.ground
+        // w: what the ground is made of (GroundSurface's number, 0 a plain floor; GroundSurfaces.h).
+        let groundColor = SIMD4<Float>(ground.color.linear * frame.skyHorizon.w, Float(ground.surface?.shaderIndex ?? 0))
         report.drawCalls += encodeShading(frame: &frame, ordered: ordered, gpu: gpu, targets: targets, ground: showsGround ? groundColor : nil,
                                           brushes: (scene.brushes, request.input.mediaImage), commandBuffer: commandBuffer,
                                           triangles: &report.triangles)
@@ -212,7 +214,7 @@ extension LoweyRenderer {
         return batches.count
     }
 
-    func encodeShading(frame: inout FrameUniforms, ordered: [DrawItem], gpu: FrameBuffers, targets: FrameTargets, ground: SIMD3<Float>?,
+    func encodeShading(frame: inout FrameUniforms, ordered: [DrawItem], gpu: FrameBuffers, targets: FrameTargets, ground: SIMD4<Float>?,
                        brushes: (batches: [BrushBatch], image: (String) -> CGImage?), commandBuffer: MTLCommandBuffer,
                        triangles: inout Int) -> Int {
         guard let encoder = commandBuffer.makeRenderCommandEncoder(descriptor: shadingPass(targets)) else { return 0 }
@@ -236,7 +238,7 @@ extension LoweyRenderer {
         encoder.setDepthStencilState(device.pipelines.depthWrite)
         var draws = 1
         if let ground {
-            var groundColor = SIMD4<Float>(ground, 1)
+            var groundColor = ground
             encoder.setRenderPipelineState(device.pipelines.shadeGround)
             encoder.setFragmentBytes(&groundColor, length: MemoryLayout<SIMD4<Float>>.stride, index: BufferIndex.objects)
             encoder.setVertexBuffer(groundMesh.vertices, offset: 0, index: BufferIndex.vertices)

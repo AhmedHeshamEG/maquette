@@ -2,6 +2,7 @@
 // and clay, chosen per object by its LookUniforms. See docs/SPEC.md §2.1 for the recipe.
 
 #include "LoweyCommon.h"
+#include "GroundSurfaces.h"
 
 struct ShadeOut {
     float4 color [[color(0)]];   // linear HDR, alpha = coverage
@@ -176,6 +177,10 @@ static inline float2x4 lw_shadeSurface(SurfaceInput s, constant FrameUniforms &f
         level = lw_band(x, look);
         float3 lit = body * (frame.sunColor.rgb * 0.85 + ambient * 0.25);
         float3 shade = lw_shadowColor(body, frame.ambient.rgb, look) * (ambient * 0.9 + 0.08) * contact;
+        if (look.shadowTint.w > 0.0) {
+            // Anime cel: the shadow is the thing's colour under one tint, flat, as a painted cel's is.
+            shade = mix(shade, body * look.shadowTint.rgb * (ambient * 0.9 + 0.35) * contact, look.shadowTint.w);
+        }
         color = mix(shade, lit, level);
         color += frame.sunColor.rgb * tint * lw_specularShape(s, sun, look) * level;
     }
@@ -185,6 +190,14 @@ static inline float2x4 lw_shadeSurface(SurfaceInput s, constant FrameUniforms &f
         float3 sky = mix(frame.skyHorizon.rgb, frame.skyTop.rgb, saturate(reflected.y));
         sky = mix(sky, frame.groundBounce.rgb, saturate(-reflected.y * 2.0));
         color += sky * s.base * s.metal * (1.0 - s.roughness * 0.7) * 0.6 * contact;
+    }
+    if (look.paper.y > 0.0) {
+        // Clean product: lacquer mirrors the room at grazing angles (the sky's gradient, the floor below).
+        float3 reflected = reflect(-s.view, s.normal);
+        float3 room = mix(frame.skyHorizon.rgb, frame.skyTop.rgb, saturate(reflected.y));
+        room = mix(room, frame.groundBounce.rgb, saturate(-reflected.y * 2.0));
+        float fresnel = 0.04 + 0.96 * pow(1.0 - saturate(dot(s.normal, s.view)), 5.0);
+        color = mix(color, room, saturate(fresnel * look.paper.y * 1.5) * contact);
     }
     color += lw_localLights(s, frame, look, lights);
     color += mix(frame.skyHorizon.rgb, frame.sunColor.rgb, 0.3) * lw_rim(s, look) * 0.6;
@@ -439,10 +452,12 @@ fragment ShadeOut lw_shadeGround(SurfaceVaryings in [[stage_in]],
     constant LookUniforms &look = looks[0];
     float2 p = in.worldPosition.xz;
     float grain = lw_noise(p * 0.16) * 0.65 + lw_noise(p * 0.53 + 17.0) * 0.35;
+    // What the ground is made of (w: GroundSurface's number, 0 a plain floor).
+    GroundSample made = lw_groundSurface(p, int(groundColor.w + 0.5), groundColor.rgb, frame.cameraPosition.w);
     SurfaceInput s;
-    s.base = groundColor.rgb * (1.0 + (grain - 0.5) * 0.08);
+    s.base = groundColor.w > 0.5 ? made.color : groundColor.rgb * (1.0 + (grain - 0.5) * 0.08);
     s.alpha = 1.0;
-    s.normal = float3(0, 1, 0);
+    s.normal = made.normal;
     s.view = normalize(frame.cameraPosition.xyz - in.worldPosition);
     s.world = in.worldPosition;
     s.viewDepth = -in.viewPosition.z;
@@ -453,7 +468,7 @@ fragment ShadeOut lw_shadeGround(SurfaceVaryings in [[stage_in]],
     s.rimStrength = 0.0;
     s.glossy = false;
     s.emissive = 0.0;
-    s.roughness = -1.0;
+    s.roughness = made.roughness;
     s.metal = 0.0;
     float2x4 shaded = lw_shadeSurface(s, frame, look, lights);
     float radius = max(frame.groundBounce.w, 1.0);

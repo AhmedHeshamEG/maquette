@@ -36,7 +36,8 @@ extension LoweyRenderer {
         // Lines at native resolution.
         var lines = LineUniforms()
         lines.size = SIMD4<Float>(Float(width), Float(height), 1 / Float(width), 1 / Float(height))
-        lines.scale = SIMD4<Float>(Float(height) / 1080, Float(request.frameIndex / 2), post.outline > 0 ? Float(1 + post.outline * 2.4) : 0, 0)
+        lines.scale = SIMD4<Float>(Float(height) / 1080, Float(request.frameIndex / 2), post.outline > 0 ? Float(1 + post.outline * 2.4) : 0,
+                                   Float(post.boil))
         lines.selection = SIMD4<Float>(StageColors.selection.linear, request.editor?.showsSelection == true ? 1 : 0)
         lines.extraInk = SIMD4<Float>(post.outlineColor.linear, 0)
         var looks = gpu.looks
@@ -48,21 +49,21 @@ extension LoweyRenderer {
         encoder.setBuffer(gpu.lineWeights, offset: 0, index: 1)
         encoder.setBytes(&lines, length: MemoryLayout<LineUniforms>.stride, index: 2)
         dispatch(encoder, device.pipelines.lines, width: width, height: height)
+        var source = encodePaint(encoder, looks: &looks, size: lines.size, frame: request.frameIndex, targets: targets)
 
         var uniforms = LookResolver.post(post, sceneLook: sceneLook, frame: request.frameIndex, size: SIMD2<Float>(Float(width), Float(height)))
         LookResolver.air(request.input.document.effectiveLook, camera: shot.camera, aspect: Float(width) / Float(max(height, 1)), into: &uniforms)
         uniforms.sunGlow.w = request.encoding == .hdr ? 1 : 0
-        encodeBloom(encoder, source: targets.lined, targets: targets, uniforms: &uniforms)
+        encodeBloom(encoder, source: source, targets: targets, uniforms: &uniforms)
 
-        // Lens: blur, or misregistration in a Look that asks for it; chromatic aberration.
-        var source = targets.lined
+        // Lens: blur, or misregistration in a Look or a Finish that asks for it; chromatic aberration.
         if let lens = shot.lens, lens.aperture > 0, post.depthOfField {
             let cocScale = Float(lens.focalLength / 1000 * lens.focalLength / 1000 / max(lens.aperture, 0.7) * Double(height) / 0.024)
             uniforms.lens = SIMD4<Float>(cocScale, 1 / Float(max(lens.focusDistance, 0.05)), Float(height) * 0.03,
-                                         sceneLook.comic.misregistration ? 2 : 1)
+                                         sceneLook.comic.misregistration || post.misregistration ? 2 : 1)
         }
         if uniforms.lens.w > 0 || post.chromaticAberration > 0 {
-            encoder.setTexture(targets.lined, index: 0)
+            encoder.setTexture(source, index: 0)
             encoder.setTexture(targets.normalDepth, index: 1)
             encoder.setTexture(targets.lensed, index: 2)
             encoder.setBytes(&uniforms, length: MemoryLayout<PostUniforms>.stride, index: 0)
@@ -79,6 +80,27 @@ extension LoweyRenderer {
         encoder.setBytes(&looks, length: MemoryLayout<LookUniforms>.stride * looks.count, index: 1)
         dispatch(encoder, device.pipelines.finish, width: width, height: height)
         encoder.endEncoding()
+    }
+
+    /// The painted Looks (L2, D-477): the picture's direction, then strokes along it, wet edges, grain and paper, into
+    /// the `painted` texture. Returns what the rest of the chain reads: the painted picture, or the lined one when no
+    /// Look in the frame paints. Tier B and C previews sample two rings a sector instead of three.
+    func encodePaint(_ encoder: MTLComputeCommandEncoder, looks: inout [LookUniforms], size: SIMD4<Float>, frame: Int,
+                     targets: FrameTargets) -> MTLTexture {
+        guard LookResolver.paints(looks), let paint = targets.paintTargets(device: device) else { return targets.lined }
+        var uniforms = PaintUniforms(size: size, params: SIMD4<Float>(size.y / 1080, quality.tier == .a ? 3 : 2, Float(frame), 0))
+        encoder.setTexture(targets.lined, index: 0)
+        encoder.setTexture(targets.ids, index: 1)
+        encoder.setTexture(paint.tensor, index: 2)
+        encoder.setBytes(&uniforms, length: MemoryLayout<PaintUniforms>.stride, index: 0)
+        encoder.setBytes(&looks, length: MemoryLayout<LookUniforms>.stride * looks.count, index: 1)
+        dispatch(encoder, device.pipelines.paintTensor, width: targets.width, height: targets.height)
+        encoder.setTexture(targets.lined, index: 0)
+        encoder.setTexture(paint.tensor, index: 1)
+        encoder.setTexture(targets.ids, index: 2)
+        encoder.setTexture(paint.painted, index: 3)
+        dispatch(encoder, device.pipelines.paintFilter, width: targets.width, height: targets.height)
+        return paint.painted
     }
 
     /// Soft-threshold prefilter, three levels down, back up with a tent filter. The result is `bloomUp[0]`.
@@ -125,6 +147,10 @@ extension LoweyRenderer {
         let screen = request.screen
         uniforms.shake = SIMD4<Float>(Float(screen.shake.x), Float(screen.shake.y), Float(screen.shake.z), Float(screen.zoomBlur))
         uniforms.effects = SIMD4<Float>(Float(screen.glitch), Float(screen.speedLines), Float(screen.flash), Float(screen.glitchSeed % 9973))
+        uniforms.drawn = SIMD4<Float>(Float(screen.impact), Float(screen.focusLines), Float(screen.kirbyDots), Float(screen.drawnSeed % 9973))
+        uniforms.drawnPlace = SIMD4<Float>(Float(screen.focusCenter.x), Float(screen.focusCenter.y), Float(screen.kirbyCenter.x),
+                                           Float(screen.kirbyCenter.y))
+        uniforms.drawnSpread.x = Float(screen.kirbySpread)
         uniforms.flashColor = SIMD4<Float>(screen.flashColor.linear, Float(screen.lineSeed % 9973))
         if let guides = request.guides {
             uniforms.guides = SIMD4<Float>(1, Float(guides.aspect ?? 0), guides.thirds ? 1 : 0, guides.safeAreas ? 1 : 0)
