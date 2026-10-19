@@ -108,7 +108,7 @@ struct ExportSheet: View {
     private func choose(_ item: ExportPreset) {
         preset = item
         lastPreset = item.rawValue
-        settings = item.settings(range: range, fps: editor.timeline.fps)
+        settings = item.settings(range: range, fps: editor.timeline.fps, frame: editor.timeline.frameShape)
         options.transparent = settings.transparent
     }
 

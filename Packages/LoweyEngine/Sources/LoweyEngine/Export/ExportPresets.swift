@@ -199,9 +199,11 @@ public enum ExportPreset: String, CaseIterable, Identifiable, Sendable, Codable 
     }
 
     /// The settings a picture or video preset stands for (range, audio and quality come from the project and the sheet).
-    public func settings(range: TimeRange, fps: Int) -> ExportSettings {
+    /// Presets that are a size come out in the scene's `frame` (2.39:1 at 1080p is 1920 × 802); the shaped ones (Shorts,
+    /// Square, the GIF loops) keep their shape.
+    public func settings(range: TimeRange, fps: Int, frame: Framing = .landscape) -> ExportSettings {
         let video = { (framing: Framing, side: Int, codec: VideoCodecKind) in
-            ExportSettings(framing: framing, longSide: side, fps: fps, codec: codec, range: range)
+            ExportSettings(framing: framing == .landscape ? frame : framing, longSide: side, fps: fps, codec: codec, range: range)
         }
         let short = TimeRange(start: range.start, end: min(range.end, range.start + 6))
         switch self {
@@ -212,7 +214,7 @@ public enum ExportPreset: String, CaseIterable, Identifiable, Sendable, Codable 
         case .youtube4K, .still4K, .frames4K, .passes4K: return video(.landscape, 3840, .hevc)
         case .hevc1080: return video(.landscape, 1920, .hevc)
         case .transparent:
-            return ExportSettings(framing: .landscape, longSide: 1920, fps: fps, codec: .hevcAlpha, range: range, transparent: true)
+            return ExportSettings(framing: frame, longSide: 1920, fps: fps, codec: .hevcAlpha, range: range, transparent: true)
         case .prores1080: return video(.landscape, 1920, .prores4444)
         case .prores4K: return video(.landscape, 3840, .prores4444)
         case .gifLoop:
@@ -220,7 +222,7 @@ public enum ExportPreset: String, CaseIterable, Identifiable, Sendable, Codable 
         case .gifWide:
             return ExportSettings(framing: .landscape, longSide: 640, fps: 15, codec: .h264, range: short)
         case .framesTransparent, .stillTransparent:
-            return ExportSettings(framing: .landscape, longSide: 1920, fps: fps, codec: .h264, range: range, transparent: true)
+            return ExportSettings(framing: frame, longSide: 1920, fps: fps, codec: .h264, range: range, transparent: true)
         default: return video(.landscape, 1920, .h264)
         }
     }

@@ -192,7 +192,6 @@ final class EditorModel {
 
     /// The camera the camera button's taps started from (a full round of taps comes back to the free view).
     @ObservationIgnored var cameraTourStart: ObjectID?
-    var deliveryFraming: Framing = .landscape
     var showsThirds = true
     var showsSafeAreas = false
     /// The heading of the work view in degrees (the joystick's compass).

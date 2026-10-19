@@ -50,10 +50,14 @@ public enum Animator {
         let beforeParts = LookAt.anyone(in: state.scene) ? state.scene : nil
         LiveRig.carryParts(in: &state, rigs: rigs)
         HoldPlayback.apply(to: &state, document: document, time: time, rigs: rigs)
+        // Cameras ride their rigs (dolly, crane, orbit, the hand), then look; the lens keeps its subject sharp.
+        if CameraRig.anyone(in: state.scene) { CameraRig.apply(to: &state, time: time) }
         if let beforeParts {
             let looked = LookAt.apply(to: &state, timeline: timeline, time: time, rigs: rigs)
             if !looked.isEmpty { LiveRig.carryParts(in: &state, rigs: rigs, only: looked, from: beforeParts) }
         }
+        if CameraRig.anyone(in: state.scene) { CameraRig.shake(&state, time: time) }
+        if FocusPull.anyone(in: state.scene) { FocusPull.apply(to: &state, timeline: timeline, time: time) }
         RigPoses.bend(&state.scene, poses: state.poses, animated: &state.animated)
         // Faces: blink, brows, look, mouth shapes (lip sync), head turns.
         Idle.blink(in: &state, timeline: timeline, time: time, overrides: overrides)
@@ -213,8 +217,13 @@ public struct CameraLens: Hashable, Sendable {
     }
 
     /// Vertical field of view and extra yaw (radians) for an output aspect ratio (width / height).
-    /// Wide frames use the camera as framed; tall frames (9:16) apply the portrait zoom and pan.
+    /// Frames from square to 16:9 use the camera as framed; wider ones (2.39) keep 16:9's width and lose height, the
+    /// letterbox a cinema frame is; tall frames (9:16, 4:5 is not one) apply the portrait zoom and pan.
     public func framing(aspect: Double) -> (fieldOfView: Double, yaw: Double) {
+        if aspect > 16.0 / 9.0 + 1e-6 {
+            let halfHeight = tan(fieldOfView * .pi / 360) * (16.0 / 9.0) / aspect
+            return (2 * atan(halfHeight) * 180 / .pi, 0)
+        }
         guard aspect < 1 else { return (fieldOfView, 0) }
         let vertical = min(max(fieldOfView * portraitZoom, 5), 150)
         let landscapeHalfWidth = tan(fieldOfView * .pi / 360) * 16 / 9

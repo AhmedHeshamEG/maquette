@@ -8,6 +8,16 @@ import LoweyEngine
 extension EditorModel {
     var cameras: [ObjectID] { baseScene.cameras }
 
+    /// The picture's shape: the scene's (its timeline keeps it, F1), so the Director view, Frame shot and exports agree.
+    var deliveryFraming: Framing {
+        get { timeline.frameShape }
+        set {
+            guard newValue != timeline.frameShape else { return }
+            updateTimeline("Frame \(newValue.rawValue)") { $0.frame = newValue == .landscape ? nil : newValue }
+            stage?.redraw()
+        }
+    }
+
     /// The camera the camera tools edit: a selected camera, else the shot camera.
     var editedCamera: ObjectID? {
         if let selected = singleSelection, selected.kind == .camera { return selected.id }
