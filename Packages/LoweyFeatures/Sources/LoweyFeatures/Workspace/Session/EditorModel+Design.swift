@@ -110,7 +110,7 @@ extension EditorModel {
     /// Hold menu ▸ More ▸ Clone…: a 5 × 5 grid of live copies, its panel open.
     func cloneSelection() {
         guard let id = singleSelection?.id else { return }
-        let size = baseScene.objects[id].map { object in operations.worldBounds(of: object.id, in: baseScene).map { max($0.size.x, $0.size.z) } ?? 1 } ?? 1
+        let size = footprint(of: id)
         changeDesign(of: id, label: "Clone") { $0.clones = $0.clones ?? ObjectClones.starting(size: size) }
         foldInspector(false)
         app.show("Twenty-five copies that move together. Change the layout and add effects in its panel")
@@ -129,7 +129,7 @@ extension EditorModel {
     }
 
     func addCloneEffect(_ kind: CloneEffect.Kind, to id: ObjectID) {
-        let size = operations.worldBounds(of: id, in: baseScene).map { max($0.size.x, $0.size.z) } ?? 1
+        let size = footprint(of: id)
         updateClones(of: id) { $0.effects.append(CloneEffect.starting(kind, id: ObjectID.make().raw, size: size)) }
     }
 
@@ -177,6 +177,11 @@ extension EditorModel {
     }
 
     // MARK: Shared
+
+    /// How wide a thing stands (its larger side seen from above), for first numbers that read at its size.
+    private func footprint(of id: ObjectID) -> Double {
+        operations.bounds.worldBounds(of: id, in: baseScene).map { max($0.size.x, $0.size.z) } ?? 1
+    }
 
     /// One undo step on a thing's motion design (removed when it ends up empty).
     func changeDesign(of id: ObjectID, label: String, coalesce: String? = nil, _ change: (inout MotionDesign) -> Void) {

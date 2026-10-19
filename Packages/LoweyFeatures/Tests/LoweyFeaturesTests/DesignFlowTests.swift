@@ -66,7 +66,7 @@ final class DesignFlowTests: XCTestCase {
         editor.select(cube)
         editor.beginLink(.turnAgainst)
         XCTAssertTrue(editor.designTap(picked: ball))
-        XCTAssertEqual(editor.links(of: cube).first?.driver, .thing(ball, .turnY))
+        XCTAssertEqual(editor.links(of: cube).first?.driver, .thing(id: ball, channel: .turnY))
         XCTAssertEqual(editor.links(of: cube).first?.amount, -1)
         XCTAssertFalse(editor.designTap(picked: ball), "nothing waits now")
         editor.removeMorph(of: cube)
@@ -101,7 +101,7 @@ final class DesignFlowTests: XCTestCase {
         let logo = try XCTUnwrap(editor.singleSelection)
         XCTAssertEqual(logo.kind, .group)
         XCTAssertEqual(logo.children.count, 2)
-        XCTAssertEqual(editor.operations.worldBounds(of: logo.id, in: editor.baseScene)?.size.x ?? 0, 1, accuracy: 1e-6)
+        XCTAssertEqual(editor.operations.bounds.worldBounds(of: logo.id, in: editor.baseScene)?.size.x ?? 0, 1, accuracy: 1e-6)
         editor.undo()
         XCTAssertNil(editor.baseScene.objects[logo.id])
     }
