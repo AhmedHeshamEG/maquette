@@ -158,7 +158,7 @@ public enum CloneField: Codable, Hashable, Sendable {
     }
 
     /// A smoothstep on 0…1, clamped.
-    static func smooth(_ value: Double) -> Double {
+    public static func smooth(_ value: Double) -> Double {
         let t = min(max(value, 0), 1)
         return t * t * (3 - 2 * t)
     }
