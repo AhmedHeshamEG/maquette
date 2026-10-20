@@ -463,7 +463,8 @@ jobs:
     needs: [changes, lint]
     if: needs.changes.outputs.features == 'true'
     runs-on: xcode-27
-    timeout-minutes: 120
+    # One attempt of the suite takes about an hour since 0.24; the second attempt has to fit too.
+    timeout-minutes: 180
     steps:
       - uses: actions/checkout@v4
       - uses: actions/cache@v4
