@@ -35,11 +35,41 @@ public enum ThreeMFFile {
           <Relationship Target="/\(modelPath)" Id="rel0" Type="http://schemas.microsoft.com/3dmanufacturing/2013/01/3dmodel"/>
         </Relationships>
         """
-        return ZipWriter.storedArchive([
+        var entries: [(String, Data)] = [
             ("[Content_Types].xml", Data(contentTypes.utf8)),
             ("_rels/.rels", Data(relationships.utf8)),
             (modelPath, Data(model(meshes).utf8))
-        ])
+        ]
+        if let (prusa, bambu) = filamentSlots(meshes) {
+            entries.append(("Metadata/Slic3r_PE_model.config", Data(prusa.utf8)))
+            entries.append(("Metadata/model_settings.config", Data(bambu.utf8)))
+        }
+        return ZipWriter.storedArchive(entries)
+    }
+
+    /// G1, multi-colour prints: each colour gets a filament slot (the first colour slot 1, and so on, up to 16), told
+    /// to the slicers in the files they read (PrusaSlicer's, and Bambu Studio's and OrcaSlicer's). Nil for one colour.
+    static func filamentSlots(_ meshes: [ExportMesh]) -> (prusa: String, bambu: String)? {
+        let parts = meshes.filter { !$0.mesh.isEmpty }
+        var colours: [String] = []
+        let slots = parts.map { item -> Int in
+            let colour = hex(item.color)
+            if let index = colours.firstIndex(of: colour) { return index + 1 }
+            colours.append(colour)
+            return min(colours.count, 16)
+        }
+        guard colours.count > 1 else { return nil }
+        var prusa = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<config>\n"
+        var bambu = prusa
+        for (index, item) in parts.enumerated() {
+            let name = escaped(item.name)
+            prusa += "  <object id=\"\(index + 2)\" instances_count=\"1\">\n"
+                + "    <metadata type=\"object\" key=\"name\" value=\"\(name)\"/>\n"
+                + "    <metadata type=\"object\" key=\"extruder\" value=\"\(slots[index])\"/>\n  </object>\n"
+            bambu += "  <object id=\"\(index + 2)\">\n    <metadata key=\"name\" value=\"\(name)\"/>\n"
+                + "    <metadata key=\"extruder\" value=\"\(slots[index])\"/>\n  </object>\n"
+        }
+        return (prusa + "</config>\n", bambu + "</config>\n")
     }
 
     static func model(_ meshes: [ExportMesh]) -> String {
@@ -80,11 +110,12 @@ public enum ThreeMFFile {
     /// The mesh in print space with corners that share a position shared (3MF meshes must be connected).
     static func indexed(_ item: ExportMesh) -> ([Vec3], [(Int, Int, Int)]) {
         var vertices: [Vec3] = []
-        var lookup: [SIMD3<Float>: Int] = [:]
+        // Corners closer than a tenth of a micron are one corner (booleans leave a few a hair apart).
+        var lookup: [SIMD3<Int64>: Int] = [:]
         let mirrored = item.transform.scale.x * item.transform.scale.y * item.transform.scale.z < 0
         let remap = item.mesh.positions.map { position -> Int in
             let world = item.transform.apply(to: Vec3(Double(position.x), Double(position.y), Double(position.z)))
-            let key = world.float3
+            let key = SIMD3<Int64>(Int64((world.x * 1e7).rounded()), Int64((world.y * 1e7).rounded()), Int64((world.z * 1e7).rounded()))
             if let known = lookup[key] { return known }
             lookup[key] = vertices.count
             vertices.append(PrintSpace.toFile(world))
