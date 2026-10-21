@@ -166,6 +166,7 @@ public extension ModelingOperations {
         let mesh = try Architecture.walls(along: path, closed: closed, height: height, thickness: thickness)
         var object = newSolid(mesh, id: id)
         object.name = "Walls"
+        object.buildingPart = .wall
         return .batch("Walls", [.insert(SceneFragment(object: object), parent: nil, index: nil)])
     }
 
@@ -205,12 +206,14 @@ public extension ModelingOperations {
     static func addSlab(outline: [Vec3], thickness: Double, id: ObjectID) throws(Architecture.Failure) -> EditCommand {
         var object = try newSolid(Architecture.slab(outline: outline, thickness: thickness), id: id)
         object.name = "Floor"
+        object.buildingPart = .slab
         return .batch("Floor", [.insert(SceneFragment(object: object), parent: nil, index: nil)])
     }
 
     static func addStairs(_ stairs: Architecture.Stairs, from start: Vec3, direction: Vec3, id: ObjectID) -> EditCommand {
         var object = newSolid(Architecture.stairs(stairs, from: start, direction: direction), id: id)
         object.name = "Stairs"
+        object.buildingPart = .stairs
         return .batch("Stairs", [.insert(SceneFragment(object: object), parent: nil, index: nil)])
     }
 }
