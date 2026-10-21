@@ -121,6 +121,8 @@ public enum Animator {
         }
         // Things and sounds driving things, on top of their own keys and behaviours.
         if !timeline.links.isEmpty { MotionLinks.apply(timeline.links, to: &scene, document: document, time: time, animated: &animated) }
+        // Exploded groups pull their parts apart (G1).
+        if Explode.anyone(in: scene) { Explode.apply(to: &scene, animated: &animated) }
         var poses: [ObjectID: [Transform]] = [:]
         for track in timeline.clipTracks {
             guard let object = scene.objects[track.target] else { continue }

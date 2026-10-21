@@ -153,7 +153,7 @@ public struct CharacterPart: Codable, Hashable, Sendable {
 
 /// How a character was started (Library ▸ Characters ▸ New).
 public enum CharacterStart: String, Codable, Sendable, CaseIterable, Identifiable {
-    case person, fourLegs, wings, blob, nothing
+    case person, fourLegs, wings, blob, mannequin, nothing
 
     public var id: String { rawValue }
 
@@ -163,6 +163,7 @@ public enum CharacterStart: String, Codable, Sendable, CaseIterable, Identifiabl
         case .fourLegs: "Four legs"
         case .wings: "Wings"
         case .blob: "Blob"
+        case .mannequin: "Mannequin"
         case .nothing: "Nothing"
         }
     }
@@ -173,6 +174,7 @@ public enum CharacterStart: String, Codable, Sendable, CaseIterable, Identifiabl
         case .fourLegs: "pawprint"
         case .wings: "bird"
         case .blob: "drop"
+        case .mannequin: "figure.arms.open"
         case .nothing: "circle.dashed"
         }
     }

@@ -140,6 +140,7 @@ public enum CharacterMaker {
         case .fourLegs: fourLegs(&builder, root: root)
         case .wings: winged(&builder, root: root)
         case .blob: blob(&builder, root: root)
+        case .mannequin: mannequin(&builder, root: root)
         case .nothing: break
         }
         ids = builder.ids
@@ -187,6 +188,22 @@ public enum CharacterMaker {
         place.scale = Vec3(0.85, 0.85, 0.85)
         let head = builder.part(.head, style: "round", parent: root, at: place)
         face(&builder, on: head, bounds: headBounds("round"), eyes: "round", mouth: "beak", extras: [])
+    }
+
+    /// An artist's mannequin (G1, for illustrators): a person without a face, in pale wood, posed by dragging and lit to
+    /// draw from.
+    static func mannequin(_ builder: inout Builder, root: ObjectID) {
+        let hip = PartSet.legReach("tube")
+        let body = bodyBounds("bean", at: Vec3(0, hip - 0.03, 0))
+        builder.part(.body, style: "bean", parent: root, at: Transform(position: Vec3(0, hip - 0.03, 0)))
+        for side in [CharacterPart.Side.left, .right] {
+            builder.limb(.leg, style: "tube", side: side, parent: root, top: PartPlacement.limbTop(.leg, side: side, limb: "", body: body, onFour: false))
+            builder.limb(.arm, style: "tube", side: side, parent: root, top: PartPlacement.limbTop(.arm, side: side, limb: "", body: body, onFour: false))
+        }
+        builder.part(.head, style: "oval", parent: root, at: PartPlacement.head(on: body, onFour: false))
+        for index in builder.objects.indices where builder.objects[index].id != root {
+            builder.objects[index][.color] = .color(.rgba(RGBA.hex("#D9B98C")))
+        }
     }
 
     /// The house blob: a round body that carries its own face, little arms and feet.

@@ -784,6 +784,7 @@
             "flipbook",
             "frameShot",
             "group",
+            "guest",
             "intent",
             "keys",
             "length",
@@ -1927,6 +1928,181 @@
             },
             "required": [
               "target"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "do": {
+                "const": "guest"
+              }
+            }
+          },
+          "then": {
+            "description": "G1's guest kits. Room: roofs over walls or an outline, columns, beams, railings, scale people, terrain, a name lying on the floor. Print: the best way up, a split with pegs, hollowing with drain holes, engraving or embossing text, ISO screw holes (M2-M10: clearance, counterbored, for a tap, threaded, a heat-set insert), a jar with a screw-on lid, bolts and nuts, scale to size. Study: explode a group (and back). Game: greybox pieces on a metre grid, freeze transforms.",
+            "properties": {
+              "op": {
+                "enum": [
+                  "roof",
+                  "column",
+                  "beam",
+                  "railing",
+                  "person",
+                  "terrain",
+                  "label",
+                  "explode",
+                  "orient",
+                  "split",
+                  "hollow",
+                  "engrave",
+                  "emboss",
+                  "hole",
+                  "print",
+                  "scale",
+                  "greybox",
+                  "freeze"
+                ]
+              },
+              "target": {
+                "$ref": "#/$defs/target"
+              },
+              "targets": {
+                "$ref": "#/$defs/target"
+              },
+              "name": {
+                "type": "string"
+              },
+              "kind": {
+                "type": "string"
+              },
+              "outline": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/$defs/vec3"
+                }
+              },
+              "over": {
+                "$ref": "#/$defs/target"
+              },
+              "pitch": {
+                "type": "number"
+              },
+              "at": {
+                "anyOf": [
+                  {
+                    "$ref": "#/$defs/vec3"
+                  },
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "$ref": "#/$defs/target"
+                  }
+                ]
+              },
+              "height": {
+                "type": "number"
+              },
+              "shape": {
+                "enum": [
+                  "round",
+                  "square"
+                ]
+              },
+              "from": {
+                "$ref": "#/$defs/vec3"
+              },
+              "to": {
+                "$ref": "#/$defs/vec3"
+              },
+              "path": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/$defs/vec3"
+                }
+              },
+              "yaw": {
+                "type": "number"
+              },
+              "width": {
+                "type": "number"
+              },
+              "depth": {
+                "type": "number"
+              },
+              "hills": {
+                "type": "number"
+              },
+              "seed": {
+                "type": "number"
+              },
+              "text": {
+                "type": "string"
+              },
+              "axis": {
+                "enum": [
+                  "x",
+                  "y",
+                  "z"
+                ]
+              },
+              "pegs": {
+                "type": "boolean"
+              },
+              "tolerance": {
+                "type": "number"
+              },
+              "wall": {
+                "type": "number"
+              },
+              "drain": {
+                "type": "number"
+              },
+              "face": {
+                "enum": [
+                  "top",
+                  "bottom",
+                  "front",
+                  "back",
+                  "left",
+                  "right"
+                ]
+              },
+              "size": {
+                "type": "number"
+              },
+              "screw": {
+                "enum": [
+                  "M2",
+                  "M2.5",
+                  "M3",
+                  "M4",
+                  "M5",
+                  "M6",
+                  "M8",
+                  "M10"
+                ]
+              },
+              "piece": {
+                "enum": [
+                  "jar",
+                  "bolt",
+                  "nut",
+                  "floor",
+                  "tile",
+                  "wall",
+                  "doorway",
+                  "window",
+                  "ramp",
+                  "stairs",
+                  "block",
+                  "pillar"
+                ]
+              }
+            },
+            "required": [
+              "op"
             ]
           }
         },

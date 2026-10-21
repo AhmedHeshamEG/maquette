@@ -156,7 +156,11 @@ public struct LineArt: Hashable, Sendable {
         art.strokes.append(Stroke([b + gap, q + gap * 0.5], pen: .dimension))
         art.strokes.append(Stroke([p - slash, p + slash], pen: .dimension))
         art.strokes.append(Stroke([q - slash, q + slash], pen: .dimension))
-        art.labels.append(Label(text, at: (p + q) * 0.5 + left * (abs(offset) * 0.35 * (offset < 0 ? -1 : 1)), size: 2.5))
+        let outward = left * (offset < 0 ? -1 : 1)
+        // Beside an upright dimension the text sits off the line's side; along a level one, above or below it.
+        let upright = abs(direction.y) > abs(direction.x)
+        let anchor: Label.Anchor = upright ? (outward.x < 0 ? .end : .start) : .middle
+        art.labels.append(Label(text, at: (p + q) * 0.5 + outward * (abs(offset) * (upright ? 0.2 : 0.35)), size: 2.5, anchor: anchor))
         return art
     }
 }
