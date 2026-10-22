@@ -345,6 +345,12 @@ final class StageGestures: NSObject, UIGestureRecognizerDelegate {
 
     /// The eyedropper's tap, and Animate ▸ Look at / Pick up's (A1: the tap names what's looked at or who holds).
     private func tapTakenFirst(at point: CGPoint, editor: EditorModel, stage: StageView) -> Bool {
+        // Presenting (U8): a tap brings back the presenter's controls; nothing on the stage is picked.
+        if editor.together.presenting != nil {
+            editor.showPresentControls()
+            return true
+        }
+        if editor.together.placingNote { return editor.placeNote(at: point, picked: stage.pickObject(at: point)) }
         if editor.eyedropping {
             editor.eyedrop(at: point)
             editor.finishEyedrop(commit: editor.eyedropperLoupe != nil)
