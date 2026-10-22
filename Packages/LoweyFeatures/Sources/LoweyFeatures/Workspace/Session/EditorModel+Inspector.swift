@@ -25,6 +25,7 @@ extension EditorModel {
         case .floor?: return modeling.build.isEmpty ? "Tap the floor's first corner" : "Tap each corner, then Done"
         case .door?, .window?: return "Tap a wall where it goes"
         case .stairs?: return "Tap where the stairs start"
+        case let tool?: return modeling.build.isEmpty || !tool.takesCorners ? tool.hint : "Tap each corner, then Done"
         case nil: return nil
         }
     }

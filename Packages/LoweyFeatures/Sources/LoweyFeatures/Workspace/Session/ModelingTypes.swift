@@ -99,6 +99,11 @@ enum SketchKind: String, CaseIterable, Identifiable, Sendable {
 /// Model ▸ Add ▸ Building: tap tools for rooms and buildings.
 enum BuildTool: String, CaseIterable, Identifiable, Sendable {
     case walls, floor, door, window, stairs
+    /// G1, Room: a roof over tapped corners, a column, a beam between two taps, a railing along taps, a scale person, a
+    /// name on the floor, a terrain.
+    case roof, column, beam, railing, person, label, terrain
+    /// G1, Print: a screw hole or words where the surface is tapped.
+    case hole, engrave
 
     var id: String { rawValue }
 
@@ -109,6 +114,15 @@ enum BuildTool: String, CaseIterable, Identifiable, Sendable {
         case .door: "Door"
         case .window: "Window"
         case .stairs: "Stairs"
+        case .roof: "Roof"
+        case .column: "Column"
+        case .beam: "Beam"
+        case .railing: "Railing"
+        case .person: "Person"
+        case .label: "Room name"
+        case .terrain: "Terrain"
+        case .hole: "Screw hole"
+        case .engrave: "Write on it"
         }
     }
 
@@ -119,8 +133,23 @@ enum BuildTool: String, CaseIterable, Identifiable, Sendable {
         case .door: "door.left.hand.open"
         case .window: "window.vertical.closed"
         case .stairs: "stairs"
+        case .roof: "house"
+        case .column: "rectangle.portrait"
+        case .beam: "rectangle"
+        case .railing: "align.horizontal.center"
+        case .person: "figure.stand"
+        case .label: "textformat"
+        case .terrain: "mountain.2"
+        case .hole: "circle.circle"
+        case .engrave: "character.cursor.ibeam"
         }
     }
+
+    /// The Room tools, in Model ▸ Add ▸ Building's order.
+    static let building: [BuildTool] = [.walls, .floor, .door, .window, .stairs, .roof, .column, .beam, .railing, .person, .label, .terrain]
+
+    /// Tools that take corners until Done (or the first corner tapped again).
+    var takesCorners: Bool { [.walls, .floor, .roof, .railing].contains(self) }
 
     /// Before the first tap.
     var hint: String {
@@ -130,6 +159,15 @@ enum BuildTool: String, CaseIterable, Identifiable, Sendable {
         case .door: "Tap the side of a wall where the door goes"
         case .window: "Tap the side of a wall where the window goes"
         case .stairs: "Tap where the stairs start: they climb away from you"
+        case .roof: "Tap the corners on top of the walls. Tap the first one to finish"
+        case .column: "Tap where a column stands"
+        case .beam: "Tap where the beam starts, then where it ends"
+        case .railing: "Tap along where the railing goes, then Done"
+        case .person: "Tap where someone stands"
+        case .label: "Tap a room's floor to name it"
+        case .terrain: "Tap the middle of the site"
+        case .hole: "Tap the surface where the hole goes"
+        case .engrave: "Tap the surface where the words go"
         }
     }
 

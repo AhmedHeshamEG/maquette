@@ -30,6 +30,7 @@ reference and stays.
 | Film (F1): the soft panel, setups (three-point, golden hour, moonlight, neon), haze and god rays, an HDRI as the sky and the light; camera bodies and real millimetres, the frame's shape (16:9, 2.39:1, 9:16, 4:5, 1:1), focus on a thing and focus pulls, rigs (dolly, crane, orbit, handheld); storyboards and animatics; spatial video and photos, 360° video and panoramas, HDR, wide colour; the rotoscope | **0.22.** D-433 … D-458. 360° is six views laid flat (D-450); HDR is HLG (D-451); only the sun throws god rays (D-442). |
 | Motion design (D1): logos from SVG as solids, fonts brought in, letters that animate (seven presets), clones (grid, circle, line, a path) with effects (random, delay, push) through fields (everywhere, near a point, a ripple), links between things and to a sound's loudness, bass or beat, morphs, the seamless-loop check and Close the loop | **0.23.** D-459 … D-475. Copies live only in the shown scene (D-463); morphs are between shapes made here (D-467); 3D files carry copies and letters at rest (D-474). |
 | Looks & the library (L2): Painterly, Watercolour, Gouache, Paperman, Anime cel, Clean product, Pixel; the Finish on any Look (Ben-Day, boil, misregistration, newsprint, riso, canvas; impact frames, focus lines, Kirby dots aimed at a thing); the Look, Effect and Part Studios; `.maquettepack` packs with an author and a licence; PSD, PSB and Procreate drawings as dioramas; eight grounds; stacks as folders; the Keeper's Tower sample turning | **0.24.** D-476 … D-496. The paint pass is a whole-frame pass (D-477); Pixel is the scene's (D-481); packs carry data only (D-485). |
+| Guest kits (G1): Set up for Room, Print, Game, Study; Room's roofs, columns, beams, railings, people, terrain, plans per floor with room areas, elevations, walking through, underlays to scale, match a photo, scan a room, IFC / DXF / PDF / SVG; Print's overhangs, best way up, split with pegs, hollow, engraving, ISO screw holes and printed threads, the jar and lid, bolts and nuts, multi-colour 3MF, scan an object; Study's exploded view and technical drawing; Game's greybox, freeze, levels for Godot / Unity / Unreal; a mannequin, layered PSD, Procreate palettes, papercraft and laser nets, ink as SVG | **0.25.** D-497 … D-523. Doors and windows leave IFC inside their walls (D-502); gable and hip roofs cover the smallest rectangle (D-503); the iPhone companion's scans come with U8 (D-506). |
 | Texture (the full colour picker, layers, smudge on paint) | U7 |
 | Mechanisms + AR, web layer (held) | M12 |
 | Content and finish: the house kit, waiting designed, the Board's finish | M14 |
@@ -40,6 +41,24 @@ reference and stays.
 Cast is gone (D-227): what said *Cast ▸ Voice & face*, *Triggers* and *Life* below is the selected character's
 button beside Record in the timeline's Perform; *Cast ▸ Rig* is Rig; *Make it part of* is in Rig. Everything below
 still works the same way.
+
+### Guest kits (0.25)
+
+- **Set up for** (D-497): the scene's name ▸ Set up for: Blank, Room, Print, Game, Study, Animation; Home's quiet row
+  starts any of them. A set-up's kit is in Model ▸ Add and Model ▸ Edit; Blank shows none.
+- **Room** (D-499 … D-507): Model ▸ Add ▸ Building (walls, floor, door, window, stairs, roof and its kind, column, beam,
+  railing, person, room name, terrain); Plans and the site (Plans: each floor's plan with the rooms' areas and the four
+  elevations; Walk through; Underlay; Match a photo; Scan a room where the iPad has LiDAR). Export ▸ 3D ▸ IFC; Export ▸
+  Paper ▸ Plans & elevations (PDF on A3, the ground floor as DXF or SVG).
+- **Print** (D-508 … D-511): Model ▸ Add ▸ Print (Jar & lid, Bolt, Nut; the screw size); Model ▸ Edit ▸ 3D print: Show
+  overhangs, Best way up, Split (across height, width or depth), Hollow, Screw hole and Write on it (then tap the part),
+  the hole's kind and the screw, the words, the Fit, Scale to size, Share to the slicer, Scan an object.
+- **Study** (D-512, D-513): Model ▸ Edit ▸ Study: Explode (a group), Forces; Export ▸ Paper ▸ Technical drawing (A4, A3).
+- **Game** (D-514, D-515): Model ▸ Add ▸ Greybox; Model ▸ Edit ▸ Game: Freeze transforms; Export ▸ 3D ▸ Game level (for
+  Godot, Unity, Unreal; One texture for everything).
+- **For illustrators** (D-516): Characters ▸ New ▸ Mannequin; Export ▸ Picture ▸ Layered PSD, Ink as SVG; Library ▸ Yours
+  ▸ Bring in a palette; Export ▸ Paper ▸ Papercraft (A4, Letter, a laser net).
+- **The Kit menu** (D-517) and **the bridge's `guest`** (D-518).
 
 ### Looks & the library (0.24)
 

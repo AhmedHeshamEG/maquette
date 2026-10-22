@@ -25,6 +25,9 @@ public struct PDFWriter: Sendable {
         case text(String, x: Double, y: Double, size: Double, bold: Bool = false, grey: Double = 0)
         /// A hairline rectangle around (x, y, width, height).
         case frame(x: Double, y: Double, width: Double, height: Double, grey: Double = 0.75)
+        /// Lines through points (G1's drawings): the first loop and, when filled, the loops cut out of it (even-odd);
+        /// `width` in points, `dashes` on and off in points, `fill` the grey inside (nil: not filled).
+        case path([[Vec2]], closed: Bool, width: Double, grey: Double = 0, dashes: [Double] = [], fill: Double? = nil)
     }
 
     public struct Page: Hashable, Sendable {
@@ -114,10 +117,44 @@ public struct PDFWriter: Sendable {
                 lines.append("BT /\(bold ? "F2" : "F1") \(n(size)) Tf \(n(grey)) g \(n(x)) \(n(y)) Td (\(escaped(text))) Tj ET")
             case let .frame(x, y, width, height, grey):
                 lines.append("q \(n(grey)) G 0.5 w \(n(x)) \(n(y)) \(n(width)) \(n(height)) re S Q")
+            case let .path(loops, closed, width, grey, dashes, fill):
+                lines.append(path(loops, closed: closed, width: width, grey: grey, dashes: dashes, fill: fill))
             }
         }
         return lines.joined(separator: "\n")
     }
+
+    static func path(_ loops: [[Vec2]], closed: Bool, width: Double, grey: Double, dashes: [Double], fill: Double?) -> String {
+        var drawing = "q \(n(grey)) G \(n(width)) w 1 J 1 j [\(dashes.map(n).joined(separator: " "))] 0 d"
+        if let fill { drawing += " \(n(fill)) g" }
+        for loop in loops where loop.count >= 2 {
+            drawing += " \(n(loop[0].x)) \(n(loop[0].y)) m"
+            for point in loop.dropFirst() {
+                drawing += " \(n(point.x)) \(n(point.y)) l"
+            }
+            if closed || fill != nil { drawing += " h" }
+        }
+        return drawing + (fill != nil ? " B* Q" : " S Q")
+    }
+
+    /// How wide a line of text sets in Helvetica (its standard metrics; bold sets a little wider).
+    public static func textWidth(_ text: String, size: Double, bold: Bool = false) -> Double {
+        let units = text.unicodeScalars.reduce(0) { sum, scalar in
+            let code = Int(scalar.value)
+            return sum + (code >= 32 && code < 127 ? helvetica[code - 32] : 556)
+        }
+        return Double(units) / 1000 * size * (bold ? 1.06 : 1)
+    }
+
+    /// Helvetica's advance widths for the printable ASCII characters (space to tilde), in thousandths of an em.
+    static let helvetica: [Int] = [
+        278, 278, 355, 556, 556, 889, 667, 191, 333, 333, 389, 584, 278, 333, 278, 278,
+        556, 556, 556, 556, 556, 556, 556, 556, 556, 556, 278, 278, 584, 584, 584, 556,
+        1015, 667, 667, 722, 722, 667, 611, 778, 722, 278, 500, 667, 556, 833, 722, 778,
+        667, 778, 722, 667, 611, 722, 667, 944, 667, 667, 611, 278, 278, 278, 469, 556,
+        333, 556, 556, 500, 556, 556, 278, 556, 556, 222, 222, 500, 222, 833, 556, 556,
+        556, 556, 333, 500, 278, 556, 500, 722, 500, 500, 500, 334, 260, 334, 584
+    ]
 
     /// A number as PDF writes it (at most three decimals, no exponent).
     static func n(_ value: Double) -> String {

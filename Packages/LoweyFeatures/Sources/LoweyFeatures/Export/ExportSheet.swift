@@ -91,6 +91,7 @@ struct ExportSheet: View {
             case .fbx: editor.canExportFBX
             case .maps: editor.hasPaintedThings
             case .captions: !editor.timeline.transcripts.isEmpty
+            case .ifc, .drawings: editor.hasBuilding
             default: true
             }
         }
@@ -135,6 +136,7 @@ struct ExportSheet: View {
                 + (preset.kind == .animatic ? " · \(editor.timeline.shots(in: settings.range).count) shots held" : "")
         case .spatialPhoto, .panorama: return "The frame at the playhead, all around or in depth."
         case .storyboard: return "\(editor.timeline.shots().count) shots, three to a row."
+        case .guest: return (options.onlySelection ? "The selection. " : "The whole scene. ") + format.purpose
         }
     }
 

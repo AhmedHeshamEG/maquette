@@ -25,6 +25,7 @@ extension EditorModel {
             return
         }
         var overlays = sketchOverlays(stage) + sketchGuessOverlays(stage) + measureOverlays(stage) + buildOverlays(stage)
+        overlays += overhangOverlays(stage)
         overlays += partOverlays(stage, wireframe: true)
         if let id = shapedSelection?.id, let cage = cageOverlay(width: stage.worldPerPoint(at: scene.worldTransform(of: id).position) * 1.2) {
             overlays.append(EditorOverlay(mesh: cage, color: Self.modelAccent, opacity: 0.8, onTop: true))

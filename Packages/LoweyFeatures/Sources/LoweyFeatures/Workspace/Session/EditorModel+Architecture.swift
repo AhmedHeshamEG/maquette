@@ -17,6 +17,10 @@ extension EditorModel {
             openingTap(at: point, tool: tool)
         case .stairs:
             stairsTap(at: point)
+        case .roof, .railing:
+            buildCornerTap(at: point, tool: tool)
+        case .column, .beam, .person, .label, .terrain, .hole, .engrave:
+            guestTap(at: point, tool: tool)
         }
     }
 
@@ -26,7 +30,7 @@ extension EditorModel {
         return PlaneFrame(origin: Vec3(0, height, 0), normal: .unitY, u: .unitX, v: Vec3(0, 0, -1))
     }
 
-    private func buildCornerTap(at point: CGPoint, tool: BuildTool) {
+    func buildCornerTap(at point: CGPoint, tool: BuildTool) {
         guard let result = snapPoint(at: point, plane: buildPlane), let stage else { return }
         // Level with the first corner (a wall on a floor stays on it).
         var corner = result.point
@@ -57,13 +61,19 @@ extension EditorModel {
             }
         case .floor:
             corners.count >= 3 && runModeling { try ModelingOperations.addSlab(outline: corners, thickness: 0.2, id: id) }
+        case .roof:
+            corners.count >= 3 && runModeling { [guest] in
+                try ModelingOperations.addRoof(guest.roofKind, outline: corners, pitch: guest.roofPitch, id: id)
+            }
+        case .railing:
+            corners.count >= 2 && runModeling { try ModelingOperations.addRailing(along: corners, id: id) }
         default:
             false
         }
         if done {
             setSelection([id])
-        } else if corners.count < (tool == .floor ? 3 : 2) {
-            app.show(tool == .floor ? "Tap at least three corners for a floor" : "Tap at least two corners for a wall")
+        } else if corners.count < (tool == .floor || tool == .roof ? 3 : 2) {
+            app.show(String.LocalizationValue(tool == .floor || tool == .roof ? "Tap at least three corners" : "Tap at least two points"))
         }
     }
 

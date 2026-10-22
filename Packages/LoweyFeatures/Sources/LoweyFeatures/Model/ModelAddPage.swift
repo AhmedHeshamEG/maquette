@@ -5,7 +5,7 @@ import UniformTypeIdentifiers
 
 /// Model ▸ Add: shapes (bevelled), lights, words and pictures in the world, effects. One tap each; things land in the
 /// middle of the view, and the panel closes so the panel of what was added shows (as Procreate Dreams' insert menu
-/// does). Building (walls, floors, doors, windows, stairs) is here while the project is set up for a Room. Cameras live
+/// does). The set-up's kit is here too (G1): Room's building tools and plans, Print's pieces, Game's greybox. Cameras live
 /// on the camera button; titles, marks and screen effects are overlays on the video, in the timeline's + Overlay.
 struct ModelAddPage: View {
     let editor: EditorModel
@@ -25,19 +25,7 @@ struct ModelAddPage: View {
                     }
                 }
             }
-            if editor.projectSetUp == .room {
-                PanelSection("Building") {
-                    TileGrid {
-                        ForEach(BuildTool.allCases) { build in
-                            TileButton(title: build.title, systemName: build.systemImage, identifier: "build-\(build.rawValue)") {
-                                editor.startModeling(.build(build))
-                                editor.openPanel = nil
-                            }
-                        }
-                    }
-                    Hint("Walls follow the corners you tap; doors and windows go where you tap a wall.")
-                }
-            }
+            GuestAddSections(editor: editor)
             PanelSection("Light") {
                 TileGrid {
                     TileButton(title: "Bulb", systemName: "lightbulb.fill", identifier: "add-lamp") { place { editor.addLight(.point) } }

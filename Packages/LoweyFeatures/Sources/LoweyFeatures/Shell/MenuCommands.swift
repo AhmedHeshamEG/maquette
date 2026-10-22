@@ -116,6 +116,26 @@ public struct LoweyMenuCommands: Commands {
                 .disabled(editor?.makerCharacter == nil)
             Button("Export for Games…") { editor?.sheet = .gameExport }.keyboardShortcut("e", modifiers: [.command, .shift])
         }
+        CommandMenu("Kit") {
+            Section("Room") {
+                Button("Plans and Elevations") { editor?.sheet = .plans }.keyboardShortcut("a", modifiers: [.command, .control])
+                Button("Walk Through") { editor.map { $0.guest.walkHeight == nil ? $0.startWalking() : $0.stopWalking() } }
+                    .keyboardShortcut("w", modifiers: [.command, .control])
+                Button("Match a Photo…") { editor?.sheet = .matchPhoto }
+            }
+            Section("Print") {
+                Button("Best Way Up") { stageEditor?.orientForPrinting() }.keyboardShortcut("b", modifiers: [.command, .control])
+                Button("Split for Printing") { stageEditor?.splitForPrinting() }.keyboardShortcut("s", modifiers: [.command, .control])
+                Button("Hollow") { stageEditor?.hollowForPrinting() }.keyboardShortcut("h", modifiers: [.command, .control])
+                Button("Show Overhangs") { stageEditor?.guest.overhangs.toggle() }.keyboardShortcut("v", modifiers: [.command, .control])
+            }
+            Section("Study") {
+                Button("Explode") { stageEditor?.toggleExplode() }.keyboardShortcut("x", modifiers: [.command, .control])
+            }
+            Section("Game") {
+                Button("Freeze Transforms") { stageEditor?.freezeTransforms() }.keyboardShortcut("t", modifiers: [.command, .control])
+            }
+        }
         CommandMenu("Scene") {
             Button("Frame Selection") { editor?.frameSelection() }.keyboardShortcut("f", modifiers: .command)
             Button("Director View") { editor.map { $0.setDirectorView(!$0.directorView) } }.keyboardShortcut("d", modifiers: [.command, .option])

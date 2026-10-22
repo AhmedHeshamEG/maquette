@@ -14,6 +14,8 @@ struct ExportJob: Sendable {
     var onlySelection = false
     /// How a glTF carries painted colour.
     var paintColors: PaintColorOutput = .texture
+    /// A game level's pieces share one texture (G1).
+    var atlas = false
 
     var title: String { preset.format.title + " · " + ExportPreset.title(of: preset) }
 }
@@ -70,6 +72,28 @@ extension ExportPreset {
         case .paperFramesLetter: "Frames across the shot, US Letter"
         case .storyboardA4: "Storyboard, A4"
         case .storyboardLetter: "Storyboard, US Letter"
+        default: guestTitle(of: preset)
+        }
+    }
+
+    /// G1's presets' names.
+    private static func guestTitle(of preset: ExportPreset) -> String {
+        switch preset {
+        case .psdLayers: "A layer a thing, HD"
+        case .inkVector: "The frame's lines"
+        case .ifcBuilding: "IFC4, for BIM apps"
+        case .levelGodot: "For Godot"
+        case .levelUnity: "For Unity"
+        case .levelUnreal: "For Unreal"
+        case .planPDF: "Plans and elevations, A3 PDF"
+        case .planDXF: "Ground floor plan, DXF"
+        case .planSVG: "Ground floor plan, SVG"
+        case .technicalA4: "A4"
+        case .technicalA3: "A3"
+        case .papercraftA4: "To print, A4"
+        case .papercraftLetter: "To print, US Letter"
+        case .laserSVG: "For a laser cutter, SVG"
+        default: preset.rawValue
         }
     }
 
@@ -94,6 +118,13 @@ extension ExportPreset {
         case .paperFrameA4, .paperFrameLetter, .paperFrameA3: "doc.richtext"
         case .paperFramesA4, .paperFramesLetter: "rectangle.split.3x3"
         case .storyboardA4, .storyboardLetter: "rectangle.split.3x1"
+        case .psdLayers: "square.3.layers.3d.down.right"
+        case .inkVector: "scribble"
+        case .ifcBuilding, .planPDF, .planDXF, .planSVG: "building.2"
+        case .levelGodot, .levelUnity, .levelUnreal: "gamecontroller"
+        case .technicalA4, .technicalA3: "ruler"
+        case .papercraftA4, .papercraftLetter: "scissors"
+        case .laserSVG: "laser.burst"
         case .hdr1080, .hdr4K, .stillP3: "sun.max"
         case .animatic1080: "rectangle.stack"
         case .spatial1080, .spatialPhotoHD: "pano"
@@ -117,6 +148,15 @@ extension ExportPreset {
         case .spatial1080, .spatialPhotoHD: "Two eyes a person's width apart; opens in depth on Apple Vision Pro and in Photos."
         case .video360x4K, .video360x6K, .panorama6K, .panorama8K: "All the way round the shot camera; titles and flipbooks stay out."
         case .storyboardA4, .storyboardLetter: "Every shot's key frame with its camera, lens, length and the words said over it."
+        case .ifcBuilding: "Walls, floors, roofs, stairs, columns, beams and railings as what they are; rooms as spaces."
+        case .levelGodot: "Each piece named …-col, so Godot gives it a body you can't walk through; Godot makes its own lighter copies."
+        case .levelUnity: "Lighter copies as _LOD0…2 in a LOD group, and a convex …_collider beside each piece for a Mesh Collider."
+        case .levelUnreal: "A convex UCX_… shape beside each piece, which Unreal takes as its collision."
+        case .planDXF, .planSVG: "Full size in millimetres: cut walls on their own layer, for AutoCAD, Rhino and Illustrator."
+        case .technicalA4, .technicalA3: "First-angle projection (ISO), hidden edges dashed; masses from each part's material."
+        case .papercraftA4, .papercraftLetter: "Cut on the solid lines, fold the dashed ones, glue tab to the edge with the same number."
+        case .laserSVG: "Red lines cut, blue lines score the folds."
+        case .psdLayers: "Each thing on its own layer over the background, named after it."
         default: nil
         }
     }

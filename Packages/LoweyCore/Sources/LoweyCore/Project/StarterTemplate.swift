@@ -5,7 +5,7 @@ import Foundation
 /// scene; a template only gets the workspace ready.
 public struct StarterTemplate: Hashable, Sendable, Identifiable {
     public enum Kind: String, Codable, Sendable, CaseIterable {
-        case blank, print, room, character, animation, sketch
+        case blank, print, room, character, animation, sketch, game, study
 
         public var title: String {
             switch self {
@@ -15,6 +15,8 @@ public struct StarterTemplate: Hashable, Sendable, Identifiable {
             case .character: "Character"
             case .animation: "Animation"
             case .sketch: "Sketch"
+            case .game: "Game"
+            case .study: "Study"
             }
         }
 
@@ -26,6 +28,8 @@ public struct StarterTemplate: Hashable, Sendable, Identifiable {
             case .character: "Rig open, the camera at eye level."
             case .animation: "The timeline open from the start."
             case .sketch: "The board first: plan it, then build it."
+            case .game: "Metres, a one-metre grid, the greybox kit near."
+            case .study: "Millimetres, sizes shown, the exploded view and the technical drawing near."
             }
         }
 
@@ -37,6 +41,8 @@ public struct StarterTemplate: Hashable, Sendable, Identifiable {
             case .character: "figure.wave"
             case .animation: "film"
             case .sketch: "scribble.variable"
+            case .game: "gamecontroller"
+            case .study: "ruler"
             }
         }
     }
@@ -53,15 +59,15 @@ public struct StarterTemplate: Hashable, Sendable, Identifiable {
     public var systemImage: String { kind.systemImage }
 
     /// In the order New project shows them.
-    public static let all: [StarterTemplate] = [.blank, .print, .room, .character, .animation, .sketch]
+    public static let all: [StarterTemplate] = [.blank, .print, .room, .character, .animation, .sketch, .game, .study]
 
     public static func template(_ kind: Kind) -> StarterTemplate {
         all.first { $0.kind == kind } ?? .blank
     }
 
     /// What "Set up for" offers, in an open project and on Home's quiet row: each changes what is in reach (units,
-    /// snapping, the grid, the printer, the timeline), never the project.
-    public static let setUps: [Kind] = [.blank, .print, .room, .animation]
+    /// snapping, the grid, the printer, the timeline, the guest kit in Model ▸ Add), never the project. G1's order.
+    public static let setUps: [Kind] = [.blank, .room, .print, .game, .study, .animation]
 
     /// The + on Home: an empty project in the dark studio.
     public static let blank = StarterTemplate(
@@ -96,6 +102,22 @@ public struct StarterTemplate: Hashable, Sendable, Identifiable {
     public static let animation = StarterTemplate(
         kind: .animation, lookPresetID: LookPreset.ink.id, mood: .day, viewpoint: .default,
         workspace: ProjectWorkspace(template: .animation, timeline: .full, showsGrid: true)
+    )
+
+    /// Game levels (G1): metres, a one-metre grid that greybox pieces snap along, quarter turns, the Low-poly Look.
+    public static let game = StarterTemplate(
+        kind: .game, lookPresetID: LookPreset.lowPoly.id, mood: .day,
+        viewpoint: Viewpoint(target: Vec3(0, 0, 0), yaw: 35, pitch: 40, distance: 18),
+        workspace: ProjectWorkspace(template: .game, snap: SnapSettings(grid: true, gridSize: 1, rotationStep: 90, objectThreshold: 0.25),
+                                    showsGrid: true, firstPanel: "model", units: .metre)
+    )
+
+    /// Study (G1): parts in millimetres on a five-millimetre grid, sizes shown, seen up close in the Clean product Look.
+    public static let study = StarterTemplate(
+        kind: .study, lookPresetID: LookPreset.cleanProduct.id, mood: .studio,
+        viewpoint: Viewpoint(target: Vec3(0, 0.05, 0), yaw: 35, pitch: 28, distance: 0.8, fieldOfView: 40),
+        workspace: ProjectWorkspace(template: .study, snap: SnapSettings(grid: true, gridSize: 0.005, rotationStep: 15, objectThreshold: 0.002),
+                                    showsGrid: true, shapeSize: 0.05, firstPanel: "model", units: .millimetre, showsDimensions: true)
     )
 
     /// Planning first: the project opens on its Schizzo board.

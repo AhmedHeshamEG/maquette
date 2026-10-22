@@ -663,6 +663,17 @@ and materials too: `{"author": "…", "licence": {"kind": "anything" | "credit" 
 "…", "imported": "<ISO 8601>"}`). All empty when missing.
 
 
+## Guest kits (0.25, still schema 23)
+
+Everything G1 keeps is a property, so 0.24 opens a 0.25 project and keeps it (D-519):
+
+- `buildingPart` (enum): what a thing is in a building: `wall`, `slab`, `roof`, `stairs`, `column`, `beam`, `railing`,
+  `door`, `window`, `person`, `terrain`, `furniture`. Plans and IFC read it; a thing without one inherits its group's.
+- `explode` (float 0–1, animatable) on a group: how far its parts are pulled apart. `explodeOffset` (vec3) on each part:
+  where it goes at 1, in the group's space.
+- Room's names are 3D text lying face up on a floor; an underlay is a locked sketch on the ground (a DXF) or a locked,
+  faint card lying flat (a PDF page or a picture under `assets/`).
+
 ## workspace.json
 
 How the project shows when it opens. It isn't the project (it's never undone and isn't in the journal); it's
@@ -672,7 +683,7 @@ falls back to its default; unknown keys are ignored. Plain JSON, no envelope.
 | Key | Type | Meaning |
 |---|---|---|
 | `schemaVersion` | number | 1. |
-| `template` | string? | What the project is set up for: `blank`, `print`, `room`, `animation` (0.12: switchable any time from the scene's name, which rewrites `snap`, `showsGrid`, `shapeSize`, `units`, `printBed` and raises `timeline`); `character` and `sketch` from older projects read as `blank`. |
+| `template` | string? | What the project is set up for: `blank`, `print`, `room`, `animation`, and since 0.25 `game` and `study` (0.12: switchable any time from the scene's name, which rewrites `snap`, `showsGrid`, `shapeSize`, `units`, `printBed` and raises `timeline`); `character` and `sketch` from older projects read as `blank`. |
 | `timeline` | string | `hidden` (the default), `transport` (the slim transport) or `full`. |
 | `timelineHeight` | number | The whole timeline's height in points, 150–900 (260 by default). |
 | `snap` | object | `grid`, `gridSize` (m), `rotation`, `rotationStep` (degrees), `ground`, `objects`, `objectThreshold` (m), and since 0.4 `corners`, `edges`, `faces` (points snap to corners and edge middles, edges, faces; on when missing); since 0.13 `magnet` (the Snap magnet: off, nothing snaps; on when missing). |

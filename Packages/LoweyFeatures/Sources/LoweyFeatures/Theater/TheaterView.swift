@@ -79,6 +79,17 @@ private struct SetUpRow: View {
     @Environment(\.hmmTheme) private var theme
 
     var body: some View {
+        // Five set-ups (G1): on a narrow screen they keep their icons and say their names to VoiceOver.
+        ViewThatFits(in: .horizontal) {
+            row(iconsOnly: false)
+            row(iconsOnly: true)
+        }
+        .font(.hmm(.footnote, weight: .semibold))
+        .lineLimit(1)
+        .frame(maxWidth: .infinity, alignment: .leading)
+    }
+
+    private func row(iconsOnly: Bool) -> some View {
         HStack(spacing: HmmSpacing.m) {
             Text("Or start set up for").foregroundStyle(theme.text3)
             ForEach(StarterTemplate.setUps.filter { $0 != .blank }, id: \.self) { kind in
@@ -86,16 +97,17 @@ private struct SetUpRow: View {
                     HmmHaptics.play(.commit)
                     app.startProject(kind, inStack: stack)
                 } label: {
-                    Label(LocalizedStringKey(kind.title), systemImage: kind.systemImage)
+                    if iconsOnly {
+                        Label(LocalizedStringKey(kind.title), systemImage: kind.systemImage).labelStyle(.iconOnly)
+                    } else {
+                        Label(LocalizedStringKey(kind.title), systemImage: kind.systemImage)
+                    }
                 }
                 .buttonStyle(.plain)
                 .foregroundStyle(theme.text2)
                 .accessibilityIdentifier("start-\(kind.rawValue)")
             }
         }
-        .font(.hmm(.footnote, weight: .semibold))
-        .lineLimit(1)
-        .frame(maxWidth: .infinity, alignment: .leading)
     }
 }
 

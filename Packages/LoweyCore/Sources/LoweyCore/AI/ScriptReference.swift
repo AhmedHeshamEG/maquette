@@ -47,6 +47,16 @@ public enum ScriptReference {
     {"do":"profile","target":"Sketch","region":0,"op":"revolve","axis":{"point":[0,0,0],"direction":[0,1,0]}}   ("pull" with "distance", negative cuts in; "sweep" with "path", "loft" with "through")
     {"do":"boolean","op":"subtract|union|intersect","target":"Body","with":["Arch front","Arch back"]}   (cut-outs: wheel arches, windows; the others are used up)
 
+    Guests (G1): Room · Print · Study · Game (each tagged with its building part, so plans and IFC know a wall from a roof)
+    {"do":"guest","op":"roof","kind":"gable|hip|shed|flat","over":"Walls","pitch":30}   ("outline":[[x,y,z],…] for any shape)
+    {"do":"guest","op":"column|person|label|terrain","at":[2,0,1],"text":"Kitchen","yaw":30,"width":20,"hills":1}
+    {"do":"guest","op":"beam","from":[0,2.7,0],"to":[4,2.7,0]}   {"do":"guest","op":"railing","path":[[0,0,0],[3,0,0]]}
+    {"do":"guest","op":"print","piece":"jar|bolt|nut","screw":"M6"}   {"do":"guest","op":"hole","target":"Box","screw":"M3","kind":"clearance|counterbore|tapped|threaded|insert","face":"top"}
+    {"do":"guest","op":"split","target":"Helmet","axis":"y","at":0.12,"pegs":true}   {"do":"guest","op":"hollow|orient","target":"Bust","wall":0.002}
+    {"do":"guest","op":"engrave|emboss","target":"Lid","text":"GIULIA","face":"top","size":0.006}   {"do":"guest","op":"scale","target":"Box","size":0.1,"axis":"x"}
+    {"do":"guest","op":"explode","target":"Gearbox"}   (again: back together)   {"do":"character","op":"new","start":"mannequin"}
+    {"do":"guest","op":"greybox","piece":"floor|tile|wall|doorway|window|ramp|stairs|block|pillar","at":[4,0,0]}   {"do":"guest","op":"freeze","targets":"Level*"}
+
     Film (F1; "camera" defaults to the shot camera)
     {"do":"light","type":"panel|bulb|spot|sun","name":"Window","at":[2,2,2],"size":[1.2,0.8],"aim":"Hero"}   (panel = a soft panel)
     {"do":"lighting","recipe":"three-point|golden-hour|moonlit|neon|key-warm-world-cool|noir-single-source|golden-rim|monitor-glow|studio-soft","subject":"Hero"}

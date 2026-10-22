@@ -88,6 +88,14 @@ public enum Animator {
         return result
     }
 
+    /// Things and sounds driving things, on top of their own keys and behaviours; then exploded groups pull their parts
+    /// apart (G1).
+    static func drive(_ scene: inout Scene, document: Document, time: Double, animated: inout Set<ObjectID>) {
+        let links = document.scene.timeline.links
+        if !links.isEmpty { MotionLinks.apply(links, to: &scene, document: document, time: time, animated: &animated) }
+        if Explode.anyone(in: scene) { Explode.apply(to: &scene, animated: &animated) }
+    }
+
     /// Keys, live values, behaviours, clips, joints turned by hand, then the head and hand channels on skeletons.
     static func posed(_ document: Document, at time: Double, rigs: [AssetID: RigAsset],
                       overrides: [ObjectID: [PropertyKey: PropertyValue]]) -> Posed {
@@ -119,8 +127,7 @@ public enum Animator {
                 animated.insert(behavior.target)
             }
         }
-        // Things and sounds driving things, on top of their own keys and behaviours.
-        if !timeline.links.isEmpty { MotionLinks.apply(timeline.links, to: &scene, document: document, time: time, animated: &animated) }
+        drive(&scene, document: document, time: time, animated: &animated)
         var poses: [ObjectID: [Transform]] = [:]
         for track in timeline.clipTracks {
             guard let object = scene.objects[track.target] else { continue }

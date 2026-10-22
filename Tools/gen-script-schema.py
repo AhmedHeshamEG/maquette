@@ -211,6 +211,21 @@ verbs = {
                 "preset": {"enum": ["flyIn", "bounce", "cascade", "pop", "spin", "typewriter", "wave", "none"]},
                 "order": {"enum": ["forward", "backward", "middle", "random"]}, "stagger": n, "length": n, "close": b,
                 "off": b}, ["op"]),
+    "guest": ("G1's guest kits. Room: roofs over walls or an outline, columns, beams, railings, scale people, terrain, a name "
+              "lying on the floor. Print: the best way up, a split with pegs, hollowing with drain holes, engraving or embossing "
+              "text, ISO screw holes (M2-M10: clearance, counterbored, for a tap, threaded, a heat-set insert), a jar with a "
+              "screw-on lid, bolts and nuts, scale to size. Study: explode a group (and back). Game: greybox pieces on a metre "
+              "grid, freeze transforms.",
+              {"op": {"enum": ["roof", "column", "beam", "railing", "person", "terrain", "label", "explode", "orient", "split",
+                               "hollow", "engrave", "emboss", "hole", "print", "scale", "greybox", "freeze"]},
+               "target": tgt, "targets": tgt, "name": s, "kind": s, "outline": {"type": "array", "items": v3}, "over": tgt,
+               "pitch": n, "at": {"anyOf": [v3, n, tgt]}, "height": n, "shape": {"enum": ["round", "square"]}, "from": v3, "to": v3,
+               "path": {"type": "array", "items": v3}, "yaw": n, "width": n, "depth": n, "hills": n, "seed": n, "text": s,
+               "axis": {"enum": ["x", "y", "z"]}, "pegs": b, "tolerance": n, "wall": n, "drain": n,
+               "face": {"enum": ["top", "bottom", "front", "back", "left", "right"]}, "size": n,
+               "screw": {"enum": ["M2", "M2.5", "M3", "M4", "M5", "M6", "M8", "M10"]},
+               "piece": {"enum": ["jar", "bolt", "nut", "floor", "tile", "wall", "doorway", "window", "ramp", "stairs", "block",
+                                  "pillar"]}}, ["op"]),
     "command":("A raw EditCommand.", {"command": ref("command")}, ["command"]),
 }
 

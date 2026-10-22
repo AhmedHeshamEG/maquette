@@ -30,6 +30,7 @@ extension EditorModel {
             background.end(success: urls != nil)
             if let urls {
                 exportResults = urls
+                if AppIdentity.isUITesting { trail("exported=\(urls.map(\.lastPathComponent).joined(separator: "+"))") }
                 HmmHaptics.play(.commit)
                 reporter?.exportFinished(id: id, title: job.title, files: urls)
             }
@@ -72,7 +73,7 @@ extension EditorModel {
         if job.onlySelection, !selection.isEmpty {
             open.scene = ExportPrep.only(selection, in: open.scene)
         }
-        guard job.everyScene, job.preset.kind != .model, job.preset.kind != .captions else { return [open] }
+        guard job.everyScene, ![.model, .captions, .guest].contains(job.preset.kind) else { return [open] }
         let others = sceneList.map(\.id).filter { $0 != baseScene.id }.compactMap { id in
             try? store.loadScene(id, in: projectURL).scene
         }
@@ -108,6 +109,8 @@ extension EditorModel {
             return try exportThreeD(job, document: document, progress: progress)
         case .paper:
             return try await [exportPaper(job, document: document, isOpen: isOpen, progress: progress)]
+        case .guest:
+            return try await exportGuest(job, document: document, progress: progress)
         case .captions:
             guard let url = exportSubtitles() else { throw ExportError.nothingToExport }
             progress(1)

@@ -221,6 +221,14 @@ jobs:
           ./Godot_v4.3-stable_linux.x86_64 --headless --path Tools/godot --script check_humanoid.gd -- "$GITHUB_WORKSPACE/acceptance/characters/person.glb" 2>&1 | tee godot-humanoid.log
           grep -q "MAQUETTE GODOT HUMANOID: .* blend shapes" godot-humanoid.log
           grep "MAQUETTE GODOT HUMANOID" godot-humanoid.log >> "$GITHUB_STEP_SUMMARY"
+      - name: Dev's greybox level comes in with a static body and its collision for every piece (G1)
+        run: |
+          set -o pipefail
+          mkdir -p Tools/godot/level && cp acceptance/game/level.glb Tools/godot/level/
+          ./Godot_v4.3-stable_linux.x86_64 --headless --path Tools/godot --import 2>&1 | tail -5
+          ./Godot_v4.3-stable_linux.x86_64 --headless --path Tools/godot --script check_level.gd -- res://level/level.glb 2>&1 | tee godot-level.log
+          grep -q "MAQUETTE GODOT LEVEL: .* static bodies" godot-level.log
+          grep "MAQUETTE GODOT LEVEL" godot-level.log >> "$GITHUB_STEP_SUMMARY"
       - name: A dog's sprite sheet plays in an AnimatedSprite2D from four directions (K1)
         run: |
           set -o pipefail
@@ -286,6 +294,11 @@ jobs:
         run: |
           pip install --quiet trimesh networkx lxml
           python Tools/check_print_files.py acceptance
+      - name: The guests' files open in their people's tools (IFC in IfcOpenShell, DXF in ezdxf, PDFs, the jar and lid watertight)
+        if: matrix.blender == '5.2.1'
+        run: |
+          pip install --quiet ifcopenshell ezdxf pypdf trimesh networkx lxml
+          python Tools/check_guest_files.py acceptance | tee -a "$GITHUB_STEP_SUMMARY"
       - name: Install Blender ${{ matrix.blender }}
         run: |
           MINOR="${{ matrix.blender }}"; MINOR="${MINOR%.*}"

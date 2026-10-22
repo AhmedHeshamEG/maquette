@@ -155,6 +155,8 @@ public enum EditorSheet: String, Identifiable, Sendable {
     case gameExport
     /// The brush library (and Brush Studio) for the drawing tool in `EditorModel.brushTool`.
     case brushes
+    /// G1, Room: the plans and elevations; matching a photo; scanning a room. Print: scanning an object.
+    case plans, matchPhoto, roomScan, objectScan
 
     public var id: String { rawValue }
 }
