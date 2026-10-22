@@ -3,6 +3,14 @@
 All notable changes to hmm-kit. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the
 project uses [Semantic Versioning](https://semver.org/).
 
+## [0.15.0] - 2026-10-22
+
+Built with Maquette 0.25.
+
+### Added
+- **HmmDesign**: `HmmPalette.procreate(swatchesJSON:)` reads a Procreate palette's `Swatches.json` (its name and its
+  hue, saturation and brightness swatches, empty slots skipped) as a saved palette.
+
 ## [0.14.0] - 2026-10-19
 
 Built with Maquette 0.24.
