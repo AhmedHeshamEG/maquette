@@ -23,7 +23,9 @@ struct ModelShapePage: View {
             }
             PanelSection("3D print") {
                 PrintCheckControls(editor: editor)
+                if editor.projectSetUp == .print { PrintToolControls(editor: editor) }
             }
+            GuestEditSections(editor: editor)
         }
     }
 }

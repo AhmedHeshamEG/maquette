@@ -30,6 +30,10 @@ struct EditorSheets: ViewModifier {
         case .timelineSettings: TimelineSettingsSheet(editor: editor).presentationDetents([.medium])
         case .brushes: BrushLibrarySheet(editor: editor).presentationDetents([.large])
         case .gameExport: GameExportSheet(editor: editor).presentationDetents([.medium, .large])
+        case .plans: PlanSheet(editor: editor).presentationDetents([.large])
+        case .matchPhoto: PhotoMatchSheet(editor: editor).presentationDetents([.large])
+        case .roomScan: RoomScanSheet(editor: editor).presentationDetents([.large])
+        case .objectScan: ObjectScanSheet(editor: editor).presentationDetents([.large])
         }
     }
 }

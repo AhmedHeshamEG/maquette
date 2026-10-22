@@ -17,6 +17,8 @@ struct ExportOptions: Equatable {
     var paintColors: PaintColorOutput = .texture
     /// Spatial: the eyes' distance against a person's.
     var stereoDepth = 1.0
+    /// A game level: every piece's colour in one texture (G1).
+    var atlas = false
 
     func job(_ preset: ExportPreset, settings: ExportSettings) -> ExportJob {
         var settings = settings
@@ -28,7 +30,7 @@ struct ExportOptions: Equatable {
             if !transparent, settings.codec == .hevcAlpha { settings.codec = .hevc }
         }
         return ExportJob(preset: preset, settings: settings, everyScene: everyScene, everyShot: everyShot && Self.moves(preset),
-                         onlySelection: onlySelection, paintColors: paintColors)
+                         onlySelection: onlySelection, paintColors: paintColors, atlas: atlas)
     }
 
     /// Video, GIF, frames and passes, the animatic, spatial and 360° video: things that play over time.
@@ -79,7 +81,17 @@ struct ExportOptionsView: View {
             if !editor.selection.isEmpty, preset.kind != .lookShader, preset.kind != .captions {
                 Toggle("Only the selection", isOn: $options.onlySelection).accessibilityIdentifier("export-only-selection")
             }
-            if editor.sceneList.count > 1, preset.kind != .model, preset.kind != .lookShader, preset.kind != .captions {
+            if preset.format == .level {
+                Toggle(isOn: $options.atlas) {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("One texture for everything")
+                        Text("Every piece's colour packed into one picture, so the level is one material.")
+                            .font(.hmm(.footnote)).foregroundStyle(theme.text2)
+                    }
+                }
+                .accessibilityIdentifier("export-atlas")
+            }
+            if editor.sceneList.count > 1, ![.model, .lookShader, .captions, .guest].contains(preset.kind) {
                 Toggle("Every scene, one file each", isOn: $options.everyScene).accessibilityIdentifier("export-every-scene")
             }
             if ExportOptions.moves(preset), !editor.timeline.cuts.isEmpty {

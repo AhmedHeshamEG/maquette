@@ -11,6 +11,7 @@ struct YoursSections: View {
     @State private var partStudio: SavedPart?
     @State private var packing = false
     @State private var bringing = false
+    @State private var bringingPalette = false
     @State private var sharing: IdentifiedURL?
     @Environment(\.hmmTheme) private var theme
 
@@ -25,6 +26,12 @@ struct YoursSections: View {
                     .accessibilityIdentifier("share-pack")
                 HmmPillButton("Bring in a pack", systemName: "square.and.arrow.down") { bringing = true }
                     .accessibilityIdentifier("bring-pack")
+                HmmPillButton("Bring in a palette", systemName: "swatchpalette") { bringingPalette = true }
+                    .accessibilityIdentifier("bring-palette")
+                    // Procreate's palettes; on the button itself, since one view keeps only one file importer.
+                    .fileImporter(isPresented: $bringingPalette, allowedContentTypes: [UTType(filenameExtension: "swatches") ?? .zip]) { result in
+                        if case let .success(url) = result { editor.importSwatches(url) }
+                    }
             }
             if !library.manifest.styles.isEmpty { looks }
             if !library.manifest.effects.isEmpty { effects }

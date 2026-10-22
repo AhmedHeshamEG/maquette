@@ -38,7 +38,11 @@ struct ModelToolExtras: View {
             HmmButton("pin", label: "Keep", size: 36) { editor.keepMeasurement() }
                 .accessibilityIdentifier("keep-measurement")
         }
-        if let build = editor.modeling.mode.buildTool, build == .walls || build == .floor, !editor.modeling.build.isEmpty {
+        if editor.guest.scaling != nil, editor.modeling.measure.count == 2 {
+            Divider().frame(height: 24)
+            UnderlayScaleRow(editor: editor)
+        }
+        if let build = editor.modeling.mode.buildTool, build.takesCorners, !editor.modeling.build.isEmpty {
             Divider().frame(height: 24)
             HmmButton("checkmark", label: "Done", size: 36) { editor.finishBuild() }
                 .accessibilityIdentifier("build-done")
@@ -95,6 +99,23 @@ struct PrintCheckControls: View {
         case .insideOut: Text("Some faces point inward.")
         case .thinWalls: Text("Some walls are thinner than this printer can print.")
         case .tooBig: Text("It's bigger than the printer's build volume.")
+        }
+    }
+}
+
+/// Setting an underlay to scale (G1): the two points just measured on it are this far apart in reality.
+struct UnderlayScaleRow: View {
+    let editor: EditorModel
+    @State private var length = ""
+
+    var body: some View {
+        HStack(spacing: HmmSpacing.xs) {
+            TextField("Real length", text: $length).textFieldStyle(.roundedBorder).keyboardType(.decimalPad).frame(width: 120)
+                .accessibilityIdentifier("underlay-length")
+            HmmButton("ruler", label: "Set to scale", size: 36) {
+                if let metres = try? LengthExpression.evaluate(length, defaultUnit: editor.units), metres > 0 { editor.setUnderlayLength(metres) }
+            }
+            .accessibilityIdentifier("underlay-scale")
         }
     }
 }

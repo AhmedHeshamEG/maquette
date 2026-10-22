@@ -34,6 +34,7 @@ extension EditorModel {
         guard flying else { return }
         flyer.stop()
         flying = false
+        guest.walkHeight = nil
         endGesture()
     }
 
@@ -47,6 +48,9 @@ extension EditorModel {
             return
         }
         flyer.isMoving = true
-        setCameraWorld(flyer.flight.step(world, input: input, dt: min(dt, 0.05)), gesture: "fly")
+        var next = flyer.flight.step(world, input: input, dt: min(dt, 0.05))
+        // Walking (Room, G1): the eyes stay at their height, whatever the sticks say.
+        if let height = guest.walkHeight { next.position.y = height }
+        setCameraWorld(next, gesture: "fly")
     }
 }
