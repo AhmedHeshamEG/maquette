@@ -33,17 +33,17 @@ public enum ExportCategory: String, CaseIterable, Identifiable, Sendable, Codabl
 /// A file format and what it's for.
 public enum ExportFormat: String, CaseIterable, Identifiable, Sendable, Codable {
     case mp4, hevc, prores, gif, frames, passes, captions, animatic, spatialVideo, video360
-    case png, picturePasses, spatialPhoto, panorama
-    case gltf, fbx, usdz, obj, stl, threeMF, blender, maps, lookShader
-    case pdf
+    case png, picturePasses, spatialPhoto, panorama, psd, inkSVG
+    case gltf, fbx, usdz, obj, stl, threeMF, blender, maps, lookShader, ifc, level
+    case pdf, drawings, technical, papercraft
 
     public var id: String { rawValue }
 
     public var category: ExportCategory {
         switch self {
         case .mp4, .hevc, .prores, .gif, .frames, .passes, .captions, .animatic, .spatialVideo, .video360: .video
-        case .png, .picturePasses, .spatialPhoto, .panorama: .picture
-        case .pdf: .paper
+        case .png, .picturePasses, .spatialPhoto, .panorama, .psd, .inkSVG: .picture
+        case .pdf, .drawings, .technical, .papercraft: .paper
         default: .model
         }
     }
@@ -73,6 +73,13 @@ public enum ExportFormat: String, CaseIterable, Identifiable, Sendable, Codable 
         case .maps: "Maps (PNG)"
         case .lookShader: "The Look as a shader"
         case .pdf: "PDF"
+        case .psd: "Layered PSD"
+        case .inkSVG: "Ink as SVG"
+        case .ifc: "IFC"
+        case .level: "Game level"
+        case .drawings: "Plans & elevations"
+        case .technical: "Technical drawing"
+        case .papercraft: "Papercraft"
         }
     }
 
@@ -96,6 +103,13 @@ public enum ExportFormat: String, CaseIterable, Identifiable, Sendable, Codable 
         case .gltf, .fbx, .usdz, .obj, .stl, .threeMF, .blender, .maps: modelFormat?.purpose ?? ""
         case .lookShader: "This scene's Look for a game engine: its shader and material, with a licence to use it anywhere."
         case .pdf: "To print or send: the frame on a page, frames across the shot, or a storyboard of every shot."
+        case .psd: "The frame at the playhead with a layer a thing, to draw over in Procreate or Photoshop."
+        case .inkSVG: "The frame's lines as vectors, sharp at any size: outlines and creases, hidden lines left out."
+        case .ifc: "For Revit, Archicad and every BIM app: walls, floors, roofs, stairs and rooms as what they are."
+        case .level: "A level for a game engine: each piece with its collision and lighter copies, named the engine's way."
+        case .drawings: "The plan with room areas and the four elevations, black and white, to scale."
+        case .technical: "Front, top and side views with sizes, an isometric view and a parts list with materials and mass."
+        case .papercraft: "The model unfolded flat with tabs and numbered edges: print, cut, fold and glue, or laser-cut it."
         }
     }
 
@@ -121,6 +135,8 @@ public enum ExportFormat: String, CaseIterable, Identifiable, Sendable, Codable 
 public enum ExportKind: String, Sendable, Codable {
     case video, gif, frames, passes, captions, still, stillPasses, model, lookShader, paper
     case animatic, spatialVideo, video360, spatialPhoto, panorama, storyboard
+    /// G1's files for the guests (drawings, IFC, levels, papercraft, layered pictures).
+    case guest
 }
 
 /// The named presets, each of one format.
@@ -137,6 +153,8 @@ public enum ExportPreset: String, CaseIterable, Identifiable, Sendable, Codable 
     case gltfGodot, gltfWeb, gltfApps, fbxUnity, fbxUnreal, usdzQuickLook, objMaterials, stlPrint, threeMFPrint, blenderComputer, mapsPNG
     case shaderGodot, shaderUnity
     case paperFrameA4, paperFrameLetter, paperFrameA3, paperFramesA4, paperFramesLetter, storyboardA4, storyboardLetter
+    case psdLayers, inkVector, ifcBuilding, levelGodot, levelUnity, levelUnreal, planPDF, planDXF, planSVG, technicalA4, technicalA3
+    case papercraftA4, papercraftLetter, laserSVG
 
     public var id: String { rawValue }
 
@@ -166,6 +184,13 @@ public enum ExportPreset: String, CaseIterable, Identifiable, Sendable, Codable 
         case .mapsPNG: .maps
         case .shaderGodot, .shaderUnity: .lookShader
         case .paperFrameA4, .paperFrameLetter, .paperFrameA3, .paperFramesA4, .paperFramesLetter, .storyboardA4, .storyboardLetter: .pdf
+        case .psdLayers: .psd
+        case .inkVector: .inkSVG
+        case .ifcBuilding: .ifc
+        case .levelGodot, .levelUnity, .levelUnreal: .level
+        case .planPDF, .planDXF, .planSVG: .drawings
+        case .technicalA4, .technicalA3: .technical
+        case .papercraftA4, .papercraftLetter, .laserSVG: .papercraft
         }
     }
 
@@ -185,6 +210,7 @@ public enum ExportPreset: String, CaseIterable, Identifiable, Sendable, Codable 
         case .video360: .video360
         case .spatialPhoto: .spatialPhoto
         case .panorama: .panorama
+        case .psd, .inkSVG, .ifc, .level, .drawings, .technical, .papercraft: .guest
         default: .model
         }
     }
@@ -197,6 +223,16 @@ public enum ExportPreset: String, CaseIterable, Identifiable, Sendable, Codable 
         case .fbxUnity: .unity
         case .fbxUnreal: .unreal
         case .gltfApps, .usdzQuickLook, .objMaterials, .stlPrint, .threeMFPrint, .blenderComputer, .mapsPNG: .apps
+        default: nil
+        }
+    }
+
+    /// A game level's engine (G1).
+    public var levelEngine: GameEngine? {
+        switch self {
+        case .levelGodot: .godot
+        case .levelUnity: .unity
+        case .levelUnreal: .unreal
         default: nil
         }
     }
