@@ -1,6 +1,7 @@
 import Foundation
 import LoweyCore
 import LoweyEngine
+import simd
 
 /// G1's files for the guests: plans and elevations (PDF, DXF, SVG), IFC, a game level, a technical drawing, papercraft
 /// and laser nets, a layered PSD and the frame's ink as SVG. Each is written from the scene as it shows at the playhead

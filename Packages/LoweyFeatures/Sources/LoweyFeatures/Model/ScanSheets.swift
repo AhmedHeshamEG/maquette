@@ -12,19 +12,18 @@ struct RoomScanSheet: View {
     let editor: EditorModel
     @Environment(\.dismiss) private var dismiss
     @State private var capture = RoomCaptureHolder()
-    @State private var result: RoomScan?
 
     static var isSupported: Bool { RoomCaptureSession.isSupported }
 
     var body: some View {
         NavigationStack {
-            RoomCaptureRepresentable(holder: capture) { scan in result = scan }
+            RoomCaptureRepresentable(holder: capture)
                 .ignoresSafeArea()
                 .navigationTitle("Scan a room")
                 .toolbar {
                     ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } }
                     ToolbarItem(placement: .confirmationAction) {
-                        if let result {
+                        if let result = capture.result {
                             Button("Add to the scene") {
                                 editor.addScannedRoom(result)
                                 dismiss()
@@ -39,15 +38,15 @@ struct RoomScanSheet: View {
     }
 }
 
-/// Holds the capture view so the sheet's button can stop it.
-@MainActor
+/// Holds the capture view (so the sheet's button can stop it) and the finished room.
+@MainActor @Observable
 final class RoomCaptureHolder {
-    var view: RoomCaptureView?
+    @ObservationIgnored var view: RoomCaptureView?
+    var result: RoomScan?
 }
 
 struct RoomCaptureRepresentable: UIViewRepresentable {
     let holder: RoomCaptureHolder
-    let done: (RoomScan) -> Void
 
     func makeUIView(context: Context) -> RoomCaptureView {
         let view = RoomCaptureView(frame: .zero)
@@ -63,15 +62,15 @@ struct RoomCaptureRepresentable: UIViewRepresentable {
         view.captureSession.stop()
     }
 
-    func makeCoordinator() -> RoomScanCoordinator { RoomScanCoordinator(done: done) }
+    func makeCoordinator() -> RoomScanCoordinator { RoomScanCoordinator(holder: holder) }
 }
 
 /// RoomPlan's delegate: the finished room read into plain sizes and places, handed back on the main actor.
 final class RoomScanCoordinator: NSObject, RoomCaptureViewDelegate {
-    let done: @MainActor (RoomScan) -> Void
+    let holder: RoomCaptureHolder
 
-    init(done: @escaping @MainActor (RoomScan) -> Void) {
-        self.done = done
+    init(holder: RoomCaptureHolder) {
+        self.holder = holder
         super.init()
     }
 
@@ -84,14 +83,14 @@ final class RoomScanCoordinator: NSObject, RoomCaptureViewDelegate {
     nonisolated func captureView(didPresent processedResult: CapturedRoom, error: (any Error)?) {
         guard error == nil else { return }
         let scan = Self.scan(processedResult)
-        let done = done
-        Task { @MainActor in done(scan) }
+        let holder = holder
+        Task { @MainActor in holder.result = scan }
     }
 
     nonisolated static func scan(_ room: CapturedRoom) -> RoomScan {
         func place(_ transform: simd_float4x4) -> (Vec3, Quat) {
             let q = simd_quatf(transform)
-            return (Vec3(transform.columns.3.x, transform.columns.3.y, transform.columns.3.z),
+            return (Vec3(Double(transform.columns.3.x), Double(transform.columns.3.y), Double(transform.columns.3.z)),
                     Quat(x: Double(q.imag.x), y: Double(q.imag.y), z: Double(q.imag.z), w: Double(q.real)))
         }
         func surfaces(_ list: [CapturedRoom.Surface], _ kind: RoomScan.SurfaceKind) -> [RoomScan.Surface] {
