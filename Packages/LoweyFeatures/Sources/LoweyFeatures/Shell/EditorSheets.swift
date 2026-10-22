@@ -34,6 +34,7 @@ struct EditorSheets: ViewModifier {
         case .matchPhoto: PhotoMatchSheet(editor: editor).presentationDetents([.large])
         case .roomScan: RoomScanSheet(editor: editor).presentationDetents([.large])
         case .objectScan: ObjectScanSheet(editor: editor).presentationDetents([.large])
+        case .phone: PhoneSheet(editor: editor).presentationDetents([.medium, .large])
         }
     }
 }

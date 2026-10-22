@@ -30,6 +30,11 @@ struct PrintToolControls: View {
                 }
                 if ObjectScanSheet.isSupported {
                     TileButton(title: "Scan an object", systemName: "viewfinder", identifier: "print-scan") { editor.sheet = .objectScan }
+                } else {
+                    TileButton(title: "Scan with your iPhone", systemName: "iphone", identifier: "print-scan-phone") {
+                        editor.ask(.objectScan)
+                        editor.sheet = .phone
+                    }
                 }
             }
             Picker("Split across", selection: $editor.guest.splitAxis) {

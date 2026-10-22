@@ -279,6 +279,7 @@ extension EditorModel {
     }
 
     func stopVirtualCamera() {
+        endPhoneCamera()
         virtualCamera?.stop()
         virtualCamera = nil
         guard virtualCameraActive else { return }

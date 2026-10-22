@@ -157,6 +157,8 @@ public enum EditorSheet: String, Identifiable, Sendable {
     case brushes
     /// G1, Room: the plans and elevations; matching a photo; scanning a room. Print: scanning an object.
     case plans, matchPhoto, roomScan, objectScan
+    /// U8: the iPhone companion (Actions ▸ Your iPhone).
+    case phone
 
     public var id: String { rawValue }
 }
