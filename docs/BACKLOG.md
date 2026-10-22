@@ -3,6 +3,21 @@
 What's known and not done yet, so nothing lives only in someone's head. What Maquette is: [SPEC.md](SPEC.md). The
 phase plan (the pass U1 … U5, M12, M14, M16, then 1.0) lives in studio-h's `PHASES.md`; ideas go to its `IDEAS.md`.
 
+## Left from G1 (Maquette 0.25)
+
+- [ ] The device checklist in the "Maquette 0.25 — G1" PR (a real PDF plan traced to scale, a scan of a room on a LiDAR
+      iPad, an object scan, the threaded jar printed, a two-colour 3MF in Bambu Studio, Dev's level in Godot, a layered
+      PSD in Procreate, a papercraft cube glued, the plans of a two-storey house timed on a Tier B iPad).
+- [ ] Doors and windows leave IFC as part of their walls' shape; IfcDoor / IfcWindow with IfcOpeningElement would let
+      Revit list them (D-502).
+- [ ] Gable and hipped roofs cover the outline's smallest rectangle; an L-shaped house takes two roofs (D-503).
+- [ ] The iPhone companion's room and object scans for iPads without LiDAR come with U8 (D-506).
+- [ ] Split cuts across the part's middle on an axis; a cut plane moved on the stage is to do if testers ask (D-508).
+- [ ] A matched photo shows behind the stage only; exports of the building in the photo would need the photo as a
+      backdrop layer in the renderer.
+- [ ] The technical sheet writes overall sizes; dimensions of holes and features, and balloons on the views, are to do.
+- [ ] Papercraft's tabs aren't checked against other pieces; a tab may overlap a neighbour on the page.
+
 ## Left from L2 (Maquette 0.24)
 
 - [ ] The device checklist in the "Maquette 0.24 — L2" PR (each new Look on the Keeper's Tower, Painterly at full screen on

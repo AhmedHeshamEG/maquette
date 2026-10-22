@@ -3147,3 +3147,147 @@ that already run. A diorama is its layers' sheets (a 30-layer drawing is 30 thin
 sheets happen off the main thread. The device checklist times Painterly at full screen on a Tier B iPad.
 
 **D-496 — Translations still ride along.** The new strings were translated into Italian and Arabic for the catalog check.
+
+## Maquette 0.25 — G1, guest kits
+
+The inbox had nothing for this phase (the queued video-planning session stays queued), and L2 left no device notes yet.
+
+**D-497 — Six set-ups, in the plan's order.** Set up for: Blank · Room · Print · Game · Study · Animation. Game is metres
+on a one-metre grid with quarter turns in the Low-poly Look; Study is millimetres on a five-millimetre grid with sizes
+shown, in Clean product. Each set-up's kit lives in the homes that exist: Model ▸ Add (Room's building tools and its
+plans and site, Print's pieces, Game's greybox) and Model ▸ Edit (Print's tools under 3D print, Study, Game). A Blank
+project shows none of it. Home's quiet row keeps its icons and drops the words on a narrow screen. *Rejected:* a
+"Guests" panel (a new home moves the layout); kits in the Library (they're tools, not things).
+
+**D-498 — One drawing engine for every drawing.** Plans, elevations, a technical sheet's views, papercraft and a frame's
+ink are all `LineArt` (metres on the drawing's plane, pens a draughtsman would name: cut, outline, thin, hidden,
+dimension, mountain, valley, cut line) from `HiddenLines`: feature edges (outlines where a surface turns away, creases
+past 30°, open edges) split into seen and hidden stretches against a depth picture of every triangle, the surface's own
+slope allowed for so an edge isn't hidden by the face it bounds. Written as PDF (vector paths, Helvetica's metrics),
+SVG and DXF (R12, millimetres, a layer a pen). *Rejected:* drawing plans with the renderer (pixels, not lines a CAD
+program can use).
+
+**D-499 — The plan.** Cut at 1.2 m above each floor: what's cut filled black (even-odd, so a ring of walls keeps its
+room), what's below in thin lines, north (−z) up. One plan a floor: the ground and the top of every slab two metres or
+more above the one below.
+
+**D-500 — Rooms.** The walls are cut low (0.3 m, under a window's sill) and high (2.25 m, over a door's head) and laid on
+a two-centimetre grid; the outside is flooded from the edge and what's left are rooms (a square metre or more), each
+outline's corners snapped to the walls' own corners so a 4 × 5 m room measures exactly 20.0 m². A room takes the name
+of the flat text lying in it (Room ▸ Room name puts one there), else "Room n". Areas in m², or square feet when the
+project works in feet or inches. *Rejected:* only walls tagged as walls (modelled walls and scans have to work too:
+when nothing is tagged, everything encloses).
+
+**D-501 — Building parts.** Walls, floors, stairs, roofs, columns, beams, railings, people, terrain and scanned furniture
+carry `buildingPart`; a thing inherits its group's. Plans and IFC read it. It's a property, so 0.24 keeps it untouched.
+
+**D-502 — IFC4 as STEP text, checked by IfcOpenShell.** One project, site and building, a storey a floor; each thing as
+the element its part says (IfcWall, IfcSlab, IfcRoof, IfcStair, IfcColumn, IfcBeam, IfcRailing, IfcGeographicElement
+for terrain), library models as IfcFurniture, anything else as a proxy, rooms as IfcSpace; shapes as triangulated face
+sets with their colour. Ids are stable hashes, so exporting again gives the same ids. Doors and windows are cut into
+their walls (as Room cuts them), so they leave as the walls' shape, not as IfcDoor. Scale people stay out. CI validates
+the file against the IFC4 schema. *Rejected:* DWG (a yearly licence, CONTEXT §10.11); extruded profiles (every shape
+here is a mesh first).
+
+**D-503 — Roofs.** Gable and hip over the outline's smallest enclosing rectangle (an L-shaped house takes two roofs);
+shed and flat follow any outline; 30° and a 30 cm overhang by default; solid down to the walls' tops so they print and
+boolean. *Rejected:* a straight skeleton for hips over any outline (rare in the people's houses, costly to make robust).
+
+**D-504 — Underlays.** A DXF lands as a sketch on the ground at full size in its own units (unitless files read as
+millimetres), centred where it's dropped, locked; its closed areas pull up like any sketch's. A PDF's first page is drawn
+at 4096 pixels and laid flat at its drawing scale (1:100 unless set); a picture at a millimetre a pixel. Two taps on a
+length you know and its real length set any of them to scale. *Rejected:* reading PDF vectors (pictures are what people
+trace; the DXF path is for vectors).
+
+**D-505 — Match a photo.** Two lines along one direction of the room and two along the direction square to it meet at
+two vanishing points; with the photo's middle as the lens's centre those give the lens and the turn; the origin tapped on
+the ground and the camera's height (1.6 m) place it. The photo stands behind the stage as a rotoscope that holds still
+(a one-frame-a-second video of it), so exports never show it. *Rejected:* three vanishing points (people rarely see a
+third), a photo card in the scene (lit by the scene's light, it would never match).
+
+**D-506 — Scans on the iPad.** Scan a room is RoomPlan, shown only where `RoomCaptureSession.isSupported` (LiDAR iPads);
+walls come in 12 cm thick with their doors, windows and openings cut through, the floor under them and each piece of
+furniture as a block named for what it is, as one undo step. Scan an object is Object Capture and the on-device
+photogrammetry at reduced detail, shown only where both are supported; the model lands in the Library and on the stage.
+The iPhone companion's scans come with U8, where the companion is completed. *Rejected:* showing the buttons on iPads
+that can't (law 8).
+
+**D-507 — Walking through.** Fly with the camera kept at eye height (1.6 m above the floor where the walk starts); the
+sticks and a game controller as for Fly.
+
+**D-508 — Print's tools work in world space on one part.** Overhangs are faces leaning past 45° facing down, not on the
+bed. Best way up tries the six sides and the hull's sixteen biggest faces as the bottom and keeps the one with the least
+support volume, the most on the bed and the lowest. Split cuts across height, width or depth at the part's middle, with
+up to two pegs (up to 3 mm across, at the cross-section's thickest spots) on one part and holes a fit larger in the other,
+moved a centimetre apart. Hollow leaves 2 mm walls and drills two 3 mm drain holes through the floor. *Rejected:* a
+movable cut plane on the stage (the middle and the axis cover the people's helmets and statues; a gizmo comes if testers
+ask).
+
+**D-509 — Screws and threads.** ISO metric M2…M10 from the standards' tables (pitch, medium clearance, tap drill, socket
+heads, hex nuts) and common heat-set inserts. Printed threads are the ISO 60° profile wound into a right-hand helix,
+faded in over their first and last half turn; a nut's or a lid's thread is the same shape a fit larger. The jar's thread
+is sunk 0.3 mm into its wall (a thread exactly on the wall left slivers). The fit is 0.2 mm a side by default.
+*Rejected:* threads as textures or "cosmetic" lines (people print them).
+
+**D-510 — Words on a part.** The block font, squeezed to the exact depth (it keeps letters at least a millimetre deep),
+upright on the face (its up is the world's up, or north on a face looking up); engraved 0.6 mm or raised 0.6 mm.
+
+**D-511 — Multi-colour 3MF.** Each colour gets a filament slot (up to 16) told to PrusaSlicer (`Slic3r_PE_model.config`)
+and Bambu Studio and OrcaSlicer (`model_settings.config`), beside the standard base materials. The 3MF's corners are now
+joined within a tenth of a micron (booleans left a few a nanometre apart, which cracked the jar).
+
+**D-512 — Explode.** `explode` (0…1, keyed like anything) on a group and `explodeOffset` on each part; the offsets are
+worked out once from the parts' boxes (each part along the line from the group's middle, past its own size; parts in the
+very middle spread along the longest side). The animator applies them right after links. One tap explodes, again puts
+it together.
+
+**D-513 — The technical sheet.** First-angle projection (ISO, as Italian and European courses use) on A4 or A3 landscape:
+front, the view from the left on its right, the top under the front, all at one standard scale; hidden edges dashed;
+overall sizes in the project's units (millimetres for metres and centimetres); an isometric view of the assembly as it
+stands (exploded, if it is); a parts list numbered from the bottom with name, material, count and mass; a title block.
+Material is a real thing's, else plastic; mass is the material's density times the part's closed volume (or the mass
+typed). *Rejected:* third-angle by default (Omar is in Rome); balloons on the views (the list carries the numbers).
+
+**D-514 — Game levels by each engine's convention.** Godot: a piece named `…-col` becomes a static body with its shape as
+collision when the project imports the file, and Godot makes its own lighter copies, so none are written. Unity:
+`…_LOD0…2` under one parent become a LOD group (halves and quarters by our own simplifier, UVs carried), and a convex
+`…_collider` beside each piece takes a Mesh Collider. Unreal: a convex `UCX_…_00` beside each piece is its collision.
+One texture for everything packs every piece's painted colour (at most 1024 px) or a swatch of its flat colour into one
+square picture. CI imports Dev's level in Godot 4.3 and finds its static bodies. *Rejected:* FBX for levels (our FBX
+writer is for rigged things; Unity's glTFast and Unreal's Interchange read glTF).
+
+**D-515 — Greybox.** Nine pieces on a one-metre module whose middles and sides fall on whole metres, in developer colours
+(floors grey-blue, walls light, ramps and stairs orange, blocks blue); Freeze transforms bakes a modelled thing's turn and
+size into its shape (not for groups: their children would move).
+
+**D-516 — For illustrators.** A Mannequin start in Characters ▸ New (a faceless person in pale wood that rigs itself as a
+humanoid). The layered PSD is the frame at the playhead split by the id picture into a layer per top-level thing over the
+background, RGB, 8 bits, layers cropped, names in Unicode, the flattened picture after them; Procreate, Photoshop and
+our own reader open it. Procreate palettes (`.swatches`) join the colour picker's saved palettes, read in hmm-kit so
+Cutaway gets them. Papercraft: faces joined along their longest edges into pieces that don't overlap, a numbered edge
+and a tab wherever pieces part, mountain and valley folds, packed onto A4 or Letter at real size when they fit (else the
+whole net scaled down); a laser net is red cuts and blue scores. Ink as SVG is the camera's outlines and creases with
+hidden lines removed, in the frame's pixels.
+
+**D-517 — Where it lives.** Model ▸ Add (set-ups' kits), Model ▸ Edit (Print, Study, Game), the Plans, Match a photo and
+scan sheets, the Export sheet's new formats (Picture ▸ Layered PSD, Ink as SVG; 3D ▸ IFC, Game level; Paper ▸ Plans &
+elevations, Technical drawing, Papercraft), Library ▸ Yours ▸ Bring in a palette, and a Kit menu on a keyboard: Plans
+⌃⌘A, Walk through ⌃⌘W, Best way up ⌃⌘B, Split ⌃⌘S, Hollow ⌃⌘H, Show overhangs ⌃⌘V, Explode ⌃⌘X, Freeze transforms ⌃⌘T.
+IFC and plans are offered only when the scene holds a building.
+
+**D-518 — The bridge's `guest`.** roof, column, beam, railing, person, terrain, label (Room); orient, split, hollow,
+engrave, emboss, hole, print, scale (Print); explode (Study); greybox, freeze (Game); and `character` `new` with
+`start: mannequin`. Files stay in the app, as packs did (D-492). The lowey skill's guest kits module teaches it.
+
+**D-519 — No schema change.** Everything new in a project is a property (`buildingPart`, `explode`, `explodeOffset`) or
+a workspace value (the Game and Study set-ups); 0.24 opens a 0.25 project and keeps them. Schema stays 23.
+
+**D-520 — Kit 0.15.** `HmmPalette.procreate(swatchesJSON:)`.
+
+**D-521 — Every tier.** Drawings, rooms, unfolding and IFC run off the main thread (the Plans sheet draws in the
+background); a depth picture of at most 1400 pixels a side for drawings; booleans for threads at 48 to 96 sides. The
+device checklist times the plans of a two-storey house and a threaded jar on a Tier B iPad.
+
+**D-522 — Permissions.** The camera's line now also names scanning a room or an object; nothing leaves the iPad.
+
+**D-523 — Translations still ride along.** The new strings were translated into Italian and Arabic for the catalog check.

@@ -3,6 +3,19 @@
 One task per feature for the two test weeks (between M14 and M16), written for its person in `studio-h/USERS.md`. A
 task says what to make, never which buttons to press; the tester says where they got stuck.
 
+## 0.25 (G1): guest kits
+
+- **The architect (Sara):** her flat from a PDF plan she was given: traced at real scale, a pitched roof, two people in it,
+  the plan with every room's area printed, and the model sent as IFC to a friend with Revit or a free IFC viewer.
+- **The maker (Giulia):** a box with a lid held on by four M3 screws into heat-set inserts, her name engraved on the lid,
+  printed in two colours from the 3MF.
+- **The maker:** a helmet too big for her printer's bed, split into two parts that peg back together.
+- **The engineering student (Omar):** a gear pair grouped, exploded, and its technical drawing on A4 with the parts list.
+- **The game developer (Dev):** a small level of greybox pieces with a ramp, opened in Godot, walked in without falling
+  through the floor.
+- **The illustrator (Lina):** a posed, lit mannequin as a layered PSD in Procreate, drawn over.
+- **Everyone:** a paper house unfolded, printed, cut and glued from the numbers on its tabs.
+
 ## 0.24 (L2): Looks & the library
 
 - **The Procreate person:** a layered drawing of their own, from Procreate, standing as a diorama the camera pushes into,

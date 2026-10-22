@@ -772,6 +772,56 @@ flowchart LR
   a `.maquettepack` decides), `AppModel+Gallery` (folders), `AppModel+Samples`; `EditorModel+Diorama`, `EditorModel+Yours`;
   the Look menu's commands. The bridge's `add_media` takes `as=drawing`.
 
+## Guest kits (0.25)
+
+```mermaid
+flowchart LR
+    Scene[Scene things] --> El[IFCWriter.elements<br/>world triangles · building part]
+    El --> IFC[IFCWriter.file<br/>IFC4 STEP]
+    El --> BD[BuildingDrawings<br/>floors · rooms · spaces]
+    BD --> Plan[PlanDrawing.plan<br/>Section.cut + HiddenLines + RoomFinder]
+    Plan --> Art[LineArt]
+    Soup[TriangleSoup] --> HL[HiddenLines<br/>orthographic or through a camera]
+    HL --> Art
+    Art --> Out[PDFWriter paths · SVG · DXF]
+    Mesh[A part in world space] --> Print[PrintTools · Threads · PrintOrientation]
+    Print --> Cmd[ModelingOperations: one batch]
+    Meshes[ExportMesh list] --> Level[GameLevel.glb<br/>-col · _LOD · UCX_ · TextureAtlas]
+    Mesh --> Net[Papercraft.unfold<br/>pieces · tabs · numbers · pages]
+```
+
+- **Core `Guests/Drawing/`**: `LineArt` (strokes with pens, fills with holes, labels; `dimension`, `pdfItems`, `svg`),
+  `PaperPlacement` (standard scales), `DXF` (R12 writer, a reader for underlays: lines, polylines, circles, arcs, units),
+  `SketchCurveSampler`, `TriangleSoup` (world triangles with shared corners and their owners; `below(height)`),
+  `DrawingView` (orthographic or perspective), `HiddenLines` (feature edges against `DepthRaster`), `Section` (a plane's
+  cut chained into loops). `PDFWriter` gained `.path` and Helvetica's widths.
+- **Core `Guests/Room/`**: `GuestProperties` (`BuildingPart`, the `buildingPart`, `explode`, `explodeOffset` keys),
+  `RoomParts` (roofs, columns, beams, railings, people, terrain; `SolidBuilder`, `MultiBox`), `RoomOperations` (their
+  commands, `Underlay`), `RoomFinder` (rooms from cuts on a grid), `PlanDrawing` (plans, elevations, sheets),
+  `BuildingDrawings` (floors, labels, spaces), `IFCWriter`, `PhotoMatch` (vanishing points → camera), `RoomScan` (a scan as
+  walls, openings, floor, furniture).
+- **Core `Guests/Print/`**: `PrintOrientation` (overhangs, best way up), `PrintTools` (split with pegs, hollow with drains,
+  engrave, holes, scale to size), `Threads` (`MetricScrew`, `ScrewHole`, thread solids, bolts, nuts, `Jar`),
+  `PrintOperations` (their commands). `ThreeMFFile` writes filament slots and welds within 0.1 µm.
+- **Core `Guests/Study/`**: `Explode` (offsets, the Animator's step in `Animator.drive`, the toggle), `TechnicalSheet`.
+- **Core `Guests/Game/`**: `GreyboxPiece`, `freezeTransforms`, `GameLevel` (`LevelWriter`, LODs by `MeshSimplify`, hulls by
+  `QuickHull3D`), `TextureAtlas`.
+- **Core `Guests/Illustration/`**: `PSDWriter`, `LayeredPicture`, `Papercraft` (+`Drawing`), `ProcreateSwatchesFile`,
+  `InkVectors`. `CharacterStart.mannequin`. `StarterTemplate` gained `.game` and `.study`. `AI/ScriptCompiler+Guests`: the
+  `guest` verb.
+- **Kit**: HmmDesign's `HmmPalette.procreate(swatchesJSON:)`.
+- **Engine**: `ExportPresets` (the formats `psd`, `inkSVG`, `ifc`, `level`, `drawings`, `technical`, `papercraft`, the kind
+  `guest`), `ExportSession+Layers` (`layeredPSD`: the colour and the id picture of one draw).
+- **Features**: `Workspace/Session/GuestTypes` (`GuestState` on `EditorModel.guest`), `EditorModel+Guests` (Room's taps,
+  walking, underlays and their scale, palettes), `+GuestPrint` (Print, Study, Game on the selection; overhangs in the
+  model overlay), `+GuestScenes` (photo match, scans), `+GuestExports` (the new files). `BuildTool` gained roof, column,
+  beam, railing, person, label, terrain, hole, engrave. Views: `Model/GuestAddSections`, `Model/GuestEditSections`
+  (`PrintToolControls`), `Model/RoomSheets` (`PlanSheet`, `LineArtView`, `PhotoMatchSheet`), `Model/ScanSheets` (RoomPlan
+  and Object Capture); `EditorSheet` gained plans, matchPhoto, roomScan, objectScan; the menu bar's Kit menu.
+- **CI**: `Tools/check_guest_files.py` (IfcOpenShell validates the IFC, ezdxf audits the DXF, pypdf reads the PDFs,
+  trimesh finds the jar and lid watertight) in the interop job; `Tools/godot/check_level.gd` imports Dev's level in Godot
+  4.3 and finds its static bodies; `AppUITests/GuestTests` (Sara, Giulia, Omar, Dev, each under three minutes).
+
 ## LoweyRender 2
 
 ```mermaid

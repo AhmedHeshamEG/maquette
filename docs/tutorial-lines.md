@@ -3,6 +3,26 @@
 One line per feature for the person it serves (`studio-h/USERS.md`), in Hesham's voice, for the YouTube lessons the
 Learn place links to (CONTEXT §8). A phase adds the lines of what it built; M16 records them.
 
+## 0.25 (G1): guest kits
+
+- **The architect:** "Scene, Set up for Room. Model, Add, Building: tap the corners and the walls follow; tap the first
+  corner to close the room. Roof: tap the corners on top of the walls. Plans: every room with its area, ready to print."
+- **The architect:** "Underlay: drop the professor's PDF. Measure a wall you know, type its length: the plan is to scale.
+  Trace it with Walls. Export, 3D, IFC: it opens in Revit as walls, floors and a roof."
+- **The architect:** "Match a photo: two red lines along one wall, two blue along the other, the yellow dot on the floor.
+  Match: your building stands in the photo."
+- **The maker:** "Set up for Print. Model, Add, Jar and lid: the lid screws on, its thread a fit looser. Export, 3D, 3MF:
+  each colour gets its own filament."
+- **The maker:** "Model, Edit, 3D print: Screw hole, M3, insert, then tap where it goes. Split: two parts with pegs. Show
+  overhangs: the red needs support; Best way up turns it so it doesn't."
+- **The engineering student:** "Set up for Study. Group your parts, Model, Edit, Explode: they fly apart. Export, Paper,
+  Technical drawing: three views, the sizes and a parts list with each part's mass."
+- **The game developer:** "Set up for Game. Model, Add, Greybox: floors, walls, ramps on the metre grid. Export, 3D, Game
+  level, For Godot: every piece is solid when it lands in your project."
+- **The illustrator:** "Characters, New, Mannequin. Pose it, light it, Export, Picture, Layered PSD: open it in Procreate
+  and draw over every layer."
+- **Everyone:** "Export, Paper, Papercraft: your model unfolded flat, every tab numbered to the edge it glues to."
+
 ## 0.24 (L2): Looks & the library
 
 - **The anime animator:** "Look, Style, Anime cel: two hard tones and a lavender shadow, on twos. Select the hero, Look,

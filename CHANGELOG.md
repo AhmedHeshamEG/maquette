@@ -3,6 +3,36 @@
 All notable changes. 1.x grew in four phases (v0.1 → v1.4); 2.0 is the remaster, released as betas first. Maquette
 continues from 2.0 and numbers its phases again from 0.1 (each phase bumps the minor version until 1.0).
 
+## [0.25] — Maquette — Guest kits (phase G1)
+
+Every guest finishes their job without leaving the app. Scene ▸ **Set up for** Room, Print, Game or Study puts their
+tools in Model ▸ Add and Model ▸ Edit; a Blank project shows none of it.
+
+- **Room**: roofs (gable, hip, shed, flat) over the walls' tops, columns, beams, railings, scale people, terrain and room
+  names. **Plans**: each floor cut at 1.2 m in black and white with every room's area, and the four elevations.
+  **Walk through** at eye height (⌃⌘W). **Underlays**: a PDF, DXF or picture of a plan laid flat, set to scale with two
+  taps and a typed length. **Match a photo**: two pairs of lines and a point on the ground give the camera that took it;
+  the photo stands behind the stage. **Scan a room** with RoomPlan on iPads with LiDAR. Out as **IFC4** (walls, floors,
+  roofs, stairs, columns, beams, railings, rooms as spaces), and plans as PDF, DXF and SVG.
+- **Print**: overhangs in red, **Best way up** (⌃⌘B), **Split** with pegs and holes (⌃⌘S), **Hollow** with drain holes
+  (⌃⌘H), words engraved where the Pencil taps, ISO **screw holes** M2–M10 (clearance, counterbored, for a tap, threaded,
+  a heat-set insert), a **jar with a screw-on lid**, bolts and nuts, the fit between parts, scale to size, **multi-colour
+  3MF** (each colour its filament slot in PrusaSlicer, Bambu Studio and OrcaSlicer), share to the slicer, and **Scan an
+  object** with Object Capture where the iPad can.
+- **Study**: **Explode** a group in one tap (⌃⌘X) and back; the force arrows; Export ▸ Paper ▸ **Technical drawing**:
+  front, top and left views in first-angle projection with hidden edges, sizes, an isometric view and a parts list with
+  each part's material and mass.
+- **Game**: the **greybox kit** (floors, walls, doorways, windows, ramps, stairs, blocks, pillars) on a metre grid,
+  **Freeze transforms** (⌃⌘T), and Export ▸ 3D ▸ **Game level** for Godot (static bodies from `-col`), Unity (`_LOD`
+  groups and colliders) and Unreal (`UCX_` collision), with one texture for everything if you like.
+- **For illustrators**: a **Mannequin** in Characters ▸ New; Export ▸ Picture ▸ **Layered PSD** (a layer a thing) and **Ink
+  as SVG**; Library ▸ Yours ▸ **Bring in a palette** (Procreate's `.swatches`); Export ▸ Paper ▸ **Papercraft** (tabs and
+  numbered edges, or a net for a laser cutter).
+- **The Kit menu** on a keyboard; Plans and elevations ⌃⌘A, Show overhangs ⌃⌘V.
+- **The bridge**: the `guest` verb (roof, column, beam, railing, person, terrain, label, explode, orient, split, hollow,
+  engrave, emboss, hole, print, scale, greybox, freeze) and `character` with `start: mannequin`. The lowey skill's guest
+  kits module teaches it.
+
 ## [0.24] — Maquette — Looks & the library (phase L2)
 
 Seven new Looks, a Finish for any of them, your drawings standing up in 3D, and a library you can share.
