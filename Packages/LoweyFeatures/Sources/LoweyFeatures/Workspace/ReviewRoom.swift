@@ -64,7 +64,7 @@ final class ReviewRoom {
         hosting = true
         outgoing = url
         do {
-            if try await !HmmTogether.start(ReviewActivity(project: name)) {
+            if try await !HmmTogether<ReviewActivity>.start(ReviewActivity(project: name)) {
                 hosting = false
                 outgoing = nil
             }
@@ -97,7 +97,12 @@ final class ReviewRoom {
         guard waitingForProject, let app else { return }
         waitingForProject = false
         Task {
-            if app.editor != nil { app.closeEditor() }
+            // The open project is saved and closed first (not `closeEditor`, which closes later, after its card).
+            if let editor = app.editor {
+                await editor.saveNow(thumbnail: false)
+                editor.tearDown()
+                app.editor = nil
+            }
             guard let opened = app.openReviewCopy(url) else { return }
             app.open(url: opened)
             app.editor?.reviewStarted()
