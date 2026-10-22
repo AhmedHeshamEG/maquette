@@ -13,10 +13,10 @@ struct PhoneSheet: View {
     var body: some View {
         NavigationStack {
             List {
-                Section { status } footer: {
+                SwiftUI.Section { status } footer: {
                     Text("Open \(AppIdentity.displayName) on your iPhone, on the same Wi-Fi as this iPad. Nothing leaves your network.")
                 }
-                Section("Use it as") {
+                SwiftUI.Section("Use it as") {
                     ForEach(modes) { mode in
                         Button { choose(mode) } label: { row(mode) }
                             .accessibilityIdentifier("phone-\(mode.rawValue)")

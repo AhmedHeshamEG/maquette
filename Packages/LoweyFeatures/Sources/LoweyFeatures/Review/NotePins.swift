@@ -91,7 +91,7 @@ private struct NoteThread: View {
     var body: some View {
         VStack(alignment: .leading, spacing: HmmSpacing.s) {
             HStack {
-                Text(verbatim: note.author).font(.hmm(.subheadline, weight: .semibold))
+                Text(verbatim: note.author).font(.hmm(.body, weight: .semibold))
                 Text(note.date, format: .relative(presentation: .named)).font(.hmm(.caption)).foregroundStyle(theme.text2)
                 Spacer()
                 HmmButton("xmark", label: "Close", size: 32) { editor.together.openNote = nil }
@@ -183,8 +183,8 @@ struct ReviewBadge: View {
     var body: some View {
         HStack(spacing: HmmSpacing.s) {
             Image(systemName: "shareplay").foregroundStyle(theme.accent)
-            Text("Reviewing with \(max(app.review.people - 1, 1))").font(.hmm(.subheadline, weight: .semibold))
-            Button("Leave") { app.review.leave() }.font(.hmm(.subheadline))
+            Text("Reviewing with \(max(app.review.people - 1, 1))").font(.hmm(.body, weight: .semibold))
+            Button("Leave") { app.review.leave() }.font(.hmm(.body))
         }
         .padding(.horizontal, HmmSpacing.m)
         .frame(minHeight: HmmTarget.minimum)

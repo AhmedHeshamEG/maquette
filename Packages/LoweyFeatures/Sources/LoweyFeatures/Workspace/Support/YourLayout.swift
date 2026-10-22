@@ -105,7 +105,7 @@ enum YourSettings {
     /// The + 's project: the set-up's own template, with your Look and units over it.
     static func template(in defaults: UserDefaults = .standard) -> StarterTemplate {
         var template = StarterTemplate.template(setUp(in: defaults))
-        if let look = defaults.string(forKey: defaultLook), LookPreset.all(custom: []).contains(where: { $0.id == look }) {
+        if let look = defaults.string(forKey: defaultLook), LookLibrary.all(custom: []).contains(where: { $0.id == look }) {
             template.lookPresetID = look
         }
         if let units = defaults.string(forKey: defaultUnits).flatMap(LengthUnit.init(rawValue:)) { template.workspace.units = units }

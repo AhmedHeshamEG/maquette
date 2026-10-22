@@ -88,7 +88,7 @@ private struct KeyRecordSheet: View {
         VStack(spacing: HmmSpacing.m) {
             Text("Press the new keys for “\(String(localized: String.LocalizationValue(command.title)))”").font(.hmm(.headline))
                 .multilineTextAlignment(.center)
-            Text(verbatim: keyboard.shownCombo(for: command)?.display ?? "—").font(.hmmNumbers(.title)).foregroundStyle(theme.text2)
+            Text(verbatim: keyboard.shownCombo(for: command)?.display ?? "—").font(.hmmNumbers(.title2)).foregroundStyle(theme.text2)
             if let problem { Text(verbatim: problem).font(.hmm(.footnote)).foregroundStyle(theme.text2) }
             Button("Cancel") { done(nil) }
             HmmKeyRecorder { combo in

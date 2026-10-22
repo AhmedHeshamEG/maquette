@@ -107,7 +107,7 @@ public struct CompanionView: View {
 
     private var home: some View {
         List {
-            Section {
+            SwiftUI.Section {
                 HStack(spacing: HmmSpacing.s) {
                     Image(systemName: link.state.isConnected ? "ipad.landscape" : "wifi")
                         .font(.system(size: 26, weight: .light))
@@ -117,7 +117,7 @@ public struct CompanionView: View {
             } footer: {
                 Text("Open \(AppIdentity.displayName) on your iPad, on the same Wi-Fi. The iPad picks what the iPhone does, or pick it here.")
             }
-            Section("Use this iPhone as") {
+            SwiftUI.Section("Use this iPhone as") {
                 ForEach(CompanionMode.allCases.filter { CompanionLink.abilities.can($0) }) { mode in
                     Button { link.mode = mode } label: {
                         Label {

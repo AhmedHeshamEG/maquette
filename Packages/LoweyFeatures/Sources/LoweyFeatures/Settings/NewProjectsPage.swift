@@ -13,14 +13,14 @@ struct NewProjectsPage: View {
 
     var body: some View {
         Form {
-            Section {
+            SwiftUI.Section {
                 Picker("Set up for", selection: $setUp) {
                     ForEach(StarterTemplate.setUps, id: \.self) { Text(LocalizedStringKey($0.title)).tag($0.rawValue) }
                 }
                 .accessibilityIdentifier("defaults-setup")
                 Picker("Look", selection: $look) {
                     Text("The set-up's own").tag("")
-                    ForEach(LookPreset.all(custom: [])) { Text(LocalizedStringKey($0.name)).tag($0.id) }
+                    ForEach(LookLibrary.all(custom: [])) { Text(LocalizedStringKey($0.name)).tag($0.id) }
                 }
                 .accessibilityIdentifier("defaults-look")
                 Picker("Units", selection: $units) {
