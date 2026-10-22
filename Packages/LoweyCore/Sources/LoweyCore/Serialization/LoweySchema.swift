@@ -73,7 +73,9 @@ public enum LoweySchema {
     ///     Finish's `misregistration`, `boil`, `benDay` and three print textures, screen effects' `impact`, `focusLines` and
     ///     `kirbyDots` with a `center` or `target`, the ground's `surface`, the library's `styles`, `effects`, `parts` and
     ///     `origins`.
-    public static let currentVersion = 23
+    /// 24: Maquette 0.26's review notes: scenes' `notes` (a pin on a spot, its thread, resolved or not) and the
+    ///     `setNotes` command.
+    public static let currentVersion = 24
 
     public static let migrations: [Migration] = [
         Migration(kind: .scene, from: 0, transform: liftSceneV0),
@@ -163,7 +165,11 @@ public enum LoweySchema {
         // 22 → 23 adds Look and Finish fields, effect kinds, a ground surface and library lists; nothing older changes shape.
         Migration(kind: .scene, from: 22) { $0 },
         Migration(kind: .project, from: 22) { $0 },
-        Migration(kind: .library, from: 22) { $0 }
+        Migration(kind: .library, from: 22) { $0 },
+        // 23 → 24 adds optional review notes; nothing older changes shape.
+        Migration(kind: .scene, from: 23) { $0 },
+        Migration(kind: .project, from: 23) { $0 },
+        Migration(kind: .library, from: 23) { $0 }
     ] + unchangedSince(.brushes) + unchangedSince(.materials)
 
     /// A file kind whose payload hasn't changed shape at any version: every step keeps it as it is (D-339; the

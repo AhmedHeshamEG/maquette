@@ -145,6 +145,8 @@ public indirect enum EditCommand: Hashable, Sendable {
     case setTakes([TakeEdit])
     /// Insert, replace or remove kept drawing sheets (`Scene.sheets`).
     case setSheets([SheetEdit])
+    /// Insert, replace or remove review notes (`Scene.notes`).
+    case setNotes([NoteEdit])
     /// Replace the whole scene with another state of it (restoring a version; the scene keeps its id).
     case replaceScene(Scene)
     /// Several commands as one undo step.
@@ -192,6 +194,7 @@ public indirect enum EditCommand: Hashable, Sendable {
         case let .setFlipbooks(edits): return edits.allSatisfy { $0.track == nil } ? "Delete flipbook" : "Draw"
         case .setTakes: return "Takes"
         case let .setSheets(edits): return edits.allSatisfy { $0.sheet == nil } ? "Delete sheet" : "Sheet"
+        case let .setNotes(edits): return edits.allSatisfy { $0.note == nil } ? "Delete note" : "Note"
         case .replaceScene: return "Restore version"
         case let .batch(label, _): return label
         }

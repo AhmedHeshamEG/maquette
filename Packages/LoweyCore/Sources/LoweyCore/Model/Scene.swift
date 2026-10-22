@@ -61,6 +61,8 @@ public struct Scene: Codable, Hashable, Sendable, Identifiable {
     public var timeline: Timeline
     /// The sheets drawn on, kept and named (`DrawingSheet`); flipbooks drawn on one name it.
     public var sheets: [DrawingSheet] = []
+    /// Review pins (`ReviewNote`, U8): notes stuck on spots of the scene, answered in place.
+    public var notes: [ReviewNote] = []
     /// Gravity, wind, the ground and the joints between real things (nil = Earth, still air, a ground, no joints).
     public var physics: ScenePhysics?
 
@@ -186,7 +188,7 @@ public struct Scene: Codable, Hashable, Sendable, Identifiable {
     // MARK: Codable (objects as an id-keyed JSON object, stable key order via the encoder)
 
     private enum CodingKeys: String, CodingKey {
-        case id, name, objects, roots, look, activeCamera, viewpoint, timeline, sheets, physics
+        case id, name, objects, roots, look, activeCamera, viewpoint, timeline, sheets, physics, notes
     }
 
     public init(from decoder: Decoder) throws {
@@ -201,6 +203,7 @@ public struct Scene: Codable, Hashable, Sendable, Identifiable {
         timeline = try container.decodeIfPresent(Timeline.self, forKey: .timeline) ?? Timeline()
         sheets = try container.decodeIfPresent([DrawingSheet].self, forKey: .sheets) ?? []
         physics = try container.decodeIfPresent(ScenePhysics.self, forKey: .physics)
+        notes = try container.decodeIfPresent([ReviewNote].self, forKey: .notes) ?? []
     }
 
     public func encode(to encoder: Encoder) throws {
@@ -215,6 +218,7 @@ public struct Scene: Codable, Hashable, Sendable, Identifiable {
         try container.encode(timeline, forKey: .timeline)
         if !sheets.isEmpty { try container.encode(sheets, forKey: .sheets) }
         try container.encodeIfPresent(physics, forKey: .physics)
+        if !notes.isEmpty { try container.encode(notes, forKey: .notes) }
     }
 }
 

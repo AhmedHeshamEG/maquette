@@ -88,7 +88,7 @@ public extension EditCommand {
         case let .setTracks(edits):
             return try Self.applySetTracks(edits, in: &document)
 
-        case .setFlipbooks, .setTakes, .setSheets, .setHolds:
+        case .setFlipbooks, .setTakes, .setSheets, .setHolds, .setNotes:
             return applyListEdits(to: &document)
 
         case .setMotionDesign, .setLinks:
@@ -296,6 +296,7 @@ public extension EditCommand {
         case let .setTakes(edits): Self.applySetTakes(edits, in: &document)
         case let .setSheets(edits): Self.applySetSheets(edits, in: &document)
         case let .setHolds(holds): Self.applySetHolds(holds, in: &document)
+        case let .setNotes(edits): Self.applySetNotes(edits, in: &document)
         default: (self, ChangeSet())
         }
     }
@@ -340,6 +341,24 @@ public extension EditCommand {
             document.scene.timeline.takes = takes
         }
         return (.setTakes(inverse.reversed()), ChangeSet(scene: true))
+    }
+
+    private static func applySetNotes(_ edits: [NoteEdit], in document: inout Document) -> Applied {
+        var inverse: [NoteEdit] = []
+        for edit in edits {
+            var notes = document.scene.notes
+            if let existing = notes.firstIndex(where: { $0.id == edit.id }) {
+                inverse.append(NoteEdit(id: edit.id, note: notes[existing], index: existing))
+                if let note = edit.note { notes[existing] = note } else { notes.remove(at: existing) }
+            } else if let note = edit.note {
+                notes.insert(note, at: min(max(edit.index ?? notes.count, 0), notes.count))
+                inverse.append(NoteEdit(id: edit.id, note: nil))
+            } else {
+                continue
+            }
+            document.scene.notes = notes
+        }
+        return (.setNotes(inverse.reversed()), ChangeSet(scene: true))
     }
 
     private static func applySetSheets(_ edits: [SheetEdit], in document: inout Document) -> Applied {

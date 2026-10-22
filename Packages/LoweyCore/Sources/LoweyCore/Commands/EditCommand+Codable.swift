@@ -6,14 +6,14 @@ extension EditCommand: Codable {
     private enum Key: String, CodingKey {
         case op, fragment, parent, index, ids, entries, changes, id, name, kind, look, scope, camera, timeline, label, commands, tracks
         case dabs, looks, flipbooks, scene, brushes, paint, tiles, rig, takes, sheets, shaping, modelHistory, physics, part, holds
-        case motionDesign, links
+        case motionDesign, links, notes
     }
 
     private enum Op: String, Codable {
         case insert, delete, restore, setProperties, rename, setKind, reparent, setLook, renameScene
         case setActiveCamera, setTimeline, setTracks, batch, setShadowPaint, setCustomLooks, setFlipbooks, replaceScene
         case setBrushes, setPaint, paintTiles, setRig, setTakes, setSheets, setShaping, setModelHistory, setPhysics, setScenePhysics
-        case setPart, setHolds, setMotionDesign, setLinks
+        case setPart, setHolds, setMotionDesign, setLinks, setNotes
     }
 
     public init(from decoder: Decoder) throws {
@@ -70,7 +70,7 @@ extension EditCommand: Codable {
             self = try .setPart(c.decode(ObjectID.self, forKey: .id), c.decodeIfPresent(CharacterPart.self, forKey: .part))
         case .setHolds:
             self = try .setHolds(c.decode([Hold].self, forKey: .holds))
-        case .setTakes, .setSheets, .setMotionDesign, .setLinks:
+        case .setTakes, .setSheets, .setMotionDesign, .setLinks, .setNotes:
             self = try Self.decodeEdits(op, from: c)
         }
     }
@@ -82,6 +82,8 @@ extension EditCommand: Codable {
             try .setTakes(c.decode([TakeEdit].self, forKey: .takes))
         case .setSheets:
             try .setSheets(c.decode([SheetEdit].self, forKey: .sheets))
+        case .setNotes:
+            try .setNotes(c.decode([NoteEdit].self, forKey: .notes))
         case .setMotionDesign:
             try .setMotionDesign(c.decode(ObjectID.self, forKey: .id), c.decodeIfPresent(MotionDesign.self, forKey: .motionDesign))
         default:
@@ -154,7 +156,7 @@ extension EditCommand: Codable {
             try c.encode(label, forKey: .label)
             try c.encode(commands, forKey: .commands)
         case .setShadowPaint, .setCustomLooks, .setFlipbooks, .replaceScene, .setBrushes, .setRig, .setTakes, .setSheets, .setShaping,
-             .setModelHistory, .setPhysics, .setScenePhysics, .setPart, .setHolds:
+             .setModelHistory, .setPhysics, .setScenePhysics, .setPart, .setHolds, .setNotes:
             try encodeWholeValue(into: &c)
         case .setPaint, .paintTiles, .setMotionDesign, .setLinks:
             try encodeObjectEdits(into: &c)
@@ -214,6 +216,9 @@ extension EditCommand: Codable {
         case let .setSheets(edits):
             try c.encode(Op.setSheets, forKey: .op)
             try c.encode(edits, forKey: .sheets)
+        case let .setNotes(edits):
+            try c.encode(Op.setNotes, forKey: .op)
+            try c.encode(edits, forKey: .notes)
         case let .setBrushes(brushes):
             try c.encode(Op.setBrushes, forKey: .op)
             try c.encode(brushes, forKey: .brushes)

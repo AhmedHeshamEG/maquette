@@ -57,6 +57,10 @@ public enum ScriptReference {
     {"do":"guest","op":"explode","target":"Gearbox"}   (again: back together)   {"do":"character","op":"new","start":"mannequin"}
     {"do":"guest","op":"greybox","piece":"floor|tile|wall|doorway|window|ramp|stairs|block|pillar","at":[4,0,0]}   {"do":"guest","op":"freeze","targets":"Level*"}
 
+    Review notes (U8): pins on a spot, carried in the file, answered in place
+    {"do":"note","text":"Taller back?","on":"Chair"}   ("at":[x,y,z] for a spot; on a thing it follows the thing)
+    {"do":"note","op":"list"}   {"do":"note","op":"reply","note":1,"text":"Done"}   {"do":"note","op":"resolve|reopen|delete","note":1}
+
     Film (F1; "camera" defaults to the shot camera)
     {"do":"light","type":"panel|bulb|spot|sun","name":"Window","at":[2,2,2],"size":[1.2,0.8],"aim":"Hero"}   (panel = a soft panel)
     {"do":"lighting","recipe":"three-point|golden-hour|moonlit|neon|key-warm-world-cool|noir-single-source|golden-rim|monitor-glow|studio-soft","subject":"Hero"}
