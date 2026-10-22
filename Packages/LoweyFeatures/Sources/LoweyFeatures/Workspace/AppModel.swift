@@ -45,6 +45,10 @@ public final class AppModel {
     /// The window that edits (Stage Manager can open more; the others offer to take over or become monitors).
     var primaryWindow: UUID?
     @ObservationIgnored private(set) lazy var bridge = BridgeModel(app: self)
+    /// A review over FaceTime (U8).
+    let review = ReviewRoom()
+    /// The keys the menu bar answers to, as the person set them (Settings ▸ Keyboard, U8).
+    let keyboard = HmmKeyboard(commands: KeyCommands.all)
     /// Shows exports outside the app (Live Activity, notification); set by the app target.
     @ObservationIgnored public weak var exportReporter: (any ExportProgressReporting)?
     @ObservationIgnored let diagnostics = DiagnosticsCenter.shared
@@ -75,6 +79,8 @@ public final class AppModel {
         guard !started else { return }
         started = true
         diagnostics.start()
+        YourSettings.settleHand()
+        review.listen(for: self)
         if diagnostics.previousSessionCrashed, !AppIdentity.isUITesting {
             show("Maquette quit unexpectedly last time. Your work was autosaved.", kind: .error)
         }

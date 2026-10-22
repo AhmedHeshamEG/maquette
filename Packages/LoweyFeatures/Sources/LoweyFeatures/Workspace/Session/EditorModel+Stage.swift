@@ -188,13 +188,17 @@ extension EditorModel {
         refreshGuide()
     }
 
+    /// The document with the scene as shown.
+    var displayDocument: Document { Document(project: (historyPreview ?? session.document).project, scene: displayed.scene) }
+
     // MARK: Camera
 
     func cameraMoved(_ viewpoint: Viewpoint) {
         if projection != viewpoint.projection { projection = viewpoint.projection }
         if abs(viewYaw - viewpoint.yaw) > 1 { viewYaw = viewpoint.yaw }
         if abs(viewPitch - viewpoint.pitch) > 1 { viewPitch = viewpoint.pitch }
-        if drawsOnSheet { viewRevision &+= 1 }
+        if drawsOnSheet || together.notesShown { viewRevision &+= 1 }
+        reviewViewMoved(viewpoint)
         if tool == .model { modelCameraMoved() }
         if tool == .rig { refreshModelOverlay() }
         if precision.bed != nil || precision.showsDimensions { refreshPrecisionOverlay() }

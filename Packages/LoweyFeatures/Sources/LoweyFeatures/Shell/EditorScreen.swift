@@ -36,6 +36,9 @@ struct EditorScreen: View {
             }
         }
         .overlay { PerformCountdown(editor: editor) }
+        .overlay(alignment: .top) {
+            if editor.together.reviewing, editor.together.presenting == nil { ReviewBadge(editor: editor) }
+        }
         .hmmUndoLine($editor.undoLine)
         .hmmGuideLine(editor.chromeHidden ? nil : editor.guideLine)
         .overlay {
@@ -153,7 +156,15 @@ struct EditorScreen: View {
                     .ignoresSafeArea(edges: [.top, .horizontal])
                     .environment(\.layoutDirection, .leftToRight)
             }
-            if editor.chromeHidden {
+            // Review notes (U8): pins on their spots, in the stage's own points.
+            if editor.together.notesShown || editor.together.draft != nil {
+                NotePins(editor: editor)
+                    .ignoresSafeArea(edges: [.top, .horizontal])
+                    .environment(\.layoutDirection, .leftToRight)
+            }
+            if let state = editor.together.presenting {
+                PresentOverlay(editor: editor, state: state)
+            } else if editor.chromeHidden {
                 ChromeRestoreButton(editor: editor)
             } else {
                 // The Reference window and pictures pinned from the board float under the chrome: a panel always opens
