@@ -795,6 +795,7 @@
             "marker",
             "model",
             "motion",
+            "note",
             "overlay",
             "paint",
             "particles",
@@ -2774,6 +2775,55 @@
               "target",
               "op"
             ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "do": {
+                "const": "note"
+              }
+            }
+          },
+          "then": {
+            "description": "U8's review notes: a pin on a thing (it follows the thing) or at a point, carried in the file and answered in place; list them, reply, resolve, reopen or delete one by its number or id.",
+            "properties": {
+              "op": {
+                "enum": [
+                  "add",
+                  "list",
+                  "reply",
+                  "resolve",
+                  "reopen",
+                  "delete"
+                ]
+              },
+              "text": {
+                "type": "string"
+              },
+              "on": {
+                "$ref": "#/$defs/target"
+              },
+              "at": {
+                "$ref": "#/$defs/vec3"
+              },
+              "note": {
+                "anyOf": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "string"
+                  }
+                ]
+              },
+              "author": {
+                "type": "string"
+              },
+              "time": {
+                "type": "number"
+              }
+            }
           }
         },
         {

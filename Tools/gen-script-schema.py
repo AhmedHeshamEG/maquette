@@ -226,6 +226,10 @@ verbs = {
                "screw": {"enum": ["M2", "M2.5", "M3", "M4", "M5", "M6", "M8", "M10"]},
                "piece": {"enum": ["jar", "bolt", "nut", "floor", "tile", "wall", "doorway", "window", "ramp", "stairs", "block",
                                   "pillar"]}}, ["op"]),
+    "note": ("U8's review notes: a pin on a thing (it follows the thing) or at a point, carried in the file and answered in "
+             "place; list them, reply, resolve, reopen or delete one by its number or id.",
+             {"op": {"enum": ["add", "list", "reply", "resolve", "reopen", "delete"]}, "text": s, "on": tgt, "at": v3,
+              "note": {"anyOf": [n, s]}, "author": s, "time": n}, []),
     "command":("A raw EditCommand.", {"command": ref("command")}, ["command"]),
 }
 
