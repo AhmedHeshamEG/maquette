@@ -62,7 +62,7 @@ private let layoutWalkRows: [LayoutWalk.Row] = [
                    control: "Monitor window (Stage Manager, external display)",
                    steps: ["Actions", "open-monitor"], held: ""),
     LayoutWalk.Row(home: "Actions", precondition: "",
-                   control: "Present: every control leaves and the stage fills the screen (a TV or a projector by AirPlay or a cable shows it); a tap brings back, for three seconds, Play the film · Walk through · Show the model, the shots and Done (U8)",
+                   control: "Present: the stage fills the screen (a TV by AirPlay or a cable); a tap brings back the film, walking, the model, the shots, Done (U8)",
                    steps: ["Actions", "present"], held: ""),
     LayoutWalk.Row(home: "Actions", precondition: "",
                    control: "Notes: the review pins on their spots; tap one for its thread (reply, Resolve, Delete) (U8)",

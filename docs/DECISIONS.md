@@ -3291,3 +3291,102 @@ device checklist times the plans of a two-storey house and a threaded jar on a T
 **D-522 — Permissions.** The camera's line now also names scanning a room or an object; nothing leaves the iPad.
 
 **D-523 — Translations still ride along.** The new strings were translated into Italian and Arabic for the catalog check.
+
+## Maquette 0.26 — U8, yours
+
+The inbox had nothing for this phase (the queued video-planning session stays queued), and G1 left no device notes yet.
+
+**D-524 — The left hand mirrors the chrome.** Settings ▸ Yours ▸ Your layout ▸ Hand: with the left hand the two top
+corners swap (making top left, the document top right), the sidebar moves to the right edge, the bottom corners swap
+(the view corner bottom left, the joystick bottom right), panels open from their own cluster's corner and the object
+panel keeps clear of the sidebar on its new side. Inside a cluster the buttons keep their left-to-right order (Model ·
+Draw · Rig · Animate is a sentence: the order a thing gets made). Words, icons and the timeline don't mirror. It replaces
+Appearance ▸ Sidebar on the right: a device that had it on opens left-handed. *Rejected:* a right-to-left layout
+direction (it flips words and time); a mirror image of each cluster (Animate first); moving only the sidebar (the old
+switch, half a job).
+
+**D-525 — Buttons arranged within their corner.** Three corners can be arranged: the document's (Home, Actions, Look,
+Library), making (Model, Draw, Rig, Animate) and the view (the views, the camera, the joystick, snapping). In Settings ▸
+Your layout each row has a menu (Move left, Move right, Hide or Show) and the list drags to reorder; top to bottom is left
+to right. Home and Actions can't be hidden (the way home and the way to Settings). A hidden button's command stays in the
+menu bar and on the keyboard. Nothing moves between corners (law 2), so a lesson's screen still matches once the layout
+is reset. A button a later version adds takes its default place among the saved order. **Reset layout** brings back the
+hand, every corner and the sidebar's place; keys and defaults have their own resets. *Rejected:* arranging the tools'
+bars (their verbs change with the selection and run in the order of use) and the panels' rows (law 2, and they scroll).
+
+**D-526 — The sidebar along its edge.** A short line under the sidebar drags it up or down its edge; the place is a
+fraction of the room there (so it survives a rotation or Split View); a double-tap on the line puts it back in the
+middle. *Rejected:* placing it anywhere (it belongs to an edge, as in Procreate).
+
+**D-527 — Keys a person can rebind.** All 101 commands of the menu bar, and the three new ones (Present ⇧⌘P, Notes
+⇧⌘N, Your iPhone…), carry a stable id and the keys they come with. Settings ▸ Yours ▸ Keyboard lists them by menu,
+searchable; tap one and press the new keys. A combination another command had moves here and that one is left without,
+said in a line; a key without ⌘, ⌃ or ⌥ is refused (it would steal typing). While recording, every shortcut is off so
+the press reaches the recorder. Hold a row for No key or Its own key; one button gives back every key. The stage's own
+keys (Space, J/K/L, ⌥←→, the arrows, Delete, Escape, ?) stay as they are: they're the transport's conventions (CONTEXT
+§4.5) and a Perform trigger's letter is its deck's. *Rejected:* rebinding the transport keys.
+
+**D-528 — Your defaults shape the +.** Settings ▸ Yours ▸ New projects: the set-up, the Look, the units and the brush the
++ on Home makes (the set-up's own Look and units unless one is chosen; the last brush used unless one is chosen). The
+quiet set-up row under Home's title still starts each job as it comes. *Rejected:* your Look over every set-up (a print
+wants Clay to read its shape).
+
+**D-529 — What was there already.** Light or dark (Automatic, Dark, Light) stays in Appearance; the gestures page (U3)
+and the quick menu's six slots (U5, Settings ▸ Your Pencil) were built; Your layout's footer points at them. Your name
+(Settings ▸ Yours) signs your notes; empty, the iPad's name does.
+
+**D-530 — Present.** Actions ▸ Present (⇧⌘P): every control leaves and the stage fills the screen. It plays the film from
+the start through its cuts, round again at its end (paused by hand, it stays paused); or walks through at eye height
+(G1's walk; with no iPhone and no game controller two faint sticks stay in the bottom corners); or shows the model,
+turned by fingers. A tap brings back for three seconds what it plays, play and the shots for the film, and Done. A TV or
+a projector shows it by AirPlay screen mirroring or a cable, which mirror by default; with Stage Manager on an external
+display, the Monitor window is the shot. The screen stays awake. *Rejected:* a separate external-display scene with a
+presenter's view on the iPad (mirroring needs nothing; the Monitor covers an extended display).
+
+**D-531 — Review pins.** A note is a pin on a spot (`Scene.notes`, schema 24): on a thing it's kept in the thing's own
+space, so it follows the thing; on the ground or with nothing under it, in the world. It carries who wrote it, the words,
+when, the film's moment when it was written through a camera, the replies and whether it's resolved; an answer opens a
+resolved note again. A thing deleted leaves its notes where they were. Each change is one undo step. Pins show only with
+Actions ▸ Notes (⇧⌘N) or during a review (law 1: nothing on the canvas at rest); a tap opens the thread beside its pin,
+answered in place (reply, Resolve, Delete). Exports never show them. *Rejected:* notes as 3D text in the scene (they'd
+export); notes on the project (they're about spots).
+
+**D-532 — Review over FaceTime.** SharePlay (`ReviewActivity`): Actions ▸ Review over FaceTime shows during a FaceTime
+call; the project goes as a `.maquettepack` through the session's journal and the others open it as their own copy.
+Everyone turns the same view: whoever moved it last leads, and views from the others wait until this person has been
+still for 0.6 s (`ViewLead`), at most fifteen a second on the quick channel. Notes travel on the reliable channel and
+arrive as the others' undo steps. It's a review, not two people modelling at once. SharePlay needs the
+`com.apple.developer.group-session` entitlement: the sideloaded `.ipa` is ad-hoc signed with no entitlements, so reviews
+work only in builds signed by the developer account (TestFlight, at launch); the device checklist says so. *Rejected:*
+co-editing (merging two journals live; a converge if the testers ask).
+
+**D-533 — The iPhone companion, complete.** On an iPhone the app is the companion: Your face · Camera · Remote · See it in
+AR · Scan a room · Scan an object, each shown only where that iPhone can. A two-way link (hmm-kit's `HmmLink`: framed JSON
+over Bonjour `_maquette._tcp`, the local network only); the iPad listens only once the person asks for the phone (Actions
+▸ Your iPhone, a scan tile, the remote), so the local-network question comes then, not at launch. The iPad asks for a mode
+and the phone switches by itself. Your face keeps its own 0.10 link. **Camera**: the phone's motion drives the scene's
+camera as the iPad's own does (the same scale; Perform records it). **Remote**: the shot playing, previous (within a
+second of a shot's start, the one before) and next, play, from the start, two sticks that walk, end. **AR**: the scene as
+USDZ, opened in AR Quick Look on the phone. **Scans**: RoomPlan on a LiDAR iPhone sends the room as data; Object Capture
+makes the model on the phone and sends the USDZ. On iPads without LiDAR the scan tiles become Scan with your iPhone (G1's
+D-506 closed). *Rejected:* the phone as a second video camera recording footage (that's Cutaway's; here a camera is a
+scene camera); a listener always on (a permission question at launch).
+
+**D-534 — The bridge's `note`.** add (on a thing or at a point), list, reply, resolve, reopen, delete; signed "Assistant"
+unless told otherwise. Present, reviews and the iPhone are the person's devices and calls: no verbs. The lowey skill's
+review notes module teaches it.
+
+**D-535 — Schema 24.** Scenes' optional `notes` and the `setNotes` command; nothing older changes shape.
+
+**D-536 — Kit 0.16.** HmmDesign: `HmmHand`, `HmmArrangement`, `HmmLayoutStore`, `HmmEdgePlace` and `HmmEdgeSlide`,
+`HmmKeyCombo`, `HmmKeyCommand`, `HmmKeyBindings`, `HmmKeyboard`, `HmmKeyRecorder`. A new module, HmmLink: `HmmFrames`,
+`HmmFrameReader`, `HmmLinkHost`, `HmmLinkCompanion`, `HmmTogether`, `HmmTogetherCall`. Cutaway takes all of it (its
+iPhones as cameras, its own reviews).
+
+**D-537 — Every tier.** Nothing new is heavy: the AR model is made when asked (the export path), the review's pack once,
+pins are projected only while shown. The device checklist runs Present's film on a Tier B iPad.
+
+**D-538 — Permissions.** The local-network line names the iPhone's jobs; SharePlay asks nothing of its own (FaceTime
+does). Nothing leaves the local network but a review, which goes only to the people on the call, through FaceTime.
+
+**D-539 — Translations still ride along.** The new strings were translated into Italian and Arabic for the catalog check.

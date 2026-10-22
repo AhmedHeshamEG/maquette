@@ -97,7 +97,7 @@ when they disagree. In the App Store configuration the walk asserts every held r
 | Export (G1): Picture ▸ Layered PSD, Ink as SVG; 3D ▸ IFC (when there's a building), Game level for Godot, Unity, Unreal (one texture for everything); Paper ▸ Plans & elevations (PDF, DXF, SVG; when there's a building), Technical drawing, Papercraft (and a laser net) | in the Export sheet |
 | Share the project file | `Actions › Project file` |
 | Monitor window (Stage Manager, external display) | `Actions › open-monitor` |
-| Present: every control leaves and the stage fills the screen (a TV or a projector by AirPlay or a cable shows it); a tap brings back, for three seconds, Play the film · Walk through · Show the model, the shots and Done (U8) | `Actions › present` |
+| Present: the stage fills the screen (a TV by AirPlay or a cable); a tap brings back the film, walking, the model, the shots, Done (U8) | `Actions › present` |
 | Notes: the review pins on their spots; tap one for its thread (reply, Resolve, Delete) (U8) | `Actions › open-notes` |
 | Add a note: then tap the spot; the words, signed with your name (U8) | `Actions › add-note` |
 | Clear resolved notes (U8) | Actions, while the notes show and one is resolved |
