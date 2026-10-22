@@ -1,8 +1,8 @@
 import HmmDesign
 import SwiftUI
 
-/// Settings, in order (CONTEXT §10.10): Pencil and hands · Gestures · Stage · Appearance · Assistant · About (with
-/// Diagnostics inside), then where projects are kept.
+/// Settings, in order (CONTEXT §10.10): Pencil and hands · Gestures · Yours (U8: your layout, the keyboard, new
+/// projects, your name) · Stage · Appearance · Assistant · About (with Diagnostics inside), then where projects are kept.
 struct SettingsSheet: View {
     let app: AppModel
     @Environment(\.dismiss) private var dismiss
@@ -16,6 +16,7 @@ struct SettingsSheet: View {
                     NavigationLink("Shortcuts, switched on and off") { GesturesPage() }
                         .accessibilityIdentifier("settings-gestures")
                 }
+                YoursSection(app: app)
                 StageSettingsSection()
                 AppearanceSection()
                 if FeatureFlags.aiBridge { AssistantSection(app: app, close: { dismiss() }) }

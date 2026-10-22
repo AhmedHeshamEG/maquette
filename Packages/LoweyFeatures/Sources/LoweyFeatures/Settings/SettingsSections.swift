@@ -1,6 +1,7 @@
 import HmmDesign
 import LoweyCore
 import SwiftUI
+import UIKit
 
 /// Settings ▸ Pencil and hands: who does what (Procreate's gesture controls, CONTEXT §10.10), who draws, and the way
 /// to the Pencil's own page.
@@ -87,15 +88,38 @@ struct StageSettingsSection: View {
 struct AppearanceSection: View {
     @AppStorage(HmmThemeMode.storageKey) private var themeMode = HmmThemeMode.dark.rawValue
     @AppStorage(HmmHaptics.storageKey) private var haptics = true
-    @AppStorage(AppSettings.sidebarOnRight) private var sidebarOnRight = false
 
     var body: some View {
         Section("Appearance") {
             Picker("Theme", selection: $themeMode) {
                 ForEach(HmmThemeMode.allCases) { Text(LocalizedStringKey($0.title)).tag($0.rawValue) }
             }
-            Toggle("Sidebar on the right (left-handed)", isOn: $sidebarOnRight)
+            .accessibilityIdentifier("settings-theme")
             Toggle("Haptics", isOn: $haptics)
+        }
+    }
+}
+
+/// Settings ▸ Yours (U8): the app fitted to your hand.
+struct YoursSection: View {
+    let app: AppModel
+    @AppStorage(YourSettings.yourName) private var name = ""
+
+    var body: some View {
+        Section {
+            NavigationLink("Your layout") { YourLayoutPage() }
+                .accessibilityIdentifier("settings-layout")
+            NavigationLink("Keyboard") { KeyboardPage(keyboard: app.keyboard) }
+                .accessibilityIdentifier("settings-keyboard")
+            NavigationLink("New projects") { NewProjectsPage(app: app) }
+                .accessibilityIdentifier("settings-defaults")
+            TextField("Your name", text: $name, prompt: Text(verbatim: UIDevice.current.name))
+                .textContentType(.name)
+                .accessibilityIdentifier("settings-name")
+        } header: {
+            Text("Yours")
+        } footer: {
+            Text("Your name signs the notes you leave on a project.")
         }
     }
 }
