@@ -78,7 +78,7 @@ final class GuestDrawingTests: XCTestCase {
     func testDrawingsLeaveAsPDFSVGAndDXF() throws {
         let soup = try TriangleSoup(Self.room(), name: "Walls")
         let plan = PlanDrawing.plan(soup).art
-        let pdf = PlanDrawing.sheets(plan: plan, elevations: [(.south, PlanDrawing.elevation(soup, side: .south))], paper: .a4,
+        let pdf = PlanDrawing.sheets(plans: [("Plan", plan)], elevations: [(.south, PlanDrawing.elevation(soup, side: .south))], paper: .a4,
                                      title: "House", author: "Sara")
         XCTAssertTrue(String(decoding: pdf.prefix(8), as: UTF8.self).hasPrefix("%PDF"))
         XCTAssertTrue(String(decoding: pdf, as: UTF8.self).contains("B*"))

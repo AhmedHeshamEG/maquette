@@ -56,7 +56,7 @@ extension ScriptState {
         let kind = string(action, "kind").flatMap(RoomParts.RoofKind.init(rawValue:)) ?? .gable
         var outline = points(action["outline"])
         if outline.isEmpty, let over = action["over"] {
-            guard let box = SceneBounds(library: context.library).worldBounds(of: try target(over), in: scene) else { throw fail("no walls") }
+            guard let box = try SceneBounds(library: context.library).worldBounds(of: target(over), in: scene) else { throw fail("no walls") }
             outline = [Vec3(box.min.x, box.max.y, box.min.z), Vec3(box.max.x, box.max.y, box.min.z), Vec3(box.max.x, box.max.y, box.max.z),
                        Vec3(box.min.x, box.max.y, box.max.z)]
         }
@@ -69,7 +69,7 @@ extension ScriptState {
 
     private mutating func guestColumn(_ action: JSONValue) throws {
         let id: ObjectID = context.ids.next()
-        try added(ModelingOperations.addColumn(at: try point(action["at"]) ?? context.focus, height: number(action, "height") ?? Architecture.wallHeight,
+        try added(ModelingOperations.addColumn(at: point(action["at"]) ?? context.focus, height: number(action, "height") ?? Architecture.wallHeight,
                                                round: (string(action, "shape") ?? "round") == "round", id: id), action: action, name: "Column")
     }
 
@@ -89,21 +89,21 @@ extension ScriptState {
 
     private mutating func guestPerson(_ action: JSONValue) throws {
         let id: ObjectID = context.ids.next()
-        try added(ModelingOperations.addPerson(at: try point(action["at"]) ?? context.focus, yaw: number(action, "yaw") ?? 0, id: id),
+        try added(ModelingOperations.addPerson(at: point(action["at"]) ?? context.focus, yaw: number(action, "yaw") ?? 0, id: id),
                   action: action, name: "Person")
     }
 
     private mutating func guestTerrain(_ action: JSONValue) throws {
         let id: ObjectID = context.ids.next()
         let width = min(max(number(action, "width") ?? 20, 1), 500), depth = min(max(number(action, "depth") ?? width, 1), 500)
-        try added(ModelingOperations.addTerrain(width: width, depth: depth, hills: number(action, "hills") ?? 1, at: try point(action["at"]) ?? .zero,
+        try added(ModelingOperations.addTerrain(width: width, depth: depth, hills: number(action, "hills") ?? 1, at: point(action["at"]) ?? .zero,
                                                 seed: UInt64(max(number(action, "seed") ?? 1, 0)), id: id), action: action, name: "Terrain")
     }
 
     private mutating func guestLabel(_ action: JSONValue) throws {
         guard let text = string(action, "text"), !text.isEmpty else { throw fail("label needs “text”") }
         let id: ObjectID = context.ids.next()
-        try added(ModelingOperations.addLabel(text, at: try point(action["at"]) ?? context.focus, id: id), action: action, name: text)
+        try added(ModelingOperations.addLabel(text, at: point(action["at"]) ?? context.focus, id: id), action: action, name: text)
     }
 
     // MARK: Study
@@ -131,7 +131,7 @@ extension ScriptState {
         guard let index = world.faces.indices.max(by: { world.normal(of: $0).dot(facing) < world.normal(of: $1).dot(facing) }) else {
             throw fail("no face")
         }
-        return (try point(action["at"]) ?? world.centroid(of: index), world.normal(of: index))
+        return try (point(action["at"]) ?? world.centroid(of: index), world.normal(of: index))
     }
 
     private mutating func guestOrient(_ action: JSONValue) throws {
@@ -222,7 +222,7 @@ extension ScriptState {
             throw fail("greybox needs “piece”: \(GreyboxPiece.allCases.map(\.rawValue).joined(separator: ", "))")
         }
         let id: ObjectID = context.ids.next()
-        try added(ModelingOperations.addGreybox(piece, at: try point(action["at"]) ?? context.focus, id: id), action: action, name: piece.title)
+        try added(ModelingOperations.addGreybox(piece, at: point(action["at"]) ?? context.focus, id: id), action: action, name: piece.title)
     }
 
     private mutating func guestFreeze(_ action: JSONValue) throws {

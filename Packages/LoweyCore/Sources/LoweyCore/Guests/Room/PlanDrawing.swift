@@ -87,9 +87,10 @@ public enum PlanDrawing {
         return art
     }
 
-    /// Plan and elevations on sheets: the plan alone on the first, the four elevations two by two on the second, each at
+    /// Plans and elevations on sheets: each floor's plan alone on a page, then the four elevations two by two, each at
     /// the largest standard scale that fits, with its title and scale under it.
-    public static func sheets(plan: LineArt, elevations: [(Side, LineArt)], paper: PaperSize, title: String, author: String?) -> Data {
+    public static func sheets(plans: [(title: String, art: LineArt)], elevations: [(Side, LineArt)], paper: PaperSize, title: String,
+                              author: String?) -> Data {
         let (pageWidth, pageHeight) = paper.page(for: 2)
         let mm = 25.4 / 72
         let width = pageWidth * mm, height = pageHeight * mm
@@ -119,7 +120,9 @@ public enum PlanDrawing {
             return items
         }
         let inner = (x: margin, y: margin, w: width - margin * 2, h: height - margin * 2 - 6)
-        pages.append(PDFWriter.Page(width: pageWidth, height: pageHeight, items: header(title) + place(plan, title: "Plan", in: inner)))
+        for plan in plans {
+            pages.append(PDFWriter.Page(width: pageWidth, height: pageHeight, items: header(title) + place(plan.art, title: plan.title, in: inner)))
+        }
         if !elevations.isEmpty {
             var items = header(title)
             let cellW = inner.w / 2, cellH = inner.h / 2

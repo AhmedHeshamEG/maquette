@@ -8,7 +8,7 @@ final class GuestStudyTests: XCTestCase {
         var document = Document(project: ProjectInfo(id: "p", name: "Gearbox"), scene: Scene(id: "s", name: "Gearbox"))
         var group = SceneObject(id: ObjectID(raw: "g"), name: "Gearbox", kind: .group)
         let parts: [(String, Vec3, PrimitiveShape)] = [("Base", Vec3(0, 0, 0), .cube), ("Wheel", Vec3(-0.6, 1, 0), .cylinder),
-                                                        ("Wheel", Vec3(0.6, 1, 0), .cylinder), ("Lid", Vec3(0, 2, 0), .cube)]
+                                                       ("Wheel", Vec3(0.6, 1, 0), .cylinder), ("Lid", Vec3(0, 2, 0), .cube)]
         var objects: [SceneObject] = []
         for (index, (name, position, shape)) in parts.enumerated() {
             var object = SceneObject(id: ObjectID(raw: "p\(index)"), name: name, kind: .primitive(shape),
@@ -57,7 +57,7 @@ final class GuestStudyTests: XCTestCase {
         XCTAssertEqual(try XCTUnwrap(parts[0].mass), 950, accuracy: 1)
         let soup = TriangleSoup(things.flatMap(\.meshes))
         let pdf = TechnicalSheet.pdf(assembly: soup, parts: parts, sheet: TechnicalSheet.Sheet(title: "Gearbox", author: "Omar",
-                                                                                             date: Date(timeIntervalSince1970: 0), units: .metre))
+                                                                                               date: Date(timeIntervalSince1970: 0), units: .metre))
         let text = String(decoding: pdf, as: UTF8.self)
         XCTAssertTrue(text.hasPrefix("%PDF"))
         for words in ["Gearbox", "Omar", "First angle", "Steel", "Plastic", "Mass", "1970-01-01", "1:"] {

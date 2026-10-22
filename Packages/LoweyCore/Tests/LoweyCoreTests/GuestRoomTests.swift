@@ -183,4 +183,32 @@ final class GuestRoomTests: XCTestCase {
         XCTAssertEqual(doorWall.transform.position.z, 2, accuracy: 0.1)
         XCTAssertNil(RoomScan(surfaces: [], items: []).command(ids: &ids))
     }
+
+    func testABuildingsFloorsRoomsAndDrawings() throws {
+        var document = Document(project: ProjectInfo(id: "p", name: "House"), scene: Scene(id: "s", name: "House"))
+        var ids = IDFactory.sequential("b")
+        let ground = [Vec3(0, 0, 0), Vec3(6, 0, 0), Vec3(6, 0, 5), Vec3(0, 0, 5)]
+        let upper = ground.map { $0 + Vec3(0, 2.9, 0) }
+        for command in try [
+            ModelingOperations.addWalls(along: ground, closed: true, height: 2.7, thickness: 0.2, id: ids.next()),
+            ModelingOperations.addSlab(outline: upper, thickness: 0.2, id: ids.next()),
+            ModelingOperations.addWalls(along: upper, closed: true, height: 2.7, thickness: 0.2, id: ids.next()),
+            ModelingOperations.addLabel("Kitchen", at: Vec3(3, 0, 2.5), id: ids.next())
+        ] {
+            _ = try command.apply(to: &document)
+        }
+        let elements = IFCWriter.elements(in: document.scene, look: Look())
+        XCTAssertEqual(BuildingDrawings.levels(elements), [0, 2.9])
+        let labels = BuildingDrawings.labels(in: document.scene)
+        XCTAssertEqual(labels.map(\.text), ["Kitchen"])
+        let floors = BuildingDrawings.floors(elements, labels: labels, units: .metre)
+        XCTAssertEqual(floors.count, 2)
+        XCTAssertEqual(floors[0].rooms.first?.name, "Kitchen")
+        XCTAssertEqual(floors[1].rooms.count, 1)
+        let spaces = BuildingDrawings.spaces(floors)
+        XCTAssertEqual(spaces.count, 2)
+        XCTAssertEqual(spaces[0].height, 2.9, accuracy: 1e-9)
+        let pdf = BuildingDrawings.pdf(elements, labels: labels, paper: .a3, title: "House", author: nil, units: .metre)
+        XCTAssertTrue(String(decoding: pdf, as: UTF8.self).contains("Level 1 plan"))
+    }
 }

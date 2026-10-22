@@ -102,7 +102,9 @@ final class PrintingTests: XCTestCase {
         red.color = RGBA(1, 0, 0)
         let data = ThreeMFFile.data([exportMesh(block), red])
         let entries = try ZipReader.entries(data)
-        XCTAssertEqual(Set(entries.map(\.name)), ["[Content_Types].xml", "_rels/.rels", "3D/3dmodel.model"])
+        // Two colours: each its filament slot for the slicers (G1).
+        XCTAssertEqual(Set(entries.map(\.name)), ["[Content_Types].xml", "_rels/.rels", "3D/3dmodel.model", "Metadata/Slic3r_PE_model.config",
+                                                  "Metadata/model_settings.config"])
         let model = try ThreeMFFile.read(data)
         XCTAssertEqual(model.parts.count, 2)
         XCTAssertEqual(model.parts[1].name, "Peg & pin")
