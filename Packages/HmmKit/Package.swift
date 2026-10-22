@@ -28,7 +28,8 @@ let package = Package(
         .library(name: "HmmBrushRender", targets: ["HmmBrushRender"]),
         .library(name: "HmmBoardUI", targets: ["HmmBoardUI"]),
         .library(name: "HmmHeld", targets: ["HmmHeld"]),
-        .library(name: "HmmVector", targets: ["HmmVector"])
+        .library(name: "HmmVector", targets: ["HmmVector"]),
+        .library(name: "HmmLink", targets: ["HmmLink"])
     ],
     targets: [
         .target(name: "HmmDesign"),
@@ -53,6 +54,8 @@ let package = Package(
         .target(name: "HmmHeld"),
         // Vector drawings (SVG) read as filled outlines, for logos and shapes.
         .target(name: "HmmVector"),
+        // Devices together: a framed link on the local network (an iPhone beside the iPad) and SharePlay over FaceTime.
+        .target(name: "HmmLink"),
         .testTarget(name: "HmmCommandsTests", dependencies: ["HmmCommands"]),
         .testTarget(name: "HmmDocumentsTests", dependencies: ["HmmDocuments", "HmmCommands"]),
         .testTarget(name: "HmmTranscriptTests", dependencies: ["HmmTranscript"]),
@@ -65,7 +68,8 @@ let package = Package(
         .testTarget(name: "HmmBoardTests", dependencies: ["HmmBoard", "HmmBrush", "HmmCommands", "HmmDocuments"]),
         .testTarget(name: "HmmBoardUITests", dependencies: ["HmmBoardUI", "HmmBoard", "HmmBrush", "HmmBrushRender"]),
         .testTarget(name: "HmmHeldTests", dependencies: ["HmmHeld"]),
-        .testTarget(name: "HmmVectorTests", dependencies: ["HmmVector"])
+        .testTarget(name: "HmmVectorTests", dependencies: ["HmmVector"]),
+        .testTarget(name: "HmmLinkTests", dependencies: ["HmmLink"])
     ],
     swiftLanguageModes: [.v6]
 )
