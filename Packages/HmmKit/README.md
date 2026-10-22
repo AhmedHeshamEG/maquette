@@ -23,6 +23,7 @@ it in place: changes land here first, then `Tools/sync-hmmkit.sh` in the app pul
 | `HmmBrushRender` | The brush engine on the GPU: `Brush.metal` (one instanced quad per stamp, in a 3D scene or flat), `BrushStamper` (stamp buffers cached per stroke), tip and grain textures, pipelines for stamps, flat fills and pictures | Apple (Metal) |
 | `HmmBoard` | The Schizzo board, pure: brush strokes, pictures, notes, arrows and frames on an endless sheet; every change a command with its exact inverse; `BoardSession` (tools, selection, drags, the stroke in progress); the view; the draw list every picture of a board comes from; `BoardStore` (the board, its history journal and pictures in a folder any document can hold) | everywhere |
 | `HmmVector` | SVG drawings as filled outlines: paths (every command, arcs too), shapes, transforms, `<use>`, CSS classes, gradients as a flat colour; strokes, text and pictures counted, not guessed at | everywhere |
+| `HmmLink` | Devices together: framed messages on the local network (an iPhone beside the iPad) and SharePlay sessions over FaceTime | Maquette (the companion, reviews), Cutaway |
 | `HmmBoardUI` | The board on screen: `BoardRenderer` (Metal: the board kept in one layer, strokes by the brush engine), `BoardCanvasView` (Pencil or hand, pan, pinch, hover, the hold menu, drops), `BoardModel`, and `HmmBoardScreen` in the studio's layout | iOS |
 
 ## Using it

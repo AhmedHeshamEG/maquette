@@ -3,6 +3,25 @@
 All notable changes to hmm-kit. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the
 project uses [Semantic Versioning](https://semver.org/).
 
+## [0.16.0] - 2026-10-23
+
+Built with Maquette 0.26.
+
+### Added
+- **HmmDesign**: the app fitted to a hand. `HmmHand` (right or left; left mirrors a canvas's chrome; a device that only
+  had "the sidebar on the right" reads as left-handed), `HmmArrangement` (a group of buttons in a person's order with some
+  hidden; ids added later take their default place; fixed ids can't be hidden) and `HmmLayoutStore` (one arrangement a
+  group in UserDefaults, and Reset layout). `HmmEdgePlace` and `HmmEdgeSlide`: something on a canvas edge dragged along it
+  by a grip, its place kept as a fraction.
+- **HmmDesign**: keys a person can rebind. `HmmKeyCombo` (a key and its modifiers, written as the menu bar writes them),
+  `HmmKeyCommand` (an id, a title, a menu and the keys it comes with), `HmmKeyBindings` (only the changes are stored; a key
+  given to one command leaves the one that had it without), `HmmKeyboard` (observed by the menu bar; every shortcut off
+  while a key is being recorded), `View.hmmKeyboardShortcut(_:in:)` and `HmmKeyRecorder`.
+- **HmmLink**, a new module: devices together. `HmmFrames` and `HmmFrameReader` (messages as length-prefixed frames, files
+  included), `HmmLinkHost` and `HmmLinkCompanion` (a link over the local network, found by Bonjour, kept up by the
+  companion), `HmmTogether` (a SharePlay session for any activity: reliable and quick messages, files through its journal,
+  who is in it) and `HmmTogetherCall` (on a FaceTime call that can share).
+
 ## [0.15.0] - 2026-10-22
 
 Built with Maquette 0.25.
