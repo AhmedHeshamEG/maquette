@@ -6,7 +6,11 @@ public extension HmmPalette {
     /// The palette in a `Swatches.json` (a palette, or a list of them: the first); nil when it isn't one.
     static func procreate(swatchesJSON data: Data) -> HmmPalette? {
         guard let json = try? JSONSerialization.jsonObject(with: data) else { return nil }
-        let palette: [String: Any]? = if let list = json as? [[String: Any]] { list.first } else { json as? [String: Any] }
+        let palette: [String: Any]? = if let list = json as? [[String: Any]] {
+            list.first
+        } else {
+            json as? [String: Any]
+        }
         guard let palette, let swatches = palette["swatches"] as? [Any] else { return nil }
         let colours: [HmmColour] = swatches.compactMap { entry in
             guard let swatch = entry as? [String: Any], let hue = Self.number(swatch["hue"]),
