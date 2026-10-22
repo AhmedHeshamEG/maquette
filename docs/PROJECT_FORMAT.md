@@ -674,6 +674,27 @@ Everything G1 keeps is a property, so 0.24 opens a 0.25 project and keeps it (D-
 - Room's names are 3D text lying face up on a floor; an underlay is a locked sketch on the ground (a DXF) or a locked,
   faint card lying flat (a PDF page or a picture under `assets/`).
 
+## Review notes (schema 24)
+
+A scene keeps its review notes (`notes`, missing when there are none). Each note:
+
+| Key | Type | Meaning |
+|---|---|---|
+| `id` | string | Unique in the scene. |
+| `object` | string? | The thing it's stuck on (it follows the thing). |
+| `point` | [x, y, z] | Where: in `object`'s space when it has one, else the world. |
+| `world` | [x, y, z] | Where it was in the world when written (for a note whose thing was deleted). |
+| `author` | string | Who wrote it (Settings ▸ Your name, else the device's name; "Assistant" from the bridge). |
+| `text` | string | The note. |
+| `date` | number | When (seconds since 2001-01-01). |
+| `time` | number? | The film's moment it was written at, through a camera. |
+| `replies` | [{`id`, `author`, `text`, `date`}] | The thread (missing when there are none). |
+| `resolved` | bool? | `true` once resolved (missing while open); an answer opens it again. |
+
+One journal command changes notes: `setNotes` (`{"op": "setNotes", "notes": [{"id", "note"?, "index"?}]}`: insert,
+replace, or remove when `note` is absent). Schema 24 only added them; files from schema 23 open unchanged, and Maquette
+0.25 refuses schema 24.
+
 ## workspace.json
 
 How the project shows when it opens. It isn't the project (it's never undone and isn't in the journal); it's

@@ -3,6 +3,25 @@
 One line per feature for the person it serves (`studio-h/USERS.md`), in Hesham's voice, for the YouTube lessons the
 Learn place links to (CONTEXT §8). A phase adds the lines of what it built; M16 records them.
 
+## 0.26 (U8): yours
+
+- **Everyone (left-handed):** "Settings, Yours, Your layout, Left hand: the corners and the sidebar swap sides, so your
+  hand never covers them. Drag the little line under the sidebar to put it where your thumb rests."
+- **Everyone:** "Your layout: hide the buttons you never use, put the ones you do in your order. Reset layout puts it all
+  back the way these lessons show it."
+- **The keyboard person:** "Settings, Keyboard: tap Draw and press the key you want. If another command had it, Maquette
+  tells you."
+- **The architect:** "Actions, Present. Your iPhone is the remote: next shot, walk through with the sticks. The TV shows
+  the iPad by AirPlay; nothing else is on screen."
+- **The architect's professor:** "Actions, Add a note, tap the window: 'Bigger?'. Sara answers in the note, then
+  resolves it."
+- **The explainer maker:** "On a FaceTime call, Actions, Review over FaceTime: your friend turns the same model on their
+  iPad and leaves notes where they want changes."
+- **The filmmaker:** "Actions, Your iPhone, Camera: walk round the room with the phone and the scene's camera walks with
+  it. Record it in Perform."
+- **The maker:** "No LiDAR on your iPad? Model, Edit, Scan with your iPhone: walk round the thing with the phone and the
+  model lands on the iPad."
+
 ## 0.25 (G1): guest kits
 
 - **The architect:** "Scene, Set up for Room. Model, Add, Building: tap the corners and the walls follow; tap the first

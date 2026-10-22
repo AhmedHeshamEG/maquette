@@ -28,6 +28,7 @@ flowchart TD
         Board[HmmBoard · HmmBoardUI]
         Held[HmmHeld]
         Vector[HmmVector]
+        Link[HmmLink]
     end
     App --> Features
     Features --> Engine
@@ -36,7 +37,7 @@ flowchart TD
     Core --> Manifold
     Core --> InstantMeshes
     Core --> Jolt
-    Features --> Design & Bridge & Diagnostics & Documents & Perception & Board & Held
+    Features --> Design & Bridge & Diagnostics & Documents & Perception & Board & Held & Link
     Engine --> Media & Diagnostics & Transcript & Perception & Brush
     Core --> Commands & Documents & Transcript & Brush & Media & Vector
     Board --> Brush
@@ -51,7 +52,7 @@ rigs, bone heat, IK chains, the person rig), blob and puppet characters, Scene S
 | **Jolt** (`Packages/Jolt`) | the C++ standard library | Jolt Physics 5.6.0 (MIT) without its GPU compute, single-threaded and cross-platform deterministic, and `JoltBridge.h`: rigid bodies, joints and soft bodies in plain C (`VENDORED.md`) | Linux (its own tests and the 500-body SPIKE in a release build; LoweyCore's physics tests) and the iPad simulator (the app build) |
 | **XAtlas** (`Packages/XAtlas`) | the C++ standard library | xatlas (MIT) as a single-threaded C++ target and `XAtlasBridge.h`: unwrap in plain C (`VENDORED.md`) | Linux (its own tests; LoweyCore's paint tests) |
 | **LoweyEngine** | Core, Metal, AVFoundation, Vision, ARKit, JavaScriptCore, hmm-kit's Media / Diagnostics / Perception / Transcript / BrushRender (re-exported) | LoweyRender 2 (with the brush engine's stamps, painted layers and drawn rigs skinned on the GPU), the shot builder, the stage view (`StageView`), model loading and caching, export sessions and presets (formats first, Final, render passes), overlays and captions, the Night Market benchmark, face capture, the JavaScript runner | iPad simulator: golden images, export, picking, skinning |
-| **LoweyFeatures** | Core, Engine, SwiftUI, hmm-kit's Design / Bridge / Documents / Diagnostics / Board / BoardUI | The editor. `Workspace/` is shared by every feature (app and editor models, the session API, controls); each other folder is one feature's views; `Shell/` composes them | iPad simulator: bridge security, editor flows |
+| **LoweyFeatures** | Core, Engine, SwiftUI, hmm-kit's Design / Bridge / Documents / Diagnostics / Board / BoardUI / Link | The editor. `Workspace/` is shared by every feature (app and editor models, the session API, controls); each other folder is one feature's views; `Shell/` composes them | iPad simulator: bridge security, editor flows |
 | **App** | Features, ActivityKit, BackgroundTasks | `LoweyApp`, the export Live Activity, the widget extension | UI smoke tests |
 
 **Rules** (enforced in CI): LoweyCore imports no Apple UI or 3D framework; features never reference each other's
@@ -821,6 +822,50 @@ flowchart LR
 - **CI**: `Tools/check_guest_files.py` (IfcOpenShell validates the IFC, ezdxf audits the DXF, pypdf reads the PDFs,
   trimesh finds the jar and lid watertight) in the interop job; `Tools/godot/check_level.gd` imports Dev's level in Godot
   4.3 and finds its static bodies; `AppUITests/GuestTests` (Sara, Giulia, Omar, Dev, each under three minutes).
+
+## Yours (0.26)
+
+```mermaid
+flowchart LR
+    Phone[iPhone: CompanionView<br/>CompanionLink] <-->|HmmLink frames<br/>_maquette._tcp| Host[EditorModel+Companion<br/>HmmLinkHost]
+    Host --> Cam[the scene's camera<br/>performOverride]
+    Host --> Present[EditorModel+Present<br/>PresentPlan]
+    Host --> Scans[addScannedRoom · landModels]
+    Room[ReviewRoom<br/>HmmTogether + ReviewActivity] <-->|SharePlay| Others[the other iPads]
+    Room --> Notes[EditorModel+Notes<br/>setNotes]
+    Room --> View[receiveView<br/>ViewLead]
+```
+
+- **Core `Review/`**: `ReviewNote` (on a thing, in its space, or the world), `ReviewReply`, `NoteEdit` and `ReviewNotes`
+  (add, reply, resolve, edit, delete, clear resolved: each one labelled batch); `Scene.notes`, the `setNotes` command
+  (schema 24, a journal op migration from 23). `Together.swift`: `CompanionMode`, `CompanionAbilities`, `RemoteCommand`,
+  `PresentStatus`, `CompanionMessage` (the companion link's messages, JSON in frames), `ReviewMessage`, `ViewLead` (who
+  turns the view in a review) and `PresentPlan` (the film's shots from its cuts; next, previous). `AI/ScriptCompiler+Review`:
+  the `note` verb.
+- **Kit**: HmmDesign's `HmmHand`, `HmmArrangement` and `HmmLayoutStore` (`hmm.layout.<group>` in UserDefaults),
+  `HmmEdgePlace` and `HmmEdgeSlide` (the sidebar along its edge), `HmmKeyCombo`, `HmmKeyCommand`, `HmmKeyBindings`
+  (`hmm.keys`), `HmmKeyboard` (observed by the menu bar; shortcuts off while recording), `hmmKeyboardShortcut`,
+  `HmmKeyRecorder` (a first responder reading `UIKey`s). The new HmmLink: `HmmFrames` and `HmmFrameReader` (four bytes of
+  length, then the bytes), `HmmLinkHost` and `HmmLinkCompanion` (Network.framework, Bonjour, peer to peer, the local
+  network only), `HmmTogether` (a GroupSession's reliable and quick messengers, its journal for files, who is in it) and
+  `HmmTogetherCall` (on a FaceTime call that can share).
+- **Features `Workspace/`**: `Support/YourLayout` (`ChromeGroup`: the three corners, their ids and the fixed ones;
+  `YourSettings`: the keys, Reset layout, the hand settled from the old sidebar switch, the +'s template), `Support/KeyCommands`
+  (every menu-bar command with its id and keys), `Session/TogetherTypes` (`TogetherState` on `EditorModel.together`:
+  presenting, the notes' state, the review, the phone), `EditorModel+Present`, `+Notes` (pins projected with
+  `StageView.screenPoint`, refreshed by `viewRevision`), `+Companion` (the host, asking for a mode, the phone's camera
+  through the virtual camera's path), `ReviewRoom` (on `AppModel.review`: listens for `ReviewActivity.sessions()` at launch,
+  sends the project as a pack, opens a joiner's copy, routes views, notes and time), `UI/Capture` (RoomPlan and Object
+  Capture for the iPad's sheets and the phone). `AppModel.keyboard` is the menu bar's `HmmKeyboard`.
+- **Features, the views**: `StageChrome` mirrors by the hand and builds each corner from its arrangement; `Settings/`
+  `YourLayoutPage`, `KeyboardPage`, `NewProjectsPage` (and `YoursSection`); `Present/PresentOverlay` (the controls, the walk
+  sticks); `Review/NotePins` (pins, the thread, the draft, `ReviewBadge`); `Companion/` (`PhoneSheet` on the iPad;
+  `CompanionView`, `CompanionLink`, `FaceCompanion`, the camera, remote, AR and scan modes on the iPhone). Taps on the stage
+  go to Present or to placing a note first (`StageGestures.tapTakenFirst`).
+- **App**: the iPhone shows `CompanionView`; `_maquette._tcp` beside `_loweyface._tcp` (the face keeps its own link);
+  the `com.apple.developer.group-session` entitlement (used by signed builds only, D-532).
+- **UI tests**: `AppUITests/YoursTests` (the left hand and an order kept over a relaunch, then reset; Present; a note
+  answered in place). A UI test launch starts from the default layout unless `-keep-layout`.
 
 ## LoweyRender 2
 

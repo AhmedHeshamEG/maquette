@@ -3,6 +3,29 @@
 All notable changes. 1.x grew in four phases (v0.1 → v1.4); 2.0 is the remaster, released as betas first. Maquette
 continues from 2.0 and numbers its phases again from 0.1 (each phase bumps the minor version until 1.0).
 
+## [0.26] — Maquette — Yours (phase U8)
+
+The app fits your hand, shows your work on a big screen, takes notes from the people you show it to, and the iPhone
+beside the iPad does every job it's handed.
+
+- **Your layout** (Settings ▸ Yours): the **left hand** mirrors the canvas's corners and the sidebar; each corner's
+  buttons in **your order**, any of them **hidden** (Home and Actions always stay); the **sidebar dragged along its edge**;
+  **Reset layout**. It replaces Sidebar on the right.
+- **Keyboard**: give any menu-bar command the keys you want; a key taken from another command says so.
+- **New projects**: the + makes your set-up, Look, units and brush. **Your name** signs your notes.
+- **Present** (Actions, ⇧⌘P): nothing but the stage, for a TV or a projector by AirPlay or a cable: the film round and
+  round, a walk through at eye height, or the model turned by hand. A tap brings the controls back for a moment.
+- **Notes** (Actions, ⇧⌘N): a pin on a spot, on a thing it follows; tap it for its thread, reply, resolve. They travel in
+  the file and never export.
+- **Review over FaceTime**: the project goes to the people on the call; everyone turns the same view and leaves notes.
+  (Needs a build signed by the developer account: the sideloaded build can't start it.)
+- **The iPhone companion**: on an iPhone, Maquette finds the iPad by itself and switches to what it asks: your face, a
+  **camera** you move to move the scene's camera, the **remote** for Present (shots, play, two sticks to walk), the scene
+  **in AR**, and **room and object scans** (for iPads without LiDAR: Scan with your iPhone).
+- **The bridge**: the `note` verb (add, list, reply, resolve, reopen, delete). The lowey skill's review notes module
+  teaches it.
+- Schema 24 (scenes' notes), hmm-kit 0.16.
+
 ## [0.25] — Maquette — Guest kits (phase G1)
 
 Every guest finishes their job without leaving the app. Scene ▸ **Set up for** Room, Print, Game or Study puts their

@@ -4,12 +4,12 @@ Shapr3D's ease, Procreate's feel, Dreams' animation and ToonSquid's rigging, in 
 or art degree. Build a set like Lego, drop in characters, direct them with a camera, sync them to your voice, and
 export the video. By **studio h.**; the continuation of 3D-lowey 2.0. All rights reserved (see [LICENSE](LICENSE)).
 
-**0.25** (phase G1): **guest kits**. Set up for Room, Print, Game or Study and that person's tools come in reach: roofs,
-columns, railings and terrain, plans per floor with room areas, elevations, a walk at eye height, underlays traced to scale,
-a photo matched, a room scanned, and IFC for the office; overhangs, the best way up, parts split with pegs, holes for M2–M10
-screws, printed threads, a jar with a screw-on lid and multi-colour 3MF for the slicer; an exploded view and a technical
-drawing with a parts list; a greybox kit and levels Godot, Unity and Unreal read as they should; and for illustrators a
-mannequin, the frame as a layered PSD, Procreate palettes, papercraft and laser nets, and the ink as SVG.
+**0.26** (phase U8): **yours**. The app fits your hand: the left hand mirrors the canvas's corners, each corner's
+buttons in your order or hidden, the sidebar dragged along its edge, any command on the keys you choose, and the +
+making your set-up, Look, units and brush. **Present** fills a TV or a projector with the film, a walk through the
+building or the model. **Notes** stick to a spot and are answered in place, and a **review over FaceTime** turns the same
+model on every iPad. On an **iPhone**, Maquette is the companion: your face, a camera, the remote, the scene in AR, and
+room and object scans for iPads without LiDAR.
 
 **0.24** (phase L2): **Looks & the library**. Seven new Looks (Painterly, Watercolour, Gouache, Paperman, Anime cel,
 Clean product, Pixel), a Finish for any Look (Ben-Day dots, line boil, misregistration, newsprint, riso, canvas, and the
