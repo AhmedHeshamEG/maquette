@@ -64,8 +64,10 @@ when they disagree. In the App Store configuration the walk asserts every held r
 | Control | Walk |
 |---|---|
 | New project: the + opens a blank project in the dark studio, named by itself | `[home] new-project` |
-| Or start set up for Print, Room or Animation (the quiet row under the title) | `[home] start-print` |
+| Or start set up for Room, Print, Game, Study or Animation (the quiet row under the title) | `[home] start-print` |
 | | `[home] start-room` |
+| | `[home] start-game` |
+| | `[home] start-study` |
 | Search projects and stacks | `[home] gallery-search` |
 | Sort (Recent, Name, Date created) | `[home] gallery-sort` |
 | Select several (stack, move out, duplicate, archive, delete: shown once something is chosen) | `[home] gallery-select` |
@@ -92,6 +94,7 @@ when they disagree. In the App Store configuration the walk asserts every held r
 | Export: Video · Picture · 3D · Paper, then the format, then its presets; Final and the options beside them | `Actions › open-export` |
 | Export (F1): Video ▸ Animatic, Spatial video (where the iPad encodes it), 360° video, HEVC ▸ HDR; Picture ▸ Spatial photo, 360° panorama, PNG ▸ Wide colour; Paper ▸ Storyboard | in the Export sheet |
 | Export (D1): loops seamlessly, or what jumps when it loops and Close the loop | in the Export sheet, beside a video or GIF preset |
+| Export (G1): Picture ▸ Layered PSD, Ink as SVG; 3D ▸ IFC (when there's a building), Game level for Godot, Unity, Unreal (one texture for everything); Paper ▸ Plans & elevations (PDF, DXF, SVG; when there's a building), Technical drawing, Papercraft (and a laser net) | in the Export sheet |
 | Share the project file | `Actions › Project file` |
 | Monitor window (Stage Manager, external display) | `Actions › open-monitor` |
 | The Board: plan before building (below) | `Actions › open-board` |
@@ -131,7 +134,8 @@ Three short pages; the page is remembered.
 | Search everything (the Kit, your models, builds, worlds, scripts) | `Library › library-search` |
 | Things: the Kit by set | `Library › library-things › kit-sets` |
 | Things: Grounds (plain, desert, grass, snow, rock, sand, pavement, water's edge, room floor) (L2) | `Library › library-things › ground-snow` |
-| Characters ▸ New: from a person, four legs, wings, a blob or nothing; the character lands with its panel open and rigs itself | `Library › library-characters › new-character-person` |
+| Characters ▸ New: a person, four legs, wings, a blob, a mannequin (G1) or nothing; it lands with its panel open, rigged | `Library › library-characters › new-character-person` |
+| | `Library › library-characters › new-character-mannequin` |
 | Characters: a Blob | `Library › library-characters › add-blob` |
 | Characters: Me | `Library › library-characters › add-me` |
 | Characters: a Puppet | `Library › library-characters › add-character` |
@@ -141,6 +145,7 @@ Three short pages; the page is remembered.
 | Yours: your models, builds, worlds, scripts, favourites, recent; import models (USDZ, glTF, GLB, OBJ, STL, 3MF) | `Library › library-yours › Import models` |
 | Yours: share a pack (Looks, brushes, materials, effects, parts, motions, things; your name and a licence in words) (L2) | `Library › library-yours › share-pack` |
 | Yours: bring in a pack (or open a .maquettepack from anywhere) | `Library › library-yours › bring-pack` |
+| Yours: bring in a Procreate palette (.swatches) into Colour ▸ Palettes (G1) | `Library › library-yours › bring-palette` |
 | Yours: your Looks, effects and parts; tap to use; hold for the Effect or Part Studio, share, delete | shown once there are any |
 | An item's menu (the hold menu): rename, favourite; replace with the selection (builds); delete | touch and hold an item |
 | Swap a shape for a model | the object's menu ▸ More ▸ Swap for a model… (the Library opens to swap) |
@@ -151,7 +156,9 @@ Three short pages; the page is remembered.
 
 | Control | Walk |
 |---|---|
-| Set up for: Blank, Print, Room, Animation (what's in reach changes, never the project) | `scene-name › setup-room` |
+| Set up for: Blank, Room, Print, Game, Study, Animation (what's in reach changes, never the project) | `scene-name › setup-room` |
+| | `scene-name › setup-game` |
+| | `scene-name › setup-study` |
 | Scenes: switch, new, duplicate, rename; copy this scene to another project | `scene-name › scene-rename` |
 | Physics: gravity, wind, a solid ground, when things start; the run and Keep it | `scene-name › gravity-moon` |
 | The objects (the outliner): pick, show or hide, lock; a row's hold menu (also: to top level, into a group, frame) | `scene-name › outliner` |
@@ -174,10 +181,16 @@ Three short pages; the page is remembered.
 | Add: effects (fire, sparks, smoke…) | `Model › model-add › add-fx-fire` |
 | Add: forces (fan, pull, whirl) and fluids (pour water, splash, billowing smoke, flames) | `Model › model-add › add-force-fan` |
 | | `Model › model-add › add-fluid-pour` |
-| Add: Building, walls along tapped corners, floor, door, window, stairs | Model ▸ Add while the scene is set up for a Room |
+| Add: Building: walls, floor, door, window, stairs; roof, column, beam, railing, person, room name, terrain (G1) | `scene-name › setup-room › Model › model-add › build-roof` |
+| Add: Plans and the site: plans with areas, walk through, an underlay set to scale, match a photo, scan a room (G1) | `scene-name › setup-room › Model › model-add › room-plans` |
+| Add: Print: a jar with a screw-on lid, a bolt, a nut (M2…M10) (G1) | `scene-name › setup-print › Model › model-add › print-jar` |
+| Add: Greybox: floors, walls, doorways, windows, ramps, stairs, blocks, pillars on the metre grid (G1) | `scene-name › setup-game › Model › model-add › greybox-ramp` |
 | Edit: Shape it: Shape, Brush, Cage, Bend (no buttons for faces, edges or corners: the Pencil touches the part, U6) | `Model › model-shape › model-verb-shape` |
 | | `Model › model-shape › model-verb-cage` |
 | Edit: 3D print: the printer, check for printing, repair | `Model › model-shape › print-check` |
+| Edit: 3D print, set up for Print (G1): overhangs, best way up, split, hollow, holes, words, fit, size, slicer, scan | `scene-name › setup-print › Model › model-shape › print-split` |
+| Edit: Study (G1): explode the chosen group (again: together), the forces | `scene-name › setup-study › Model › model-shape › study-explode` |
+| Edit: Game (G1): freeze transforms | `scene-name › setup-game › Model › model-shape › game-freeze` |
 | Model's bar: Shape · Brush · Cage · Bend · Measure; the brushes (grab, smooth, inflate) and their mirror; the cage on, back or off; the bend's kind, axis and amount; the measurement and Keep, ✕ | shown at the bottom while the Model tool is on |
 | Touch and drag (U6): over the selected shape the Pencil lights the face, edge or corner under its tip; a drag pulls a face, rounds an edge, moves a corner; a tap picks it | the Pencil on the selected shape, with any tool but Draw |
 | The part's chip: a face's inset, shell, bridge (two faces), knife; an edge's bevel, round, loop cut, knife; corners' merge and fill the hole; ⋯ grow, shrink, similar, the pivot here | above the tool's bar |
@@ -476,6 +489,7 @@ joins To the ground in the object's menu; the menu bar has a Physics menu. Nothi
 | Model ▸ Add ▸ Camera | the camera button (bottom right) | Looking through a camera is about the view (D-229) |
 | Model ▸ Add ▸ Title, Label, marks on the frame, screen effects | the timeline's + Overlay | They sit on the video, not in the world (D-229) |
 | Model ▸ Add ▸ Building | Model ▸ Add while set up for a Room | Only the Room job needs it (D-229) |
+| The guests' kits (G1) | Model ▸ Add and Model ▸ Edit, by set-up | A Blank project shows none of them |
 | Actions ▸ Scenes | the scene's name | The scene is a door (D-230) |
 | Select ▸ the outliner | the scene's name | The scene's objects are the scene (D-230) |
 | Select (a panel) | a small bar | Five buttons don't need a panel |
