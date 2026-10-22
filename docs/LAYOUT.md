@@ -97,6 +97,12 @@ when they disagree. In the App Store configuration the walk asserts every held r
 | Export (G1): Picture ▸ Layered PSD, Ink as SVG; 3D ▸ IFC (when there's a building), Game level for Godot, Unity, Unreal (one texture for everything); Paper ▸ Plans & elevations (PDF, DXF, SVG; when there's a building), Technical drawing, Papercraft (and a laser net) | in the Export sheet |
 | Share the project file | `Actions › Project file` |
 | Monitor window (Stage Manager, external display) | `Actions › open-monitor` |
+| Present: every control leaves and the stage fills the screen (a TV or a projector by AirPlay or a cable shows it); a tap brings back, for three seconds, Play the film · Walk through · Show the model, the shots and Done (U8) | `Actions › present` |
+| Notes: the review pins on their spots; tap one for its thread (reply, Resolve, Delete) (U8) | `Actions › open-notes` |
+| Add a note: then tap the spot; the words, signed with your name (U8) | `Actions › add-note` |
+| Clear resolved notes (U8) | Actions, while the notes show and one is resolved |
+| Review over FaceTime: the project goes to the people on the call; everyone turns the same view and leaves notes (U8) | Actions, during a FaceTime call |
+| Your iPhone: use it as your face, a camera, the remote, an AR view, a room or object scanner (U8) | `Actions › open-phone` |
 | The Board: plan before building (below) | `Actions › open-board` |
 | Rotoscope: a video behind the stage, its frame the one under the playhead (opacity, over the scene, start at the playhead); never exported (F1) | Actions ▸ Rotoscope, once a video is picked from Photos |
 | History scrubber, versions; over it, the selected thing's modelling steps to change (H1) | `Actions › open-history` |
@@ -327,6 +333,7 @@ Animate calls the timeline and its bar, under the stage (A1): six verbs. With no
 | Control | Walk |
 |---|---|
 | Resting: a thin rail where the sliders sit (touch it for size and opacity) | `sidebar-rail` |
+| Dragged along its edge by the short line under it; double-tap the line for the middle (U8) | `edge-grip` |
 | Two sliders that follow the tool (size and opacity) | Draw, the weight brush, Perform |
 | Pick a colour from the stage | `Draw › Pick` |
 | The colour in the hand (the palette, any colour) while Model ▸ Add is open (Draw has its own) | the sidebar while Model ▸ Add is open |
@@ -418,7 +425,11 @@ In this order. From Home (the gear) and from Actions.
 | Pencil or hand: draw with a finger too (automatic otherwise: a finger makes until an Apple Pencil has touched); the Pencil's hover point; the quick menu's six slots | Settings ▸ Pencil and hands |
 | Every gesture and shortcut; show undo buttons | Settings ▸ Gestures |
 | Always show the sidebar, always full resolution, moving-around speed, dock the object panel, the joystick and its speed, the Board on or off | Settings ▸ Stage |
-| Theme, sidebar on the right, haptics | Settings ▸ Appearance |
+| Your layout: the hand (left mirrors the chrome), each corner's buttons in your order or hidden (within the corner), the sidebar's place, Reset layout (U8) | Settings ▸ Yours ▸ Your layout |
+| Keyboard: any command's keys, pressed to set them (U8) | Settings ▸ Yours ▸ Keyboard |
+| New projects: the set-up, Look, units and brush the + makes (U8) | Settings ▸ Yours ▸ New projects |
+| Your name (it signs your notes) | Settings ▸ Yours |
+| Theme (automatic, dark, light), haptics | Settings ▸ Appearance |
 | The assistant on this network (the laptop bridge for MCP), pairing and proposals, Scripts, paste a script; with Hesham's note | Settings ▸ Assistant |
 | Version, licences; Diagnostics: the feel recorder, the benchmarks, the Pencil's latency, smoothness, logs, the chrome-restraint trial | Settings ▸ About |
 | iCloud Drive | Settings ▸ Storage |
@@ -448,6 +459,13 @@ explanations in panels; on by default).
   menu: ⇧⌘J make real, ⌥⌘J not real, ⌘J settle, ⌥⌘U does it stand, ⇧⌘K keep the run as keys. Holding ⌘ lists
   them. The Perform menu (the microphone, the trigger keys) is *(held: 1.2)*.
 - **Proposals** from the AI bridge appear at the bottom of the stage while one is waiting.
+
+## What moved in 0.26 (U8)
+
+| What | Now | Why |
+|---|---|---|
+| Settings ▸ Appearance ▸ Sidebar on the right | Settings ▸ Yours ▸ Your layout ▸ Left hand (the whole chrome mirrors) | Left-handed people need the corners too, not only the sidebar |
+| Face companion (the iPhone's only screen) | The iPhone's list: your face, camera, remote, AR, scans | The phone does every job the iPad hands it |
 
 ## What moved in 0.19 (P1)
 

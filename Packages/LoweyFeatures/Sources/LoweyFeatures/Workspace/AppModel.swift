@@ -79,6 +79,11 @@ public final class AppModel {
         guard !started else { return }
         started = true
         diagnostics.start()
+        // UI tests start from the layout as it comes, unless a test relaunches to see its layout kept.
+        if AppIdentity.isUITesting, !ProcessInfo.processInfo.arguments.contains("-keep-layout") {
+            YourSettings.resetLayout()
+            keyboard.resetAll()
+        }
         YourSettings.settleHand()
         review.listen(for: self)
         if diagnostics.previousSessionCrashed, !AppIdentity.isUITesting {
