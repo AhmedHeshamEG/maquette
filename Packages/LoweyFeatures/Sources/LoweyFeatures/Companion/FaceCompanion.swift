@@ -3,20 +3,17 @@ import LoweyEngine
 import SwiftUI
 import UIKit
 
-/// What the app shows on an iPhone: the face companion. With Face ID, the iPhone tracks your face (ARKit) and arms
-/// (Vision) and streams them to the iPad over the local network, where they drive your character.
-public struct CompanionView: View {
+/// The companion's face mode: with Face ID, the iPhone tracks your face (ARKit) and arms (Vision) and streams them to
+/// the iPad over the local network, where they drive your character.
+struct FaceCompanion: View {
     @State private var sender = FaceLinkSender()
     @State private var status = "Starting…"
     @State private var running = false
     @State private var monitor = FaceMonitor()
     @Environment(\.hmmTheme) private var theme
 
-    public init() {}
-
-    public var body: some View {
+    var body: some View {
         VStack(spacing: HmmSpacing.l) {
-            Text("Face companion").font(.hmm(.title2, weight: .semibold))
             ZStack {
                 if let picture = monitor.picture {
                     Image(decorative: picture, scale: 1).resizable().scaledToFill()
@@ -54,12 +51,8 @@ public struct CompanionView: View {
         }
         .padding()
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(theme.background.ignoresSafeArea())
         .onAppear(perform: begin)
-        .onDisappear {
-            sender.stop()
-            UIApplication.shared.isIdleTimerDisabled = false
-        }
+        .onDisappear { sender.stop() }
     }
 
     private func begin() {
@@ -75,6 +68,5 @@ public struct CompanionView: View {
         } else {
             status = "This iPhone has no Face ID camera. The iPad can read your face with its own camera instead."
         }
-        UIApplication.shared.isIdleTimerDisabled = true
     }
 }

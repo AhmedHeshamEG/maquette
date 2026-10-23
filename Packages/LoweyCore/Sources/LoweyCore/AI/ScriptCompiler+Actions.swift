@@ -66,6 +66,7 @@ extension ScriptState {
         "film": { try $0.film($1) },
         "design": { try $0.design($1) },
         "guest": { try $0.guest($1) },
+        "note": { try $0.note($1) },
         "command": { try $0.rawCommand($1) }
     ]
 

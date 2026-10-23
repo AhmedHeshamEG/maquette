@@ -62,7 +62,9 @@ public enum ProjectHistory {
         // commands.
         21: { $0 },
         // 22 → 23 adds Look and Finish fields, effect kinds and a ground surface; nothing older changes shape.
-        22: { $0 }
+        22: { $0 },
+        // 23 → 24 only adds the optional notes field and the `setNotes` command.
+        23: { $0 }
     ]
     /// The first schema journals were written with (Maquette 0.1).
     public static let firstJournalSchema = 4

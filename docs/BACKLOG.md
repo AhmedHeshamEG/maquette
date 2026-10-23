@@ -3,6 +3,18 @@
 What's known and not done yet, so nothing lives only in someone's head. What Maquette is: [SPEC.md](SPEC.md). The
 phase plan (the pass U1 … U5, M12, M14, M16, then 1.0) lives in studio-h's `PHASES.md`; ideas go to its `IDEAS.md`.
 
+## Left from U8 (Maquette 0.26)
+
+- [ ] The device checklist in the "Maquette 0.26 — U8" PR (the left hand on the iPad with a Pencil, keys on a Magic
+      Keyboard, Present on a TV by AirPlay and a cable, the iPhone as camera, remote, AR and scanner, Present on a Tier B
+      iPad).
+- [ ] Reviews over FaceTime need the `com.apple.developer.group-session` entitlement: the sideloaded `.ipa` is ad-hoc
+      signed without it. Test with the first TestFlight build (D-532); the two-iPad SharePlay check waits for it.
+- [ ] Two people modelling at once (merging two journals live) is out of a review; a converge if the testers ask (D-532).
+- [ ] The tools' bars and the panels' rows aren't arranged; only the three corners are (D-525).
+- [ ] The iPhone's AR model is the scene as USDZ, as Export makes it; a huge scene takes a moment to send.
+- [ ] The phone's object scan is made at reduced detail on the phone; a full-detail model needs a Mac (Reality Composer).
+
 ## Left from G1 (Maquette 0.25)
 
 - [ ] The device checklist in the "Maquette 0.25 — G1" PR (a real PDF plan traced to scale, a scan of a room on a LiDAR
@@ -11,7 +23,7 @@ phase plan (the pass U1 … U5, M12, M14, M16, then 1.0) lives in studio-h's `PH
 - [ ] Doors and windows leave IFC as part of their walls' shape; IfcDoor / IfcWindow with IfcOpeningElement would let
       Revit list them (D-502).
 - [ ] Gable and hipped roofs cover the outline's smallest rectangle; an L-shaped house takes two roofs (D-503).
-- [ ] The iPhone companion's room and object scans for iPads without LiDAR come with U8 (D-506).
+- [x] The iPhone companion's room and object scans for iPads without LiDAR come with U8 (D-506). Done in 0.26 (D-533).
 - [ ] Split cuts across the part's middle on an axis; a cut plane moved on the stage is to do if testers ask (D-508).
 - [ ] A matched photo shows behind the stage only; exports of the building in the photo would need the photo as a
       backdrop layer in the renderer.

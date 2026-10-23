@@ -25,9 +25,13 @@ extension AppModel {
 
     /// The + on Home (and the quiet set-up row): a new project straight away, in its set-up's world (Blank: the dark
     /// studio), named by itself. It can be renamed from its card any time.
-    func startProject(_ kind: StarterTemplate.Kind = .blank, inStack stack: String? = nil) {
-        let template = StarterTemplate.template(kind)
+    /// With no set-up named, the + makes your defaults (Settings ▸ New projects, U8): your set-up, Look, units and brush.
+    func startProject(_ kind: StarterTemplate.Kind? = nil, inStack stack: String? = nil) {
+        let template = kind.map(StarterTemplate.template) ?? YourSettings.template()
         createProject(named: newProjectName(), template: template, mood: template.mood, look: template.lookPresetID, inStack: stack)
+        if kind == nil, let brush = UserDefaults.standard.string(forKey: YourSettings.defaultBrush), brushes.library.brush(brush) != nil {
+            brushes.select(brush, for: .ink)
+        }
     }
 
     /// "Untitled", then "Untitled 2", "Untitled 3"… so a fresh project never shares a name.

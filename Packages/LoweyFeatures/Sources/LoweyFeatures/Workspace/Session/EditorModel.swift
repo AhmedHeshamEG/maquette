@@ -26,9 +26,6 @@ final class EditorModel {
         return displayed.scene
     }
 
-    /// The document with the scene as shown.
-    var displayDocument: Document { Document(project: (historyPreview ?? session.document).project, scene: displayed.scene) }
-
     var selection: [ObjectID] = [] {
         didSet {
             guard selection != oldValue else { return }
@@ -382,6 +379,8 @@ final class EditorModel {
     var savingPrefab = false
     /// What an undo or a redo just changed, said for a second at the top centre (CONTEXT §10.10).
     var undoLine: HmmUndoLineMessage?
+    /// U8: presenting, review notes, a review over FaceTime, the iPhone companion.
+    let together = TogetherState()
     @ObservationIgnored let logger = Logger(subsystem: AppIdentity.subsystem, category: "editor")
 
     var library: LibraryModel { app.library }
@@ -408,6 +407,7 @@ final class EditorModel {
         stopFaceCapture()
         stopVoice()
         stopVirtualCamera()
+        endTogether()
         clock.stop()
         chromeFadeTask?.cancel()
         idleCheckpointTask?.cancel()

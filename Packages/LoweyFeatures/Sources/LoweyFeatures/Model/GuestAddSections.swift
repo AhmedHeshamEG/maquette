@@ -47,6 +47,12 @@ struct GuestAddSections: View {
                     TileButton(title: "Match a photo", systemName: "photo.badge.checkmark", identifier: "room-photo") { editor.sheet = .matchPhoto }
                     if RoomScanSheet.isSupported {
                         TileButton(title: "Scan a room", systemName: "camera.metering.matrix", identifier: "room-scan") { editor.sheet = .roomScan }
+                    } else {
+                        // No LiDAR here: the iPhone scans (U8).
+                        TileButton(title: "Scan with your iPhone", systemName: "iphone", identifier: "room-scan-phone") {
+                            editor.ask(.roomScan)
+                            editor.sheet = .phone
+                        }
                     }
                 }
                 Hint("An underlay is a PDF, DXF or picture of a plan: lay it flat, set it to scale with two taps, trace it.")

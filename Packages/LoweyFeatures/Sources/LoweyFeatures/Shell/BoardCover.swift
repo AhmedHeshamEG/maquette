@@ -10,11 +10,11 @@ struct BoardCover: View {
     @Bindable var editor: EditorModel
     let board: BoardModel
     @AppStorage(AppSettings.pencilHoverPreview) private var pencilHover = false
-    @AppStorage(AppSettings.sidebarOnRight) private var sidebarOnRight = false
+    @AppStorage(HmmHand.storageKey) private var hand = HmmHand.right.rawValue
     @AppStorage(HmmPencilOrHand.fingersAlwaysMakeKey) private var fingersMake = false
 
     var body: some View {
-        HmmBoardScreen(model: board, showsHover: pencilHover, sidebarOnRight: sidebarOnRight, close: { editor.closeBoard() }) {
+        HmmBoardScreen(model: board, showsHover: pencilHover, sidebarOnRight: hand == HmmHand.left.rawValue, close: { editor.closeBoard() }) {
             BrushRow(editor: editor, tool: .board)
                 .frame(width: 300)
                 .padding(HmmSpacing.xxs)

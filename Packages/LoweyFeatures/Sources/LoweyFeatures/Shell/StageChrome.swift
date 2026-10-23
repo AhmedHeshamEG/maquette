@@ -8,7 +8,11 @@ struct StageChrome: View {
     @Bindable var editor: EditorModel
     @Environment(AppModel.self) private var app
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
-    @AppStorage(AppSettings.sidebarOnRight) private var sidebarOnRight = false
+    /// Left-handed (U8): the clusters swap corners, the sidebar goes right, the bottom corners swap.
+    @AppStorage(HmmHand.storageKey) private var hand = HmmHand.right.rawValue
+    /// Each corner's buttons as the person arranged them (Settings ▸ Your layout).
+    @AppStorage(ChromeGroup.document.storageKey) private var documentLayout = Data()
+    @AppStorage(ChromeGroup.making.storageKey) private var makingLayout = Data()
     @AppStorage(AppSettings.showsJoystick) private var showsJoystick = true
     /// The open panel's frame on screen (the object panel, or its chip, keeps clear of it).
     @State private var panelFrame: CGRect?
@@ -21,9 +25,9 @@ struct StageChrome: View {
             if editor.tool == .ink, !editor.inkStrokes.isEmpty { StrokeChip(editor: editor) }
             if editor.tool == .model || editor.tool == .select { PartChip(editor: editor) }
             HStack {
-                if !sidebarOnRight { EditorSidebar(editor: editor) }
+                if !mirrored { sidebar }
                 Spacer()
-                if sidebarOnRight { EditorSidebar(editor: editor) }
+                if mirrored { sidebar }
             }
             .padding(.horizontal, HmmSpacing.xs)
             .frame(maxHeight: .infinity, alignment: .center)
@@ -32,19 +36,19 @@ struct StageChrome: View {
             // the other way round.
             VStack(spacing: HmmSpacing.s) {
                 HStack(alignment: .top) {
-                    leadingCluster
+                    if mirrored { trailingCluster } else { leadingCluster }
                     Spacer(minLength: HmmSpacing.m)
-                    trailingCluster
+                    if mirrored { leadingCluster } else { trailingCluster }
                 }
                 HStack(alignment: .top, spacing: HmmSpacing.s) {
-                    if let panel = editor.openPanel, panel.isLeading {
+                    if let panel = editor.openPanel, panel.isLeading != mirrored {
                         ClusterPanelView(editor: editor, panel: panel)
                             .hmmPanelTransition(from: .topLeading)
                             .onGeometryChange(for: CGRect.self) { $0.frame(in: .global) } action: { panelFrame = $0 }
                             .onDisappear { panelFrame = nil }
                     }
                     Spacer(minLength: 0)
-                    if let panel = editor.openPanel, !panel.isLeading {
+                    if let panel = editor.openPanel, panel.isLeading == mirrored {
                         ClusterPanelView(editor: editor, panel: panel)
                             .hmmPanelTransition(from: .topTrailing)
                             .onGeometryChange(for: CGRect.self) { $0.frame(in: .global) } action: { panelFrame = $0 }
@@ -57,7 +61,7 @@ struct StageChrome: View {
         }
         .overlay {
             if showsInspector {
-                FloatingInspector(editor: editor, avoiding: panelFrame, sidebarOnRight: sidebarOnRight)
+                FloatingInspector(editor: editor, avoiding: panelFrame, sidebarOnRight: mirrored)
                     .transition(.opacity)
             }
         }
@@ -66,6 +70,13 @@ struct StageChrome: View {
         .animation(HmmMotion.standard.animation(reduceMotion: reduceMotion), value: editor.openPanel)
         .animation(HmmMotion.standard.animation(reduceMotion: reduceMotion), value: showsInspector)
         .animation(HmmMotion.gentle.animation(reduceMotion: reduceMotion), value: editor.clustersResting)
+    }
+
+    private var mirrored: Bool { hand == HmmHand.left.rawValue }
+
+    /// The sidebar, dragged along its edge by the grip under it (U8).
+    private var sidebar: some View {
+        HmmEdgeSlide(key: YourSettings.sidebarPlace) { EditorSidebar(editor: editor) }
     }
 
     /// The object panel floats while something is selected (a chip while something bigger is open). While sketching it
@@ -79,30 +90,46 @@ struct StageChrome: View {
     /// The document and the app: Home, Actions, Look, the Library (U5: the Select button left; the lasso is in the
     /// quick menu, the three-finger menu and the empty stage's hold menu).
     private var leadingCluster: some View {
-        HmmCornerCluster([
-            HmmClusterItem(id: "home", systemName: "square.grid.2x2", label: "Home") { app.closeEditor() },
-            item(.actions, "ellipsis.circle", "Actions"),
-            item(.look, "paintpalette", "Look"),
-            item(.library, "books.vertical", "Library")
-        ], resting: editor.clustersResting) { editor.wakeClusters() }
-            .overlay(alignment: .bottomLeading) {
-                if !editor.clustersResting { SceneNameDoor(editor: editor).offset(x: HmmSpacing.xs, y: 30) }
-            }
+        HmmCornerCluster(ChromeGroup.document.visible(documentLayout).compactMap(documentItem), resting: editor.clustersResting) {
+            editor.wakeClusters()
+        }
+        .overlay(alignment: mirrored ? .bottomTrailing : .bottomLeading) {
+            if !editor.clustersResting { SceneNameDoor(editor: editor).offset(x: mirrored ? -HmmSpacing.xs : HmmSpacing.xs, y: 30) }
+        }
+    }
+
+    private func documentItem(_ id: String) -> HmmClusterItem? {
+        switch id {
+        case "home": HmmClusterItem(id: "home", systemName: "square.grid.2x2", label: "Home") { app.closeEditor() }
+        case "actions": item(.actions, "ellipsis.circle", "Actions")
+        case "look": item(.look, "paintpalette", "Look")
+        case "library": item(.library, "books.vertical", "Library")
+        default: nil
+        }
     }
 
     /// The making tools, in the order a thing gets made: Model, Draw (U5: Draw and Paint are one; its bar is under the
     /// stage, no panel), Rig, and Animate (it calls the timeline).
     private var trailingCluster: some View {
-        HmmCornerCluster([
-            item(.model, "cube", "Model", on: editor.tool == .model && !editor.isSketching),
+        HmmCornerCluster(ChromeGroup.making.visible(makingLayout).compactMap(makingItem), resting: editor.clustersResting) {
+            editor.wakeClusters()
+        }
+    }
+
+    private func makingItem(_ id: String) -> HmmClusterItem? {
+        switch id {
+        case "model": item(.model, "cube", "Model", on: editor.tool == .model && !editor.isSketching)
+        case "draw":
             HmmClusterItem(id: "draw", systemName: editor.drawBrush.systemImage, label: "Draw", isOn: editor.isDrawing, accent: editor.isDrawing) {
                 editor.toggleDraw()
-            },
-            item(.rig, "figure.arms.open", "Rig", on: editor.tool == .rig),
+            }
+        case "rig": item(.rig, "figure.arms.open", "Rig", on: editor.tool == .rig)
+        case "animate":
             HmmClusterItem(id: "animate", systemName: "figure.walk.motion", label: "Animate", isOn: editor.animatesNow, accent: editor.animatesNow) {
                 editor.toggleAnimate()
             }
-        ], resting: editor.clustersResting) { editor.wakeClusters() }
+        default: nil
+        }
     }
 
     /// A cluster button. `on` is the tool in the hand: with chrome restraint, the one thing that wears the accent.
@@ -117,23 +144,28 @@ struct StageChrome: View {
 
     private var bottomRow: some View {
         HStack(alignment: .bottom, spacing: HmmSpacing.s) {
-            if editor.flying {
-                FlyPad(editor: editor).transition(.scale.combined(with: .opacity))
-            } else if editor.tool == .flipbook {
-                FlipbookTimecode(editor: editor)
-            } else if showsJoystick, !editor.selection.isEmpty, editor.tool == .select, editor.performPhase == .idle, !editor.directorView {
-                JoystickPad(editor: editor)
-                    .transition(.scale.combined(with: .opacity))
-            }
+            if mirrored { ViewControls(editor: editor, mirrored: true) } else { handCorner }
             Spacer()
             ToolOptionsBar(editor: editor)
             Spacer()
-            ViewControls(editor: editor)
+            if mirrored { handCorner } else { ViewControls(editor: editor, mirrored: false) }
         }
         .padding(HmmSpacing.m)
-        .padding(.leading, sidebarOnRight ? 0 : 56)
-        .padding(.trailing, sidebarOnRight ? 56 : 0)
+        .padding(.leading, mirrored ? 0 : 56)
+        .padding(.trailing, mirrored ? 56 : 0)
         .frame(maxHeight: .infinity, alignment: .bottom)
+    }
+
+    /// The corner under the hand: flying's sticks, the flipbook's timecode, or the joystick.
+    @ViewBuilder private var handCorner: some View {
+        if editor.flying {
+            FlyPad(editor: editor).transition(.scale.combined(with: .opacity))
+        } else if editor.tool == .flipbook {
+            FlipbookTimecode(editor: editor)
+        } else if showsJoystick, !editor.selection.isEmpty, editor.tool == .select, editor.performPhase == .idle, !editor.directorView {
+            JoystickPad(editor: editor)
+                .transition(.scale.combined(with: .opacity))
+        }
     }
 }
 
@@ -186,28 +218,41 @@ private struct SceneNameDoor: View {
 /// timeline comes with Animate; framing is a finger's double-tap and the quick menu's.
 private struct ViewControls: View {
     let editor: EditorModel
+    let mirrored: Bool
     @AppStorage(AppSettings.showsJoystick) private var showsJoystick = true
     @AppStorage(AppSettings.showsViewCube) private var showsViewCube = true
+    @AppStorage(ChromeGroup.view.storageKey) private var viewLayout = Data()
+
+    private var shown: [String] { ChromeGroup.view.visible(viewLayout) }
 
     var body: some View {
         // The view cube sits in the view corner, above its row (U6); hidden, the views menu takes its place.
-        VStack(alignment: .trailing, spacing: HmmSpacing.xs) {
-            if showsViewCube {
+        VStack(alignment: mirrored ? .leading : .trailing, spacing: HmmSpacing.xs) {
+            if showsViewCube, shown.contains("views") {
                 ViewCube(editor: editor)
                     .padding(HmmSpacing.xxs)
                     .hmmGlass(in: RoundedRectangle(cornerRadius: 14, style: .continuous), interactive: false)
             }
-            row
+            if shown.contains(where: { $0 != "views" }) || !showsViewCube { row }
+        }
+    }
+
+    @ViewBuilder
+    private func control(_ id: String) -> some View {
+        switch id {
+        case "views": if !showsViewCube { viewsMenu }
+        case "camera": CameraButton(editor: editor)
+        case "joystick":
+            HmmButton("gamecontroller", label: "Joystick", isOn: showsJoystick) { showsJoystick.toggle() }
+                .accessibilityIdentifier("joystick-toggle")
+        case "snap": SnapMagnet(editor: editor)
+        default: EmptyView()
         }
     }
 
     private var row: some View {
         HStack(spacing: HmmSpacing.xxs) {
-            if !showsViewCube { viewsMenu }
-            CameraButton(editor: editor)
-            HmmButton("gamecontroller", label: "Joystick", isOn: showsJoystick) { showsJoystick.toggle() }
-                .accessibilityIdentifier("joystick-toggle")
-            SnapMagnet(editor: editor)
+            ForEach(shown, id: \.self) { control($0) }
         }
         .padding(HmmSpacing.xxs)
         .environment(\.hmmInsideGlass, true)

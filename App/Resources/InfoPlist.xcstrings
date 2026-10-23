@@ -10,9 +10,9 @@
     },
     "NSLocalNetworkUsageDescription" : {
       "localizations" : {
-        "ar" : { "stringUnit" : { "state" : "translated", "value" : "يتواصل Maquette مع حاسوبك المقترن (جسر الذكاء الاصطناعي والملفات) ومع آيفونك (التقاط الوجه) على شبكتك المحلية فقط." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Maquette talks to your paired laptop (AI bridge, files) and your iPhone (face capture) on your local network only." } },
-        "it" : { "stringUnit" : { "state" : "translated", "value" : "Maquette comunica con il tuo portatile abbinato (bridge IA, file) e con il tuo iPhone (cattura del viso) solo sulla tua rete locale." } }
+        "ar" : { "stringUnit" : { "state" : "translated", "value" : "يتواصل Maquette مع حاسوبك المقترن (جسر الذكاء الاصطناعي والملفات) ومع آيفونك بجانب الآيباد (وجهك، كاميرا، جهاز تحكم، الواقع المعزز والمسح) على شبكتك المحلية فقط." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Maquette talks to your paired laptop (AI bridge, files) and to your iPhone beside your iPad (your face, a camera, a remote, AR and scans) on your local network only." } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Maquette comunica con il tuo portatile abbinato (bridge IA, file) e con il tuo iPhone accanto all'iPad (il tuo viso, una videocamera, un telecomando, la realtà aumentata e le scansioni) solo sulla tua rete locale." } }
       }
     },
     "NSMicrophoneUsageDescription" : {

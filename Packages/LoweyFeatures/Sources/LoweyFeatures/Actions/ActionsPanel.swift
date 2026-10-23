@@ -29,6 +29,31 @@ struct ActionsPanel: View {
                         }
                     }
                 }
+                // U8: show it on a screen, leave notes on it, review it over FaceTime, hand it to the iPhone.
+                PanelSection("Show and review") {
+                    TileGrid {
+                        TileButton(title: "Present", systemName: "play.tv", identifier: "present") {
+                            editor.openPanel = nil
+                            editor.startPresenting()
+                        }
+                        TileButton(title: "Notes", systemName: "mappin.and.ellipse", identifier: "open-notes", isOn: editor.together.notesShown) {
+                            editor.setNotesShown(!editor.together.notesShown)
+                        }
+                        TileButton(title: "Add a note", systemName: "plus.bubble", identifier: "add-note") { editor.beginNote() }
+                        if editor.together.notesShown, editor.baseScene.notes.contains(where: \.resolved) {
+                            TileButton(title: "Clear resolved", systemName: "checkmark.bubble", identifier: "clear-resolved") {
+                                editor.clearResolvedNotes()
+                            }
+                        }
+                        if app.review.call.isOn, !editor.together.reviewing {
+                            TileButton(title: "Review over FaceTime", systemName: "shareplay", identifier: "start-review") {
+                                editor.openPanel = nil
+                                app.startReview()
+                            }
+                        }
+                        TileButton(title: "Your iPhone", systemName: "iphone", identifier: "open-phone") { open(.phone) }
+                    }
+                }
                 PanelSection("Project") {
                     TileGrid {
                         if boardEnabled {

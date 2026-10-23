@@ -31,6 +31,7 @@ reference and stays.
 | Motion design (D1): logos from SVG as solids, fonts brought in, letters that animate (seven presets), clones (grid, circle, line, a path) with effects (random, delay, push) through fields (everywhere, near a point, a ripple), links between things and to a sound's loudness, bass or beat, morphs, the seamless-loop check and Close the loop | **0.23.** D-459 … D-475. Copies live only in the shown scene (D-463); morphs are between shapes made here (D-467); 3D files carry copies and letters at rest (D-474). |
 | Looks & the library (L2): Painterly, Watercolour, Gouache, Paperman, Anime cel, Clean product, Pixel; the Finish on any Look (Ben-Day, boil, misregistration, newsprint, riso, canvas; impact frames, focus lines, Kirby dots aimed at a thing); the Look, Effect and Part Studios; `.maquettepack` packs with an author and a licence; PSD, PSB and Procreate drawings as dioramas; eight grounds; stacks as folders; the Keeper's Tower sample turning | **0.24.** D-476 … D-496. The paint pass is a whole-frame pass (D-477); Pixel is the scene's (D-481); packs carry data only (D-485). |
 | Guest kits (G1): Set up for Room, Print, Game, Study; Room's roofs, columns, beams, railings, people, terrain, plans per floor with room areas, elevations, walking through, underlays to scale, match a photo, scan a room, IFC / DXF / PDF / SVG; Print's overhangs, best way up, split with pegs, hollow, engraving, ISO screw holes and printed threads, the jar and lid, bolts and nuts, multi-colour 3MF, scan an object; Study's exploded view and technical drawing; Game's greybox, freeze, levels for Godot / Unity / Unreal; a mannequin, layered PSD, Procreate palettes, papercraft and laser nets, ink as SVG | **0.25.** D-497 … D-523. Doors and windows leave IFC inside their walls (D-502); gable and hip roofs cover the smallest rectangle (D-503); the iPhone companion's scans come with U8 (D-506). |
+| Yours (U8): the left hand mirrors the chrome, each corner arranged (order, hidden) within itself, the sidebar along its edge, rebindable keys, defaults for the +; Present (the film, a walk, the model); review notes on spots, answered in place; reviews over FaceTime; the iPhone companion (face, camera, remote, AR, room and object scans) | **0.26.** D-524 … D-539. Reviews need the developer account's signing (D-532); the stage's transport keys stay fixed (D-527). |
 | Texture (the full colour picker, layers, smudge on paint) | U7 |
 | Mechanisms + AR, web layer (held) | M12 |
 | Content and finish: the house kit, waiting designed, the Board's finish | M14 |
@@ -41,6 +42,25 @@ reference and stays.
 Cast is gone (D-227): what said *Cast ▸ Voice & face*, *Triggers* and *Life* below is the selected character's
 button beside Record in the timeline's Perform; *Cast ▸ Rig* is Rig; *Make it part of* is in Rig. Everything below
 still works the same way.
+
+### Yours (0.26)
+
+- **Your layout** (D-524 … D-526): Settings ▸ Yours ▸ Your layout: Hand (left mirrors the corners and the sidebar), the
+  document's corner, the making corner and the view corner in your order with any hidden (Home and Actions stay), the
+  sidebar's place (the short line under it drags it along its edge), Reset layout.
+- **Keyboard** (D-527): Settings ▸ Yours ▸ Keyboard: every menu-bar command, tap and press the new keys; hold a row for No
+  key or Its own key.
+- **New projects** (D-528): Settings ▸ Yours ▸ New projects: the + makes your set-up, Look, units and brush. Your name
+  signs your notes.
+- **Present** (D-530): Actions ▸ Present (⇧⌘P): the film round and round, Walk through, Show the model; a tap for the
+  controls; AirPlay or a cable shows it on a TV.
+- **Notes** (D-531): Actions ▸ Notes (⇧⌘N), Add a note, then the spot; a pin's tap opens its thread (reply, Resolve,
+  Delete); Clear resolved.
+- **Review over FaceTime** (D-532): in Actions during a FaceTime call: the project goes to the others; the same view,
+  notes for everyone.
+- **Your iPhone** (D-533): Actions ▸ Your iPhone: your face, Camera, Remote, See it in AR, Scan a room, Scan an object; on
+  iPads without LiDAR, Room's and Print's scan tiles are Scan with your iPhone. On the iPhone the app is the companion.
+- **The bridge** (D-534): `note` (add, list, reply, resolve, reopen, delete).
 
 ### Guest kits (0.25)
 

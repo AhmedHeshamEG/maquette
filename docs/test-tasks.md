@@ -3,6 +3,18 @@
 One task per feature for the two test weeks (between M14 and M16), written for its person in `studio-h/USERS.md`. A
 task says what to make, never which buttons to press; the tester says where they got stuck.
 
+## 0.26 (U8): yours
+
+- **A left-handed tester:** the layout set for their hand, the buttons they never use hidden, a model made and animated
+  that way; then the layout reset.
+- **The architect (Sara):** her flat presented on a TV, walked through from the iPhone, with the professor's notes left on
+  two walls and answered.
+- **The explainer maker:** a review over FaceTime with a friend on another iPad, both turning the model, three notes left
+  and resolved (TestFlight build).
+- **The filmmaker:** a camera move made by walking round with the iPhone, recorded as keys.
+- **The maker:** an object on the desk scanned with an iPhone and landed on an iPad without LiDAR.
+- **Everyone:** two commands given new keys, used for a whole session.
+
 ## 0.25 (G1): guest kits
 
 - **The architect (Sara):** her flat from a PDF plan she was given: traced at real scale, a pitched roof, two people in it,

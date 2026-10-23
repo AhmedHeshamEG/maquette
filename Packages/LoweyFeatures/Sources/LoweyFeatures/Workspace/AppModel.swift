@@ -45,6 +45,10 @@ public final class AppModel {
     /// The window that edits (Stage Manager can open more; the others offer to take over or become monitors).
     var primaryWindow: UUID?
     @ObservationIgnored private(set) lazy var bridge = BridgeModel(app: self)
+    /// A review over FaceTime (U8).
+    let review = ReviewRoom()
+    /// The keys the menu bar answers to, as the person set them (Settings ▸ Keyboard, U8).
+    let keyboard = HmmKeyboard(commands: KeyCommands.all)
     /// Shows exports outside the app (Live Activity, notification); set by the app target.
     @ObservationIgnored public weak var exportReporter: (any ExportProgressReporting)?
     @ObservationIgnored let diagnostics = DiagnosticsCenter.shared
@@ -57,6 +61,12 @@ public final class AppModel {
         let base = AppIdentity.isUITesting ? documents.appendingPathComponent("UITest-\(UUID().uuidString)") : documents
         let locator = DocumentLocator(containerIdentifier: nil, subfolder: "Projects", localRoot: base)
         self.init(projects: locator.localFolder, library: base.appendingPathComponent("Lowey Library"))
+        // UI tests start from the layout as it comes, unless a test relaunches to see its layout kept (at launch, before
+        // anything reads it).
+        if AppIdentity.isUITesting, !ProcessInfo.processInfo.arguments.contains("-keep-layout") {
+            YourSettings.resetLayout()
+            keyboard.resetAll()
+        }
     }
 
     /// Projects and library in the given folders, on this device (the app's own, or the Home benchmark's scratch ones).
@@ -75,6 +85,8 @@ public final class AppModel {
         guard !started else { return }
         started = true
         diagnostics.start()
+        YourSettings.settleHand()
+        review.listen(for: self)
         if diagnostics.previousSessionCrashed, !AppIdentity.isUITesting {
             show("Maquette quit unexpectedly last time. Your work was autosaved.", kind: .error)
         }
