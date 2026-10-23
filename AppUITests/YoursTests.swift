@@ -127,8 +127,9 @@ final class YoursTests: XCTestCase {
         XCTAssertTrue(element("present").waitForExistence(timeout: 8))
         XCTAssertFalse(element("Actions").exists, "the chrome is gone while presenting")
         shot("Presenting")
-        if !element("present-done").exists { stage.tap() }
-        XCTAssertTrue(tap("present-done"))
+        // The controls fade after three seconds: a tap on the stage brings them back, then Done at once.
+        stage.tap()
+        XCTAssertTrue(tap("present-done", timeout: 2))
         XCTAssertTrue(element("Actions").waitForExistence(timeout: 8), "the chrome is back")
         // A note on the cube, then an answer in its thread.
         XCTAssertTrue(tap("Actions"))
