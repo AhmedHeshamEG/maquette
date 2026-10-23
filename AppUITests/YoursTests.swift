@@ -14,6 +14,14 @@ final class YoursTests: XCTestCase {
         app.launch()
     }
 
+    /// Whatever happened, the next test starts from the layout as it comes (a launch without -keep-layout resets it).
+    override func tearDown() async throws {
+        app.terminate()
+        app.launchArguments = ["-ui-testing"]
+        app.launch()
+        app.terminate()
+    }
+
     private func element(_ identifier: String) -> XCUIElement {
         app.descendants(matching: .any)[identifier].firstMatch
     }
@@ -97,8 +105,10 @@ final class YoursTests: XCTestCase {
             app.collectionViews.firstMatch.swipeUp()
         }
         XCTAssertTrue(tap("layout-reset"))
-        XCTAssertTrue(app.buttons["layout-reset-confirm"].waitForExistence(timeout: 5) || app.buttons["Reset layout"].exists)
-        if app.buttons["layout-reset-confirm"].exists { app.buttons["layout-reset-confirm"].tap() } else { app.buttons["Reset layout"].tap() }
+        // The iPad shows the confirmation as a popover; its button can appear twice in the tree.
+        let confirm = app.buttons.matching(identifier: "layout-reset-confirm").firstMatch
+        XCTAssertTrue(confirm.waitForExistence(timeout: 5))
+        confirm.tap()
         closeSettings()
         XCTAssertLessThan(middle("Home"), 0.5, "reset: the document's corner is back on the left")
         XCTAssertGreaterThan(middle("Model"), 0.5, "reset: the making corner is back on the right")
