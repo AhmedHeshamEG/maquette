@@ -91,6 +91,11 @@ final class YoursTests: XCTestCase {
         assertLeftHanded("after a relaunch")
 
         openYourLayout(fromHome: false)
+        // Reset layout is the last row: bring it on screen first.
+        let reset = element("layout-reset")
+        for _ in 0 ..< 6 where !(reset.exists && reset.isHittable) {
+            app.collectionViews.firstMatch.swipeUp()
+        }
         XCTAssertTrue(tap("layout-reset"))
         XCTAssertTrue(app.buttons["layout-reset-confirm"].waitForExistence(timeout: 5) || app.buttons["Reset layout"].exists)
         if app.buttons["layout-reset-confirm"].exists { app.buttons["layout-reset-confirm"].tap() } else { app.buttons["Reset layout"].tap() }
