@@ -6,11 +6,11 @@ phase plan (Q1, M12, X1, M14, the test weeks, M16, then 1.0) lives in studio-h's
 
 ## Before launch
 
-- [ ] The first TestFlight build (Q1): the developer account, the App Store Connect key in the repo secrets, the
-      paid-account entitlements (iCloud Drive, the app group, `com.apple.developer.group-session`).
-- [ ] Every device checklist below run once on a real iPad, on the TestFlight build, from one sweep list (Q1). Each
+- [ ] Every device checklist below run once on a real iPad, on the sideloaded build, from one sweep list (Q1). Each
       section's "device checklist" line is ticked when the sweep covers it.
-- [ ] Reviews over FaceTime tested on the TestFlight build (D-532), with the two-iPad SharePlay check.
+- [ ] At the very end (L1): the developer account, the App Store Connect key in the repo secrets, the paid-account
+      entitlements (iCloud Drive, the app group, `com.apple.developer.group-session`) and the first TestFlight build.
+- [ ] Reviews over FaceTime tested on that TestFlight build (D-532), with the two-iPad SharePlay check.
 - [ ] The floating Reference window rebuilt to Procreate's standard: a close button, modes, moving and resizing
       (Q1).
 - [ ] Placing the sheet on a face: a preview on the lit face, fitted and lined up to it, snaps (Q1).
