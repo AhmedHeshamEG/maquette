@@ -120,6 +120,9 @@ enum KeyCommands {
     static let scenePresent = HmmKeyCommand("scene.present", "Present", menu: "Scene", HmmKeyCombo("p", shift: true))
     static let sceneNotes = HmmKeyCommand("scene.notes", "Notes", menu: "Scene", HmmKeyCombo("n", shift: true))
     static let sceneYourIPhone = HmmKeyCommand("scene.yourIPhone", "Your iPhone…", menu: "Scene", nil)
+    // M12: the scene in the room.
+    static let sceneViewInAR = HmmKeyCommand("scene.viewInAR", "View in AR", menu: "Scene", HmmKeyCombo("a", shift: true, option: true))
+    static let sceneShareForAR = HmmKeyCommand("scene.shareForAR", "Share for AR…", menu: "Scene", nil)
 
     static let all: [HmmKeyCommand] = [
         editUndo,
@@ -226,6 +229,8 @@ enum KeyCommands {
         performMicrophone,
         scenePresent,
         sceneNotes,
-        sceneYourIPhone
+        sceneYourIPhone,
+        sceneViewInAR,
+        sceneShareForAR
     ]
 }

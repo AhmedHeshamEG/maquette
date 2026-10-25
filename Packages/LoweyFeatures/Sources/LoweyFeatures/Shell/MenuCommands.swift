@@ -168,6 +168,10 @@ public struct LoweyMenuCommands: Commands {
                 .hmmKeyboardShortcut(KeyCommands.sceneNotes, in: keyboard)
             Button("Your iPhone…") { editor?.sheet = .phone }
                 .hmmKeyboardShortcut(KeyCommands.sceneYourIPhone, in: keyboard)
+            if stageEditor?.canShowAR == true {
+                Button("View in AR") { stageEditor?.openAR() }.hmmKeyboardShortcut(KeyCommands.sceneViewInAR, in: keyboard)
+            }
+            Button("Share for AR…") { stageEditor?.shareForAR() }.hmmKeyboardShortcut(KeyCommands.sceneShareForAR, in: keyboard)
             Divider()
             Button("Reference Window") { stageEditor?.toggleReferenceWindow() }
                 .hmmKeyboardShortcut(KeyCommands.sceneReferenceWindow, in: keyboard)
@@ -216,17 +220,15 @@ public struct LoweyMenuCommands: Commands {
             Button("Pull Focus to the Selection") { editor?.focusOnSelection(pull: true) }
                 .hmmKeyboardShortcut(KeyCommands.timelinePullFocusToTheSelection, in: keyboard)
         }
-        // Live performance airs as 1.2 (held in App Store builds until then).
-        if Held.isOn(.livePerformance) {
-            CommandMenu("Perform") {
-                Button(editor?.live.voiceOn == true ? "Stop the Microphone" : "Mouth from the Microphone") { editor?.toggleVoice() }
-                    .hmmKeyboardShortcut(KeyCommands.performMicrophone, in: keyboard)
-                Divider()
-                ForEach(TriggerDeck.keys, id: \.self) { key in
-                    Button("Trigger \(key)") { editor?.fireTriggerKey(key) }
-                        .keyboardShortcut(KeyEquivalent(Character(key)), modifiers: [])
-                        .disabled(board != nil || editor?.hasTrigger(key: key) != true)
-                }
+        // Live performance (M10): the microphone and the trigger keys.
+        CommandMenu("Perform") {
+            Button(editor?.live.voiceOn == true ? "Stop the Microphone" : "Mouth from the Microphone") { editor?.toggleVoice() }
+                .hmmKeyboardShortcut(KeyCommands.performMicrophone, in: keyboard)
+            Divider()
+            ForEach(TriggerDeck.keys, id: \.self) { key in
+                Button("Trigger \(key)") { editor?.fireTriggerKey(key) }
+                    .keyboardShortcut(KeyEquivalent(Character(key)), modifiers: [])
+                    .disabled(board != nil || editor?.hasTrigger(key: key) != true)
             }
         }
     }

@@ -5,11 +5,24 @@ import SwiftUI
 /// The editor's sheets, one at a time (`EditorModel.sheet`).
 struct EditorSheets: ViewModifier {
     @Bindable var editor: EditorModel
+    @Environment(\.openWindow) private var openWindow
 
     func body(content: Content) -> some View {
         content.sheet(item: $editor.sheet) { sheet in
             sheetContent(sheet)
                 .hmmThemed(.lowey, mode: HmmThemeMode(rawValue: UserDefaults.standard.string(forKey: HmmThemeMode.storageKey) ?? "") ?? .dark)
+        }
+        .sheet(item: Binding(get: { editor.ar.share.map(IdentifiedURL.init) }, set: { editor.ar.share = $0?.url })) { ShareSheet(items: [$0.url]) }
+        // The bridge's `app monitor` (M12): only a view can open a window.
+        .onChange(of: editor.ar.monitorRequested) { _, asked in
+            guard asked else { return }
+            editor.ar.monitorRequested = false
+            openWindow(id: LoweyWindow.monitor)
+        }
+        // M12: the scene in the room fills the screen.
+        .fullScreenCover(isPresented: $editor.ar.open) {
+            ARScreen(editor: editor)
+                .hmmThemed(.lowey, mode: .dark)
         }
     }
 
