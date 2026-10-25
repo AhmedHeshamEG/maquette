@@ -61,6 +61,11 @@ public enum ScriptReference {
     {"do":"note","text":"Taller back?","on":"Chair"}   ("at":[x,y,z] for a spot; on a thing it follows the thing)
     {"do":"note","op":"list"}   {"do":"note","op":"reply","note":1,"text":"Done"}   {"do":"note","op":"resolve|reopen|delete","note":1}
 
+    The Reference window (Q1): floats over the stage; not an edit, nothing to undo
+    {"do":"reference","op":"open","mode":"canvas|image|face"}   {"do":"reference","op":"mode","mode":"face"}   {"do":"reference","op":"close"}
+    {"do":"reference","op":"image","image":"references/….png"}   (POST the picture to /v2/media?as=reference for the name)
+    {"do":"reference","op":"frame"}   (Canvas: the whole scene again, from where the stage looks)
+
     Film (F1; "camera" defaults to the shot camera)
     {"do":"light","type":"panel|bulb|spot|sun","name":"Window","at":[2,2,2],"size":[1.2,0.8],"aim":"Hero"}   (panel = a soft panel)
     {"do":"lighting","recipe":"three-point|golden-hour|moonlit|neon|key-warm-world-cool|noir-single-source|golden-rim|monitor-glow|studio-soft","subject":"Hero"}

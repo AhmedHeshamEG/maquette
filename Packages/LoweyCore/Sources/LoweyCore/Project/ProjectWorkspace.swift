@@ -98,6 +98,8 @@ public struct ProjectWorkspace: Codable, Hashable, Sendable {
     public var planeGuide: DrawingGuide?
     /// Pictures pinned from the Schizzo board, floating over the stage.
     public var references: [ReferenceCard]
+    /// The Reference window (Q1): where it is, how big, what it shows. Nil: never opened in this project.
+    public var referenceWindow: ReferenceWindow?
     /// A video behind the stage to animate over, frame by frame (F1), nil when there's none.
     public var rotoscope: Rotoscope?
 
@@ -129,7 +131,7 @@ public struct ProjectWorkspace: Codable, Hashable, Sendable {
 
     private enum CodingKeys: String, CodingKey {
         case schemaVersion, template, timeline, timelineHeight, snap, showsGrid, shapeSize, firstPanel, units, printBed, section, showsDimensions
-        case frameGuide, planeGuide, references, rotoscope
+        case frameGuide, planeGuide, references, rotoscope, referenceWindow
     }
 
     /// Unknown or missing values fall back to the defaults: a damaged or future workspace never stops a project opening.
@@ -152,7 +154,13 @@ public struct ProjectWorkspace: Codable, Hashable, Sendable {
         showsDimensions = (try? container.decodeIfPresent(Bool.self, forKey: .showsDimensions)) ?? defaults.showsDimensions
         frameGuide = try? container.decodeIfPresent(DrawingGuide.self, forKey: .frameGuide)
         planeGuide = try? container.decodeIfPresent(DrawingGuide.self, forKey: .planeGuide)
-        references = ((try? container.decodeIfPresent([ReferenceCard].self, forKey: .references)) ?? []).map(\.clamped)
+        let cards = ((try? container.decodeIfPresent([ReferenceCard].self, forKey: .references)) ?? []).map(\.clamped)
+        if let window = try? container.decodeIfPresent(ReferenceWindow.self, forKey: .referenceWindow) {
+            referenceWindow = window
+            references = cards
+        } else {
+            (referenceWindow, references) = ReferenceWindow.migrating(cards)
+        }
         rotoscope = (try? container.decodeIfPresent(Rotoscope.self, forKey: .rotoscope))?.clamped
     }
 }

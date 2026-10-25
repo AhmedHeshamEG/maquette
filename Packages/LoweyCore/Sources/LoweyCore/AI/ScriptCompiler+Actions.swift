@@ -67,6 +67,7 @@ extension ScriptState {
         "design": { try $0.design($1) },
         "guest": { try $0.guest($1) },
         "note": { try $0.note($1) },
+        "reference": { try $0.reference($1) },
         "command": { try $0.rawCommand($1) }
     ]
 

@@ -804,6 +804,7 @@
             "preset",
             "profile",
             "recolor",
+            "reference",
             "remove",
             "rename",
             "scaleTo",
@@ -3460,6 +3461,39 @@
               "target",
               "slot"
             ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "do": {
+                "const": "reference"
+              }
+            }
+          },
+          "then": {
+            "description": "Q1's Reference window over the stage (not an edit): open it, show the whole scene (canvas), a picture already in the project (image, named by /v2/media?as=reference) or the front camera (face); frame the whole scene again; close it.",
+            "properties": {
+              "op": {
+                "enum": [
+                  "open",
+                  "mode",
+                  "image",
+                  "frame",
+                  "close"
+                ]
+              },
+              "mode": {
+                "enum": [
+                  "canvas",
+                  "image",
+                  "face"
+                ]
+              },
+              "image": {
+                "type": "string"
+              }
+            }
           }
         },
         {

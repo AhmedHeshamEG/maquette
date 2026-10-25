@@ -49,6 +49,8 @@ public struct ScriptResult: Sendable {
     /// Files the command names that aren't in the project yet (paint tiles, unwraps): written under assets before it's
     /// performed.
     public var files: [String: Data] = [:]
+    /// What the script asks of the Reference window (Q1), in order; not part of the command.
+    public var reference: [ReferenceAsk] = []
 }
 
 public struct ScriptError: Error, Equatable, CustomStringConvertible {
@@ -80,7 +82,8 @@ public enum ScriptCompiler {
             }
         }
         let command: EditCommand? = state.commands.isEmpty ? nil : .batch(script.title, state.commands)
-        return ScriptResult(command: command, report: state.report, created: state.created, document: state.document, files: state.files)
+        return ScriptResult(command: command, report: state.report, created: state.created, document: state.document, files: state.files,
+                            reference: state.reference)
     }
 
     /// Compiles and describes the change without applying it (the AI proposes, you decide).
@@ -158,6 +161,8 @@ struct ScriptState {
     var operations: Operations
     /// Files made by the script (paint), by asset key.
     var files: [String: Data] = [:]
+    /// The Reference window's asks (Q1).
+    var reference: [ReferenceAsk] = []
 
     init(document: Document, context: ScriptContext) {
         self.document = document
