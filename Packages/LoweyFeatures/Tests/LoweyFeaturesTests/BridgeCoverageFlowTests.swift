@@ -23,6 +23,7 @@ final class BridgeCoverageFlowTests: XCTestCase {
         let script = """
         {"version": 3, "title": "Asks", "actions": [
           {"do": "add", "shape": "cube", "name": "Box"},
+          {"do": "camera", "name": "Shot"},
           {"do": "app", "op": "playhead", "value": 1.5},
           {"do": "app", "op": "select", "value": "Box"},
           {"do": "app", "op": "panel", "value": "look"},
@@ -36,7 +37,7 @@ final class BridgeCoverageFlowTests: XCTestCase {
         XCTAssertEqual(editor.time, 1.5, accuracy: 1e-9)
         XCTAssertEqual(editor.selection.compactMap { editor.baseScene.objects[$0]?.name }, ["Box"])
         XCTAssertEqual(editor.openPanel, .look)
-        XCTAssertTrue(editor.directorView)
+        XCTAssertTrue(editor.directorView, "through the shot's camera (it needs one)")
         XCTAssertFalse(editor.animate.ghosts)
     }
 
