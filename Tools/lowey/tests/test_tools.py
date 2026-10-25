@@ -210,6 +210,8 @@ def test_the_sixteen_tools_go_through_the_bridge(bridge_host, monkeypatch, tmp_p
     mark.write_bytes(b"<svg/>")
     mcp_server.add_media(str(mark), logo=True)
     assert "as=logo" in RECEIVED[-1][1], "an SVG stands up as a logo"
+    mcp_server.add_media(str(picture), reference=True)
+    assert "as=reference" in RECEIVED[-1][1], "a picture to work from goes to the Reference window"
     made = tmp_path / "Graph.mov"
     made.write_bytes(b"MOV")
     rendered = []
