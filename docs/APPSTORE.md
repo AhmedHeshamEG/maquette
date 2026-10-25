@@ -55,7 +55,7 @@ own HTML in a sandbox with no network; it isn't a browser.
   and `App/Widgets/PrivacyInfo.xcprivacy` (the export Live Activity, nothing accessed).
 - **Network:** only what the user starts: sharing files, iCloud Drive sync, SharePlay reviews over FaceTime, the
   iPhone companion and the assistant bridge on the local network.
-- **Permissions:** camera (the iPad as a film camera, face capture, acting out), microphone (voiceover), speech
+- **Permissions:** camera (the iPad as a film camera, face capture, acting out, the Reference window's Face), microphone (voiceover), speech
   recognition (word timings, on device), photo library add (saving exports), local network (bridge, iPhone
   companion), LiDAR scans through ARKit. Each prompt's line is in `App/Resources/InfoPlist.xcstrings`.
 

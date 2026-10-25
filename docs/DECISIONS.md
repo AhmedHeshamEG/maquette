@@ -3390,3 +3390,92 @@ pins are projected only while shown. The device checklist runs Present's film on
 does). Nothing leaves the local network but a review, which goes only to the people on the call, through FaceTime.
 
 **D-539 — Translations still ride along.** The new strings were translated into Italian and Arabic for the catalog check.
+
+## Maquette 0.27 — Q1, fixes and the device sweep
+
+**D-540 — What was wrong with the Reference window.** Hesham on 0.26: "buggy, doesn't work as intended at all, doesn't
+even have a close button or controls". Read from the code in this session (no iPad here; the sweep checks the rebuild on
+the device): (1) no close, only a fold to a 52-point chip and Delete in its hold menu; (2) it lost its place: every
+Actions ▸ Reference made a *new* card at a stepped spot (`ReferenceCard.place(after:)`), so windows stacked and a deleted
+one never came back; (3) dragging clamped only its middle to the stage, so half of it could hang off an edge or sit over
+the clusters, and it stopped dead where the finger lifted; (4) the hold menu (a UIKit interaction) sat under the SwiftUI
+drag on the whole card, so a drag that started slowly opened the menu; (5) the grip sized the width only and, the card
+being placed by its middle, grew it both ways at once; (6) its fold and grip buttons sat on the picture's corners, so a
+touch near a corner folded or sized it; (7) it showed only a picture. The rebuild answers each one below. *Rejected:*
+patching the card (the window and a pinned card want different things).
+
+**D-541 — One window per project.** `ReferenceWindow` in `workspace.json` (`referenceWindow`): open, mode, where (its
+middle as fractions of the stage), its content's size in points, the picture and how it's zoomed and panned, Canvas's
+camera. It's how the work is seen, so it's never undone. An older project's window cards: the newest open one becomes
+the window's picture, the rest stay floating cards; the Board's pins stay cards. *Rejected:* several windows (Procreate
+has one, and one keeps its place).
+
+**D-542 — It settles.** Dragged by its 44-point bar it follows the finger, glides on a quarter of the throw and settles
+with a spring 12 points from the stage's edges and off the clusters (the shortest way out); a stage that changes size
+settles it again. Its corner sizes it from its top-left (160–900 × 120–900 points), a pinch on the bar sizes it about the
+same corner; the content keeps its own shape, never stretched. ✕ closes it; Actions ▸ Reference and ⌘⌥R open it where
+and as big as it was, on the mode it was left on. *Rejected:* snapping to the corners (Procreate doesn't).
+
+**D-543 — Canvas.** The whole scene, live, from the window's own camera: framed to show everything from the angle the
+stage had when Canvas first opened, kept until ⌖ ("the whole scene, from where you look") frames it again. A second
+`StageView` draws the scene as the stage has it (poses, paint) through that camera at 30 frames a second with 8 lights
+and no helpers. *Rejected:* the shot's camera (that's the Monitor window).
+
+**D-544 — Image.** A picture from Photos, Files, the clipboard or a drop, fitted whole; one finger pans it, two zoom it
+(1–12×) about the point between them; some of it always shows. Import, Paste and Clear sit on its lower edge; More keeps
+the pinned picture's two uses (trace it on the sheet, stand it in the scene). Clear forgets the picture, its file stays
+with the project's media. Paste reads the clipboard only when tapped.
+
+**D-545 — Face.** The front camera, mirrored like a mirror, 1280 × 720 at 24 frames a second, shown and dropped: nothing is
+recorded or kept, nothing leaves the iPad. It asks for the camera only on an iPad that has one; while a face performance
+runs, the camera is that one's and the window says so. The camera line in the Info.plist now names it.
+
+**D-546 — Pick on it.** With Pick (or the quick menu's Eyedropper), a tap on the window takes the colour there into the
+hand: the picture's pixel, the camera's pixel, or on Canvas the paint or colour of the thing under the tap (the stage's
+eyedropper rule, through the window's own picking). *Rejected:* the held finger's loupe on the window: one finger pans
+the picture.
+
+**D-547 — A two-finger tap** on the window hides it for two and a half seconds, then it fades back.
+
+**D-548 — Keys.** ⌘⌥R is Reference Window (Scene menu), as the phase asks; Record Voiceover, which had it, moves to
+⌘⌥⇧R. Both can be rebound in Settings ▸ Keyboard.
+
+**D-549 — The bridge.** `{"do": "reference", "op": "open" | "mode" | "image" | "frame" | "close"}` isn't an edit: it rides
+in `ScriptResult.reference`, is listed in the proposal's report, and the editor applies it after the script's command.
+`POST /v2/media?as=reference` keeps a picture and shows it at once (as `as=environment` lights the world at once);
+`add_media(path, reference=True)` on the laptop. The lowey skill's new module (`modules/reference-window.md`) teaches it.
+
+**D-550 — The sheet on a face.** A finger's tap on a thing with a tool that draws on the sheet lays it on the face's own
+plane: the connected triangles within 0.5° and a hundred-thousandth of the shape's size of the touched one's plane
+(corners welded at a millionth), its flat normal facing the eye. It lines up with the face's longest outline edge (up the
+way nearest the world's up), is as big as the face less a 4% margin and at most two thirds of the view (the old size),
+stays inside the face and snaps within 16 points to the face's middle and edges, with the light tick. It sits a hair
+above the surface (0.1% of its size, 0.5–5 mm) and rides with its object as before. *Rejected:* the largest rectangle
+inside a face that isn't one (the box along the longest edge; strokes land past a sheet's edge anyway).
+
+**D-551 — On a curve.** A patch under 5% of the shape's area whose outline mostly runs on into neighbours at under 25°
+is part of a curved surface: the sheet lies on the tangent plane under the tip, no bigger than the shape seen on that
+plane, and doesn't snap. Over 60,000 triangles (a sculpt) the shape is a curve without the scan, so hovering stays
+quick; a found face is kept while the tip stays on it.
+
+**D-552 — The preview.** The hovering Pencil, resting 0.3 s on a face the sheet isn't on, lights the face and shows the
+sheet's ghost there; sliding moves it from face to face and ticks when it snaps. A finger's tap lays it as the ghost
+showed, and the face lights for a moment as it lands. *Rejected:* "or a finger held" from the phase: a finger held on a
+thing while drawing is the eyedropper (U5), and it stays the eyedropper. Sketches keep laying their own plane on the face
+they start on (exact already).
+
+**D-553 — Exact, from its chip.** A sheet laid on a face shows a chip above the tool's bar: Offset (along its normal from
+where it was laid), Turn (about its normal, snapping to 15° within 4°, with a tick) and Size (its width, its shape kept),
+each dragged as a slider or typed on our number pad; one drag is one undo step for a kept sheet. Done puts the chip away.
+*Rejected:* sliders across the face (sliding on the face does that).
+
+**D-554 — Every tier.** The Canvas window is the one new cost (a second, lighter draw at 30 fps); finding a face is one or
+two passes over the mesh only when the tip reaches a new face. The device sweep times the window on a Tier B iPad.
+
+**D-555 — Permissions.** No new one: the camera's line gains the Reference window. Nothing leaves the device.
+
+**D-556 — Translations still ride along** (Italian and Arabic, for the catalog check).
+
+**D-557 — The store docs.** `docs/APPSTORE.md` and BACKLOG's "Before launch" (from 2026-10-24) were read against
+studio-h's `LAUNCH.md`: name, subtitle, keywords, the price and its launch week, Family Sharing, the education discount,
+"Data Not Collected" and the age rating agree. APPSTORE's permissions line gains the Reference window's Face.
