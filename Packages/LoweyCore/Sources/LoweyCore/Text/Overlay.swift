@@ -87,11 +87,14 @@ public struct OverlayRecipe: Codable, Hashable, Sendable {
     /// The video's length (s). After it ends it holds its last frame, or loops.
     public var videoDuration: Double?
     public var videoLoop: Bool?
+    /// A web piece played over the frame (schema 25; an `.image` overlay whose picture is the piece's frame). Before its
+    /// start it isn't drawn.
+    public var web: WebPiece?
 
     public init(
         shape: Shape, text: String = "", font: Font = .rounded, image: String? = nil, stroke: Double = 0.12, filled: Bool = true,
         aspect: Double = 1, bend: Double = 0, anchor: ObjectID? = nil, video: String? = nil, videoStart: Double? = nil,
-        videoDuration: Double? = nil, videoLoop: Bool? = nil
+        videoDuration: Double? = nil, videoLoop: Bool? = nil, web: WebPiece? = nil
     ) {
         self.shape = shape
         self.text = text
@@ -106,6 +109,7 @@ public struct OverlayRecipe: Codable, Hashable, Sendable {
         self.videoStart = videoStart
         self.videoDuration = videoDuration
         self.videoLoop = videoLoop
+        self.web = web
     }
 
     /// Where in the video the timeline is at `time` (nil before it starts). Frame-exact at 60 fps steps.
@@ -157,15 +161,16 @@ public enum VideoFrameKey {
     }
 
     public static func parse(_ key: String) -> (file: String, time: Double)? {
-        guard let range = key.range(of: "#t=", options: .backwards), let time = Double(key[range.upperBound...]) else { return nil }
+        guard WebFrameKey.parse(key) == nil, let range = key.range(of: "#t=", options: .backwards),
+              let time = Double(key[range.upperBound...]) else { return nil }
         return (String(key[..<range.lowerBound]), time)
     }
 }
 
 public enum OverlayLayout {
     /// Visible overlays of `scene`, back to front. `project` maps a world point to frame space (−1…1, y up)
-    /// for anchored overlays, or nil when it's behind the camera. `time` (the timeline's) picks video frames:
-    /// a video overlay's image becomes a `VideoFrameKey`; before its start it isn't drawn.
+    /// for anchored overlays, or nil when it's behind the camera. `time` (the timeline's) picks video and web frames:
+    /// a video overlay's image becomes a `VideoFrameKey`, a web piece's a `WebFrameKey`; before its start it isn't drawn.
     public static func placements(
         in scene: Scene, palette: Palette, width: Double, height: Double, time: Double? = nil, project: ((Vec3) -> (Double, Double)?)? = nil
     ) -> [OverlayPlacement] {
@@ -176,6 +181,10 @@ public enum OverlayLayout {
             if let video = recipe.video {
                 guard let time, let local = recipe.videoTime(at: time) else { continue }
                 recipe.image = VideoFrameKey.make(file: video, time: local)
+            }
+            if let web = recipe.web {
+                guard let time, time >= web.start - 1e-9, web.isPlayable else { continue }
+                recipe.image = WebFrameKey.make(object: id, frame: web.frame(at: time))
             }
             let transform = object.transform
             var x = transform.position.x

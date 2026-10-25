@@ -18,9 +18,11 @@ public struct CardRecipe: Codable, Hashable, Sendable {
     /// Card thickness (metres) and the border around the picture (a fraction of the height).
     public var thickness: Double
     public var border: Double
+    /// A web piece playing on the card (schema 25): a screen on the set showing a page, a three.js scene or a Lottie file.
+    public var web: WebPiece?
 
     public init(image: String? = nil, video: String? = nil, videoStart: Double? = nil, videoDuration: Double? = nil, videoLoop: Bool? = nil,
-                aspect: Double = 16.0 / 9, thickness: Double = 0.02, border: Double = 0.03) {
+                aspect: Double = 16.0 / 9, thickness: Double = 0.02, border: Double = 0.03, web: WebPiece? = nil) {
         self.image = image
         self.video = video
         self.videoStart = videoStart
@@ -29,6 +31,7 @@ public struct CardRecipe: Codable, Hashable, Sendable {
         self.aspect = aspect
         self.thickness = thickness
         self.border = border
+        self.web = web
     }
 
     /// Picture size in metres at scale 1 (height 1).
@@ -42,9 +45,13 @@ public struct CardRecipe: Codable, Hashable, Sendable {
         return (picture.width + 2 * border, picture.height + 2 * border, max(thickness, 0.002))
     }
 
-    /// What the card shows at timeline `time`: the picture's file name, or a `VideoFrameKey` (frame-exact, 60 fps steps).
-    /// Before the video starts the card holds its first frame; nil when it has nothing to show.
-    public func frameKey(at time: Double) -> String? {
+    /// What the card shows at timeline `time`: the picture's file name, a `VideoFrameKey` (frame-exact, 60 fps steps) or,
+    /// for a web piece, the `WebFrameKey` of the card `id`. Before the video or piece starts the card holds its first frame;
+    /// nil when it has nothing to show.
+    public func frameKey(at time: Double, id: ObjectID? = nil) -> String? {
+        if let web, web.isPlayable, let id {
+            return WebFrameKey.make(object: id, frame: web.frame(at: time))
+        }
         if let video {
             let local = max(time - (videoStart ?? 0), 0)
             let step = 1.0 / 60
