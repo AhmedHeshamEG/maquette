@@ -12,6 +12,8 @@ struct ModelAddPage: View {
     @State private var importingMedia = false
     @State private var importingLogo = false
     @State private var importingDrawing = false
+    @State private var importingWeb = false
+    @State private var webFile: URL?
 
     var body: some View {
         VStack(alignment: .leading, spacing: HmmSpacing.m) {
@@ -42,6 +44,7 @@ struct ModelAddPage: View {
                     TileButton(title: "Drawing (PSD, Procreate)", systemName: "square.3.layers.3d", identifier: "add-drawing") {
                         importingDrawing = true
                     }
+                    TileButton(title: "Web page or Lottie", systemName: "globe", identifier: "add-web") { importingWeb = true }
                 }
             }
             PanelSection("Effects") {
@@ -75,6 +78,14 @@ struct ModelAddPage: View {
                 Task { await editor.importMedia(url) }
             }
         }
+        .fileImporter(isPresented: $importingWeb, allowedContentTypes: EditorModel.webTypes) { result in
+            if case let .success(url) = result { webFile = url }
+        }
+        .confirmationDialog("Where does it play?", isPresented: Binding(get: { webFile != nil }, set: { if !$0 { webFile = nil } }),
+                            titleVisibility: .visible) {
+            Button("On a screen in the scene") { addWeb(.card) }
+            Button("Over the frame") { addWeb(.overlay) }
+        }
         .fileImporter(isPresented: $importingLogo, allowedContentTypes: [.svg]) { result in
             if case let .success(url) = result {
                 editor.openPanel = nil
@@ -87,6 +98,13 @@ struct ModelAddPage: View {
                 Task { await editor.importDrawing(url) }
             }
         }
+    }
+
+    private func addWeb(_ placement: MediaPlacement) {
+        guard let url = webFile else { return }
+        webFile = nil
+        editor.openPanel = nil
+        Task { await editor.importMedia(url, as: placement) }
     }
 
     private func place(_ add: () -> Void) {

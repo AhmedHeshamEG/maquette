@@ -25,7 +25,8 @@ let package = Package(
                 .product(name: "HmmMedia", package: "HmmKit"),
                 .product(name: "HmmDiagnostics", package: "HmmKit"),
                 .product(name: "HmmPerception", package: "HmmKit"),
-                .product(name: "HmmTranscript", package: "HmmKit")
+                .product(name: "HmmTranscript", package: "HmmKit"),
+                .product(name: "HmmWeb", package: "HmmKit")
             ],
             path: "Sources/LoweyEngine",
             // The Metal shaders are compiled by Xcode into this module's default library.
