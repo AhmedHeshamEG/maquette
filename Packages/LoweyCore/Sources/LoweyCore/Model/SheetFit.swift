@@ -47,27 +47,49 @@ public enum SheetFit {
     /// The face around `triangle`, seen from `eye`. `limit` caps how many triangles a face may gather (a flat ground
     /// of thousands is still one face, but the scan stays quick).
     public static func face(around triangle: Int, in mesh: MeshData, eye: Vec3, limit: Int = 200_000) -> Face? {
-        let count = mesh.triangleCount
-        guard triangle >= 0, triangle < count else { return nil }
-        guard let seed = corners(triangle, in: mesh) else { return nil }
+        guard triangle >= 0, triangle < mesh.triangleCount, let seed = corners(triangle, in: mesh) else { return nil }
         var normal = (seed.1 - seed.0).cross(seed.2 - seed.0).normalized
         guard normal.lengthSquared > 0.5 else { return nil }
         if normal.dot(eye - seed.0) < 0 { normal = -normal }
-        let size = max(mesh.bounds?.size.length ?? 1, 1e-6)
-        let planeTolerance = size * 1e-5
-        let offset = normal.dot(seed.0)
-        let welder = Welder(cell: size * 1e-6)
+        let welder = Welder(cell: max(mesh.bounds?.size.length ?? 1, 1e-6) * 1e-6)
+        let region = flatRegion(around: triangle, normal: normal, through: seed.0, in: mesh, welder: welder, limit: limit)
 
-        // The triangles on the same plane (either winding: a face seen from either side), then the ones connected to
-        // the seed by shared edges.
-        var onPlane = Set<Int>()
+        // Its outline: the edges used once. The longest lines the sheet up.
+        var uses: [Welder.Edge: (Vec3, Vec3, Int)] = [:]
+        var area = 0.0
+        for index in region {
+            guard let (a, b, c) = corners(index, in: mesh) else { continue }
+            area += (b - a).cross(c - a).length / 2
+            for (edge, ends) in zip(welder.edges(a, b, c), [(a, b), (b, c), (c, a)]) {
+                uses[edge] = (ends.0, ends.1, (uses[edge]?.2 ?? 0) + 1)
+            }
+        }
+        let outline = uses.filter { $0.value.2 == 1 }
+        let longest = outline.values.max { ($0.1 - $0.0).lengthSquared < ($1.1 - $1.0).lengthSquared }
+        let curved = isCurved(region: region, outline: Set(outline.keys), normal: normal, area: area, mesh: mesh, welder: welder)
+        let (right, up) = axes(normal: normal, along: curved ? nil : longest.map { $0.1 - $0.0 }, eye: eye, point: seed.0)
+
+        // A face's box is its own; on a curved surface the sheet may be as big as the whole shape seen on that plane.
+        let points = curved ? mesh.positions.map { Vec3($0) } : region.flatMap { index in
+            corners(index, in: mesh).map { [$0.0, $0.1, $0.2] } ?? []
+        }
+        let box = extent(of: points, from: seed.0, right: right, up: up)
+        let middle = seed.0 + right * ((box.low.u + box.high.u) / 2) + up * ((box.low.v + box.high.v) / 2)
+        return Face(triangles: region.sorted(), normal: normal, right: right, up: up, middle: middle,
+                    halfWidth: (box.high.u - box.low.u) / 2, halfHeight: (box.high.v - box.low.v) / 2, curved: curved)
+    }
+
+    /// The triangles on the seed's plane (either winding: a face seen from either side) joined to it by shared edges.
+    static func flatRegion(around triangle: Int, normal: Vec3, through point: Vec3, in mesh: MeshData, welder: Welder,
+                           limit: Int) -> Set<Int> {
+        let tolerance = welder.cell * 10
+        let offset = normal.dot(point)
         var edgesOfPlane: [Welder.Edge: [Int]] = [:]
-        for index in 0 ..< count {
+        for index in 0 ..< mesh.triangleCount {
             guard let (a, b, c) = corners(index, in: mesh) else { continue }
             let n = (b - a).cross(c - a).normalized
-            guard abs(n.dot(normal)) >= flatCosine, abs(normal.dot(a) - offset) <= planeTolerance,
-                  abs(normal.dot(b) - offset) <= planeTolerance, abs(normal.dot(c) - offset) <= planeTolerance else { continue }
-            onPlane.insert(index)
+            let onPlane = [a, b, c].allSatisfy { abs(normal.dot($0) - offset) <= tolerance }
+            guard abs(n.dot(normal)) >= flatCosine, onPlane else { continue }
             for edge in welder.edges(a, b, c) {
                 edgesOfPlane[edge, default: []].append(index)
             }
@@ -77,48 +99,68 @@ public enum SheetFit {
         while let next = queue.popLast(), region.count < limit {
             guard let (a, b, c) = corners(next, in: mesh) else { continue }
             for edge in welder.edges(a, b, c) {
-                for other in edgesOfPlane[edge] ?? [] where !region.contains(other) && onPlane.contains(other) {
+                for other in edgesOfPlane[edge] ?? [] where !region.contains(other) {
                     region.insert(other)
                     queue.append(other)
                 }
             }
         }
+        return region
+    }
 
-        // Its outline: the edges used once. The longest lines the sheet up.
-        var uses: [Welder.Edge: (Vec3, Vec3, Int)] = [:]
-        var area = 0.0
-        for index in region {
-            guard let (a, b, c) = corners(index, in: mesh) else { continue }
-            area += (b - a).cross(c - a).length / 2
-            for (edge, ends) in zip(welder.edges(a, b, c), [(a, b), (b, c), (c, a)]) {
-                let seen = uses[edge]
-                uses[edge] = (ends.0, ends.1, (seen?.2 ?? 0) + 1)
-            }
-        }
-        let outline = uses.filter { $0.value.2 == 1 }
-        let longest = outline.values.max { ($0.1 - $0.0).lengthSquared < ($1.1 - $1.0).lengthSquared }
-        let curved = isCurved(region: region, outline: Set(outline.keys), normal: normal, area: area, mesh: mesh, welder: welder)
-
-        let (right, up) = axes(normal: normal, along: curved ? nil : longest.map { $0.1 - $0.0 }, eye: eye, point: seed.0)
-        // A face's box is its own; on a curved surface the sheet may be as big as the whole shape seen on that plane.
-        var points: [Vec3] = []
-        if curved {
-            points = mesh.positions.map { Vec3($0) }
-        } else {
-            for index in region {
-                guard let (a, b, c) = corners(index, in: mesh) else { continue }
-                points += [a, b, c]
-            }
-        }
+    /// The box of `points` along `right` and `up`, from `origin`.
+    static func extent(of points: [Vec3], from origin: Vec3, right: Vec3,
+                       up: Vec3) -> (low: (u: Double, v: Double), high: (u: Double, v: Double)) {
         var low = (u: Double.infinity, v: Double.infinity), high = (u: -Double.infinity, v: -Double.infinity)
         for point in points {
-            let u = (point - seed.0).dot(right), v = (point - seed.0).dot(up)
+            let u = (point - origin).dot(right), v = (point - origin).dot(up)
             low = (min(low.u, u), min(low.v, v))
             high = (max(high.u, u), max(high.v, v))
         }
-        let middle = seed.0 + right * ((low.u + high.u) / 2) + up * ((low.v + high.v) / 2)
-        return Face(triangles: region.sorted(), normal: normal, right: right, up: up, middle: middle,
-                    halfWidth: (high.u - low.u) / 2, halfHeight: (high.v - low.v) / 2, curved: curved)
+        guard low.u.isFinite else { return ((0, 0), (0, 0)) }
+        return (low, high)
+    }
+
+    /// Meshes denser than this (a sculpt) are curved surfaces: the sheet takes the tangent plane without scanning the
+    /// mesh for the face, so hovering stays quick.
+    public static let denseTriangles = 60000
+
+    /// The tangent plane under a hit, the sheet as big as the shape's box allows (a sculpt, or anything dense).
+    public static func tangentFace(at hit: SurfaceHit, triangle: Int, bounds: Bounds?, eye: Vec3) -> Face {
+        var normal = hit.normal.normalized
+        if normal.dot(eye - hit.point) < 0 { normal = -normal }
+        let (right, up) = axes(normal: normal, along: nil, eye: eye, point: hit.point)
+        var half = (width: 0.5, height: 0.5)
+        if let bounds {
+            var low = (u: Double.infinity, v: Double.infinity), high = (u: -Double.infinity, v: -Double.infinity)
+            for x in [bounds.min.x, bounds.max.x] {
+                for y in [bounds.min.y, bounds.max.y] {
+                    for z in [bounds.min.z, bounds.max.z] {
+                        let offset = Vec3(x, y, z) - hit.point
+                        low = (min(low.u, offset.dot(right)), min(low.v, offset.dot(up)))
+                        high = (max(high.u, offset.dot(right)), max(high.v, offset.dot(up)))
+                    }
+                }
+            }
+            half = ((high.u - low.u) / 2, (high.v - low.v) / 2)
+        }
+        return Face(triangles: [triangle], normal: normal, right: right, up: up, middle: hit.point, halfWidth: half.width,
+                    halfHeight: half.height, curved: true)
+    }
+
+    /// The face's own triangles, a hair above it, to light it on the stage.
+    public static func mesh(of face: Face, in mesh: MeshData, lift: Double) -> MeshData {
+        var lit = MeshData()
+        let offset = face.normal * lift
+        for triangle in face.triangles {
+            guard let (a, b, c) = corners(triangle, in: mesh) else { continue }
+            let n = face.normal.float3
+            let i = lit.addVertex((a + offset).float3, normal: n)
+            let j = lit.addVertex((b + offset).float3, normal: n)
+            let k = lit.addVertex((c + offset).float3, normal: n)
+            lit.addTriangle(i, j, k)
+        }
+        return lit
     }
 
     /// A small patch whose outline mostly runs on into neighbours at a shallow angle is part of a curved surface
@@ -256,7 +298,7 @@ struct Welder {
 
     func length(_ edge: Edge) -> Double {
         let d = edge.b &- edge.a
-        return (Double(d.x * d.x + d.y * d.y + d.z * d.z)).squareRoot() * cell
+        return Double(d.x * d.x + d.y * d.y + d.z * d.z).squareRoot() * cell
     }
 }
 

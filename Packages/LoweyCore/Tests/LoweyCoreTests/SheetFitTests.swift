@@ -243,3 +243,19 @@ final class ReferenceVerbTests: XCTestCase {
         XCTAssertThrowsError(try compile(#"{"version":3,"actions":[{"do":"reference","op":"spin"}]}"#))
     }
 }
+
+extension SheetFitTests {
+    func testADenseShapeTakesTheTangentPlaneAndTheFaceLights() throws {
+        let mesh = PrimitiveMesh.box(size: SIMD3(1, 1, 1))
+        let eye = Vec3(0, 0.5, 3)
+        let ray = Ray(origin: eye, direction: Vec3(0, 0.5, 0.5) - eye)
+        let landed = try XCTUnwrap(MeshRaycast.intersectTriangle(ray, mesh: mesh))
+        let tangent = SheetFit.tangentFace(at: landed.hit, triangle: landed.triangle, bounds: mesh.bounds, eye: eye)
+        XCTAssertTrue(tangent.curved)
+        XCTAssertEqual(tangent.halfWidth, 0.5, accuracy: 1e-6, "as big as the shape seen on that plane")
+        let face = try XCTUnwrap(SheetFit.face(around: landed.triangle, in: mesh, eye: eye))
+        let lit = SheetFit.mesh(of: face, in: mesh, lift: 0.001)
+        XCTAssertEqual(lit.triangleCount, 2)
+        XCTAssertTrue(lit.positions.allSatisfy { abs(Double($0.z) - 0.501) < 1e-5 }, "a hair in front of the face")
+    }
+}
