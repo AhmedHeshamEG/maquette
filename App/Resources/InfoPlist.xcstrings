@@ -3,9 +3,9 @@
   "strings" : {
     "NSCameraUsageDescription" : {
       "localizations" : {
-        "ar" : { "stringUnit" : { "state" : "translated", "value" : "يستخدم Maquette الكاميرا لتتبّع الآيباد عندما يعمل ككاميرا تصوير، والكاميرا الأمامية لقراءة وجهك في أداء الشخصيات، ولمسح غرفة أو غرض وتحويله إلى نموذج. لا يغادر شيء جهازك." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Maquette uses the camera to follow the iPad when it acts as a film camera, the front camera to read your face for character performances, to film you acting so a character can copy your moves, and to scan a room or an object into a model. Nothing leaves your iPad." } },
-        "it" : { "stringUnit" : { "state" : "translated", "value" : "Maquette usa la fotocamera per seguire l'iPad quando fa da cinepresa, la fotocamera frontale per leggere il tuo viso nelle interpretazioni dei personaggi, e per scansionare una stanza o un oggetto in un modello. Niente lascia il tuo iPad." } }
+        "ar" : { "stringUnit" : { "state" : "translated", "value" : "يستخدم Maquette الكاميرا لتتبّع الآيباد عندما يعمل ككاميرا تصوير، والكاميرا الأمامية لقراءة وجهك في أداء الشخصيات ولعرضه في نافذة المرجع أثناء الرسم، ولمسح غرفة أو غرض وتحويله إلى نموذج. لا يغادر شيء جهازك." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Maquette uses the camera to follow the iPad when it acts as a film camera, the front camera to read your face for character performances and to show it in the Reference window while you draw, to film you acting so a character can copy your moves, and to scan a room or an object into a model. Nothing leaves your iPad." } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Maquette usa la fotocamera per seguire l'iPad quando fa da cinepresa, la fotocamera frontale per leggere il tuo viso nelle interpretazioni dei personaggi e per mostrartelo nella finestra Riferimento mentre disegni, e per scansionare una stanza o un oggetto in un modello. Niente lascia il tuo iPad." } }
       }
     },
     "NSLocalNetworkUsageDescription" : {
