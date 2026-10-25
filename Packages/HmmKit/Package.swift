@@ -29,7 +29,8 @@ let package = Package(
         .library(name: "HmmBoardUI", targets: ["HmmBoardUI"]),
         .library(name: "HmmHeld", targets: ["HmmHeld"]),
         .library(name: "HmmVector", targets: ["HmmVector"]),
-        .library(name: "HmmLink", targets: ["HmmLink"])
+        .library(name: "HmmLink", targets: ["HmmLink"]),
+        .library(name: "HmmWeb", targets: ["HmmWeb"])
     ],
     targets: [
         .target(name: "HmmDesign"),
@@ -56,6 +57,8 @@ let package = Package(
         .target(name: "HmmVector"),
         // Devices together: a framed link on the local network (an iPhone beside the iPad) and SharePlay over FaceTime.
         .target(name: "HmmLink"),
+        // Web pieces: HTML, three.js and Lottie played offline on a clock the app steps, so preview and export match.
+        .target(name: "HmmWeb", resources: [.copy("Web")]),
         .testTarget(name: "HmmCommandsTests", dependencies: ["HmmCommands"]),
         .testTarget(name: "HmmDocumentsTests", dependencies: ["HmmDocuments", "HmmCommands"]),
         .testTarget(name: "HmmTranscriptTests", dependencies: ["HmmTranscript"]),
@@ -69,7 +72,8 @@ let package = Package(
         .testTarget(name: "HmmBoardUITests", dependencies: ["HmmBoardUI", "HmmBoard", "HmmBrush", "HmmBrushRender"]),
         .testTarget(name: "HmmHeldTests", dependencies: ["HmmHeld"]),
         .testTarget(name: "HmmVectorTests", dependencies: ["HmmVector"]),
-        .testTarget(name: "HmmLinkTests", dependencies: ["HmmLink"])
+        .testTarget(name: "HmmLinkTests", dependencies: ["HmmLink"]),
+        .testTarget(name: "HmmWebTests", dependencies: ["HmmWeb"])
     ],
     swiftLanguageModes: [.v6]
 )
