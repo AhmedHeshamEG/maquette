@@ -152,6 +152,15 @@ final class ReferenceWindowLayoutTests: XCTestCase {
         XCTAssertLessThanOrEqual(frame.maxX, stage.width - ReferenceWindow.margin + 0.01)
     }
 
+    func testAStageBrieflySmallerDoesntMoveWhereItWasLeft() {
+        let window = ReferenceWindow(open: true, x: 0.8, y: 0.5, width: 300, height: 200)
+        let small = CGSize(width: 600, height: 500)
+        let shown = window.keptInside(small).frame(in: small)
+        XCTAssertLessThanOrEqual(shown.maxX, small.width - ReferenceWindow.margin + 0.01, "shown inside the smaller stage")
+        XCTAssertEqual(window.keptInside(stage).x, window.x, accuracy: 1e-9, "and where it was in the stage it was left in")
+        XCTAssertEqual(window.keptInside(stage).width, window.width, accuracy: 1e-9)
+    }
+
     func testResizingKeepsItsTopLeftAndItsLimits() {
         let window = ReferenceWindow(open: true, x: 0.5, y: 0.5, width: 300, height: 200)
         let before = window.frame(in: stage)

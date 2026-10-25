@@ -128,10 +128,14 @@ final class ReferenceTests: XCTestCase {
         app.launch()
         XCTAssertTrue(stage.waitForExistence(timeout: 30), "the project opens again")
         XCTAssertTrue(window.waitForExistence(timeout: 10), "and its Reference window")
-        assertSameFrame(window.frame, before, "in the same place and size after a relaunch")
+        assertSameFrame(window.frame, before, "in the same place and size after a relaunch (stage \(stage.frame), trail: \(trail))")
     }
 
     func testASheetLaidOnACubeFitsTheFace() {
+        // As on an iPad that has seen a Pencil: a finger places the sheet (with no Pencil, a finger draws).
+        app.terminate()
+        app.launchArguments += ["-hmm.pencilSeen", "YES"]
+        app.launch()
         XCTAssertTrue(tap("new-project", timeout: 15))
         XCTAssertTrue(stage.waitForExistence(timeout: 15))
         XCTAssertTrue(tap("Model"))
@@ -140,9 +144,6 @@ final class ReferenceTests: XCTestCase {
         XCTAssertTrue(element("inspector").waitForExistence(timeout: 5))
         XCTAssertTrue(tap("Model"), "the panel closes")
         XCTAssertTrue(tap("Draw"))
-        // Draw's pop-over goes with a tap on the stage, away from the cube.
-        settle(0.8)
-        stage.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.1)).tap()
         settle(0.8)
         // A finger's tap on the cube lays the sheet on the face under it, fitted to it.
         stage.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).tap()

@@ -22,7 +22,9 @@ struct ReferenceWindowView: View {
         GeometryReader { geometry in
             let stage = geometry.size
             let origin = geometry.frame(in: .global).origin
-            let window = editor.referenceState
+            // Kept inside the stage as it's drawn, never saved that way: a stage that is briefly smaller (launching, a
+            // rotation) doesn't move where it was left.
+            let window = editor.referenceState.keptInside(stage)
             let size = sizing ?? CGSize(width: window.width, height: window.height)
             let frame = window.frame(in: stage)
             VStack(spacing: 0) {
@@ -50,8 +52,6 @@ struct ReferenceWindowView: View {
             .accessibilityElement(children: .contain)
             .accessibilityLabel(Text("Reference window"))
             .accessibilityIdentifier("reference-window")
-            .onAppear { reconcile(stage: stage, origin: origin) }
-            .onChange(of: stage) { _, _ in reconcile(stage: stage, origin: origin) }
         }
     }
 
@@ -119,14 +119,6 @@ struct ReferenceWindowView: View {
     private static func clampedSize(_ size: CGSize) -> CGSize {
         CGSize(width: min(max(size.width, ReferenceWindow.widthRange.lowerBound), ReferenceWindow.widthRange.upperBound),
                height: min(max(size.height, ReferenceWindow.heightRange.lowerBound), ReferenceWindow.heightRange.upperBound))
-    }
-
-    /// Shown, or the stage changed size (a rotation, Stage Manager): the window settles inside it again. Only the edges
-    /// count here; the clusters are still finding their places, so they're avoided when it's let go.
-    private func reconcile(stage: CGSize, origin: CGPoint) {
-        guard stage.width > 1, stage.height > 1 else { return }
-        let frame = editor.referenceState.frame(in: stage)
-        editor.moveReferenceWindow(to: CGPoint(x: frame.midX, y: frame.midY), in: stage, stageOrigin: origin, avoidingClusters: false)
     }
 }
 

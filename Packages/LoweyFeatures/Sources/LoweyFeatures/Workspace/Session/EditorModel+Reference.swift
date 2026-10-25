@@ -52,9 +52,8 @@ extension EditorModel {
     }
 
     /// The window let go at `center` (stage points) in a stage of `size`: it settles off the edges and the clusters.
-    func moveReferenceWindow(to center: CGPoint, in size: CGSize, stageOrigin: CGPoint, avoidingClusters: Bool = true) {
-        let clusters = avoidingClusters ? clusterRects(stageOrigin: stageOrigin) : []
-        let window = referenceState.settled(at: center, in: size, avoiding: clusters)
+    func moveReferenceWindow(to center: CGPoint, in size: CGSize, stageOrigin: CGPoint) {
+        let window = referenceState.settled(at: center, in: size, avoiding: clusterRects(stageOrigin: stageOrigin))
         setReferenceWindow(window)
         if AppIdentity.isUITesting { trail("reference=at \(Int(window.frame(in: size).minX)),\(Int(window.frame(in: size).minY))") }
     }

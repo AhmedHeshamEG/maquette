@@ -164,6 +164,13 @@ public extension ReferenceWindow {
         return window.clamped
     }
 
+    /// Where it shows in a stage of `size`: inside its edges (and no bigger than it), the clusters aside.
+    func keptInside(_ stage: CGSize) -> ReferenceWindow {
+        guard stage.width > 1, stage.height > 1 else { return self }
+        let frame = frame(in: stage)
+        return settled(at: CGPoint(x: frame.midX, y: frame.midY), in: stage)
+    }
+
     /// The same window as big as asked (a corner drag or a pinch on the bar), still inside the stage.
     func sized(width: Double, height: Double, in stage: CGSize, avoiding clusters: [CGRect] = []) -> ReferenceWindow {
         var window = self
