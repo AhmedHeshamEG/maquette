@@ -121,11 +121,12 @@ struct ReferenceWindowView: View {
                height: min(max(size.height, ReferenceWindow.heightRange.lowerBound), ReferenceWindow.heightRange.upperBound))
     }
 
-    /// The stage changed size (a rotation, Stage Manager): the window settles inside it again.
+    /// Shown, or the stage changed size (a rotation, Stage Manager): the window settles inside it again. Only the edges
+    /// count here; the clusters are still finding their places, so they're avoided when it's let go.
     private func reconcile(stage: CGSize, origin: CGPoint) {
         guard stage.width > 1, stage.height > 1 else { return }
         let frame = editor.referenceState.frame(in: stage)
-        editor.moveReferenceWindow(to: CGPoint(x: frame.midX, y: frame.midY), in: stage, stageOrigin: origin)
+        editor.moveReferenceWindow(to: CGPoint(x: frame.midX, y: frame.midY), in: stage, stageOrigin: origin, avoidingClusters: false)
     }
 }
 

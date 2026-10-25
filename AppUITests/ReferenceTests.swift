@@ -140,6 +140,10 @@ final class ReferenceTests: XCTestCase {
         XCTAssertTrue(element("inspector").waitForExistence(timeout: 5))
         XCTAssertTrue(tap("Model"), "the panel closes")
         XCTAssertTrue(tap("Draw"))
+        // Draw's pop-over goes with a tap on the stage, away from the cube.
+        settle(0.8)
+        stage.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.1)).tap()
+        settle(0.8)
         // A finger's tap on the cube lays the sheet on the face under it, fitted to it.
         stage.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).tap()
         XCTAssertTrue(waitForTrail("sheet=fitted face"), "the sheet lies on the cube's face, fitted (trail: \(trail))")
