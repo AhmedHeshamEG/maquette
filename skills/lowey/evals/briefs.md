@@ -1,6 +1,6 @@
 # Eval briefs
 
-Twelve briefs that cover what the skill must do well. `run_evals.py` reads the blocks below (`## id` + the brief, and
+Fifteen briefs that cover what the skill must do well. `run_evals.py` reads the blocks below (`## id` + the brief, and
 optional `voiceover:`, `framing:`, `seconds:` lines), runs each in a fresh scene, and scores the result with the
 rubric (`rubric.md`).
 
@@ -58,3 +58,20 @@ A three-shot sequence synced to a 12-second voiceover: the message (desk), nobod
 (robot in a cave). Cut on "People" and "Last".
 voiceover: In 1941, a message was encrypted with Enigma. People tried for decades. Nobody could. Last, the secret was out.
 seconds: 12
+
+## web-screen
+A newsroom at night: on the wall, a screen shows a bar chart (a web piece) whose bars grow on the word "doubled". Comic
+Look. The screen is the subject; a Blob anchor stands beside it.
+voiceover: In one year the number of readers doubled.
+seconds: 5
+
+## lottie-title
+A title over the frame, made as a Lottie animation that writes itself in, over a calm wide shot of a desert road at
+golden hour. The title says "Route 66". Painterly Look.
+seconds: 5
+
+## hand-off
+Build a small product shot of a ceramic mug on a table, then get it ready for Hesham: the Look panel open, the mug
+selected, the playhead at 2 s, and a USDZ of the scene exported for his client's iPhone.
+seconds: 4
+
