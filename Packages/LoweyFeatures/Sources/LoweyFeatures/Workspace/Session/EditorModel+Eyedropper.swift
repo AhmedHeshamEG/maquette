@@ -2,6 +2,7 @@ import CoreGraphics
 import Foundation
 import HmmDesign
 import LoweyCore
+import LoweyEngine
 
 /// Where the eyedropper's loupe is, and the colour under it.
 struct EyedropperLoupe: Equatable {
@@ -15,7 +16,13 @@ struct EyedropperLoupe: Equatable {
 extension EditorModel {
     /// The colour of what is under a point: its paint where it's painted, else its own colour (nil over nothing).
     func colour(at point: CGPoint) -> RGBA? {
-        guard let stage, let picked = stage.pickObject(at: point), let object = displayed.scene.objects[picked.0] else { return nil }
+        guard let stage else { return nil }
+        return colour(at: point, in: stage)
+    }
+
+    /// The same, for any stage view showing this project (the Reference window's Canvas too).
+    func colour(at point: CGPoint, in stage: StageView) -> RGBA? {
+        guard let picked = stage.pickObject(at: point), let object = displayed.scene.objects[picked.0] else { return nil }
         let local = displayed.scene.worldTransform(of: picked.0).inverseApply(to: picked.1.point)
         if let paint = object.paint, let painted = PaintSampler.color(at: local, of: object, paint: paint, file: paintFiles) {
             return RGBA(painted.r, painted.g, painted.b, 1)

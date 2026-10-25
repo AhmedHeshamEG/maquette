@@ -75,6 +75,7 @@ extension EditorModel {
                 perform(command)
                 HmmHaptics.play(.commit)
             }
+            if !result.reference.isEmpty { applyReference(result.reference) }
             return .success(result)
         } catch {
             return .failure(error)

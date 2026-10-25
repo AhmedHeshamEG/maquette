@@ -18,6 +18,7 @@ extension EditorModel {
         frameGuide = workspace.frameGuide
         planeGuide = workspace.planeGuide
         references = workspace.references
+        placing.window = workspace.referenceWindow
         rotoscope = workspace.rotoscope
         projectSetUp = workspace.setUp
         if workspace.firstPanel == ProjectWorkspace.boardPanel {
@@ -55,6 +56,7 @@ extension EditorModel {
         workspace.frameGuide = frameGuide
         workspace.planeGuide = planeGuide
         workspace.references = references
+        workspace.referenceWindow = placing.window
         workspace.rotoscope = rotoscope
         do {
             try store.saveWorkspace(workspace, at: projectURL)

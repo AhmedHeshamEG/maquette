@@ -169,6 +169,8 @@ public struct LoweyMenuCommands: Commands {
             Button("Your iPhone…") { editor?.sheet = .phone }
                 .hmmKeyboardShortcut(KeyCommands.sceneYourIPhone, in: keyboard)
             Divider()
+            Button("Reference Window") { stageEditor?.toggleReferenceWindow() }
+                .hmmKeyboardShortcut(KeyCommands.sceneReferenceWindow, in: keyboard)
             Button("New Monitor Window") { openWindow(id: LoweyWindow.monitor) }.hmmKeyboardShortcut(KeyCommands.sceneNewMonitorWindow, in: keyboard)
         }
         CommandMenu("Timeline") {
