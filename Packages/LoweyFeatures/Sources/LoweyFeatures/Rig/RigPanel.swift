@@ -16,7 +16,7 @@ struct RigPanel: View {
                 } else {
                     RigSection(editor: editor)
                     if let character = currentCharacter { CharacterSections(editor: editor, character: character) }
-                    if Held.isOn(.livePerformance) { PartSection(editor: editor) }
+                    PartSection(editor: editor)
                 }
             }
         }

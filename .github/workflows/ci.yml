@@ -368,6 +368,8 @@ jobs:
         run: python Tools/gen-script-schema.py --check
       - name: Every chrome string is in the String Catalog, in Italian and Arabic
         run: python Tools/strings.py check
+      - name: The bridge's reach table matches BridgeCoverage (M12)
+        run: python Tools/gen-coverage.py --check
       - name: The layout walk matches docs/LAYOUT.md
         run: python Tools/layout_walk.py --check
       - name: Test against a fake iPad bridge (the 16 MCP tools, the CLI, the evals harness)
@@ -586,8 +588,8 @@ jobs:
         run: |
           xcrun simctl boot "${{ steps.sim.outputs.udid }}" || true
           xcrun simctl bootstatus "${{ steps.sim.outputs.udid }}" -b
-      # The App Store configuration holds back what airs later (CONTEXT §5): the layout walk asserts every row marked
-      # held in docs/LAYOUT.md is absent there, and every other row is present.
+      # Since 0.28 the App Store configuration holds nothing (CONTEXT §D.3): the layout walk asserts no row of
+      # docs/LAYOUT.md is held and every row is there.
       - name: Walk the layout in the App Store configuration
         run: |
           set -o pipefail
@@ -608,6 +610,13 @@ jobs:
             echo "::warning::The App Store walk failed on attempt $attempt"
           done
           exit 1
+      - name: The App Store build holds nothing (its Info.plist's HmmHeld is empty)
+        run: |
+          PLIST=$(find DerivedData/Build/Products -path "*AppStore-iphonesimulator/*.app/Info.plist" -maxdepth 4 | head -1)
+          test -n "$PLIST" || { echo "::error::No App Store build found"; exit 1; }
+          HELD=$(/usr/libexec/PlistBuddy -c "Print :HmmHeld" "$PLIST" 2>/dev/null || true)
+          test -z "$HELD" || { echo "::error::The App Store build holds: $HELD"; exit 1; }
+          echo "The App Store build ($PLIST) holds nothing."
       - uses: actions/upload-artifact@v4
         if: failure()
         with:

@@ -47,8 +47,8 @@ end says what came from where.
    selection. A label is never cut: it takes a second line.
 8. **Every panel resizes** from the grip in its corner and **moves by hand** from its title row (double-tap the title
    to send it home, double-tap the grip for the original size); each remembers both on the device.
-9. **Held features have their places reserved.** A row marked *(held: 1.x)* is built and works in every build but the
-   App Store one, which airs it in that update (CONTEXT §5). The layout doesn't move when it appears.
+9. **Nothing is held** (since 0.28, CONTEXT §D.3): every row is in every build, the App Store one included. A row may
+   still be marked *(held: 1.x)* by the mechanism, but none is, and the App Store walk fails if one ever is.
 
 ## The walk
 
@@ -57,7 +57,7 @@ and the last must be there. A step is an accessibility identifier (or the contro
 `section-<its title>`). A row may start with a precondition: `[cube]` a cube is added and selected, `[blob]` a Blob is
 added, `[timeline]` the whole timeline is open, `[transport]` the slim transport is showing, `[home]` the steps start
 on Home instead of in a project. `Tools/layout_walk.py` turns this file into `AppUITests/LayoutWalk.swift`; CI fails
-when they disagree. In the App Store configuration the walk asserts every held row's last step is **absent**.
+when they disagree. In the App Store configuration the walk asserts no row is held and every row's last step is **there**.
 
 ## Home
 
@@ -103,6 +103,8 @@ when they disagree. In the App Store configuration the walk asserts every held r
 | Clear resolved notes (U8) | Actions, while the notes show and one is resolved |
 | Review over FaceTime: the project goes to the people on the call; everyone turns the same view and leaves notes (U8) | Actions, during a FaceTime call |
 | Your iPhone: use it as your face, a camera, the remote, an AR view, a room or object scanner (U8) | `Actions › open-phone` |
+| Share for AR: the scene as a USDZ any iPhone or iPad opens in AR Quick Look (M12) | `Actions › share-ar` |
+| View in AR: the scene on your floor or table, in its own Look; table or life size, play, share (M12; an iPad with a rear camera) | Actions, on an iPad that can |
 | The Board: plan before building (below) | `Actions › open-board` |
 | The Reference window (Q1): the whole scene from its own camera, a picture (Import, Paste, Clear; one finger pans it, two zoom it) or the front camera; drag its bar, size it by its corner or a pinch on the bar, ✕ closes it; Pick takes a colour from it; a two-finger tap hides it a moment | Actions ▸ Reference, or ⌘⌥R |
 | Rotoscope: a video behind the stage, its frame the one under the playhead (opacity, over the scene, start at the playhead); never exported (F1) | Actions ▸ Rotoscope, once a video is picked from Photos |
@@ -185,6 +187,7 @@ Three short pages; the page is remembered.
 | Add: a photo or video (a card in the world) | `Model › model-add › add-media` |
 | Add: a logo (an SVG: one solid a colour, the upper colours standing proud) | `Model › model-add › add-logo` |
 | Add: a drawing (PSD, PSB, Procreate): a painted sheet a layer, stacked in depth, ready to pin and rig (L2) | `Model › model-add › add-drawing` |
+| Add: a web page, a folder with one or a Lottie file, on a screen in the scene or over the frame (M12) | `Model › model-add › add-web` |
 | Add: effects (fire, sparks, smoke…) | `Model › model-add › add-fx-fire` |
 | Add: forces (fan, pull, whirl) and fluids (pour water, splash, billowing smoke, flames) | `Model › model-add › add-force-fan` |
 | | `Model › model-add › add-fluid-pour` |
@@ -261,11 +264,11 @@ you until a finger's tap places it, and reads as paper while you draw. Tap Draw 
 | Several things chosen: rig them together (each part rides the bone nearest it; a dot between two parts hinges them) | Rig with two or more things selected |
 | Rigged: change the rig (it relaxes to its rest shape and shows its pins and dots; poses and keys stay), reset the pose, remove the rig | Rig on a rigged thing |
 | How it bends: paint weights; fit the weights to a new shape | Rig ▸ How it bends, on a rigged thing |
-| Pose: Dangle for the joint last touched (and everything below it) *(held: 1.2)* | Rig on a rigged thing, after touching a joint |
+| Pose: Dangle for the joint last touched (and everything below it) | Rig on a rigged thing, after touching a joint |
 | A character's poses: save, apply, mirror | `[blob] Rig › save-pose` |
 | A pose's hold menu: apply mirrored, save a mirrored copy, save to the Library | touch and hold a pose |
 | A character's clips: play from the playhead, tune, feet on the ground, look at, walk speed, crowds | `[blob] Rig › section-Clips` |
-| Make a loose object a part of a drawn rig (it rides the nearest bone); a part's face role, its bone, take it off *(held: 1.2)* | Rig ▸ Make it part of / Part, with that object selected |
+| Make a loose object a part of a drawn rig (it rides the nearest bone); a part's face role, its bone, take it off | Rig ▸ Make it part of / Part, with that object selected |
 | The weight brush's size and strength | the sidebar's two sliders while painting weights |
 | Pose any character by dragging its joints (IK): a pin bends only its stretch, a dot brings its limb along | the joints on the stage when a character is selected |
 | A model that just came in (Open in, the share sheet, a drop, Home's import): Rig it, once, at the top of its panel | after a model lands |
@@ -351,7 +354,7 @@ Animate calls the timeline and its bar, under the stage (A1): six verbs. With no
 | The camera button: tap to look through (again: the next, then back); hold for a new camera, or Lens and frame… (⌥⌘L) | `camera-button` |
 | The joystick, on or off (on by default) | `joystick-toggle` |
 | The tool's bar (Draw, Model, Rig, scatter) | below the stage while that tool is on |
-| The trigger deck: the selected character's triggers under the fingers *(held: 1.2)* | below the stage with Select in the hand while the timeline is in Perform |
+| The trigger deck: the selected character's triggers under the fingers | below the stage with Select in the hand while the timeline is in Perform |
 
 ## The timeline
 
@@ -376,11 +379,11 @@ titles are 3D text that sticks to the camera, screen effects are in Look ▸ Fin
 | A flipbook drawing's hold menu: duplicate; hold longer, hold shorter; delete (the track's is on its name) | touch and hold a drawing |
 | Perform with a character: its button beside Record | `[blob] Animate › timeline-mode-perform › perform-character` |
 | The character's expressions, lip sync, face capture (front camera, iPhone) | inside the character's button |
-| The microphone drives the mouth (live voice), with its level *(held: 1.2)* | `[blob] Animate › timeline-mode-perform › perform-character › voice-live` |
-| Triggers: one tap for an expression, a saved pose or a swap, a key each *(held: 1.2)* | `[blob] Animate › timeline-mode-perform › perform-character › add-trigger` |
-| Life: breathes, blinks on its own, which bone is its head *(held: 1.2)* | `[blob] Animate › timeline-mode-perform › perform-character › life-breathe` |
-| Takes: every recording, newest on top, bright where it plays; drag across one to use it from there to there; its hold menu *(held: 1.2)* | above the lanes in Perform once something was recorded |
-| Draggers: a joint dragged while a take records is performed *(held: 1.2)* | the joints on the stage while recording |
+| The microphone drives the mouth (live voice), with its level | `[blob] Animate › timeline-mode-perform › perform-character › voice-live` |
+| Triggers: one tap for an expression, a saved pose or a swap, a key each | `[blob] Animate › timeline-mode-perform › perform-character › add-trigger` |
+| Life: breathes, blinks on its own, which bone is its head | `[blob] Animate › timeline-mode-perform › perform-character › life-breathe` |
+| Takes: every recording, newest on top, bright where it plays; drag across one to use it from there to there; its hold menu | above the lanes in Perform once something was recorded |
+| Draggers: a joint dragged while a take records is performed | the joints on the stage while recording |
 | The slim transport: play, the time, ±10 s, a frame back and forward | `[transport] Play` |
 | Back to the whole timeline | `[transport] Show the timeline` |
 | Send the timeline away | `[transport] hide-timeline` |
@@ -458,7 +461,7 @@ explanations in panels; on by default).
 - **The menu bar and keyboard** reach the same controls: ⌘1–⌘4 Model, Draw, Rig, Animate; ⌘6–⌘8 Actions, Look, the
   lasso; ⌘L the Library; ⌥⌘1–3 move, turn, size; ⌘T the timeline; Space/J/K/L and ⌥←→ the transport; the Physics
   menu: ⇧⌘J make real, ⌥⌘J not real, ⌘J settle, ⌥⌘U does it stand, ⇧⌘K keep the run as keys. Holding ⌘ lists
-  them. The Perform menu (the microphone, the trigger keys) is *(held: 1.2)*.
+  them. The Perform menu has the microphone and the trigger keys.
 - **Proposals** from the AI bridge appear at the bottom of the stage while one is waiting.
 
 ## What moved in 0.26 (U8)

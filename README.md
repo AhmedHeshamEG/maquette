@@ -4,6 +4,13 @@ Shapr3D's ease, Procreate's feel, Dreams' animation and ToonSquid's rigging, in 
 or art degree. Build a set like Lego, drop in characters, direct them with a camera, sync them to your voice, and
 export the video. By **studio h.**; the continuation of 3D-lowey 2.0. All rights reserved (see [LICENSE](LICENSE)).
 
+**0.28** (phase M12): **AR, the web layer and the bridge**. **View in AR** stands the scene on your floor or table,
+drawn in its own Look by Maquette's renderer: one finger moves it, two turn it, a pinch sizes it to the table or to life,
+and Play runs the film in the room. **Share for AR** hands over a USDZ that any iPhone opens without the app. **Web
+pieces**, a page, a three.js scene, an HTML animation, a Lottie file, play on a screen in the scene or over the frame,
+sandboxed with no network on the timeline's clock, so what you see is what exports. The **bridge reaches everything**:
+every menu command has a path an assistant can take, and the `lowey` skill teaches them. Nothing is held back any more.
+
 **0.27** (phase Q1): **fixes and the device sweep**. The **Reference window** is made like Procreate's: a bar to
 move it, a corner to size it, a ✕, and three modes, the whole scene from its own camera, a picture you pan and zoom, or
 the front camera, back where you left it. The **sheet** lies on the face you choose: the face lights under the hovering

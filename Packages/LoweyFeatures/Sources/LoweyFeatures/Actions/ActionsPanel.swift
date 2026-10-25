@@ -48,6 +48,11 @@ struct ActionsPanel: View {
                                 app.startReview()
                             }
                         }
+                        // M12: the scene in the room, drawn in its Look; or a USDZ any iPhone opens in AR Quick Look.
+                        if editor.canShowAR {
+                            TileButton(title: "View in AR", systemName: "arkit", identifier: "open-ar") { editor.openAR() }
+                        }
+                        TileButton(title: "Share for AR", systemName: "cube.transparent", identifier: "share-ar") { editor.shareForAR() }
                         TileButton(title: "Your iPhone", systemName: "iphone", identifier: "open-phone") { open(.phone) }
                     }
                 }

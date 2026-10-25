@@ -2,6 +2,7 @@ import CoreGraphics
 import Foundation
 import HmmDesign
 import HmmDiagnostics
+import HmmWeb
 import LoweyCore
 import LoweyEngine
 import UIKit
@@ -276,8 +277,12 @@ extension EditorModel {
 
     // MARK: Pictures in the shot
 
-    /// Card pictures, overlay images and video frames (the stage never waits for a video frame).
+    /// Card pictures, overlay images, video and web frames (the stage never waits for a video or web frame).
     func mediaImage(_ key: String) -> CGImage? {
+        if let (object, frame) = WebFrameKey.parse(key) {
+            guard let piece = document.scene.webPiece(object)?.playable(mediaURL: { [weak self] in self?.mediaURL($0) }) else { return nil }
+            return webPreview.frameNow(object.raw, piece: piece, frame: frame)
+        }
         if let (file, _) = VideoFrameKey.parse(key) {
             guard let url = mediaURL(file) else { return nil }
             return videoPreview.frameNow(key, url: url)

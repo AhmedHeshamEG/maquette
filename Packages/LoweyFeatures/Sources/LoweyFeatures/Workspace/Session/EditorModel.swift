@@ -2,6 +2,7 @@ import Foundation
 import HmmBoardUI
 import HmmDesign
 import HmmDocuments
+import HmmWeb
 import LoweyCore
 import LoweyEngine
 import Observation
@@ -154,6 +155,8 @@ final class EditorModel {
     var modelPage: ModelPage = .add
     var libraryPage: LibraryPage = .things
     var sheet: EditorSheet?
+    /// The AR view, Share for AR, the bridge's Monitor window (M12).
+    var ar = ARViewState()
     var libraryPurpose: LibraryPurpose = .place
     /// Four-finger tap: everything but the stage hides.
     var chromeHidden = false
@@ -346,11 +349,8 @@ final class EditorModel {
     @ObservationIgnored let faceClock = PlaybackClock()
     @ObservationIgnored var faceDirty = false
     @ObservationIgnored var mediaImages: [String: CGImage] = [:]
-    @ObservationIgnored lazy var videoPreview: VideoFrames = {
-        let frames = VideoFrames(exact: false)
-        frames.onFrame = { [weak self] in self?.stage?.redraw() }
-        return frames
-    }()
+    @ObservationIgnored lazy var videoPreview: VideoFrames = makeVideoPreview()
+    @ObservationIgnored lazy var webPreview: HmmWebFrames = makeWebPreview()
 
     @ObservationIgnored var overlayCache = StageOverlayCache()
     @ObservationIgnored var motionCache = MotionViewCache()

@@ -235,6 +235,21 @@ verbs = {
                   "scene again; close it.",
                   {"op": {"enum": ["open", "mode", "image", "frame", "close"]}, "mode": {"enum": ["canvas", "image", "face"]},
                    "image": s}, []),
+    "web": ("M12's web layer: a page (HTML, CSS and JavaScript: a three.js scene, an HTML animation timed to the clock), a "
+            "Lottie file or a project file played on a screen in the scene or over the frame, sandboxed with no network, its clock "
+            "stepped by the timeline (60 frames a second from `start`) so preview and export match; edit one, list them.",
+            {"op": {"enum": ["add", "edit", "list"]}, "target": tgt, "name": s, "on": {"enum": ["scene", "frame"]}, "html": s,
+             "lottie": {"anyOf": [s, {"type": "object"}]}, "file": s, "entry": s, "kind": {"enum": ["html", "lottie"]}, "width": n,
+             "height": n, "start": n, "duration": n, "loop": b, "at": {"anyOf": [point, v3]}, "size": n, "facing": n}, []),
+    "app": ("M12: the app around the scene, not an edit (nothing to undo): the hand's tool, a panel, play, pause, the playhead, "
+            "undo and redo, present, notes, the timeline, the director's view, the interface, framing the selection, flying, "
+            "what's shown, the selection, an export into the project's renders (fetched from /v1/renders), the AR view, a "
+            "Monitor window.",
+            {"op": {"enum": ["tool", "panel", "closePanel", "play", "pause", "playhead", "undo", "redo", "present", "stopPresenting",
+                             "notes", "timeline", "directorView", "hideInterface", "frameSelection", "fly", "show", "select", "export",
+                             "ar", "monitor"]},
+             "value": {"anyOf": [s, n, b, {"type": "array", "items": s}]}, "on": b}, ["op"]),
+    "duplicate": ("Copies beside the originals (Edit ▸ Duplicate).", {"target": tgt, "offset": v3, "name": s}, ["target"]),
     "command":("A raw EditCommand.", {"command": ref("command")}, ["command"]),
 }
 

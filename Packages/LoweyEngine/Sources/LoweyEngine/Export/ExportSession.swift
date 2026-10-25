@@ -1,6 +1,7 @@
 import CoreGraphics
 import Foundation
 import HmmMedia
+import HmmWeb
 import LoweyCore
 import os
 
@@ -31,6 +32,8 @@ public final class ExportSession {
     /// Final: motion blur, supersampling, the best shadows and the finest water.
     public let final: Bool
     private let videoFrames = VideoFrames(exact: true)
+    /// The web pieces' frames: the same player steps as the stage's, waited for.
+    let webFrames = HmmWebFrames()
     private let logger = Logger(subsystem: "studio.h.maquette", category: "export")
     /// Where a project media file lives (videos on cards and overlays, Manim renders).
     public var mediaURL: (String) -> URL? = { _ in nil }
@@ -62,19 +65,21 @@ public final class ExportSession {
         await preparePhysics(reusing: builder.physics, detail: final ? 2 : 1)
     }
 
-    /// Loads the exact pictures and video frames shown at `time` (never "the nearest one").
+    /// Loads the exact pictures, video frames and web frames shown at `time` (never "the nearest one").
     func prepareMedia(at time: Double, size: CGSize, framing: Framing) async {
         var images: [String: CGImage] = [:]
         let scene = builder.document.scene
         var keys: [String] = scene.objects.values.compactMap { object in
             guard case let .card(recipe) = object.kind else { return nil }
-            return recipe.frameKey(at: time)
+            return recipe.frameKey(at: time, id: object.id)
         }
         let placements = OverlayLayout.placements(in: builder.evaluate(at: time).scene, palette: builder.document.palette,
                                                   width: Double(size.width), height: Double(size.height), time: time)
         keys += placements.compactMap(\.recipe.image)
         for key in Set(keys) {
-            if let (file, _) = VideoFrameKey.parse(key) {
+            if let (object, frame) = WebFrameKey.parse(key) {
+                if let piece = webPiece(object), let image = await webFrames.frame(object.raw, piece: piece, frame: frame) { images[key] = image }
+            } else if let (file, _) = VideoFrameKey.parse(key) {
                 if let url = mediaURL(file), let image = await videoFrames.frame(key, url: url) { images[key] = image }
             } else if let image = stillImage(key) {
                 images[key] = image

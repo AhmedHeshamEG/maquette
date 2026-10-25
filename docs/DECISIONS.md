@@ -3479,3 +3479,93 @@ two passes over the mesh only when the tip reaches a new face. The device sweep 
 **D-557 — The store docs.** `docs/APPSTORE.md` and BACKLOG's "Before launch" (from 2026-10-24) were read against
 studio-h's `LAUNCH.md`: name, subtitle, keywords, the price and its launch week, Family Sharing, the education discount,
 "Data Not Collected" and the age rating agree. APPSTORE's permissions line gains the Reference window's Face.
+
+
+## Maquette 0.28 — M12, AR, the web layer and the bridge
+
+**D-558 — Nothing is held.** `MAQUETTE_HELD` is empty in every configuration, the App Store one included (CONTEXT §D.3).
+`MaquetteHeld` stays as the mechanism with no names (a struct whose every name reads as nothing, since an enum without
+cases can't carry a raw type); the five entry points that asked about live performance no longer ask. The App Store walk
+now fails if any LAYOUT.md row is marked held and walks every row as present, and a CI step reads the store build's
+Info.plist and fails unless `HmmHeld` is empty. *Rejected:* deleting `Held.swift` (the phase keeps the mechanism).
+
+**D-559 — SPIKE passed: a web view on a stepped clock.** hmm-kit's `HmmWeb` (0.17.0) plays a piece in an offscreen,
+sandboxed `WKWebView`: a script added before the page's own replaces `performance.now`, `Date`, `requestAnimationFrame`,
+timers, CSS and Web Animations, video and audio and `Math.random` (seeded) with a clock that stands still until the
+player steps it, a frame of 1/60 s at a time; frame 0 is the first round of animation frames at time 0. On CI (iPad
+simulator) a CSS slide and a `performance.now()` box sit where their clock says, a three.js scene drawn through WebGL is
+pixel-identical at frame 45 whether reached straight or after frames 10 and 100, a Lottie square is at its keyframed
+place, and a `fetch` to the web fails. The view paints with no window (tests, a background export); in the app it joins
+the window scene offscreen. *Rejected:* snapshotting a canvas from JavaScript (WebGL needs `preserveDrawingBuffer`, and
+HTML can't be drawn that way at all).
+
+**D-560 — Pages are laid out at their own size.** Without a viewport tag WebKit lays a page out 980 px wide and shrinks
+it (the spike's first run measured everything at a quarter); every page gets `width=device-width, initial-scale=1`
+unless it brings its own, so `innerWidth` is the piece's width.
+
+**D-561 — Every path to a moment steps from frame 0.** Forward is stepping on; going back starts the page again and steps
+to the frame. So scrubbing back costs a reload, and a page that keeps state (a three.js simulation) always shows the same
+frame for the same time. The stage and an export keep separate players and still match, because both step the same way.
+
+**D-562 — Offline, with the libraries agents use.** A content policy and a content rule list block every http(s) and
+socket request; the piece's own files come from `hmm-web://piece/…`. three.js 0.170 (with its addons but not the big
+decoders) and lottie-web 5.12 are carried (MIT); their usual CDN addresses (unpkg, jsDelivr, esm.sh, Skypack, jspm, cdnjs,
+any version) are swapped for the carried copies, and a page without an import map gets one for `three` and
+`three/addons/`. *Rejected:* letting pieces reach the network (nothing leaves the device, CONTEXT §3).
+
+**D-563 — A web piece is a card or an overlay (schema 25).** `CardRecipe.web` and `OverlayRecipe.web` hold a `WebPiece`
+(an inline page or Lottie the bridge writes, or a project file or folder; its CSS size; `start`, `duration`, `loop`).
+Its frames are named like a video's (`web:<object>#f=<frame>`, 60 a second from `start`), so the stage, the export and the
+texture cache already know where to put them; a card's frames share one texture slot. Before its start a card shows frame
+0 and an overlay isn't drawn (as a video). No new object kind and no new command: an edit is `setKind`. *Rejected:* a
+`web` object kind (every switch over kinds would grow for what a card already does).
+
+**D-564 — A piece is drawn at its own size**, at most 3840 pixels a side: a 4K film upsamples a 1280 page. The skill tells
+the bridge to make a page as big as it will be seen.
+
+**D-565 — Bringing one in.** Model ▸ Add ▸ Web page or Lottie takes a `.html`, a folder with a page (its `index.html`, else
+its first page) or a Lottie `.json` (its size and length read from it), then asks "On a screen in the scene" or "Over the
+frame". The bridge's `web` verb adds (`html`, `lottie`, `file`), edits and lists them; `start` takes a word.
+
+**D-566 — AR on the iPad, in our own renderer.** Actions ▸ View in AR (⇧⌥⌘A) fills the screen with the camera; the scene
+is drawn over it by LoweyRender with a transparent background (no sky, no ground), so its Look, light, paint and effects
+are the stage's. The scene isn't moved: the iPad's camera is carried into the scene's space (`ARPlacement`), its lengths
+divided by the size. A tap on a found floor or table puts it there turned to face you, sized for a table (`tableScale`:
+40 cm across its widest side, never bigger than life); one finger moves it on the surface, two turn it, a pinch sizes it
+and snaps to life size within 8% with a tick; On the table and Life size set it at once; Play runs the timeline in the
+room. One pass composes the camera (full-range YCbCr) under the frame. Apple's coaching overlay asks for the floor.
+Nothing is recorded or kept. *Rejected:* RealityKit (another renderer, another Look).
+
+**D-567 — No ground shadow in AR (for now).** The transparent pass has no ground, so things stand on the real floor
+without a contact shadow. The device sweep says whether it reads as floating; a shadow catcher is a BACKLOG line.
+
+**D-568 — Share for AR.** Actions ▸ Share for AR and Scene ▸ Share for AR… write the scene as USDZ (the Apps preset,
+painted colour as textures) and hand it to the share sheet: AR Quick Look opens it on any iPhone or iPad without the app
+(architects send it to clients). The AR view's own Share does the same.
+
+**D-569 — The bridge reaches everything through verbs.** `BridgeCoverage` (Core) maps every menu-bar command (107) and
+every kind the Add page makes to a path: a verb and its op, an app ask, or a laptop tool. Core tests check every verb is
+the compiler's, every op is in the schema and every tool is in the skill's reference; a Features test checks the table and
+`KeyCommands.all` name the same commands. `skills/lowey/reference/coverage.md` is generated from it (CI checks).
+
+**D-570 — `{"do": "app"}`: the app around the scene.** What changes how a person sees the work rather than the work (the
+hand's tool, a panel, play, the playhead, undo and redo, present, notes, the timeline, the director's view, the
+interface, framing, flying, view aids, the selection, an export into renders, the AR view, a Monitor window) rides in
+`ScriptResult.app` beside the edit, as the Reference window's asks do, applied in order after it and never undone. The
+editor's switch is over every `AppAsk.Op`, so none goes unhandled. *Rejected:* a tool per action (CONTEXT §12: tools stay
+few, verbs carry the breadth).
+
+**D-571 — `duplicate`.** Edit ▸ Duplicate (and Copy then Paste) had no friendly bridge path; the new verb copies beside the
+originals and names a single copy. Ungroup keeps the raw `command` verb (a reparent), the only menu command that does.
+
+**D-572 — The skill for the whole app.** `lowey` is now "Maquette — the director (and the second pair of hands)": two new
+modules (`web-layer.md`, `the-app.md`), the reach table, and three new eval briefs (a web chart on a screen, a Lottie
+title, a hand-off: a panel, a selection, the playhead and a USDZ). *Rejected:* rewriting the director loop (the evals
+say it works).
+
+**D-573 — Every tier.** A web piece is the new cost: the page draws once per new frame, off the render loop, and the stage
+shows the last frame it has while the next one draws (as a video); four pieces stay loaded at once. The AR view draws at
+60 fps with the stage's quality tier. The device sweep times both on a Tier B iPad.
+
+**D-574 — Permissions.** The AR view uses the camera, whose Info.plist line now names it; nothing leaves the iPad. Web
+pieces need none (no network).

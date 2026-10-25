@@ -6,7 +6,8 @@ import XCTest
 final class LayoutTests: XCTestCase {
     private var app: XCUIApplication!
     private let panels: Set<String> = ["Model", "Draw", "Rig", "Actions", "Look", "Library", "scene-name"]
-    /// The App Store configuration's walk: held rows must be absent there, everything else present (CONTEXT §5).
+    /// The App Store configuration's walk (M12): nothing is held there any more, so no row may be marked held and every
+    /// row must be present (CONTEXT §D.3).
     private static let checkingHeld = ProcessInfo.processInfo.environment["MAQUETTE_HELD_CHECK"] == "1"
 
     override func setUp() async throws {
@@ -210,9 +211,8 @@ final class LayoutTests: XCTestCase {
 
     /// Taps every step but the last; the last must be there (in the App Store build, a held row's last must not be).
     private func walk(_ row: LayoutWalk.Row) {
-        if Self.checkingHeld, !row.held.isEmpty {
-            walkHeld(row)
-            return
+        if Self.checkingHeld {
+            XCTAssertTrue(row.held.isEmpty, "\(row.control) is marked held for \(row.held): the store build holds nothing")
         }
         // A row that calls the timeline or reaches into one of Draw's pop-overs leaves it open: the next row starts afresh.
         let reachesIntoDraw = row.steps.first == "Draw" && row.steps.count > 2
@@ -227,18 +227,6 @@ final class LayoutTests: XCTestCase {
         guard row.steps.count > 1, !reachesIntoDraw, let first = row.steps.first, panels.contains(first) else { return }
         // Tapping the home again closes its panel (or puts Draw down).
         tap(first)
-    }
-
-    /// A held row in the App Store build: the way there is open, the held control itself isn't.
-    private func walkHeld(_ row: LayoutWalk.Row) {
-        for step in row.steps.dropLast() {
-            tap(step)
-            if panels.contains(step) { settle(1) }
-        }
-        if let last = row.steps.last {
-            XCTAssertFalse(element(last).waitForExistence(timeout: 2), "\(row.control) airs in \(row.held): it must be held in the App Store build")
-        }
-        startAfresh(row.precondition)
     }
 
     /// A new launch and a new project, prepared as `precondition` asks.

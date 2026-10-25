@@ -17,9 +17,9 @@ def check(name, result, detail=""):
     return {"name": name, "result": result, "detail": detail}
 
 
-def test_the_twelve_briefs_parse():
+def test_the_fifteen_briefs_parse():
     briefs = run_evals.parse_briefs((ROOT / "skills" / "lowey" / "evals" / "briefs.md").read_text(encoding="utf-8"))
-    assert len(briefs) == 12
+    assert len(briefs) == 15
     by_id = {brief.id: brief for brief in briefs}
     assert by_id["vertical-short"].framing == "9:16"
     assert by_id["classroom-reveal"].voiceover == "Two plus two equals four."

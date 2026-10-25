@@ -767,6 +767,7 @@
         "do": {
           "enum": [
             "add",
+            "app",
             "array",
             "blob",
             "boolean",
@@ -778,6 +779,7 @@
             "command",
             "cut",
             "design",
+            "duplicate",
             "effect",
             "expression",
             "film",
@@ -813,7 +815,8 @@
             "sketch",
             "text",
             "transcript",
-            "transform"
+            "transform",
+            "web"
           ]
         }
       },
@@ -917,6 +920,70 @@
                 "$ref": "#/$defs/vec3"
               }
             }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "do": {
+                "const": "app"
+              }
+            }
+          },
+          "then": {
+            "description": "M12: the app around the scene, not an edit (nothing to undo): the hand's tool, a panel, play, pause, the playhead, undo and redo, present, notes, the timeline, the director's view, the interface, framing the selection, flying, what's shown, the selection, an export into the project's renders (fetched from /v1/renders), the AR view, a Monitor window.",
+            "properties": {
+              "op": {
+                "enum": [
+                  "tool",
+                  "panel",
+                  "closePanel",
+                  "play",
+                  "pause",
+                  "playhead",
+                  "undo",
+                  "redo",
+                  "present",
+                  "stopPresenting",
+                  "notes",
+                  "timeline",
+                  "directorView",
+                  "hideInterface",
+                  "frameSelection",
+                  "fly",
+                  "show",
+                  "select",
+                  "export",
+                  "ar",
+                  "monitor"
+                ]
+              },
+              "value": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "boolean"
+                  },
+                  {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                ]
+              },
+              "on": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "op"
+            ]
           }
         },
         {
@@ -1582,6 +1649,32 @@
             },
             "required": [
               "op"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "do": {
+                "const": "duplicate"
+              }
+            }
+          },
+          "then": {
+            "description": "Copies beside the originals (Edit ▸ Duplicate).",
+            "properties": {
+              "target": {
+                "$ref": "#/$defs/target"
+              },
+              "offset": {
+                "$ref": "#/$defs/vec3"
+              },
+              "name": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "target"
             ]
           }
         },
@@ -3830,6 +3923,95 @@
             "required": [
               "target"
             ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "do": {
+                "const": "web"
+              }
+            }
+          },
+          "then": {
+            "description": "M12's web layer: a page (HTML, CSS and JavaScript: a three.js scene, an HTML animation timed to the clock), a Lottie file or a project file played on a screen in the scene or over the frame, sandboxed with no network, its clock stepped by the timeline (60 frames a second from `start`) so preview and export match; edit one, list them.",
+            "properties": {
+              "op": {
+                "enum": [
+                  "add",
+                  "edit",
+                  "list"
+                ]
+              },
+              "target": {
+                "$ref": "#/$defs/target"
+              },
+              "name": {
+                "type": "string"
+              },
+              "on": {
+                "enum": [
+                  "scene",
+                  "frame"
+                ]
+              },
+              "html": {
+                "type": "string"
+              },
+              "lottie": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "object"
+                  }
+                ]
+              },
+              "file": {
+                "type": "string"
+              },
+              "entry": {
+                "type": "string"
+              },
+              "kind": {
+                "enum": [
+                  "html",
+                  "lottie"
+                ]
+              },
+              "width": {
+                "type": "number"
+              },
+              "height": {
+                "type": "number"
+              },
+              "start": {
+                "type": "number"
+              },
+              "duration": {
+                "type": "number"
+              },
+              "loop": {
+                "type": "boolean"
+              },
+              "at": {
+                "anyOf": [
+                  {
+                    "$ref": "#/$defs/point"
+                  },
+                  {
+                    "$ref": "#/$defs/vec3"
+                  }
+                ]
+              },
+              "size": {
+                "type": "number"
+              },
+              "facing": {
+                "type": "number"
+              }
+            }
           }
         }
       ],

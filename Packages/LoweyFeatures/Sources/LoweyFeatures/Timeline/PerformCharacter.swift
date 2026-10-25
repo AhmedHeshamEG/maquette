@@ -48,10 +48,8 @@ struct PerformCharacterSections: View {
         VStack(alignment: .leading, spacing: HmmSpacing.m) {
             if editor.isBlob(character) { ExpressionTriggers(editor: editor, character: character) }
             FaceSection(editor: editor, character: character)
-            if Held.isOn(.livePerformance) {
-                TriggersSection(editor: editor, character: character)
-                LifeSection(editor: editor, character: character)
-            }
+            TriggersSection(editor: editor, character: character)
+            LifeSection(editor: editor, character: character)
         }
     }
 }
@@ -86,13 +84,11 @@ struct FaceSection: View {
             HmmPillButton(editor.wordSelection == nil ? "Lip sync to the voiceover" : "Lip sync these words", systemName: "mouth",
                           prominent: !editor.words.isEmpty) { editor.lipSync(character) }
                 .accessibilityIdentifier("lip-sync")
-            if Held.isOn(.livePerformance) {
-                HStack(spacing: HmmSpacing.xs) {
-                    HmmPillButton(editor.live.voiceOn ? "Stop the microphone" : "Mouth from the microphone",
-                                  systemName: editor.live.voiceOn ? "mic.slash.fill" : "mic.fill") { editor.toggleVoice() }
-                        .accessibilityIdentifier("voice-live")
-                    if editor.live.voiceOn { VoiceLevel(meter: editor.live.meter) }
-                }
+            HStack(spacing: HmmSpacing.xs) {
+                HmmPillButton(editor.live.voiceOn ? "Stop the microphone" : "Mouth from the microphone",
+                              systemName: editor.live.voiceOn ? "mic.slash.fill" : "mic.fill") { editor.toggleVoice() }
+                    .accessibilityIdentifier("voice-live")
+                if editor.live.voiceOn { VoiceLevel(meter: editor.live.meter) }
             }
             if editor.faceActive {
                 Text(editor.faceStatus ?? "Face on").font(.hmm(.body, weight: .semibold))

@@ -1,11 +1,16 @@
 ---
 name: lowey
-description: Direct 3D-lowey, Hesham's iPad app for stylised 3D explainer videos, through its MCP server (hmm-bridge). Use when he asks for a shot, a scene, a set, a camera move, lighting, animation or a whole video from a script or an idea in 3D-lowey, or mentions lowey, the iPad app, Ink/Comic/Sketch Looks, the Kit, or a Proposal.
+description: Drive Maquette (formerly 3D-lowey), Hesham's iPad app for 3D by hand, through its MCP server (hmm-bridge). Use when he asks for a shot, a scene, a set, a model, a print, a room, a game level, a character, a camera move, lighting, animation, a web piece (HTML, three.js, Lottie), an export, the AR view or a whole video in Maquette, or mentions lowey, Maquette, the iPad app, Ink/Comic/Sketch Looks, the Kit, or a Proposal.
 ---
 
-# 3D-lowey — the director
+# Maquette — the director (and the second pair of hands)
 
-*For Maquette 0.26, Scene Script v3. An older copy in `~/.claude/skills` teaches tools that are gone: install it again.*
+*For Maquette 0.28, Scene Script v3 (51 verbs). An older copy in `~/.claude/skills` teaches tools that are gone: install it
+again.*
+
+**The bridge reaches everything** a person can do: every menu-bar command has a path (`reference/coverage.md`): a verb
+for the work, `{"do": "app"}` for the app around it (the hand's tool, a panel, play, present, an export, the AR view),
+or a tool. When Hesham asks for something you haven't done before, look it up there before saying it can't be done.
 
 Hesham reads a line of narration and sees a picture. Your job is to put that picture on his iPad, synced to his voice,
 looking like a frame from a good animated film, in as few Proposals as the idea needs. The app renders, measures and
@@ -47,6 +52,9 @@ grounds things; you decide what the shot is, then check it with your own eyes (`
 | a building, plans, rooms, roofs; 3D printing, screws, threads, splitting; an exploded view; a game level, greybox | `modules/guest-kits.md` |
 | notes on the scene, feedback to leave or answer, to-dos on a shot | `modules/review-notes.md` |
 | a picture or the whole scene to work from beside the stage, the front camera for expressions | `modules/reference-window.md` |
+| a web page, a three.js scene, an HTML animation, a Lottie file, a chart, on a screen in the scene or over the frame | `modules/web-layer.md` |
+| the app itself: a tool, a panel, play, the playhead, present, an export (video, still, glTF, USDZ, STL…), the AR view, a Monitor window | `modules/the-app.md` |
+| "can the bridge do X?", any menu command | `reference/coverage.md` |
 | "is it good?", fixing a shot | `modules/critique.md` |
 | photos, video, Manim graphs | `modules/media.md` |
 | which Look (twelve), the Finish, grounds, drawn effects, a drawing as a diorama, colour, composition | `style/looks.md`, `style/color.md`, `style/composition.md` |

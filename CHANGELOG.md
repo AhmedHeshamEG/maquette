@@ -3,6 +3,27 @@
 All notable changes. 1.x grew in four phases (v0.1 → v1.4); 2.0 is the remaster, released as betas first. Maquette
 continues from 2.0 and numbers its phases again from 0.1 (each phase bumps the minor version until 1.0).
 
+## [0.28] — Maquette — AR, the web layer and the bridge (phase M12)
+
+The last things that were held come out, and an assistant can now do whatever a person can.
+
+- **View in AR** (Actions, ⇧⌥⌘A, on an iPad with a rear camera): the camera fills the screen and the scene stands on the
+  floor or table you tap, drawn by Maquette's own renderer, so its Look, light, paint and effects are the ones on the
+  stage. It starts sized for the table and turned to face you; one finger moves it, two turn it, a pinch sizes it and
+  snaps to life size with a tick; On the table and Life size set it at once; Play runs the timeline in the room.
+- **Share for AR** (Actions and the Scene menu): the scene as a USDZ in the share sheet; AR Quick Look opens it on any
+  iPhone or iPad without the app.
+- **Web pieces** (Model ▸ Add ▸ Web page or Lottie, and the bridge's `web` verb): an HTML page, a three.js scene, an HTML
+  animation or a Lottie file plays on a screen in the scene or over the frame. It runs sandboxed with no network, on the
+  timeline's clock (60 frames a second from its start), so scrubbing, the stage and an export show the same frame.
+  three.js 0.170 and lottie-web 5.12 come with the app; their CDN addresses just work.
+- **The bridge reaches everything**: the `app` verb (the hand's tool, a panel, play, the playhead, undo, present, an
+  export into renders, the AR view, a Monitor window…) and `duplicate`; every menu command has a path, checked by tests
+  both ways, and listed in the skill's reach table. The `lowey` skill covers the whole app, with three new evals.
+- **Nothing is held**: live performance (the microphone, triggers, life, parts, dangle, draggers, takes) is in every
+  build, and CI checks the App Store build holds nothing.
+- Schema 25 (cards' and overlays' optional `web`); hmm-kit 0.17.0 (`HmmWeb`).
+
 ## [0.27] — Maquette — Fixes and the device sweep (phase Q1)
 
 The two things Hesham found on the iPad on 2026-10-24, made right, and every device check left since M1 in one list.

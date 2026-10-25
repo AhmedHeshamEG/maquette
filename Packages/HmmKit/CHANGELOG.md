@@ -3,6 +3,22 @@
 All notable changes to hmm-kit. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the
 project uses [Semantic Versioning](https://semver.org/).
 
+## [0.17.0] - 2026-10-25
+
+Built with Maquette 0.28.
+
+### Added
+- **HmmWeb**, a new module: web pieces (an HTML page, a three.js scene, an HTML animation timed to the clock, a Lottie
+  file) played offscreen in a sandboxed `WKWebView` on a clock the app steps, 60 frames a second, so every way to a
+  moment draws the same picture and a preview is its export. `HmmWebClock` (`performance.now`, `Date`,
+  `requestAnimationFrame`, timers, CSS and Web Animations, video and audio, a seeded `Math.random`), `HmmWebPage` (a
+  content policy and a viewport added; CDN addresses of three.js and lottie-web swapped for the carried copies; an import
+  map for `three` and `three/addons/`; a host page for Lottie), `HmmWebPlayer` (steps forward, starts over to go back,
+  pictures at exactly the asked size, no network: every http(s) and socket request blocked), `HmmWebFrames` (one player a
+  piece, the stage's frame-now and an export's exact frame from the same steps).
+- Carried, MIT: three.js 0.170.0 (`three.module.js` and its addons, without the big decoders) and lottie-web 5.12.2, each
+  with its licence, under `Sources/HmmWeb/Web/lib/`.
+
 ## [0.16.0] - 2026-10-23
 
 Built with Maquette 0.26.

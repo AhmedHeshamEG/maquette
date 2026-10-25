@@ -26,6 +26,9 @@ extension EditorModel {
             let file = uniqueMediaName(source.lastPathComponent)
             let destination = assetsFolder.appendingPathComponent(file)
             try FileManager.default.copyItem(at: source, to: destination)
+            if let piece = Self.webPiece(file, at: destination, start: start ?? time) {
+                return addWebPiece(piece, as: placement)
+            }
             if UTType(filenameExtension: destination.pathExtension)?.conforms(to: .movie) ?? false {
                 return try await addVideo(file, at: destination, start: start ?? time, placement: placement)
             }
@@ -66,15 +69,16 @@ extension EditorModel {
         object = operations.nudgedToFreeSpot(object, in: scene)
         guard perform(operations.add(object)) else { return nil }
         select(object.id)
-        app.show(recipe.video != nil ? "Plays from \(TimeFormat.clock(recipe.videoStart ?? 0)). Move, turn and size it like any object"
+        let start = recipe.videoStart ?? recipe.web?.start ?? 0
+        app.show(recipe.video != nil || recipe.web != nil ? "Plays from \(TimeFormat.clock(start)). Move, turn and size it like any object"
             : "Move, turn and size it like any object")
         return object.id
     }
 
     /// Media flat over the frame, filling most of its height, on top.
-    private func addMediaOverlay(_ recipe: OverlayRecipe) -> ObjectID? {
+    private func addMediaOverlay(_ recipe: OverlayRecipe, named: String? = nil) -> ObjectID? {
         let layer = Double(baseScene.objects.values.filter(\.kind.isOverlay).count)
-        let name = recipe.video ?? recipe.image ?? "Media"
+        let name = named ?? recipe.video ?? recipe.image ?? "Media"
         let object = SceneObject(id: .make(), name: ObjectFactory.uniqueName((name as NSString).deletingPathExtension, in: scene), kind: .overlay(recipe),
                                  transform: CoreTransform(position: Vec3(0, 0, layer), scale: Vec3(2.6, 2.6, 1)))
         guard perform(operations.add(object)) else { return nil }
@@ -83,13 +87,47 @@ extension EditorModel {
         return object.id
     }
 
+    /// Pages, folders with a page and Lottie files are web pieces: they play on a card or over the frame (M12).
+    static let webTypes: [UTType] = [.html, .folder, .json, UTType(filenameExtension: "lottie") ?? .json]
+
+    /// The web piece a copied file or folder is, if it is one: a `.html`, a folder with an `index.html` (or one page), a
+    /// Lottie `.json` (its size and length read from it).
+    static func webPiece(_ file: String, at url: URL, start: Double) -> WebPiece? {
+        var isFolder: ObjCBool = false
+        FileManager.default.fileExists(atPath: url.path, isDirectory: &isFolder)
+        if isFolder.boolValue {
+            let pages = (try? FileManager.default.contentsOfDirectory(atPath: url.path))?.filter { $0.lowercased().hasSuffix(".html") } ?? []
+            guard let entry = pages.contains("index.html") ? "index.html" : pages.min() else { return nil }
+            return WebPiece(kind: .html, file: file, entry: entry, start: start)
+        }
+        switch url.pathExtension.lowercased() {
+        case "html", "htm": return WebPiece(kind: .html, file: file, start: start)
+        case "json", "lottie":
+            guard let data = try? Data(contentsOf: url), let lottie = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+                  lottie["layers"] != nil, let rate = lottie["fr"] as? Double, rate > 0 else { return nil }
+            let frames = ((lottie["op"] as? Double) ?? 0) - ((lottie["ip"] as? Double) ?? 0)
+            return WebPiece(kind: .lottie, file: file, width: (lottie["w"] as? Int) ?? 512, height: (lottie["h"] as? Int) ?? 512, start: start,
+                            duration: frames > 0 ? frames / rate : nil)
+        default: return nil
+        }
+    }
+
+    /// A web piece on a card where you're looking, or over the frame.
+    func addWebPiece(_ piece: WebPiece, as placement: MediaPlacement, named: String? = nil) -> ObjectID? {
+        let name = named ?? ((piece.file ?? "Web piece") as NSString).lastPathComponent
+        if placement == .card {
+            return addMediaCard(CardRecipe(aspect: piece.aspect, border: 0.015, web: piece), named: name)
+        }
+        return addMediaOverlay(OverlayRecipe(shape: .image, aspect: piece.aspect, web: piece), named: name)
+    }
+
     func uniqueMediaName(_ original: String) -> String {
         let base = (original as NSString).deletingPathExtension
         let ext = (original as NSString).pathExtension
         var candidate = original
         var index = 2
         while FileManager.default.fileExists(atPath: assetsFolder.appendingPathComponent(candidate).path) {
-            candidate = "\(base) \(index).\(ext)"
+            candidate = ext.isEmpty ? "\(base) \(index)" : "\(base) \(index).\(ext)"
             index += 1
         }
         return candidate

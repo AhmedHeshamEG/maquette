@@ -151,7 +151,7 @@ extension SceneCompiler {
 
     // MARK: Cards
 
-    func compileCard(_ recipe: CardRecipe, object _: SceneObject, world: simd_float4x4, base: ObjectUniforms, input: RenderInput, casts: Bool,
+    func compileCard(_ recipe: CardRecipe, object: SceneObject, world: simd_float4x4, base: ObjectUniforms, input: RenderInput, casts: Bool,
                      scene: inout RenderScene) {
         let size = recipe.cardSize
         let device = device
@@ -178,8 +178,10 @@ extension SceneCompiler {
         face.baseColor = SIMD4<Float>(1, 1, 1, base.baseColor.w)
         face.emissive = .zero
         face.ids.z |= ObjectFlags.unlit.rawValue
-        let texture = recipe.frameKey(at: input.time).flatMap { key in
-            input.mediaImage(key).flatMap { textures.texture(for: $0, key: key, maxSide: recipe.video != nil ? 1280 : 2048) }
+        // A web piece's frames share one texture slot per card (each new frame replaces the last).
+        let slot = recipe.web != nil ? "web:\(object.id.raw)" : nil
+        let texture = recipe.frameKey(at: input.time, id: object.id).flatMap { key in
+            input.mediaImage(key).flatMap { textures.texture(for: $0, key: slot ?? key, maxSide: recipe.video != nil ? 1280 : 2048) }
         }
         if texture == nil { face.baseColor = SIMD4<Float>(0.03, 0.03, 0.035, base.baseColor.w) }
         add(quad, world: world, uniforms: face, texture: texture, castsShadow: false, scene: &scene)

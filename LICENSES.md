@@ -11,6 +11,8 @@ Only permissively licensed dependencies are allowed.
 | [Instant Meshes](https://github.com/wjakob/instant-meshes) | commit 7b31608 (vendored in `Packages/InstantMeshes`) | BSD 3-clause | Clean quads from a sculpt (Clean up the shape) |
 | [Eigen](https://eigen.tuxfamily.org) | 3.4.0, the headers Instant Meshes uses (vendored with it) | MPL 2.0 | Instant Meshes' linear algebra |
 | [pcg32](https://github.com/wjakob/pcg32) and [dset](https://github.com/wjakob/dset) | commits 70099ea, 7967ef0 (vendored with Instant Meshes) | Apache 2.0; zlib-style | Instant Meshes' random numbers and disjoint sets |
+| [three.js](https://github.com/mrdoob/three.js) | 0.170.0 and its addons (carried in hmm-kit's `HmmWeb`, `Sources/HmmWeb/Web/lib/three`) | MIT | Web pieces: three.js scenes play offline (M12) |
+| [lottie-web](https://github.com/airbnb/lottie-web) | 5.12.2 (carried in hmm-kit's `HmmWeb`, `Sources/HmmWeb/Web/lib`) | MIT | Web pieces: Lottie animations (M12) |
 | [MCP Python SDK](https://github.com/modelcontextprotocol/python-sdk) (laptop tool only) | ≥ 2 | MIT | `hmm-bridge`, the MCP server and CLI on the laptop (not shipped in the app) |
 
 ## The Kit (shipped in the app, `App/Resources/Kit`)
