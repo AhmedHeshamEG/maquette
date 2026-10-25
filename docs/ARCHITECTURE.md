@@ -895,6 +895,38 @@ flowchart LR
   (the window, its three contents, the camera feed); `EditorModel+SheetFit` and `Draw/SheetChip`; `placeSheet` tries the
   fit first. The bridge's `/v2/media?as=reference`.
 
+## AR, the web layer and the bridge (0.28)
+
+```mermaid
+flowchart LR
+    Piece[WebPiece on a card / overlay<br/>schema 25] -->|WebFrameKey web:id#f=n| Stage[EditorModel.mediaImage<br/>webPreview.frameNow]
+    Piece -->|same key| Export[ExportSession.prepareMedia<br/>webFrames.frame]
+    Stage --> Frames[HmmWebFrames]
+    Export --> Frames2[HmmWebFrames]
+    Frames --> Player[HmmWebPlayer: WKWebView<br/>HmmWebClock stepped 1/60 s]
+    Frames2 --> Player
+    AR[ARStageView: ARSession] -->|camera carried into the scene, ARPlacement| Renderer[LoweyRenderer transparent]
+    Renderer --> Compose[one pass: camera YCbCr under the frame]
+```
+
+- **Kit `HmmWeb`** (0.17.0): `HmmWebClock` (the script before the page's own: time stands still until stepped),
+  `HmmWebPage` (policy, viewport, CDN → carried libraries, import map, the Lottie host), `HmmWebSchemeHandler`
+  (`hmm-web://piece/…` and `…/lib/…`, nothing outside), `HmmWebPlayer` (one offscreen `WKWebView`, non-persistent, a rule
+  list blocking http(s) and sockets; forward steps, back reloads), `HmmWebFrames` (a player a piece, four live; `frame`
+  waits, `frameNow` never does). three.js 0.170 and lottie-web 5.12 under `Sources/HmmWeb/Web/lib/`.
+- **Core**: `Text/WebPiece` (`WebPiece`, `WebFrameKey`, `Scene.webPiece`); `CardRecipe.web`, `OverlayRecipe.web`;
+  `AI/ScriptCompiler+Web` (`web`: add, edit, list), `+App` (`AppAsk`, the `app` verb, riding in `ScriptResult.app`),
+  `duplicate`; `AI/BridgeCoverage` (every menu command → a verb, an app ask or a tool); `Placement/ARPlacement` (the
+  scene in the room, the camera carried into the scene's space, the table size, the pinch).
+- **Engine**: `Web/WebPieces` (`WebPiece.playable(mediaURL:)` → the kit's piece); `ExportSession.webFrames`;
+  `SceneCompiler+Surfaces` gives a web card one texture slot; `AR/ARStageView` (an `MTKView` with its own `ARSession`
+  and `LoweyRenderer`, the compose shader compiled from source, the gestures, the coaching overlay).
+- **Features**: `Workspace/Session/EditorModel+AR` (`ARViewState`, open, share, the frame source, the previews' makers),
+  `+AppAsks` (one switch over every `AppAsk.Op`), `+Media` (pages, folders and Lottie files as web pieces);
+  `AR/ARScreen` (full screen from `EditorSheets`); Actions' View in AR and Share for AR; Add ▸ Web page or Lottie.
+- **Held**: `MaquetteHeld` has no names; the App Store build's Info.plist is checked on CI.
+- **Tools**: `Tools/gen-coverage.py` writes `skills/lowey/reference/coverage.md` from `BridgeCoverage`.
+
 ## LoweyRender 2
 
 ```mermaid

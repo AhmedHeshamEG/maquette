@@ -14,11 +14,26 @@ phase plan (Q1, M12, X1, M14, the test weeks, M16, then 1.0) lives in studio-h's
 - [x] The floating Reference window rebuilt to Procreate's standard: a close button, modes, moving and resizing
       (Q1, 0.27).
 - [x] Placing the sheet on a face: a preview on the lit face, fitted and lined up to it, snaps (Q1, 0.27).
-- [ ] The App Store build holds nothing: `MAQUETTE_HELD` is emptied when AR and the web layer are finished (M12).
+- [x] The App Store build holds nothing: `MAQUETTE_HELD` is empty, checked on CI (M12, D-558).
 - [ ] Import from anything, export to anything, every feature carried, three.js first (X1, `docs/INTEROP.md`).
 - [ ] First launch asks "What do you want to make?" and opens the matching set-up (M16).
 - [ ] The store screenshots show a film scene, a house, a printable part and a game level (M16,
       `AppUITests/ScreenshotTests.swift`).
+
+## Left from M12 (Maquette 0.28)
+
+- [ ] The device checklist in the "Maquette 0.28 — M12" PR, added to `DEVICE-SWEEP.md` (the AR view on a floor and a
+      table, life size, a pinch, play; Share for AR opened on an iPhone; a web piece on the stage and in an export; a Tier B
+      iPad's timing for both).
+- [ ] No ground shadow in the AR view: things stand on the real floor without a contact shadow (D-567); a shadow catcher
+      if it reads as floating.
+- [ ] Scrubbing a web piece backwards reloads its page and steps from frame 0 (D-561): a long piece scrubbed back near its
+      end takes a moment; a cache of key frames if it bothers anyone.
+- [ ] A web piece is drawn at its own size, at most 3840 a side (D-564); the export doesn't redraw it at the film's size.
+- [ ] Web pieces' sound (an `<audio>` in a page) is muted; the timeline's own audio is the film's sound.
+- [ ] The coverage covers the menu bar and what the Add page makes; panels' own rows (a light's colour, a Look's
+      sliders) reach the bridge through `set`, `look` and the raw `command`, not a listed path. LAYOUT.md's rows as the
+      table's keys if an assistant misses one.
 
 ## Left from Q1 (Maquette 0.27)
 

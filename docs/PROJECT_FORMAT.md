@@ -5,7 +5,7 @@ surface of that package: power users, scripts and MCP clients may **read** any o
 (the laptop bridge), so undo and the history journal stay true; a file changed behind the app's back is overwritten at
 the next checkpoint.
 
-Format version: package **2**, document schema **20** (`LoweySchema.currentVersion`), journal **1**.
+Format version: package **2**, document schema **25** (`LoweySchema.currentVersion`), journal **1**.
 
 ```
 My film.maquette/                 (3D-lowey's .lowey packages open too, and are upgraded in place)
@@ -694,6 +694,30 @@ A scene keeps its review notes (`notes`, missing when there are none). Each note
 One journal command changes notes: `setNotes` (`{"op": "setNotes", "notes": [{"id", "note"?, "index"?}]}`: insert,
 replace, or remove when `note` is absent). Schema 24 only added them; files from schema 23 open unchanged, and Maquette
 0.25 refuses schema 24.
+
+## Web pieces (schema 25)
+
+A card (`kind.card`) or an overlay (`kind.overlay`, shape `image`) may carry `web`, a web piece played on the
+timeline's clock:
+
+```json
+"web": {"kind": "html", "source": "<!doctype html>…", "width": 1280, "height": 720, "start": 2.0, "duration": 6, "loop": true}
+"web": {"kind": "lottie", "file": "logo.json", "width": 512, "height": 512, "start": 0}
+"web": {"kind": "html", "file": "intro", "entry": "index.html", "width": 1920, "height": 1080, "start": 0}
+```
+
+| Key | Type | Meaning |
+|---|---|---|
+| `kind` | `html` · `lottie` | A page (HTML, CSS, JavaScript, three.js) or a Lottie animation. |
+| `source` | string? | The page's (or the Lottie file's) whole text, kept in the project. |
+| `file`, `entry` | string? | Or a file or folder under `assets/`, and the page inside a folder (`index.html` when absent). |
+| `width`, `height` | int | The page's size in CSS pixels (16–3840 a side). |
+| `start` | number | Timeline time (s) of the piece's frame 0. |
+| `duration`, `loop` | number?, bool? | How long it plays; after it, it holds its last frame or loops. Absent: it runs as long as the timeline. |
+
+Its frames step 60 a second from `start`; before it a card shows frame 0 and an overlay isn't drawn. It is edited with
+`setKind` (no new command). Schema 25 only added the key; files from schema 24 open unchanged, and Maquette 0.27 refuses
+schema 25.
 
 ## workspace.json
 

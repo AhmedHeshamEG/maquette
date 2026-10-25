@@ -3,6 +3,15 @@
 One task per feature for the two test weeks (between M14 and M16), written for its person in `studio-h/USERS.md`. A
 task says what to make, never which buttons to press; the tester says where they got stuck.
 
+## 0.28 (M12): AR, web pieces and the bridge
+
+- **The architect:** stand the Keeper's Tower on a real table in AR, then make it life size and stand inside its door;
+  send it to an iPhone with Share for AR and open it there.
+- **The hobby sculptor:** put your creature on the floor in AR, turn it to face you, and play its walk.
+- **The explainer maker:** put a web page with a counting number on a screen beside the tower, scrub back and forth, and
+  export five seconds: the numbers in the film are the ones you scrubbed past.
+- **The motion designer:** a Lottie logo over the frame for the first three seconds of the film.
+
 ## 0.27 (Q1): the Reference window and the sheet
 
 - **The Procreate person:** a character's face painted with a reference picture beside it, colours taken from the

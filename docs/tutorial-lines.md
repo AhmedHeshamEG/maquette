@@ -3,6 +3,16 @@
 One line per feature for the person it serves (`studio-h/USERS.md`), in Hesham's voice, for the YouTube lessons the
 Learn place links to (CONTEXT §8). A phase adds the lines of what it built; M16 records them.
 
+## 0.28 (M12): AR, web pieces and the bridge
+
+- **The architect:** "Actions, View in AR: tap the table and the house stands on it, in its own Look. Pinch it up to life
+  size and walk into the living room. Share for AR sends it to your client's iPhone."
+- **The hobby sculptor:** "View in AR, tap the floor: your creature stands beside you. Play, and it walks in your room."
+- **The explainer maker:** "Model, Add, Web page or Lottie: a chart you made as a web page plays on a screen in the
+  scene, on the timeline's clock. What you scrub is what exports."
+- **The motion designer:** "Bring in a Lottie and put it over the frame: it plays with the film and loops if you ask."
+- **Everyone:** "Connect an assistant in Settings: everything in the menu bar, it can do too."
+
 ## 0.27 (Q1): the Reference window and the sheet
 
 - **The Procreate person:** "Actions, Reference. Drag the window by its bar wherever you like, size it by its corner.
