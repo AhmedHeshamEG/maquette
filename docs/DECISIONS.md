@@ -3543,7 +3543,7 @@ without a contact shadow. The device sweep says whether it reads as floating; a 
 painted colour as textures) and hand it to the share sheet: AR Quick Look opens it on any iPhone or iPad without the app
 (architects send it to clients). The AR view's own Share does the same.
 
-**D-569 — The bridge reaches everything through verbs.** `BridgeCoverage` (Core) maps every menu-bar command (111) and
+**D-569 — The bridge reaches everything through verbs.** `BridgeCoverage` (Core) maps every menu-bar command (107) and
 every kind the Add page makes to a path: a verb and its op, an app ask, or a laptop tool. Core tests check every verb is
 the compiler's, every op is in the schema and every tool is in the skill's reference; a Features test checks the table and
 `KeyCommands.all` name the same commands. `skills/lowey/reference/coverage.md` is generated from it (CI checks).

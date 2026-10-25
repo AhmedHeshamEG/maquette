@@ -37,7 +37,7 @@ final class BridgeCoverageTests: XCTestCase {
                 XCTAssertTrue(reference.contains("## `\(tool)`"), "\(action): no laptop tool “\(tool)”")
             }
         }
-        XCTAssertGreaterThanOrEqual(BridgeCoverage.commands.count, 111, "every menu-bar command")
+        XCTAssertGreaterThanOrEqual(BridgeCoverage.commands.count, 107, "every menu-bar command (Features checks the exact set)")
     }
 
     func testEveryKindTheAddPageMakesHasAVerb() {
