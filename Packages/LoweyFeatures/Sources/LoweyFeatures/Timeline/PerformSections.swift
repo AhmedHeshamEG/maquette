@@ -163,7 +163,7 @@ struct TriggerDeckBar: View {
     @Environment(\.hmmTheme) private var theme
 
     var body: some View {
-        if Held.isOn(.livePerformance), editor.timelineMode == .perform, let character = editor.faceTarget {
+        if editor.timelineMode == .perform, let character = editor.faceTarget {
             let deck = editor.triggers(of: character)
             if !deck.isEmpty {
                 ScrollView(.horizontal, showsIndicators: false) {

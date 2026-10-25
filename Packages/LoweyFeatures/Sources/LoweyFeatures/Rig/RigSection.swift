@@ -57,7 +57,7 @@ struct RigSection: View {
         if object.kind != .group {
             DisclosureRow("How it bends", systemName: "point.3.connected.trianglepath.dotted", identifier: "rig-bending") { bending(object) }
         }
-        if Held.isOn(.livePerformance) { DangleControl(editor: editor, character: object.id) }
+        DangleControl(editor: editor, character: object.id)
         HmmPillButton("Remove the rig", systemName: "trash", role: .destructive) { editor.removeRig(object.id) }
             .accessibilityIdentifier("rig-remove")
     }
