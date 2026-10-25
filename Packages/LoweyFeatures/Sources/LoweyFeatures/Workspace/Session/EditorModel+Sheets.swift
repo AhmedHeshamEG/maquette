@@ -95,6 +95,8 @@ extension EditorModel {
                 select(id)
                 return
             }
+            // Q1: on the face's own plane, sized to it and lined up with its longest edge (the tangent plane on a curve).
+            if laySheetFitted(at: point, shape: shape) { return }
             if let mesh = stage.worldMesh(of: id), let hit = MeshRaycast.intersect(ray, mesh: mesh) {
                 let sheet = DrawingSheet.lying(on: hit, object: id, eye: eye, in: displayed.scene, id: Self.newID(), name: baseScene.nextSheetName(),
                                                size: sheetSize(at: hit.point))
@@ -165,7 +167,7 @@ extension EditorModel {
     }
 
     /// A kept sheet moves with what is drawn on it, in one step (U5).
-    private func updateSheet(_ sheet: DrawingSheet, gesture: String?) {
+    func updateSheet(_ sheet: DrawingSheet, gesture: String?) {
         if sheetIsKept, let old = baseScene.sheet(sheet.id) {
             let carried = SheetCarry.carrying(from: old, to: sheet, in: baseScene)
             let move: EditCommand = carried.isEmpty ? .setSheets([SheetEdit(sheet)])
@@ -262,7 +264,7 @@ extension EditorModel {
         let border = SheetMesh.border(sheet, in: scene, thickness: point * 1.2)
         if !border.isEmpty { overlays.append(EditorOverlay(mesh: border, color: paper, opacity: Float(StageColors.sheetBorderAlpha * strength))) }
         guard sheetAwake else {
-            stage.showSheet(overlays)
+            stage.showSheet(overlays + sheetGhostOverlays())
             return
         }
         let edges = SheetMesh.softEdge(sheet, in: scene, width: point * 18, steps: StageColors.sheetEdgeAlphas.count)
@@ -271,7 +273,7 @@ extension EditorModel {
         }
         let dots = SheetMesh.dots(sheet, in: scene, spacing: point * 28, size: point * 2.2)
         if !dots.isEmpty { overlays.append(EditorOverlay(mesh: dots, color: paper, opacity: Float(StageColors.sheetDotAlpha))) }
-        stage.showSheet(overlays)
+        stage.showSheet(overlays + sheetGhostOverlays())
     }
 
     /// The sheet shows as paper now (a stroke starts, it was placed, the Pencil hovers) and fades a moment after.

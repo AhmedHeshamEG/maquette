@@ -86,6 +86,7 @@ enum KeyCommands {
                                                       menu: "Scene", HmmKeyCombo("v", option: true))
     static let sceneAiLaptopBridge = HmmKeyCommand("scene.aiLaptopBridge", "AI & Laptop Bridge…", menu: "Scene", HmmKeyCombo("b", shift: true))
     static let sceneScripts = HmmKeyCommand("scene.scripts", "Scripts…", menu: "Scene", nil)
+    static let sceneReferenceWindow = HmmKeyCommand("scene.referenceWindow", "Reference Window", menu: "Scene", HmmKeyCombo("r", option: true))
     static let sceneNewMonitorWindow = HmmKeyCommand("scene.newMonitorWindow", "New Monitor Window", menu: "Scene", HmmKeyCombo("n", option: true))
     static let timelineShowTimeline = HmmKeyCommand("timeline.showTimeline", "Show or Hide the Timeline", menu: "Timeline", HmmKeyCombo("t"))
     static let timelinePlayPause = HmmKeyCommand("timeline.playPause", "Play / Pause", menu: "Timeline", nil)
@@ -96,7 +97,7 @@ enum KeyCommands {
     static let timelineAudioWords = HmmKeyCommand("timeline.audioWords", "Audio & Words…", menu: "Timeline", HmmKeyCombo("u", shift: true))
     static let timelineTranscript = HmmKeyCommand("timeline.transcript", "Transcript", menu: "Timeline", HmmKeyCombo("t", shift: true))
     static let timelineRecordVoiceover = HmmKeyCommand("timeline.recordVoiceover", "Record Voiceover",
-                                                       menu: "Timeline", HmmKeyCombo("r", option: true))
+                                                       menu: "Timeline", HmmKeyCombo("r", shift: true, option: true))
     static let timelineSelectAllKeys = HmmKeyCommand("timeline.selectAllKeys", "Select All Keys", menu: "Timeline", HmmKeyCombo("a", option: true))
     static let timelineKeysAfterThePlayhead = HmmKeyCommand("timeline.keysAfterThePlayhead", "Keys After the Playhead",
                                                             menu: "Timeline", HmmKeyCombo("right", shift: true))
@@ -200,6 +201,7 @@ enum KeyCommands {
         scenePasteASceneScript,
         sceneAiLaptopBridge,
         sceneScripts,
+        sceneReferenceWindow,
         sceneNewMonitorWindow,
         timelineShowTimeline,
         timelinePlayPause,

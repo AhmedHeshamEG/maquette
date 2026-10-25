@@ -24,6 +24,7 @@ struct StageChrome: View {
             if editor.tool == .model || editor.precision.showsDimensions { ModelDimensions(editor: editor) }
             if editor.tool == .ink, !editor.inkStrokes.isEmpty { StrokeChip(editor: editor) }
             if editor.tool == .model || editor.tool == .select { PartChip(editor: editor) }
+            if editor.tool != .model, editor.drawsOnSheet { SheetChip(editor: editor) }
             HStack {
                 if !mirrored { sidebar }
                 Spacer()
@@ -36,9 +37,9 @@ struct StageChrome: View {
             // the other way round.
             VStack(spacing: HmmSpacing.s) {
                 HStack(alignment: .top) {
-                    if mirrored { trailingCluster } else { leadingCluster }
+                    if mirrored { measured(trailingCluster, "making") } else { measured(leadingCluster, "document") }
                     Spacer(minLength: HmmSpacing.m)
-                    if mirrored { leadingCluster } else { trailingCluster }
+                    if mirrored { measured(leadingCluster, "document") } else { measured(trailingCluster, "making") }
                 }
                 HStack(alignment: .top, spacing: HmmSpacing.s) {
                     if let panel = editor.openPanel, panel.isLeading != mirrored {
@@ -73,6 +74,11 @@ struct StageChrome: View {
     }
 
     private var mirrored: Bool { hand == HmmHand.left.rawValue }
+
+    /// A cluster, its frame kept so the Reference window settles off it (Q1).
+    private func measured(_ cluster: some View, _ key: String) -> some View {
+        cluster.onGeometryChange(for: CGRect.self) { $0.frame(in: .global) } action: { editor.placing.clusterFrames[key] = $0 }
+    }
 
     /// The sidebar, dragged along its edge by the grip under it (U8).
     private var sidebar: some View {

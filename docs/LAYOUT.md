@@ -38,7 +38,7 @@ end says what came from where.
    a finger or the hovering Pencil comes near.
 3. **Time lives in the timeline**, and the timeline comes when called: the corner control (⏱) or Animate. Performing
    live, overlays on the video, sound and words are there.
-4. **Actions holds making and sharing**: export, the project file, the Monitor, the Board, History, Learn, Settings.
+4. **Actions holds making and sharing**: export, the project file, the Monitor, the Board, the Reference window, History, Learn, Settings.
 5. **The object panel belongs to the selection.** It floats beside it and never covers it, can be moved by hand and
    stays where it was left, and folds to a chip (its name and Move · Turn · Size) while anything bigger is open.
 6. **One big thing open at a time.** Opening a panel folds the whole timeline to its transport and the object panel to
@@ -104,6 +104,7 @@ when they disagree. In the App Store configuration the walk asserts every held r
 | Review over FaceTime: the project goes to the people on the call; everyone turns the same view and leaves notes (U8) | Actions, during a FaceTime call |
 | Your iPhone: use it as your face, a camera, the remote, an AR view, a room or object scanner (U8) | `Actions › open-phone` |
 | The Board: plan before building (below) | `Actions › open-board` |
+| The Reference window (Q1): the whole scene from its own camera, a picture (Import, Paste, Clear; one finger pans it, two zoom it) or the front camera; drag its bar, size it by its corner or a pinch on the bar, ✕ closes it; Pick takes a colour from it; a two-finger tap hides it a moment | Actions ▸ Reference, or ⌘⌥R |
 | Rotoscope: a video behind the stage, its frame the one under the playhead (opacity, over the scene, start at the playhead); never exported (F1) | Actions ▸ Rotoscope, once a video is picked from Photos |
 | History scrubber, versions; over it, the selected thing's modelling steps to change (H1) | `Actions › open-history` |
 | Learn: the tour, every gesture, the instructions switch | `Actions › open-learn` |

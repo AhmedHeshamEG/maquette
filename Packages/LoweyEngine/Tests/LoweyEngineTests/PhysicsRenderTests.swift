@@ -56,6 +56,7 @@ final class PhysicsRenderTests: XCTestCase {
     }
 
     func testClothAndWaterAreDrawnFromTheRun() async throws {
+        executionTimeAllowance = 600 // the cloth and the water are simulated first; a slow runner passes five minutes
         var cloth = SceneObject(id: "cloth", name: "Cloth", kind: .primitive(.plane), transform: Transform(position: Vec3(0, 1.2, 0), scale: Vec3(1.4, 1, 1.4)))
         cloth[.color] = .color(.rgba(RGBA.hex("#C0392B")))
         cloth.physics = ObjectPhysics(material: .cloth)

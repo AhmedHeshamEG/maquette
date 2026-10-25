@@ -20,7 +20,9 @@ extension BridgeModel {
             v2("POST", "/v2/observe") { model, request in await model.observeRoute(request) },
             v2("POST", "/v2/contact_sheet") { model, request in await model.contactSheetRoute(request) },
             v2("POST", "/v2/commit") { model, request in await model.commit(request) },
-            v2("POST", "/v2/media") { model, request in await model.v2Media(request) },
+            v2("POST", "/v2/media") { model, request in
+                request.query["as"] == "reference" ? model.referencePicture(request.body) : await model.v2Media(request)
+            },
             // Not one of the sixteen tools: the evals harness starts each brief in a fresh scene.
             v2("POST", "/v2/scenes/new") { model, request in await model.newScene(request) }
         ]
@@ -240,6 +242,15 @@ extension BridgeModel {
         }
         notify("scene")
         return .json(["added": name, "id": id.raw, "name": editor.baseScene.objects[id]?.name ?? name])
+    }
+
+    /// A picture for the Reference window (Q1): kept in the project and shown there; `{"do":"reference"}` names it again.
+    private func referencePicture(_ data: Data) -> HTTPResponse {
+        guard let editor = app.editor else { return .error(409, "Open a project on the iPad first") }
+        guard let image = UIImage(data: data), let png = image.pngData() else { return .error(422, "That isn't a picture") }
+        guard let file = editor.keepReferencePicture(png) else { return .error(500, "Couldn't keep the picture") }
+        editor.applyReference([.image(file)])
+        return .json(["image": file, "window": "open, Image"])
     }
 }
 

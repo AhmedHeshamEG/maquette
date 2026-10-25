@@ -4,6 +4,11 @@ Shapr3D's ease, Procreate's feel, Dreams' animation and ToonSquid's rigging, in 
 or art degree. Build a set like Lego, drop in characters, direct them with a camera, sync them to your voice, and
 export the video. By **studio h.**; the continuation of 3D-lowey 2.0. All rights reserved (see [LICENSE](LICENSE)).
 
+**0.27** (phase Q1): **fixes and the device sweep**. The **Reference window** is made like Procreate's: a bar to
+move it, a corner to size it, a ✕, and three modes, the whole scene from its own camera, a picture you pan and zoom, or
+the front camera, back where you left it. The **sheet** lies on the face you choose: the face lights under the hovering
+Pencil with the sheet's ghost on it, a tap lays it fitted and lined up, and its chip makes it exact.
+
 **0.26** (phase U8): **yours**. The app fits your hand: the left hand mirrors the canvas's corners, each corner's
 buttons in your order or hidden, the sidebar dragged along its edge, any command on the keys you choose, and the +
 making your set-up, Look, units and brush. **Present** fills a TV or a projector with the film, a walk through the

@@ -278,6 +278,7 @@ final class EditorModel {
     var boardShown = false
     /// Pictures pinned from the board, floating over the stage (`workspace.json`).
     var references: [ReferenceCard] = []
+    let placing = PlacingState() // Q1: the Reference window, and the sheet laid on a face
     /// The video behind the stage (F1), kept in the workspace.
     var rotoscope: Rotoscope?
     /// The camera button's Lens and frame popover (F1).

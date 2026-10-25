@@ -230,6 +230,11 @@ verbs = {
              "place; list them, reply, resolve, reopen or delete one by its number or id.",
              {"op": {"enum": ["add", "list", "reply", "resolve", "reopen", "delete"]}, "text": s, "on": tgt, "at": v3,
               "note": {"anyOf": [n, s]}, "author": s, "time": n}, []),
+    "reference": ("Q1's Reference window over the stage (not an edit): open it, show the whole scene (canvas), a picture "
+                  "already in the project (image, named by /v2/media?as=reference) or the front camera (face); frame the whole "
+                  "scene again; close it.",
+                  {"op": {"enum": ["open", "mode", "image", "frame", "close"]}, "mode": {"enum": ["canvas", "image", "face"]},
+                   "image": s}, []),
     "command":("A raw EditCommand.", {"command": ref("command")}, ["command"]),
 }
 

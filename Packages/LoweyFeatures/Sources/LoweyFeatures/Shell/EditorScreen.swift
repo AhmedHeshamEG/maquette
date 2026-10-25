@@ -173,6 +173,11 @@ struct EditorScreen: View {
                     ReferenceCards(editor: editor, boardEnabled: boardEnabled)
                         .opacity(editor.chromeFaded ? 0 : 1)
                 }
+                if editor.referenceOpen {
+                    ReferenceWindowView(editor: editor)
+                        .opacity(editor.chromeFaded ? 0 : 1)
+                        .transition(.opacity.combined(with: .scale(scale: 0.96)))
+                }
                 StageChrome(editor: editor)
                     .opacity(editor.chromeFaded ? 0 : 1)
                     .animation(HmmMotion.gentle.animation(reduceMotion: reduceMotion), value: editor.chromeFaded)

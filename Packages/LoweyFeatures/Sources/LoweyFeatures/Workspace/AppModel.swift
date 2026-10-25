@@ -58,7 +58,8 @@ public final class AppModel {
 
     public convenience init() {
         let documents = DocumentLocator.defaultLocalRoot
-        let base = AppIdentity.isUITesting ? documents.appendingPathComponent("UITest-\(UUID().uuidString)") : documents
+        let folder = AppIdentity.uiTestingFolder.map { "UITest-\($0)" } ?? "UITest-\(UUID().uuidString)"
+        let base = AppIdentity.isUITesting ? documents.appendingPathComponent(folder) : documents
         let locator = DocumentLocator(containerIdentifier: nil, subfolder: "Projects", localRoot: base)
         self.init(projects: locator.localFolder, library: base.appendingPathComponent("Lowey Library"))
         // UI tests start from the layout as it comes, unless a test relaunches to see its layout kept (at launch, before
@@ -103,6 +104,8 @@ public final class AppModel {
             showTour = !AppIdentity.isUITesting || AppIdentity.isTestingTour
         }
         refreshArchived()
+        // The Reference window's UI test pastes a picture this app put on the clipboard itself (no paste question).
+        if AppIdentity.isUITesting, ProcessInfo.processInfo.arguments.contains("-ui-testing-picture") { UIPasteboard.general.image = Self.testPicture() }
         Task { await drawSamplesCard() }
         if !showTour { await restoreSession() }
         if !AppIdentity.isUITesting, !AppIdentity.isHostingTests { bridge.restoreIfWanted() }
@@ -296,5 +299,18 @@ final class CardImageCache {
 
     func remove(_ id: ProjectID) {
         cache.removeObject(forKey: id.raw as NSString)
+    }
+}
+
+extension AppModel {
+    /// A 400 × 200 picture of four colour bands, for the Reference window's UI test.
+    static func testPicture() -> UIImage {
+        UIGraphicsImageRenderer(size: CGSize(width: 400, height: 200)).image { context in
+            let colours: [UIColor] = [.systemRed, .systemGreen, .systemBlue, .systemYellow]
+            for (index, colour) in colours.enumerated() {
+                colour.setFill()
+                context.fill(CGRect(x: index * 100, y: 0, width: 100, height: 200))
+            }
+        }
     }
 }

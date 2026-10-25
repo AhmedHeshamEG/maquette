@@ -7,41 +7,57 @@ TestFlight upload all happen in GitHub Actions.
 
 | Field | Value |
 |---|---|
-| Name | 3D-lowey |
-| Subtitle | Stylised 3D explainer videos |
+| Name | Maquette (fallback if taken: Maquette: 3D for Everyone) |
+| Subtitle | 3D, even if you've never tried |
 | Primary category | Graphics & Design |
 | Secondary category | Photo & Video |
-| Platforms | iPad (the app); iPhone (the face companion for the iPad) |
-| Languages | English, Italian, Arabic |
-| Price | Paid upfront. Working plan: $14.99, launch week $9.99. A studio bundle later. No in-app purchases in 2.0. |
+| Platforms | iPad (the app); iPhone (the companion: face, camera, remote, AR, scans) |
+| Languages | English at 1.0; Italian, Arabic, Japanese, Korean and Simplified Chinese with the languages update |
+| Price | $14.99, paid once; $9.99 in launch week, then $14.99 by a scheduled price change. No in-app purchases. Lower prices set by hand in Egypt, India, Brazil and Turkey. Family Sharing on. Education volume discount on. |
 
-**Promotional text:** Build a world, direct it, make the video — in Ink, Comic, Sketch, Clay or Low-poly.
+**Promotional text** (launch week): $9.99 this week only, then $14.99. Make your first 3D thing today, with your
+fingers and a Pencil.
+
+**Promotional text** (after): You've never made anything in 3D? Start with a film, a room, a part to print or a game
+level.
 
 **Description:**
-3D-lowey turns an idea and your voice into a stylised 3D video on your iPad. Build sets from a Kit of hundreds of
-real-size models, draw with ink and the Pencil, cast Blob characters that talk and lip-sync to your voiceover, and
-direct with real camera language: shot types, lenses, moves that land on your words. Five Looks — Ink, Comic,
-Sketch, Clay and Low-poly — give every frame a hand-made style, and flipbook effects add drawn speed lines and
-impacts. Export for YouTube, Shorts, GIFs and stills, in the background. Everything stays on your iPad: no account, no
-tracking.
+You've never made anything in 3D. Make something today: a short film, a room, a part to print, a game level.
 
-**Keywords:** 3D,animation,explainer,video,storyboard,cartoon,motion,camera,ink,comic,lip sync,low poly
+Pay once. No subscription, no in-app purchases, no account.
+
+Maquette asks what you want to make and sets itself up for it. Draw with the Pencil and it stands up in 3D. Push and
+pull shapes like clay, paint straight onto them, give a character bones by drawing them, then move it by hand or act
+it out in front of the camera. Twelve Looks give every frame a hand-made style: Ink, Comic, Sketch, Painterly,
+Watercolour, Gouache, Paperman, Anime cel, Clay, Clean product, Low-poly and Pixel.
+
+Set it up for a film and you get cameras, lenses and a timeline. For a room, walls, doors and a floor plan. For
+printing, millimetres, a print check and files for your slicer. For a game, a greybox and exports for Godot, Unity
+and Unreal. For study, exploded views and technical drawings.
+
+Bring in what you made elsewhere and take your work anywhere: the web (three.js), Blender, game engines, printers,
+architects' files, AR. Everything stays on your iPad.
+
+**Keywords:** lowpoly,modeling,animation,rigging,stl,print,pencil,ar,cartoon,game,beginner,threejs,gltf,house
+
+The listing never says "AI" or "Claude" (the bridge is one quiet Settings row, off by default).
 
 ## Age rating (answers)
 
 Every content question: **None** (no violence, no mature themes, no gambling, no user-generated content shared
-inside the app, no web browsing, no messaging). Result: **4+**. "Made for Kids": no.
+inside the app, no web browsing, no messaging). Result: **4+**. "Made for Kids": no. The web layer runs the user's
+own HTML in a sandbox with no network; it isn't a browser.
 
 ## Privacy
 
 - **Data collection:** Data Not Collected. No analytics, no accounts, no ads, no tracking.
 - **Privacy manifest:** `App/Resources/PrivacyInfo.xcprivacy` (UserDefaults CA92.1; file timestamps C617.1, 3B52.1)
   and `App/Widgets/PrivacyInfo.xcprivacy` (the export Live Activity, nothing accessed).
-- **Network:** only what the user starts — sharing files, iCloud Drive sync, and (sideloaded builds only) the laptop
-  bridge on the local network.
-- **Permissions:** camera (the iPad as a film camera, face capture), microphone (voiceover), speech recognition (word
-  timings, on device), photo library add (saving exports), local network (bridge, iPhone companion). Each prompt is
-  localised in `App/Resources/InfoPlist.xcstrings`.
+- **Network:** only what the user starts: sharing files, iCloud Drive sync, SharePlay reviews over FaceTime, the
+  iPhone companion and the assistant bridge on the local network.
+- **Permissions:** camera (the iPad as a film camera, face capture, acting out, the Reference window's Face), microphone (voiceover), speech
+  recognition (word timings, on device), photo library add (saving exports), local network (bridge, iPhone
+  companion), LiDAR scans through ARKit. Each prompt's line is in `App/Resources/InfoPlist.xcstrings`.
 
 ## Export compliance
 
@@ -49,18 +65,27 @@ inside the app, no web browsing, no messaging). Result: **4+**. "Made for Kids":
 
 ## Screenshots
 
-Generated by the UI tests (`AppUITests/ScreenshotTests.swift`) from the shipped samples on CI's simulators:
+Generated by the UI tests (`AppUITests/ScreenshotTests.swift`) from sample projects on CI's simulators. They show the
+variety, in this order (rebuilt in M16):
 
-- iPad 13" (iPad Air 13-inch): Theater, Stage, Director view, Looks, Cast, Export.
-- iPhone 6.9" (the largest iPhone simulator): the face companion.
+1. A film scene (the Keeper's Tower, mid-shot)
+2. A house (set up for Room, with its plan)
+3. A printable part (set up for Print, the threaded jar with its print check)
+4. A game level (set up for Game, the greybox)
+5. A character being rigged · 6. A painted model · 7. The Looks side by side · 8. A three.js export ·
+   9. Present on a TV · 10. The Pencil drawing on the sheet
+
+- iPad 13" (iPad Air 13-inch), and iPhone 6.9" for the companion.
+- Each has one big "Now you can ___" line. No pricing words (guideline 2.3.7).
+- Up to 3 App Previews of 30 s, screen footage only, captured from the same samples; the first works muted.
 
 Each CI run uploads them as the `app-store-screenshots` artifact (`AppStore-<device>-<nn>-<screen>.png`).
 
 ## The App Store build
 
-The App Store variant differs from the sideloaded one in three Info.plist values, set by the TestFlight job:
-`LoweyAIBridge = NO` and `LoweyBackgroundBridge = NO` (the laptop bridge ships in 2.1, after review of its local
-network use), and no `UIBackgroundModes` (background audio exists only to keep the bridge answering).
+The `AppStore` configuration in `project.yml` differs from the sideloaded one in its Info.plist values. Its held
+list (`MAQUETTE_HELD`) gets no new names and is emptied in M12, so the store build holds nothing. The assistant
+bridge ships in 1.0, off by default (M16); switching it off is one line in the release workflow if App Review objects.
 
 ## TestFlight
 
@@ -76,14 +101,19 @@ repository secrets exist (otherwise it notes that it skipped):
 
 The job generates the project, switches the App Store values, archives with automatic signing through the API key,
 and uploads with `xcodebuild -exportArchive` (`destination: upload`). The build number is the workflow run number.
+A paid account brings the entitlements a sideloaded build can't have: iCloud Drive, the app group, and
+`com.apple.developer.group-session` for reviews over FaceTime.
 
 ## StoreKit
 
-`Config/Lowey.storekit` is the scheme's StoreKit configuration for testing. 2.0 has no in-app purchases, so it holds
-no products; it's there so a later bundle or upgrade can be tested in the simulator without App Store Connect.
+`Config/Lowey.storekit` is the scheme's StoreKit configuration for testing. 1.0 has no in-app purchases, so it holds
+no products.
 
 ## Review notes (paste into App Review Information)
 
-3D-lowey is an iPad app; on iPhone it's a companion that streams the user's face to the iPad for character
-animation (open the iPad app, select a character, Cast ▸ My iPhone). A sample project opens on first launch with a
-60-second tour. No sign-in is needed.
+Maquette is an iPad app; on iPhone it's a companion for the iPad (face capture, an extra camera, a remote, AR and
+scans): open the iPad app, then Actions ▸ Your iPhone. On first launch it asks what you want to make and opens a short
+hands-on tutorial. No sign-in is needed.
+
+M16 adds the notes for the camera, LiDAR, SharePlay, background export, the web layer's sandbox and the local-network
+assistant bridge.

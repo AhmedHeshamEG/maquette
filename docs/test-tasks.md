@@ -3,6 +3,13 @@
 One task per feature for the two test weeks (between M14 and M16), written for its person in `studio-h/USERS.md`. A
 task says what to make, never which buttons to press; the tester says where they got stuck.
 
+## 0.27 (Q1): the Reference window and the sheet
+
+- **The Procreate person:** a character's face painted with a reference picture beside it, colours taken from the
+  picture, the whole model watched in the window while working close up.
+- **The anime animator:** three expressions drawn on a head while looking at their own face.
+- **The maker:** a label drawn on the slanted side of a box, the sheet turned to 15° and moved 2 mm off the face.
+
 ## 0.26 (U8): yours
 
 - **A left-handed tester:** the layout set for their hand, the buttons they never use hidden, a model made and animated

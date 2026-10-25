@@ -1,7 +1,34 @@
 # Backlog
 
 What's known and not done yet, so nothing lives only in someone's head. What Maquette is: [SPEC.md](SPEC.md). The
-phase plan (the pass U1 … U5, M12, M14, M16, then 1.0) lives in studio-h's `PHASES.md`; ideas go to its `IDEAS.md`.
+phase plan (Q1, M12, X1, M14, the test weeks, M16, then 1.0) lives in studio-h's `PHASES.md`; ideas go to its
+`IDEAS.md`.
+
+## Before launch
+
+- [ ] Every device checklist below run once on a real iPad, on the sideloaded build, from one sweep list: studio-h's
+      `DEVICE-SWEEP.md` (written in Q1). Each section's "device checklist" line is ticked when the sweep covers it.
+- [ ] At the very end (L1): the developer account, the App Store Connect key in the repo secrets, the paid-account
+      entitlements (iCloud Drive, the app group, `com.apple.developer.group-session`) and the first TestFlight build.
+- [ ] Reviews over FaceTime tested on that TestFlight build (D-532), with the two-iPad SharePlay check.
+- [x] The floating Reference window rebuilt to Procreate's standard: a close button, modes, moving and resizing
+      (Q1, 0.27).
+- [x] Placing the sheet on a face: a preview on the lit face, fitted and lined up to it, snaps (Q1, 0.27).
+- [ ] The App Store build holds nothing: `MAQUETTE_HELD` is emptied when AR and the web layer are finished (M12).
+- [ ] Import from anything, export to anything, every feature carried, three.js first (X1, `docs/INTEROP.md`).
+- [ ] First launch asks "What do you want to make?" and opens the matching set-up (M16).
+- [ ] The store screenshots show a film scene, a house, a printable part and a game level (M16,
+      `AppUITests/ScreenshotTests.swift`).
+
+## Left from Q1 (Maquette 0.27)
+
+- [ ] The device checklist in the "Maquette 0.27 — Q1" PR, in `DEVICE-SWEEP.md`'s first group (the window's feel at
+      120 Hz, the Face mode on a real camera, the hover ghost with a Pencil, the Canvas window on a Tier B iPad).
+- [ ] A finger held on a thing while drawing stays the eyedropper, so only the hovering Pencil previews the sheet
+      (D-552). A finger-only iPad sees the face light as the sheet lands.
+- [ ] A face that isn't a rectangle gets the box along its longest edge, which can reach past a corner (D-550).
+- [ ] The Canvas window shows the scene as the stage has it, not the Look's finish (no screen effects); it's a view to
+      work by, not the shot (D-543).
 
 ## Left from U8 (Maquette 0.26)
 

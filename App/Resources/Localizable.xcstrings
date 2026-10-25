@@ -1313,6 +1313,22 @@
         }
       }
     },
+    "A picture to work from": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Un'immagine da cui lavorare"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "صورة تعمل منها"
+          }
+        }
+      }
+    },
     "A Radiance .hdr panorama shows behind everything and lights the world: its sun, its sky.": {
       "localizations": {
         "it": {
@@ -6049,6 +6065,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "أغلق الحلقة"
+          }
+        }
+      }
+    },
+    "Close the Reference window": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chiudi la finestra Riferimento"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "أغلق نافذة المرجع"
           }
         }
       }
@@ -11433,6 +11465,22 @@
         }
       }
     },
+    "Face": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Viso"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الوجه"
+          }
+        }
+      }
+    },
     "Face capture failed: %@": {
       "localizations": {
         "it": {
@@ -13517,6 +13565,38 @@
         }
       }
     },
+    "From Files": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Da File"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "من الملفات"
+          }
+        }
+      }
+    },
+    "From Photos": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Da Foto"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "من الصور"
+          }
+        }
+      }
+    },
     "From the laptop: %@ is in your library": {
       "localizations": {
         "it": {
@@ -15573,6 +15653,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "لقطة الاصطدام"
+          }
+        }
+      }
+    },
+    "Import": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Importa"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "استيراد"
           }
         }
       }
@@ -19085,6 +19181,22 @@
         }
       }
     },
+    "Maquette may use the front camera only to show you your face here": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Maquette usa la fotocamera frontale solo per mostrarti il tuo viso qui"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "يستخدم Maquette الكاميرا الأمامية فقط ليُريك وجهك هنا"
+          }
+        }
+      }
+    },
     "Maquette quit unexpectedly last time. Your work was autosaved.": {
       "localizations": {
         "it": {
@@ -20545,6 +20657,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "انقل المحور إلى هنا"
+          }
+        }
+      }
+    },
+    "Move the Reference window": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sposta la finestra Riferimento"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "حرّك نافذة المرجع"
           }
         }
       }
@@ -22157,6 +22285,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "لا شيء للتصدير"
+          }
+        }
+      }
+    },
+    "Nothing to take a colour from there": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lì non c'è un colore da prendere"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "لا يوجد لون لأخذه من هناك"
           }
         }
       }
@@ -27061,6 +27205,38 @@
           "stringUnit": {
             "state": "translated",
             "value": "مرجع"
+          }
+        }
+      }
+    },
+    "Reference Window": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Finestra Riferimento"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "نافذة المرجع"
+          }
+        }
+      }
+    },
+    "Reference window": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Finestra Riferimento"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "نافذة المرجع"
           }
         }
       }
@@ -35721,6 +35897,22 @@
         }
       }
     },
+    "The camera is reading your face for the performance": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La fotocamera sta leggendo il tuo viso per la performance"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الكاميرا تقرأ وجهك من أجل الأداء"
+          }
+        }
+      }
+    },
     "The camera stands where the photo was taken; what you build sits in it": {
       "localizations": {
         "it": {
@@ -36553,6 +36745,22 @@
         }
       }
     },
+    "The sheet": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Il foglio"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الورقة"
+          }
+        }
+      }
+    },
     "The short explanations under controls. Turn them off once you know your way around.": {
       "localizations": {
         "it": {
@@ -36937,6 +37145,22 @@
         }
       }
     },
+    "The whole scene": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tutta la scena"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "المشهد كله"
+          }
+        }
+      }
+    },
     "The whole scene as a glTF (.glb).": {
       "localizations": {
         "it": {
@@ -36949,6 +37173,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "المشهد كاملًا بصيغة glTF (.glb)."
+          }
+        }
+      }
+    },
+    "The whole scene, from where you look": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tutta la scena, da dove guardi"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "المشهد كله، من حيث تنظر"
           }
         }
       }
@@ -37029,6 +37269,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "السمة"
+          }
+        }
+      }
+    },
+    "There's no front camera here": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Qui non c'è una fotocamera frontale"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "لا توجد كاميرا أمامية هنا"
           }
         }
       }
@@ -41217,6 +41473,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "وجهك ويداك يحرّكان الشخصية مباشرة. سجّل لتلتقط لقطة؛ كل لقطة تُحفظ."
+          }
+        }
+      }
+    },
+    "Your face, from the front camera": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Il tuo viso, dalla fotocamera frontale"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "وجهك، من الكاميرا الأمامية"
           }
         }
       }

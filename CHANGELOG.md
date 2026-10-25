@@ -3,6 +3,27 @@
 All notable changes. 1.x grew in four phases (v0.1 → v1.4); 2.0 is the remaster, released as betas first. Maquette
 continues from 2.0 and numbers its phases again from 0.1 (each phase bumps the minor version until 1.0).
 
+## [0.27] — Maquette — Fixes and the device sweep (phase Q1)
+
+The two things Hesham found on the iPad on 2026-10-24, made right, and every device check left since M1 in one list.
+
+- **The Reference window, made like Procreate's** (Actions ▸ Reference, ⌘⌥R): one window over the stage with a slim bar
+  to move it (it glides and settles off the clusters and the edges), a corner (or a pinch on the bar) to size it, a ✕ to
+  close it, and three modes: **Canvas**, the whole scene live from its own camera; **Image**, a picture from Photos,
+  Files or the clipboard, panned with one finger and zoomed with two; **Face**, the front camera for drawing
+  expressions. It comes back where and as big as it was, per project. Pick takes a colour from it; a two-finger tap
+  hides it a moment. Older projects' window picture moves into it.
+- **The sheet on a face, precise**: while the Pencil hovers, the face under it lights and the sheet's ghost sits on it;
+  a finger's tap lays it there, on the face's own plane, sized to the face and lined up with its longest edge (on a
+  curve, the tangent plane under the tip), snapping to the face's middle and edges with a tick. Its chip makes it exact:
+  offset, turn (15° steps) and size, as sliders with the number pad behind them.
+- **Keys**: ⌘⌥R is the Reference window; Record Voiceover moves to ⌘⌥⇧R.
+- **The bridge**: the `reference` verb (open, mode, image, frame, close) and `add_media(…, reference=True)`; the lowey
+  skill's Reference window module teaches them.
+- **The device sweep**: studio-h's `DEVICE-SWEEP.md`, every unticked device check from the PRs in one list, grouped by
+  what you need for it.
+- No schema change (the window lives in `workspace.json`), no kit change.
+
 ## [0.26] — Maquette — Yours (phase U8)
 
 The app fits your hand, shows your work on a big screen, takes notes from the people you show it to, and the iPhone

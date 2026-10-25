@@ -867,6 +867,34 @@ flowchart LR
 - **UI tests**: `AppUITests/YoursTests` (the left hand and an order kept over a relaunch, then reset; Present; a note
   answered in place). A UI test launch starts from the default layout unless `-keep-layout`.
 
+## The Reference window and the sheet on a face (0.27)
+
+```mermaid
+flowchart LR
+    Actions[Actions ▸ Reference · ⌘⌥R · the reference verb] --> Model[EditorModel+Reference<br/>PlacingState.window]
+    Model --> Window[Board/ReferenceWindowView<br/>bar · modes · corner]
+    Window --> Canvas[a second StageView<br/>its own camera]
+    Window --> Image[the picture<br/>zoom and pan]
+    Window --> Face[Board/ReferenceCamera<br/>front camera frames]
+    Model --> Workspace[workspace.json<br/>referenceWindow]
+    Hover[the hovering Pencil] --> Fit[EditorModel+SheetFit<br/>SheetFit.face · placement]
+    Tap[a finger's tap] --> Fit
+    Fit --> Ghost[the lit face and the ghost<br/>StageView.showSheet]
+    Fit --> Chip[Draw/SheetChip<br/>offset · turn · size]
+```
+
+- **Core**: `Project/ReferenceWindow` (the window's state, `settled(at:in:avoiding:)` off the edges and the clusters,
+  `sized`, the picture's rect, `zoomed(by:about:)` and `panned(by:)`, `canvasView(framing:from:aspect:)`, `migrating` older
+  window cards), `ProjectWorkspace.referenceWindow`. `Model/SheetFit` (`face(around:in:eye:)` gathers the flat face by
+  welded shared edges, `isCurved`, `tangentFace` for dense shapes, `placement(on:tip:maximum:snap:turn:)`, `snappedTurn`,
+  `lift`, `mesh(of:in:lift:)`), `DrawingSheet.fitted`; `MeshRaycast.intersectTriangle` says which triangle was hit.
+  `AI/ScriptCompiler+Reference`: the `reference` verb, `ReferenceAsk` in `ScriptResult.reference`.
+- **Features**: `PlacingState` on `EditorModel.placing` (the window, its two-finger hide, the ghost, the fitted sheet, the
+  clusters' frames from `StageChrome`, the Canvas view, the face cache); `EditorModel+Reference` (open, close, modes,
+  settle, size, pictures, Canvas's frame, Pick, the bridge's asks); `Board/ReferenceWindowView` and `Board/ReferenceCamera`
+  (the window, its three contents, the camera feed); `EditorModel+SheetFit` and `Draw/SheetChip`; `placeSheet` tries the
+  fit first. The bridge's `/v2/media?as=reference`.
+
 ## LoweyRender 2
 
 ```mermaid

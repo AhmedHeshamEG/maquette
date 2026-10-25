@@ -46,6 +46,7 @@ grounds things; you decide what the shot is, then check it with your own eyes (`
 | a logo, fonts, letters that animate, clones and ripples, links, moving to the music, morphs, seamless loops | `modules/motion-design.md` |
 | a building, plans, rooms, roofs; 3D printing, screws, threads, splitting; an exploded view; a game level, greybox | `modules/guest-kits.md` |
 | notes on the scene, feedback to leave or answer, to-dos on a shot | `modules/review-notes.md` |
+| a picture or the whole scene to work from beside the stage, the front camera for expressions | `modules/reference-window.md` |
 | "is it good?", fixing a shot | `modules/critique.md` |
 | photos, video, Manim graphs | `modules/media.md` |
 | which Look (twelve), the Finish, grounds, drawn effects, a drawing as a diorama, colour, composition | `style/looks.md`, `style/color.md`, `style/composition.md` |

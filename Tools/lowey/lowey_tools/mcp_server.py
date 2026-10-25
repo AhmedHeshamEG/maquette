@@ -235,14 +235,16 @@ def flipbook(kind: str, anchor: Any, at: Any = None, on_word: str | None = None,
 
 @tool()
 def add_media(path: str, at: float | None = None, overlay: bool = False, environment: bool = False, font: bool = False,
-              logo: bool = False, drawing: bool = False) -> str:
+              logo: bool = False, drawing: bool = False, reference: bool = False) -> str:
     """A picture or video file from this laptop into the open shot: a thin card standing in the 3D world, or overlay=True
     to lay it flat over the frame. Videos play from `at` seconds (default: the playhead). environment=True takes a
     Radiance .hdr panorama (an HDRI) as the world's sky and light: its sun and sky colours light the scene; turn it with
     build's {"do": "film", "op": "environment", "turn": 40}. font=True brings an OTF/TTF font into the project for 3D
     text (build's {"do": "text", "font": "fonts/…"}); logo=True stands an SVG logo up as solids, one a colour; drawing=True
-    stands a layered PSD, PSB or Procreate drawing up as a diorama, one painted sheet a layer."""
-    placement = ("font" if font else "logo" if logo else "drawing" if drawing else "environment" if environment
+    stands a layered PSD, PSB or Procreate drawing up as a diorama, one painted sheet a layer. reference=True shows a
+    picture in the Reference window over the stage (not in the shot): build's {"do": "reference"} switches it to the
+    whole scene (mode canvas), the picture or the front camera, or closes it."""
+    placement = ("reference" if reference else "font" if font else "logo" if logo else "drawing" if drawing else "environment" if environment
                  else "overlay" if overlay else "card")
     try:
         return _compact(bridge().add_media(pathlib.Path(path).expanduser(), at=at, placement=placement))

@@ -288,6 +288,8 @@ final class StageGestures: NSObject, UIGestureRecognizerDelegate {
         }
         editor.hoverLight(at: hovering ? point : nil)
         if editor.tool == .model || editor.touchModelTarget != nil { editor.lightModelPart(at: hovering ? point : nil) }
+        // Q1: the face under the tip lights and the sheet's ghost sits on it, where a finger's tap will lay it.
+        if editor.drawsOnSheet || editor.placing.ghost != nil { editor.hoverSheetGhost(at: hovering ? point : nil) }
         let showsPoint = UserDefaults.standard.bool(forKey: AppSettings.pencilHoverPreview)
         let shown = showsPoint && hovering ? point : nil
         if shown != editor.hoverPoint { editor.setHover(shown) }

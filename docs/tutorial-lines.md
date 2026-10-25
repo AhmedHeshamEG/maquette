@@ -3,6 +3,16 @@
 One line per feature for the person it serves (`studio-h/USERS.md`), in Hesham's voice, for the YouTube lessons the
 Learn place links to (CONTEXT §8). A phase adds the lines of what it built; M16 records them.
 
+## 0.27 (Q1): the Reference window and the sheet
+
+- **The Procreate person:** "Actions, Reference. Drag the window by its bar wherever you like, size it by its corner.
+  Canvas shows the whole model while you paint the details up close."
+- **The anime animator:** "Reference, Face: your own face in the corner. Pull the expression, then draw it."
+- **The hobby sculptor:** "Reference, Image, Paste your concept art. Pinch to zoom on the head, and Pick its colours
+  straight from the picture."
+- **Everyone:** "Hover the Pencil over the face you want to draw on: it lights up and the sheet waits there. Tap it with
+  a finger and the sheet lies on it, fitted. Turn it to forty-five degrees on its chip."
+
 ## 0.26 (U8): yours
 
 - **Everyone (left-handed):** "Settings, Yours, Your layout, Left hand: the corners and the sidebar swap sides, so your
