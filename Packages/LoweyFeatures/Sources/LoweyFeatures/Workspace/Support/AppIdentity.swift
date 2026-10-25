@@ -28,4 +28,10 @@ public enum AppIdentity {
     /// App Store screenshots: UI testing without the debug overlays.
     public static let isTakingScreenshots = ProcessInfo.processInfo.arguments.contains("-ui-testing-screenshots")
     public static let isHostingTests = ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] != nil
+    /// A UI test that relaunches names its folder (`-ui-testing-folder Name`), so the second launch finds the first's work.
+    public static let uiTestingFolder: String? = {
+        let arguments = ProcessInfo.processInfo.arguments
+        guard let index = arguments.firstIndex(of: "-ui-testing-folder"), arguments.indices.contains(index + 1) else { return nil }
+        return arguments[index + 1]
+    }()
 }

@@ -34,7 +34,7 @@ final class AtlasTests: XCTestCase {
         executionTimeAllowance = 1200
         XCUIDevice.shared.orientation = ProcessInfo.processInfo.environment["ATLAS_ORIENTATION"] == "portrait" ? .portrait : .landscapeLeft
         app = XCUIApplication()
-        app.launchArguments = ["-ui-testing", "-ui-testing-sample", "-ui-testing-screenshots"]
+        app.launchArguments = ["-ui-testing", "-ui-testing-sample", "-ui-testing-screenshots", "-ui-testing-picture"]
     }
 
     override func tearDown() async throws {
@@ -292,5 +292,27 @@ final class AtlasTests: XCTestCase {
         shot("Timeline on a scene")
         fresh(.home)
         shot("Home with projects")
+    }
+
+    /// Q1: the Reference window in each of its modes, over a finished scene.
+    func test08Reference() {
+        area = "8 Reference"
+        fresh(.sample)
+        tap("Actions")
+        tap("open-reference")
+        settle(2)
+        shot("Reference window: the whole scene")
+        let modes = app.segmentedControls["reference-mode"].firstMatch
+        guard modes.waitForExistence(timeout: 5) else {
+            missing.append("reference-mode")
+            return
+        }
+        modes.buttons["Image"].tap()
+        tap("reference-paste")
+        settle(1.5)
+        shot("Reference window: a picture")
+        modes.buttons["Face"].tap()
+        settle(1.5)
+        shot("Reference window: the front camera")
     }
 }
