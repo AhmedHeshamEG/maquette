@@ -51,6 +51,8 @@ public struct ScriptResult: Sendable {
     public var files: [String: Data] = [:]
     /// What the script asks of the Reference window (Q1), in order; not part of the command.
     public var reference: [ReferenceAsk] = []
+    /// What the script asks of the app around the scene (M12): tools, panels, playing, presenting, exports, AR.
+    public var app: [AppAsk] = []
 }
 
 public struct ScriptError: Error, Equatable, CustomStringConvertible {
@@ -83,7 +85,7 @@ public enum ScriptCompiler {
         }
         let command: EditCommand? = state.commands.isEmpty ? nil : .batch(script.title, state.commands)
         return ScriptResult(command: command, report: state.report, created: state.created, document: state.document, files: state.files,
-                            reference: state.reference)
+                            reference: state.reference, app: state.app)
     }
 
     /// Compiles and describes the change without applying it (the AI proposes, you decide).
@@ -163,6 +165,7 @@ struct ScriptState {
     var files: [String: Data] = [:]
     /// The Reference window's asks (Q1).
     var reference: [ReferenceAsk] = []
+    var app: [AppAsk] = []
 
     init(document: Document, context: ScriptContext) {
         self.document = document

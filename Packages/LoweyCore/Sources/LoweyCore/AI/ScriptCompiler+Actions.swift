@@ -68,6 +68,9 @@ extension ScriptState {
         "guest": { try $0.guest($1) },
         "note": { try $0.note($1) },
         "reference": { try $0.reference($1) },
+        "web": { try $0.web($1) },
+        "app": { try $0.app($1) },
+        "duplicate": { try $0.duplicate($1) },
         "command": { try $0.rawCommand($1) }
     ]
 
@@ -109,6 +112,18 @@ extension ScriptState {
     mutating func delete(_ action: JSONValue) throws {
         let ids = try targets(action["target"])
         try run(operations.delete(ids, in: scene), label: "Delete \(ids.count) object\(ids.count == 1 ? "" : "s")")
+    }
+
+    /// `{"do": "duplicate", "target": "Chair", "offset": [0.5, 0, 0.5], "name": "Chair 2"}`: copies beside the originals.
+    mutating func duplicate(_ action: JSONValue) throws {
+        let ids = try targets(action["target"])
+        let offset = vec3(action["offset"]) ?? Vec3(0.5, 0, 0.5)
+        guard let (command, copies) = withOperations({ $0.duplicate(ids, in: $1, offset: offset) }) else { throw fail("nothing to duplicate") }
+        try run(command, label: "Duplicate \(ids.count) object\(ids.count == 1 ? "" : "s")")
+        if copies.count == 1, let copy = copies.first {
+            if let wanted = string(action, "name") { try run(.rename(copy, wanted), label: nil) }
+            remember(action, copy, name: string(action, "name") ?? scene.objects[copy]?.name ?? "Copy")
+        }
     }
 
     mutating func rename(_ action: JSONValue) throws {
