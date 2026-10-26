@@ -14,11 +14,15 @@ public struct ObjectClones: Codable, Hashable, Sendable {
         case line(count: Int, step: Vec3)
         /// Evenly along a drawn path, turned along it when `along`.
         case path(count: Int, path: ObjectID, along: Bool)
+        /// Where a file put them (a three.js `InstancedMesh`, glTF's GPU instancing): each copy's place, turn and size
+        /// against the thing's own (the first is the thing itself).
+        case placed([Transform])
 
         public var count: Int {
             switch self {
             case let .grid(columns, rows, layers, _): max(columns, 1) * max(rows, 1) * max(layers, 1)
             case let .circle(count, _, _), let .line(count, _), let .path(count, _, _): max(count, 1)
+            case let .placed(places): max(places.count, 1)
             }
         }
 
@@ -28,6 +32,7 @@ public struct ObjectClones: Codable, Hashable, Sendable {
             case .circle: "Circle"
             case .line: "Line"
             case .path: "Along a path"
+            case .placed: "As placed"
             }
         }
     }

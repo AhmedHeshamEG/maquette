@@ -13,7 +13,7 @@ struct CloneSection: View {
     var body: some View {
         VStack(alignment: .leading, spacing: HmmSpacing.s) {
             Picker("Layout", selection: Binding(get: { clones.layout.title }, set: { setLayout($0) })) {
-                ForEach(["Grid", "Circle", "Line", "Along a path"], id: \.self) { Text(LocalizedStringKey($0)).tag($0) }
+                ForEach(layoutTitles, id: \.self) { Text(LocalizedStringKey($0)).tag($0) }
             }
             .pickerStyle(.segmented)
             .accessibilityIdentifier("clone-layout")
@@ -63,7 +63,16 @@ struct CloneSection: View {
                 ForEach(drawnPaths, id: \.id) { Text(verbatim: $0.name).tag($0.id) }
             }
             Toggle("Turned along it", isOn: Binding(get: { along }, set: { set(.path(count: count, path: path, along: $0)) }))
+        case .placed:
+            Hint("Each copy stands where the file put it. Choose a layout to arrange them again.")
         }
+    }
+
+    /// The layouts to choose from; "As placed" only while it's the one a file gave (it can't be made by hand).
+    private var layoutTitles: [String] {
+        let made = ["Grid", "Circle", "Line", "Along a path"]
+        if case .placed = clones.layout { return made + ["As placed"] }
+        return made
     }
 
     private var drawnPaths: [SceneObject] {
@@ -99,6 +108,7 @@ struct CloneSection: View {
         case "Along a path":
             guard let path = drawnPaths.first else { return editor.app.show("Draw a path first (Draw, then a line), and choose it here") }
             set(.path(count: max(count, 2), path: path.id, along: true))
+        case "As placed": return
         default: set(.grid(columns: 5, rows: 5, layers: 1, spacing: Vec3(gap, gap, gap)))
         }
     }

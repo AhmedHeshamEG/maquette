@@ -200,7 +200,7 @@ verbs = {
                "another thing's shape; letters that animate; and the loop check, which can close the loop.",
                {"op": {"enum": ["logo", "clone", "effect", "link", "morph", "letters", "loop"]}, "target": tgt, "name": s,
                 "svg": s, "file": s, "width": n, "depth": n, "at": time,
-                "layout": {"enum": ["grid", "circle", "line", "path"]}, "count": n, "columns": n, "rows": n, "layers": n,
+                "layout": {"enum": ["grid", "circle", "line", "path", "placed"]}, "places": {"type": "array", "items": {"type": "object"}}, "count": n, "columns": n, "rows": n, "layers": n,
                 "spacing": {"anyOf": [v3, n]}, "radius": n, "facesOut": b, "step": v3, "path": tgt, "along": b,
                 "kind": {"enum": ["random", "delay", "push"]}, "move": v3, "turn": v3, "grow": n, "delay": n,
                 "field": {"enum": ["everywhere", "sphere", "ripple"]}, "centre": v3, "speed": n, "every": n, "clear": b,

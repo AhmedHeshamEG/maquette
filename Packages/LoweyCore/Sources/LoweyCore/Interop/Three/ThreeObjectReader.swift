@@ -3,8 +3,8 @@ import Foundation
 /// three.js's own scene format in (X1 step 3): what `scene.toJSON()` writes (format 4.x), the way vibe-coded scenes are
 /// often saved. Meshes become editable things (buffer geometry, boxes, spheres, cylinders, cones and planes), standard
 /// and physical materials become colour, roughness, metal, glow and see-through, cameras and lights become ours, an
-/// instanced mesh becomes its copies, and every clip's tracks become keys. What can't become ours is said in one line a
-/// kind (`notes`); nothing is asked first.
+/// instanced mesh becomes one thing cloned where its copies stand, and every clip's tracks become keys. What can't
+/// become ours is said in one line a kind (`notes`); nothing is asked first.
 public enum ThreeObjectReader {
     public struct Result: Sendable {
         public var scene: GLTFSceneReader.Result
@@ -152,26 +152,39 @@ struct ThreeReaderBuilder {
         }
     }
 
-    /// An instanced mesh's copies, each a mesh of its own under the group (`InstancedMesh` keeps them as matrices).
+    /// An instanced mesh as one thing under the group, cloned where the instances stand (the `placed` layout: each copy's
+    /// place, turn and size against the first's), so the copies stay one thing to edit.
     mutating func instances(_ source: [String: Any], kind: ObjectKind, parent: ObjectID, ids: inout IDFactory) -> [ObjectID] {
         let before = triangles
         guard source["type"] as? String == "InstancedMesh", let shape = mesh(source["geometry"] as? String),
               let matrices = GLTFReader.numbers((source["instanceMatrix"] as? [String: Any])?["array"]) else { return [] }
-        let count = min(source["count"] as? Int ?? matrices.count / 16, matrices.count / 16)
+        let count = min(source["count"] as? Int ?? matrices.count / 16, matrices.count / 16, ObjectClones.maximumCount)
+        guard count > 0 else { return [] }
         triangles += (triangles - before) * max(count - 1, 0)
+        let places = (0 ..< count).map { GLTFReader.decompose(Array(matrices[$0 * 16 ..< $0 * 16 + 16])) }
+        let first = places[0]
         let name = source["name"] as? String ?? "Copy"
+        var thing = SceneObject(id: ids.next(), name: name.isEmpty ? "Copy" : name, kind: .mesh(shape), parent: parent, transform: first)
         let material = ((source["material"] as? String) ?? (source["material"] as? [String])?.first).flatMap { materials[$0] }
-        var result: [ObjectID] = []
-        for index in 0 ..< count {
-            let id: ObjectID = ids.next()
-            var copy = SceneObject(id: id, name: "\(name) \(index + 1)", kind: .mesh(shape), parent: parent,
-                                   transform: GLTFReader.decompose(Array(matrices[index * 16 ..< index * 16 + 16])))
-            if let material { apply(material, to: &copy) }
-            objects.append(copy)
-            result.append(id)
+        if let material { apply(material, to: &thing) }
+        if count > 1 {
+            let back = first.rotation.inverse
+            let relative = places.map { place in
+                Transform(position: back.act(place.position - first.position), rotation: (back * place.rotation).normalized,
+                          scale: Vec3(place.scale.x / Self.nonZero(first.scale.x), place.scale.y / Self.nonZero(first.scale.y),
+                                      place.scale.z / Self.nonZero(first.scale.z)))
+            }
+            thing.motionDesign = MotionDesign(clones: ObjectClones(layout: .placed(relative)))
         }
-        if count > 0 { notes.insert("Instanced meshes: each copy came in as a thing of its own.") }
-        return result
+        if (source["count"] as? Int ?? 0) > ObjectClones.maximumCount {
+            notes.insert("Instanced meshes: the first \(ObjectClones.maximumCount) copies came in as clones.")
+        }
+        objects.append(thing)
+        return [thing.id]
+    }
+
+    static func nonZero(_ value: Double) -> Double {
+        abs(value) < 1e-9 ? 1e-9 : value
     }
 
     /// An sRGB hex number as a colour.

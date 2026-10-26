@@ -3641,3 +3641,11 @@ above. `KHR_texture_transform` moves the uvs first. It happens in the background
 A normal map is left for now (a tangent-space picture doesn't survive a new unwrap as it is); the matrix says so.
 *Rejected:* keeping the file's uvs on the editable mesh (modelling rebuilds faces and their uvs with them), a picture
 as a material (paint is where a picture can be painted on, smudged and exported again).
+
+**D-585 — An instanced mesh comes in as clones, as placed (schema 26).** A three.js `InstancedMesh` is one thing with
+clones, not a thing a copy: the clones gain a layout, `placed`, holding each copy's place, turn and size against the
+first's, so the forest stays one tree to model, paint or swap, and every clone effect still acts on it. The inspector
+shows "As placed" only while it's the layout a file gave (choosing another arranges them again; it can't be made by
+hand), and the bridge's `clone` takes `places`. Schema 26 only adds the case. Over 1000 instances, the first 1000 come
+in (the clones' limit) and the line says so. *Rejected:* a thing a copy (D-583's first answer: a thousand trees to
+edit one by one), a new object kind for instances (clones already are Maquette's instances).

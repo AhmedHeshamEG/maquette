@@ -48,10 +48,18 @@ final class ThreeObjectReaderTests: XCTestCase {
         let island = try XCTUnwrap(objects.first { $0.name == "Island" })
         guard case let .mesh(rock) = island.kind else { return XCTFail("the island is a mesh") }
         XCTAssertEqual(rock.volume, 4 * 1 * 4, accuracy: 1e-6)
-        XCTAssertEqual(objects.filter { $0.name.hasPrefix("Trees ") }.count, 3)
-        let tree = try XCTUnwrap(objects.first { $0.name == "Trees 2" })
-        XCTAssertEqual(tree.transform.position.x, 1.5, accuracy: 1e-9)
+        // The forest is one tree, cloned where the instances stand.
+        let tree = try XCTUnwrap(objects.first { $0.motionDesign?.clones != nil })
+        XCTAssertEqual(tree.transform.position.x, -1, accuracy: 1e-9)
         XCTAssertEqual(tree.color?.resolved(in: .empty), RGBA.hex("#2E8B57"))
+        let clones = try XCTUnwrap(tree.motionDesign?.clones)
+        XCTAssertEqual(clones.count, 3)
+        let slots = ClonePlayback.slots(clones.layout, count: clones.count, base: tree.transform, parent: tree.parent, in: Scene(id: "s", name: "S"))
+        let played = slots.enumerated().map { index, slot in
+            ClonePlayback.transform(slot: slot, index: index, clones: clones, base: tree.transform, moved: tree.transform, time: 0, strength: 1).position
+        }
+        XCTAssertEqual(played.map(\.x), [-1, 1.5, 0])
+        XCTAssertEqual(played.map(\.z), [0, 0, 1])
         XCTAssertNotNil(objects.first { $0.name == "Sea" })
         XCTAssertNil(objects.first { $0.name == "Sky light" || $0.name == "Spray" })
         XCTAssertEqual(objects.first { $0.name == "Sun" }?.kind, .light(.directional))
@@ -59,7 +67,7 @@ final class ThreeObjectReaderTests: XCTestCase {
         XCTAssertEqual(spin.keyframes.count, 3)
         XCTAssertEqual(result.scene.duration, 4)
         XCTAssertTrue(result.suggestsToon)
-        XCTAssertEqual(result.notes.count, 5, result.notes.joined(separator: "\n"))
+        XCTAssertEqual(result.notes.count, 4, result.notes.joined(separator: "\n"))
         // In the scene as one step.
         let command = ModelingOperations.importScene(result.scene, in: Scene(id: "s", name: "Empty"))
         guard case let .batch(label, _) = command else { return XCTFail("one step") }

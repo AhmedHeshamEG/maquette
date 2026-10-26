@@ -67,7 +67,7 @@ Not listed: todo
 |---|---|---|
 | Meshes and hierarchy | carried | carried |
 | Materials | carried | carried |
-| Clones and links | todo | baked — an instanced mesh becomes a thing a copy |
+| Clones and links | todo | carried |
 | Keys on any property | carried | carried |
 | Cameras | carried | carried |
 | Lights | carried | carried |

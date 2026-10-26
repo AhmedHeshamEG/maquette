@@ -65,7 +65,7 @@ enum InteropProofs {
             format: threeJSON,
             feature: "Clones and links",
             direction: "In",
-            claim: "baked",
+            claim: "carried",
             test: "ThreeObjectReaderTests.testAVibeCodedIslandComesInAsThings"
         ),
         Proof(format: threeJSON, feature: "Keys on any property", direction: "In", claim: "carried", test: threeJSONBack),

@@ -3289,6 +3289,22 @@
         }
       }
     },
+    "As placed": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Come posizionate"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "كما وُضعت"
+          }
+        }
+      }
+    },
     "As the iPad's Pencil setting says": {
       "localizations": {
         "it": {
@@ -10169,6 +10185,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "الديناميكيات"
+          }
+        }
+      }
+    },
+    "Each copy stands where the file put it. Choose a layout to arrange them again.": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ogni copia sta dove l'ha messa il file. Scegli una disposizione per ordinarle di nuovo."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "كل نسخة في المكان الذي وضعها فيه الملف. اختر ترتيبًا لترتيبها من جديد."
           }
         }
       }

@@ -7,6 +7,8 @@ struct CloneSlot: Sendable {
     var turn: Quat
     /// Along a path: the place in the parent's space, which replaces the thing's own place.
     var placed: Vec3?
+    /// As placed: the copy's size against the thing's.
+    var size = Vec3(1, 1, 1)
 }
 
 /// Clones played at a moment: the thing becomes its first copy and the others join the shown scene as things of their own
@@ -66,6 +68,8 @@ public enum ClonePlayback {
             return (0 ..< count).map { CloneSlot(offset: step * Double($0), turn: .identity) }
         case let .path(_, path, along):
             return pathSlots(path, count: count, along: along, base: base, parent: parent, in: scene)
+        case let .placed(places):
+            return places.prefix(count).map { CloneSlot(offset: $0.position, turn: $0.rotation, size: $0.scale) }
         }
     }
 
@@ -130,7 +134,7 @@ public enum ClonePlayback {
         let size = max(1 + grow, 0.01)
         return Transform(position: home + motion + base.rotation.act(shift),
                          rotation: (moved.rotation * slot.turn * turn).normalized,
-                         scale: moved.scale * size)
+                         scale: moved.scale.scaled(by: slot.size) * size)
     }
 
     /// A copy of the thing and everything under it, under the thing's parent.
