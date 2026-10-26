@@ -136,6 +136,61 @@ final class TextureExportTests: XCTestCase {
         }
     }
 
+    /// X1: the crate's glTF made editable again keeps its look: its pictures become a first layer, "Model", with the
+    /// colour, roughness, metal and glow it left with, laid on the editable copy's own unwrap.
+    func testAGLTFsPicturesComeBackAsPaint() throws {
+        let (scene, look, files) = try crate()
+        let glb = GLTFScene.glb(nil, in: scene, look: look, painted: painted(files, look: look))
+        let (json, binary) = try glbJSON(glb)
+        let material = try XCTUnwrap((json["materials"] as? [[String: Any]])?.first)
+        let index = try XCTUnwrap(((material["pbrMetallicRoughness"] as? [String: Any])?["baseColorTexture"] as? [String: Any])?["index"] as? Int)
+        let exported = try image(index, json: json, binary: binary)
+        var ids = IDFactory.sequential("t")
+        let result = try GLTFSceneReader.read(glb, ids: &ids)
+        let (id, pictures) = try XCTUnwrap(result.pictures.first)
+        let made = result.paints(in: result.fragment, size: 256)
+        XCTAssertEqual(made.commands.count, 1)
+        guard case let .setPaint(target, paint?) = made.commands.first else { return XCTFail("no paint") }
+        XCTAssertEqual(target, id)
+        XCTAssertEqual(paint.layers.map(\.name), ["Model", "Layer 1"])
+        let model = paint.layers[0]
+        XCTAssertEqual(Set(model.paintedMaps), [.color, .roughness, .metal, .glow])
+        // Each of the model's triangles: its colour in the exported picture, and on the new surface at the same point.
+        let unwrapData = try XCTUnwrap(made.files[paint.surface.unwrap])
+        let surface = try PaintUnwrap(data: unwrapData).surfaceMesh
+        let grid = TriangleGrid(surface, cell: 0.05)
+        var tiles: [String: RGBAImage] = [:]
+        func paintedColor(_ uv: SIMD2<Float>) throws -> RGBA? {
+            let x = min(Int(uv.x * 256), 255), y = min(Int(uv.y * 256), 255)
+            guard let name = model[.color, PaintTileIndex(column: x / 256, row: y / 256)] else { return nil }
+            if tiles[name] == nil { tiles[name] = try PNGCodec.decode(XCTUnwrap(made.files[name])) }
+            return tiles[name]?.pixel(x % 256, y % 256)
+        }
+        let source = pictures.source
+        var close = 0, total = 0
+        for face in 0 ..< source.triangleCount {
+            let corners = (0 ..< 3).map { Int(source.indices[face * 3 + $0]) }
+            let point = corners.map { source.positions[$0] }.reduce(SIMD3<Float>.zero, +) / 3
+            let uv = corners.map { source.uvs[$0] }.reduce(SIMD2<Float>.zero, +) / 3
+            let expected = exported.sample(u: Double(uv.x), v: Double(uv.y))
+            guard let hit = grid.closest(to: point, within: 0.05, hint: nil) else { continue }
+            let at = (0 ..< 3).map { surface.uvs[Int(surface.indices[hit.triangle * 3 + $0])] }
+            let newUV = at[0] * hit.weights.x + at[1] * hit.weights.y + at[2] * hit.weights.z
+            guard let found = try paintedColor(newUV) else { continue }
+            total += 1
+            if max(abs(found.r - expected.r), abs(found.g - expected.g), abs(found.b - expected.b)) < 0.1 { close += 1 }
+        }
+        XCTAssertGreaterThan(total, source.triangleCount / 2)
+        XCTAssertGreaterThanOrEqual(Double(close) / Double(max(total, 1)), 0.9, "\(close) of \(total) points kept their colour")
+    }
+
+    func testATextureTransformMovesTheUVs() {
+        let moved = GLTFSceneReader.Builder.transformed(SIMD2<Float>(1, 0), by: ["offset": [0.5, 0.25], "scale": [2.0, 3.0], "rotation": Double.pi / 2])
+        // Scaled to (2, 0), turned a quarter (u' = cos·u + sin·v, v' = -sin·u + cos·v) to (0, -2), then offset.
+        XCTAssertEqual(moved.x, 0.5, accuracy: 1e-5)
+        XCTAssertEqual(moved.y, -1.75, accuracy: 1e-5)
+    }
+
     /// Exact to a step of rounding; `RECORD_GOLDEN=1` writes the golden instead (reviewed, then committed).
     private func compare(_ image: RGBAImage, golden url: URL, file: StaticString = #filePath, line: UInt = #line) throws {
         if ProcessInfo.processInfo.environment["RECORD_GOLDEN"] == "1" {

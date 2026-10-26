@@ -26,6 +26,7 @@ enum InteropProofs {
         Proof(format: gltf, feature: "Meshes and hierarchy", direction: "In", claim: "carried", test: roundTrip),
         Proof(format: gltf, feature: "Paint layers and maps", direction: "Out", claim: "baked",
               test: "TextureExportTests.testAPaintedSmudgedMaskedModelExportsEveryMap"),
+        Proof(format: gltf, feature: "Paint layers and maps", direction: "In", claim: "baked", test: "TextureExportTests.testAGLTFsPicturesComeBackAsPaint"),
         Proof(format: gltf, feature: "Materials", direction: "Out", claim: "carried", test: roundTrip),
         Proof(format: gltf, feature: "Materials", direction: "In", claim: "carried", test: roundTrip),
         Proof(

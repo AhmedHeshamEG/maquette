@@ -2,7 +2,8 @@ import Foundation
 
 /// Reads a glTF scene back into objects you can edit: a group or a modelled mesh per node (keeping the hierarchy and
 /// each node's own transform), materials as colours, roughness, metal and glow, cameras, lights, and node animation as
-/// timeline keys. Skins are left to the library (a rigged model is placed as a model, not taken apart).
+/// timeline keys. A piece's pictures are kept with its own uvs (`pictures`), for `PaintImport` to lay on it as paint.
+/// Skins are left to the library (a rigged model is placed as a model, not taken apart).
 public enum GLTFSceneReader {
     public enum Failure: Error, Equatable, CustomStringConvertible {
         case empty
@@ -24,6 +25,9 @@ public enum GLTFSceneReader {
         public var fragment: SceneFragment
         public var tracks: [Track]
         public var duration: Double
+        /// The objects whose material shows pictures, and the file's pictures (by image index).
+        public var pictures: [ObjectID: GLTFPictures] = [:]
+        public var textures: [ImportedTexture] = []
     }
 
     public static func read(_ data: Data, baseURL: URL? = nil, ids: inout IDFactory) throws -> Result {
@@ -41,7 +45,12 @@ public enum GLTFSceneReader {
         }
         guard !roots.isEmpty else { throw Failure.empty }
         let (tracks, duration) = try builder.tracks(ids: &ids)
-        return Result(fragment: SceneFragment(objects: builder.objects, roots: roots), tracks: tracks, duration: duration)
+        var result = Result(fragment: SceneFragment(objects: builder.objects, roots: roots), tracks: tracks, duration: duration)
+        if !builder.pictures.isEmpty {
+            result.pictures = builder.pictures
+            result.textures = try GLTFMeshReader.textures(file, baseURL: baseURL)
+        }
+        return result
     }
 
     static func countTriangles(_ file: GLTFReader.File) throws -> Int {
@@ -70,6 +79,7 @@ public enum GLTFSceneReader {
         var objectsOfCamera: [Int: [ObjectID]] = [:]
         var objectsOfLight: [Int: [ObjectID]] = [:]
         var objectOfWrittenID: [String: ObjectID] = [:]
+        var pictures: [ObjectID: GLTFPictures] = [:]
 
         init(file: GLTFReader.File) {
             self.file = file
@@ -111,6 +121,7 @@ public enum GLTFSceneReader {
                 if pieces.count == 1, let piece = pieces.first {
                     object.kind = .mesh(piece.mesh)
                     apply(piece.material, to: &object)
+                    pictures[id] = piece.pictures
                     objectsOfMaterial[piece.index, default: []].append(id)
                 } else {
                     // Several materials: one modelled child per material under this node.
@@ -118,6 +129,7 @@ public enum GLTFSceneReader {
                         let child: ObjectID = ids.next()
                         var part = SceneObject(id: child, name: piece.name, kind: .mesh(piece.mesh), parent: id)
                         apply(piece.material, to: &part)
+                        pictures[child] = piece.pictures
                         objectsOfMaterial[piece.index, default: []].append(child)
                         objects.append(part)
                         children.append(child)
@@ -154,6 +166,7 @@ public enum GLTFSceneReader {
             var mesh: EditableMesh
             var material: Material?
             var index: Int
+            var pictures: GLTFPictures?
         }
 
         /// A glTF material's numbers as written (linear), before anything rounds them.
@@ -190,7 +203,8 @@ public enum GLTFSceneReader {
                                                             material: primitive["material"] as? Int ?? -1, skinned: false)
                 let mesh = MeshBuilder.mesh(from: part.mesh)
                 guard !mesh.isEmpty else { continue }
-                pieces.append(Piece(name: part.name, mesh: mesh, material: material(part.material), index: part.material))
+                pieces.append(Piece(name: part.name, mesh: mesh, material: material(part.material), index: part.material,
+                                    pictures: pictures(of: part.material, source: part.mesh)))
             }
             return pieces
         }

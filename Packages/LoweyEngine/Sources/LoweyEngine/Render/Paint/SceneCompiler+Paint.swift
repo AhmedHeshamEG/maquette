@@ -165,7 +165,7 @@ public enum AssetPaint {
     }
 
     /// A model's embedded picture (PNG or JPEG) as straight RGBA.
-    static func decode(_ data: Data) -> RGBAImage? {
+    public static func decode(_ data: Data) -> RGBAImage? {
         guard let source = CGImageSourceCreateWithData(data as CFData, nil), let image = CGImageSourceCreateImageAtIndex(source, 0, nil) else {
             return nil
         }

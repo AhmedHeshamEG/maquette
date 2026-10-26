@@ -24,7 +24,7 @@ Scenes and shots · Units and dimensions · The artist's credit.
 |---|---|---|
 | Meshes and hierarchy | carried | carried |
 | Modelling steps | todo | todo |
-| Paint layers and maps | baked — every map as a texture (colour, metallic-roughness, glow, normal) | todo |
+| Paint layers and maps | baked — every map as a texture (colour, metallic-roughness, glow, normal) | baked — colour, roughness, metal and glow pictures become a first layer, Model, on the editable copy; a normal map is left |
 | Materials | carried | carried |
 | The Looks | impossible — glTF holds surfaces, not a picture's style (the three.js folder and the engine shaders carry it) | impossible — as out |
 | Ink and flipbooks | todo | todo |

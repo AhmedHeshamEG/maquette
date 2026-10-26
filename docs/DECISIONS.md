@@ -3632,3 +3632,12 @@ until copies become clones); clips' tracks as keys, by name or uuid. A file Maqu
 pictures on surfaces for now, other parametric shapes) is said after, in the same toast line; nothing is asked first.
 *Rejected:* a library asset (a three.js scene is a scene, with cameras and clips, not a model to place).
 
+
+**D-584 — A glTF's pictures come in as paint.** Making a glTF model editable keeps the pictures its materials show:
+each part is laid flat as any shape is (its own uvs describe the old triangles, not the editable copy's), every pixel
+finds its point on the model's own surface, and the colour, metallic-roughness and emissive pictures there, times the
+material's factors, become a first layer, "Model", with its colour, roughness, metal and glow maps; an empty layer sits
+above. `KHR_texture_transform` moves the uvs first. It happens in the background and lands as one step with the parts.
+A normal map is left for now (a tangent-space picture doesn't survive a new unwrap as it is); the matrix says so.
+*Rejected:* keeping the file's uvs on the editable mesh (modelling rebuilds faces and their uvs with them), a picture
+as a material (paint is where a picture can be painted on, smudged and exported again).
