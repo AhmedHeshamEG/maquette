@@ -3649,3 +3649,12 @@ shows "As placed" only while it's the layout a file gave (choosing another arran
 hand), and the bridge's `clone` takes `places`. Schema 26 only adds the case. Over 1000 instances, the first 1000 come
 in (the clones' limit) and the line says so. *Rejected:* a thing a copy (D-583's first answer: a thousand trees to
 edit one by one), a new object kind for instances (clones already are Maquette's instances).
+
+**D-586 — Clones leave glTF as GPU instances.** A thing with clones leaves as its node with `EXT_mesh_gpu_instancing`:
+each copy where it stands at the first frame (layout and effects applied), in the node's own space, so three.js makes
+an `InstancedMesh` and Blender, Godot and Unity their own instances; the recipe (layout, effects, seed) rides in the
+node's extras and comes back as itself. Another tool's instances come in as placed clones (D-585); when its first
+instance isn't the node itself (a ring's first copy is on the ring), the mesh comes in as a child standing at it. The
+extension is used, not required, so a reader without it shows the thing once. *Rejected:* a node a copy (a thousand
+nodes for a forest, and nothing to come back as clones), baking the effects' motion into instance keys (glTF has no
+place for keyed instances).

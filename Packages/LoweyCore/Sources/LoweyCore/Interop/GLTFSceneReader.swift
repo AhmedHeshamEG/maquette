@@ -118,16 +118,20 @@ public enum GLTFSceneReader {
                 }
             } else if let mesh = node["mesh"] as? Int {
                 let pieces = try meshPieces(mesh)
-                if pieces.count == 1, let piece = pieces.first {
+                let cloned = try clones(of: node)
+                if pieces.count == 1, let piece = pieces.first, cloned.map({ $0.first.isApproximately(.identity) }) ?? true {
+                    object.motionDesign = cloned.map { MotionDesign(clones: $0.clones) }
                     object.kind = .mesh(piece.mesh)
                     apply(piece.material, to: &object)
                     pictures[id] = piece.pictures
                     objectsOfMaterial[piece.index, default: []].append(id)
                 } else {
-                    // Several materials: one modelled child per material under this node.
+                    // Several materials, or instances whose first isn't the node: one modelled child per material,
+                    // each cloned where the instances stand.
                     for piece in pieces {
                         let child: ObjectID = ids.next()
-                        var part = SceneObject(id: child, name: piece.name, kind: .mesh(piece.mesh), parent: id)
+                        var part = SceneObject(id: child, name: piece.name, kind: .mesh(piece.mesh), parent: id, transform: cloned?.first ?? .identity)
+                        part.motionDesign = cloned.map { MotionDesign(clones: $0.clones) }
                         apply(piece.material, to: &part)
                         pictures[child] = piece.pictures
                         objectsOfMaterial[piece.index, default: []].append(child)

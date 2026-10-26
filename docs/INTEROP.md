@@ -39,7 +39,7 @@ Scenes and shots · Units and dimensions · The artist's credit.
 | HDRIs and the sky | todo | todo |
 | Physics bodies and joints | todo | todo |
 | Baked runs | todo | todo |
-| Clones and links | todo | todo |
+| Clones and links | baked — clones as GPU instances (`EXT_mesh_gpu_instancing`) where they stand at the first frame, their recipe in extras; links don't leave yet | carried — another tool's instances as placed clones, Maquette's own recipe from extras |
 | Text and logos | todo | todo |
 | Sound and words | todo | todo |
 | Web objects | todo | todo |

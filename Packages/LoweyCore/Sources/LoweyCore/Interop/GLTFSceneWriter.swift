@@ -115,6 +115,7 @@ struct GLTFSceneWriter {
             addCollider(for: id, mesh: mesh, to: &node)
         }
         addBody(object, to: &node)
+        addClones(of: object, to: &node, extras: &extras)
         switch object.kind {
         case .camera:
             node["camera"] = addCamera(object)
