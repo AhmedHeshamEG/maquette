@@ -3,6 +3,18 @@
 All notable changes. 1.x grew in four phases (v0.1 → v1.4); 2.0 is the remaster, released as betas first. Maquette
 continues from 2.0 and numbers its phases again from 0.1 (each phase bumps the minor version until 1.0).
 
+## [Unreleased] — Maquette 0.29 — Import and export everything (phase X1, in progress)
+
+- **Export ▸ 3D ▸ three.js**: a folder for the web in one zip. The scene as a GLB and as three.js's own JSON, a player
+  that plays it in any browser with its camera cuts, its timeline and its Look (toon bands, ink lines, halftone, pixel
+  art), a React Three Fiber component with every name typed, `AGENTS.md` for an agent picking it up, and three.js
+  itself inside, so it needs no network. The bridge's export ask takes `web`.
+- **glTF carries more**: keyed colours, see-through, roughness, metal and glow, keyed lights and lenses travel as
+  `KHR_animation_pointer` and come back as keys; a glow brighter than white keeps its strength; see-through things are
+  see-through in every file; Clean product's lacquer is a clearcoat; keys glTF has no place for (face states) ride in
+  the file for Maquette to read back.
+- **`docs/INTEROP.md`**: every feature against every format, both ways, checked by CI against the tests that prove it.
+
 ## [0.28] — Maquette — AR, the web layer and the bridge (phase M12)
 
 The last things that were held come out, and an assistant can now do whatever a person can.

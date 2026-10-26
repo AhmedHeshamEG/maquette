@@ -151,6 +151,31 @@ Engine's `ModelExport` hands Core as `GLTFScene.LocalPart`s. 3MF reading uses Co
 M3 block's STL and 3MF with trimesh and renders a frame of a Blender package in Blender 4.2 and 5.2 (the `interop`
 job, from files LoweyCore's tests write to `ACCEPTANCE_DIR`).
 
+**X1 (in progress; the table is `docs/INTEROP.md`, checked by `InteropMatrixTests` against `InteropProofs`).**
+
+```mermaid
+flowchart LR
+    Scene[Scene] --> GW[GLTFSceneWriter<br/>+Pointer: KHR_animation_pointer<br/>+Materials: glow strength, clearcoat]
+    GW --> GLB[.glb]
+    GLB --> TN[ThreeNames.prepared<br/>names as three.js keeps them]
+    TN --> TJ[ThreeObjectJSON<br/>scene.json] & TP[ThreeProject<br/>player · look.js · pointer.js<br/>Scene.jsx · AGENTS.md]
+    Kit[HmmWeb lib/three r170] --> TP
+    TP --> Zip[&lt;name&gt; for the web.zip]
+    GLB --> GR[GLTFSceneReader<br/>+Pointer: keys back, extras' tracks back]
+```
+
+- **Core `Interop/`**: `GLTFSceneWriter+Pointer` (keyed material, light and lens numbers as pointer channels; keys glTF
+  can't hold kept in `extras.maquette.tracks`), `GLTFSceneWriter+Materials` (lights, glow strength, fur),
+  `GLTFSceneReader+Pointer` (both back as keys). `Interop/Three/`: `ThreeNames` (clean, unique names; the GLB's chunks),
+  `ThreeObjectJSON` (+`Meshes`, +`Clips`: three.js's scene format from the GLB), `ThreeProject` (the folder, `scene.js`),
+  `ThreeProject+Docs` (`ThreeContents`, `ThreeComponent`), `ThreeAgents`, `ThreeProjectScripts` (+`Modules`, +`Look`:
+  the JavaScript, as strings).
+- **Engine**: `ModelExportFormat.web` and `ModelExport+Web` (reads three.js from `HmmWebPage.libraryFolder`).
+- **CI**: the `threejs` job (Playwright's image) runs `Tools/check_threejs.mjs`: `structure` (three.js 0.170 in node
+  reads both scene files; they agree with each other and with `expected.json`) and `render` (Chromium plays the folder;
+  its picture must cover `expected-mask.pgm`, Maquette's own silhouette of the moment from `ThreeSilhouette`), then the
+  Khronos validator on the web GLB.
+
 ## Brushes (0.5)
 
 ```mermaid

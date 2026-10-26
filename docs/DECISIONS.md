@@ -3569,3 +3569,55 @@ shows the last frame it has while the next one draws (as a video); four pieces s
 
 **D-574 — Permissions.** The AR view uses the camera, whose Info.plist line now names it; nothing leaves the iPad. Web
 pieces need none (no network).
+
+
+## Maquette 0.29 — X1, import and export everything (in progress)
+
+**D-575 — Keyed numbers point at their place.** A key on a material's colour, see-through, roughness, metal or glow, a
+light's colour, strength, reach or cone, or a camera's lens leaves glTF as a `KHR_animation_pointer` channel at that
+number, sampled like node keys (linear and held keys as they are, eased ones every frame). The extension is used, never
+required, so a reader that doesn't know it skips those channels and plays the rest. Colour and see-through share one
+channel (the base colour's alpha). Maquette reads the channels back as keys on the objects using that material, light or
+camera. *Rejected:* baking them into extra nodes or morph targets (three.js, Blender and engines would each need their
+own trick).
+
+**D-576 — What glTF can't hold rides in its extras.** Keys with no place in glTF (face states, a reveal, a stepping)
+are written as Maquette's own tracks in the file's `extras.maquette.tracks`, their targets the nodes'
+`extras.maquette.id`, and come back as they were. The matrix calls these cells `extras`. *Rejected:* dropping them
+silently (law 5: nothing is ever lost, and a round trip through Maquette is the common case).
+
+**D-577 — Glow, see-through and lacquer reach every file.** A glow brighter than white keeps its strength with
+`KHR_materials_emissive_strength` (it was clamped to white); an object's see-through is the material's alpha in every
+format (it was left out); the Look's lacquer (Clean product's reflection) is every surface's clearcoat.
+
+**D-578 — For the web is a folder, not a file.** Export ▸ 3D ▸ three.js writes one zip: `scene.glb`, the same scene as
+three.js's own JSON, a player (`index.html` + `main.js`: the camera cuts, the timeline on an `AnimationMixer`, the
+sun, sky and ground, the Look), `maquette/pointer.js`, a React Three Fiber component, `AGENTS.md` and three r170 from
+the kit's own copy, so it plays with no network. *Rejected:* a single GLB (it can't carry the Look, the cuts or the
+notes an agent needs), loading three from a CDN (nothing leaves the device, and folders must open offline).
+
+**D-579 — Names three.js keeps.** `GLTFLoader` strips spaces and `[ ] . : /` and numbers duplicates in an order that
+depends on its async loading. The web GLB is written with names already clean and unique (nodes and meshes together),
+so `getObjectByName`, `scene.json`, the component and `AGENTS.md` agree; the Maquette name stays in
+`extras.maquette.name`. Other glTF exports keep names as they are.
+
+**D-580 — The Look in three.js is its numbers.** `maquette/look.js` rebuilds it: toon Looks as `MeshToonMaterial` with a
+gradient from the Look's bands, threshold and softness; lines with `OutlineEffect` at the Look's width (pixels at
+1080p); halftone and pixel art as passes; Clay and Clean product keep three's standard materials. The paint Looks and
+paper use their nearest real-time pass (toon bands and lines), and the matrix says so. Toon materials keep a
+`roughness` and `metalness` so keyed tracks still land.
+
+**D-581 — SPIKE (step 0) passed with a render check, not only structure.** In node, three.js 0.170 reads the folder's
+GLB (with `pointer.js`) and `scene.json`; their names, places, clips, tracks and values at a moment must agree with each
+other and with what Maquette wrote. Then Chromium (Playwright, SwiftShader) plays `index.html?t=0.5&transparent`, and
+its picture must cover Maquette's own silhouette of that moment: Core projects the scene through its camera and keyed
+lens and rasterises a mask (`ThreeSilhouette`), so the golden is Maquette's, not three's. Locally: structure agrees,
+overlap 94.1% (the ink lines are the rest). The job is `threejs` in CI. *Rejected:* headless-gl (three dropped WebGL 1
+in r163), comparing to a Metal golden (two renderers never match pixel for pixel; the silhouette is what must).
+
+**D-582 — The matrix is checked against proofs.** `docs/INTEROP.md` has a section a format, a row a feature, a word a
+direction (`carried`, `baked`, `extras`, `impossible`, `not offered`, `todo`). `InteropMatrixTests` fails when a
+`carried`, `baked` or `extras` cell has no proof in `InteropProofs` with the same word, when a proof's test doesn't
+exist, or when a proof no longer matches its cell. Unlisted rows take the section's "Not listed" line. The phase ends
+when no `todo` is left (333 at this point). *Rejected:* one wide table (24 rows × 20 formats × 2 directions doesn't
+read).

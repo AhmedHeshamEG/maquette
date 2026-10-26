@@ -142,3 +142,5 @@ task says what to make, never which buttons to press; the tester says where they
 - **The explainer maker:** a title, "The Keeper", that stays on the picture while the camera circles the tower.
 - **Everyone:** carry the keeper from the ground onto the tower's lowest step with one finger, then put a lamp on the
   table with "To the ground".
+- **The web builder:** export the Keeper's Tower as three.js, open the folder on a computer (`npx serve .`), and check
+  the tower plays with its camera cut and its ink lines; then ask an agent to make the lamp blink using only AGENTS.md.

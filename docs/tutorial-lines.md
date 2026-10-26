@@ -200,3 +200,5 @@ Learn place links to (CONTEXT §8). A phase adds the lines of what it built; M16
   pose or draw over it, frame by frame."
 - **Everyone:** "Export, Paper, Storyboard: every shot on a page with its lens and its words. Video, Animatic: the same
   film held shot by shot, with the sound."
+- **The web builder:** "Export, 3D, three.js: a folder that plays in any browser with your cameras and your Look. Hand
+  it to your code, or to an agent: AGENTS.md tells it what everything is called."

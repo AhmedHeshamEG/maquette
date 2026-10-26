@@ -597,6 +597,13 @@ tool's bar at the bottom of the stage (pick modes, sketch shapes, Done, grow / s
   **OBJ** with its MTL, **STL**, **3MF**, and **Blender**: a folder with the scene, the Look, the sun, the sky, the
   ground, the camera cuts and render settings, and `setup_maquette.py`, which builds a ready-to-render .blend (Blender
   4.2 or newer). Kept dimensions, sketches, marks on the frame and effects stay in Maquette.
+- **Interop, everywhere (X1, in progress; `docs/INTEROP.md` is the table).** **three.js** (Export ▸ 3D ▸ three.js): a
+  zip with `scene.glb` (names as three.js keeps them), `scene.json` (three.js's own format), `index.html` + `main.js`
+  (plays the camera cuts and the timeline with the Look; `?t=` holds a moment, `?orbit` looks around, `?transparent`
+  drops the sky), `maquette/pointer.js` (keyed materials, lights and lenses for any `GLTFLoader` user), `maquette/look.js`,
+  `maquette/scene.js`, `Scene.jsx` (React Three Fiber, names and clips typed), `AGENTS.md` and three.js 0.170 carried.
+  **glTF** also carries keyed material, light and lens numbers (`KHR_animation_pointer`), glow brighter than white,
+  see-through and the Look's lacquer (clearcoat); keys it has no place for ride in its extras for Maquette.
 
 ---
 

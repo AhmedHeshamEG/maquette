@@ -16,6 +16,8 @@ phase plan (Q1, M12, X1, M14, the test weeks, M16, then 1.0) lives in studio-h's
 - [x] Placing the sheet on a face: a preview on the lit face, fitted and lined up to it, snaps (Q1, 0.27).
 - [x] The App Store build holds nothing: `MAQUETTE_HELD` is empty, checked on CI (M12, D-558).
 - [ ] Import from anything, export to anything, every feature carried, three.js first (X1, `docs/INTEROP.md`).
+      Done so far: the three.js folder out, keyed numbers in glTF, the matrix and its check. `InteropMatrixTests` prints
+      how many cells are still `todo`.
 - [ ] First launch asks "What do you want to make?" and opens the matching set-up (M16).
 - [ ] The store screenshots show a film scene, a house, a printable part and a game level (M16,
       `AppUITests/ScreenshotTests.swift`).
