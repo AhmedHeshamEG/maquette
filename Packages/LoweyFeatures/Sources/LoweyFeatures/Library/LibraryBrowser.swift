@@ -86,7 +86,13 @@ struct LibraryBrowser: View {
             }
         }
         .fileImporter(isPresented: $importing, allowedContentTypes: LibraryModel.importTypes, allowsMultipleSelection: true) { result in
-            guard case let .success(urls) = result else { return }
+            guard case let .success(chosen) = result else { return }
+            // A three.js scene comes into the scene itself; models go to the library.
+            for url in chosen where EditorModel.isThreeJSON(url) {
+                editor.bringInThreeJSON(url)
+            }
+            let urls = chosen.filter { !EditorModel.isThreeJSON($0) }
+            guard !urls.isEmpty else { return }
             Task {
                 let count = await library.importFiles(urls)
                 editor.app.show(count == 0 ? "No models there (USDZ, glTF, GLB, OBJ)" : "Imported \(count) model\(count == 1 ? "" : "s")")

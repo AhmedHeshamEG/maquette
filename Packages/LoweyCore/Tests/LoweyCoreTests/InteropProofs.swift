@@ -15,6 +15,7 @@ enum InteropProofs {
     static let pointers = "GLTFPointerTests.testEveryKeyedNumberComesBack"
     static let threeJSONTest = "ThreeProjectTests.testSceneJSONIsTheGLBInThreesOwnFormat"
     static let folderTest = "ThreeProjectTests.testTheFolderHoldsEverythingNamedOnce"
+    static let threeJSONBack = "ThreeObjectReaderTests.testAScenesJSONComesBackAsItWas"
     static let threeMF = "PrintingTests.test3MFRoundTripKeepsPartsColoursAndSize"
     static let drawings = "GuestDrawingTests.testDrawingsLeaveAsPDFSVGAndDXF"
 
@@ -56,7 +57,19 @@ enum InteropProofs {
         Proof(format: threeJSON, feature: "Materials", direction: "Out", claim: "carried", test: threeJSONTest),
         Proof(format: threeJSON, feature: "Keys on any property", direction: "Out", claim: "carried", test: threeJSONTest),
         Proof(format: threeJSON, feature: "Cameras", direction: "Out", claim: "carried", test: threeJSONTest),
-        Proof(format: threeJSON, feature: "Lights", direction: "Out", claim: "carried", test: threeJSONTest)
+        Proof(format: threeJSON, feature: "Lights", direction: "Out", claim: "carried", test: threeJSONTest),
+        Proof(format: threeJSON, feature: "Meshes and hierarchy", direction: "In", claim: "carried", test: threeJSONBack),
+        Proof(format: threeJSON, feature: "Materials", direction: "In", claim: "carried", test: threeJSONBack),
+        Proof(
+            format: threeJSON,
+            feature: "Clones and links",
+            direction: "In",
+            claim: "baked",
+            test: "ThreeObjectReaderTests.testAVibeCodedIslandComesInAsThings"
+        ),
+        Proof(format: threeJSON, feature: "Keys on any property", direction: "In", claim: "carried", test: threeJSONBack),
+        Proof(format: threeJSON, feature: "Cameras", direction: "In", claim: "carried", test: threeJSONBack),
+        Proof(format: threeJSON, feature: "Lights", direction: "In", claim: "carried", test: threeJSONBack)
     ]
 
     static let otherProofs: [Proof] = [

@@ -65,11 +65,12 @@ Not listed: todo
 
 | Feature | Out | In |
 |---|---|---|
-| Meshes and hierarchy | carried | todo |
-| Materials | carried | todo |
-| Keys on any property | carried | todo |
-| Cameras | carried | todo |
-| Lights | carried | todo |
+| Meshes and hierarchy | carried | carried |
+| Materials | carried | carried |
+| Clones and links | todo | baked — an instanced mesh becomes a thing a copy |
+| Keys on any property | carried | carried |
+| Cameras | carried | carried |
+| Lights | carried | carried |
 
 Not listed: todo
 

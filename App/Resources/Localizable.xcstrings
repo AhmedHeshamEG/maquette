@@ -4537,6 +4537,38 @@
         }
       }
     },
+    "Brought in %lld things from three.js": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Importati %lld oggetti da three.js"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تم جلب %lld عنصرًا من three.js"
+          }
+        }
+      }
+    },
+    "Brought in %lld things from three.js. %@": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Importati %lld oggetti da three.js. %@"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تم جلب %lld عنصرًا من three.js. %@"
+          }
+        }
+      }
+    },
     "Brows": {
       "localizations": {
         "it": {
