@@ -38,13 +38,13 @@ extension EditorModel {
         return urls
     }
 
-    /// The scene (or the selection) as a 3D file, with its preset applied: glTF, USDZ, OBJ (with its materials), STL,
-    /// 3MF, a Blender package, every painted map, or one rigged thing as FBX.
+    /// The scene (or the selection) as a 3D file, with its preset applied: glTF, a three.js folder, USDZ, OBJ (with its
+    /// materials), STL, 3MF, a Blender package, every painted map, or one rigged thing as FBX.
     func modelFiles(_ format: ModelExportFormat, preset: ModelPreset, selectionOnly: Bool, colors: PaintColorOutput) -> [(name: String, data: Data)] {
         let ids = selectionOnly && !selection.isEmpty ? selection : nil
         let name = ProjectStore.sanitize(ids.flatMap { $0.count == 1 ? displayed.scene.objects[$0[0]]?.name : nil } ?? baseScene.name)
         // The scene as edited for the timeline's keys (glTF, Blender, FBX); as shown for the rest.
-        let edited = format == .glb || format == .blender || format == .fbx
+        let edited = format == .glb || format == .web || format == .blender || format == .fbx
         if edited, let frames = physicsRun.frames, !frames.isComplete {
             app.show("The physics run is still being worked out; export again in a moment")
             return []

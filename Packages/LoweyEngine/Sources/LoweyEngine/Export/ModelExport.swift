@@ -5,6 +5,8 @@ import simd
 /// The 3D formats Maquette writes.
 public enum ModelExportFormat: String, CaseIterable, Sendable, Identifiable, Codable {
     case glb, usdz, obj, stl
+    /// A three.js folder (X1): the scene, a player, a React component and notes for agents.
+    case web
     case threeMF = "3mf"
     case blender
     case fbx
@@ -16,6 +18,7 @@ public enum ModelExportFormat: String, CaseIterable, Sendable, Identifiable, Cod
     public var title: String {
         switch self {
         case .glb: "glTF (.glb)"
+        case .web: "three.js folder"
         case .usdz: "USDZ"
         case .obj: "OBJ"
         case .stl: "STL"
@@ -30,6 +33,7 @@ public enum ModelExportFormat: String, CaseIterable, Sendable, Identifiable, Cod
     public var purpose: String {
         switch self {
         case .glb: "For Blender, game engines and other 3D apps: objects, materials, cameras, lights and animation."
+        case .web: "For the web: a folder that plays in any browser with its cameras, timeline and Look, ready to build on."
         case .usdz: "For Apple's Quick Look and Reality Composer: opens on any iPhone or iPad."
         case .obj: "The oldest format every 3D app opens: shapes and colours."
         case .stl: "For 3D printing: every slicer reads it. Millimetres, standing on the bed."
@@ -197,6 +201,10 @@ public enum ModelExport {
         switch format {
         case .glb:
             return [("\(name).glb", GLTFScene.glb(ids, in: scene, look: look, parts: parts, painted: paintOf, posed: posed, skinned: skinnedOf))]
+        case .web:
+            let glb = GLTFScene.glb(ids, in: scene, look: look, parts: parts, painted: paintOf, posed: posed, skinned: skinnedOf,
+                                    clearcoat: preset.shading.reflection ?? 0)
+            return webFolder(glb, scene: scene, look: look, preset: preset, name: name)
         case .fbx:
             // One rigged thing: the first the export holds.
             let candidates = (ids ?? scene.roots).flatMap { scene.subtree(of: $0) }
@@ -232,7 +240,7 @@ public enum ModelExport {
         case .obj:
             let (obj, mtl) = OBJFile.text(meshes, materialFile: "\(name).mtl")
             return [("\(name).obj", Data(obj.utf8)), ("\(name).mtl", Data(mtl.utf8))] + OBJFile.textures(meshes)
-        case .glb, .blender, .fbx, .textures: return []
+        case .glb, .web, .blender, .fbx, .textures: return []
         }
     }
 

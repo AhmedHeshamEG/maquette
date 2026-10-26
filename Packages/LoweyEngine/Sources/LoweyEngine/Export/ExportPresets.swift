@@ -34,7 +34,7 @@ public enum ExportCategory: String, CaseIterable, Identifiable, Sendable, Codabl
 public enum ExportFormat: String, CaseIterable, Identifiable, Sendable, Codable {
     case mp4, hevc, prores, gif, frames, passes, captions, animatic, spatialVideo, video360
     case png, picturePasses, spatialPhoto, panorama, psd, inkSVG
-    case gltf, fbx, usdz, obj, stl, threeMF, blender, maps, lookShader, ifc, level
+    case gltf, threeJS, fbx, usdz, obj, stl, threeMF, blender, maps, lookShader, ifc, level
     case pdf, drawings, technical, papercraft
 
     public var id: String { rawValue }
@@ -64,6 +64,7 @@ public enum ExportFormat: String, CaseIterable, Identifiable, Sendable, Codable 
         case .spatialPhoto: "Spatial photo"
         case .panorama: "360° panorama"
         case .gltf: "glTF"
+        case .threeJS: "three.js"
         case .fbx: "FBX"
         case .usdz: "USDZ"
         case .obj: "OBJ"
@@ -100,7 +101,7 @@ public enum ExportFormat: String, CaseIterable, Identifiable, Sendable, Codable 
         case .panorama: "All the way round the camera at the playhead, for Facebook, Google Photos and any 360 viewer."
         case .png: "The frame at the playhead, through the shot camera."
         case .picturePasses: "The frame at the playhead with its alpha, its depth and a mask per thing."
-        case .gltf, .fbx, .usdz, .obj, .stl, .threeMF, .blender, .maps: modelFormat?.purpose ?? ""
+        case .gltf, .threeJS, .fbx, .usdz, .obj, .stl, .threeMF, .blender, .maps: modelFormat?.purpose ?? ""
         case .lookShader: "This scene's Look for a game engine: its shader and material, with a licence to use it anywhere."
         case .pdf: "To print or send: the frame on a page, frames across the shot, or a storyboard of every shot."
         case .psd: "The frame at the playhead with a layer a thing, to draw over in Procreate or Photoshop."
@@ -117,6 +118,7 @@ public enum ExportFormat: String, CaseIterable, Identifiable, Sendable, Codable 
     public var modelFormat: ModelExportFormat? {
         switch self {
         case .gltf: .glb
+        case .threeJS: .web
         case .fbx: .fbx
         case .usdz: .usdz
         case .obj: .obj
@@ -150,7 +152,7 @@ public enum ExportPreset: String, CaseIterable, Identifiable, Sendable, Codable 
     case captions
     case stillHD, still4K, stillTransparent, stillP3, stillPasses
     case animatic1080, spatial1080, video360x4K, video360x6K, spatialPhotoHD, panorama6K, panorama8K
-    case gltfGodot, gltfWeb, gltfApps, fbxUnity, fbxUnreal, usdzQuickLook, objMaterials, stlPrint, threeMFPrint, blenderComputer, mapsPNG
+    case gltfGodot, gltfWeb, gltfApps, threeFolder, fbxUnity, fbxUnreal, usdzQuickLook, objMaterials, stlPrint, threeMFPrint, blenderComputer, mapsPNG
     case shaderGodot, shaderUnity
     case paperFrameA4, paperFrameLetter, paperFrameA3, paperFramesA4, paperFramesLetter, storyboardA4, storyboardLetter
     case psdLayers, inkVector, ifcBuilding, levelGodot, levelUnity, levelUnreal, planPDF, planDXF, planSVG, technicalA4, technicalA3
@@ -175,6 +177,7 @@ public enum ExportPreset: String, CaseIterable, Identifiable, Sendable, Codable 
         case .panorama6K, .panorama8K: .panorama
         case .stillPasses: .picturePasses
         case .gltfGodot, .gltfWeb, .gltfApps: .gltf
+        case .threeFolder: .threeJS
         case .fbxUnity, .fbxUnreal: .fbx
         case .usdzQuickLook: .usdz
         case .objMaterials: .obj
@@ -222,7 +225,7 @@ public enum ExportPreset: String, CaseIterable, Identifiable, Sendable, Codable 
         case .gltfWeb: .web
         case .fbxUnity: .unity
         case .fbxUnreal: .unreal
-        case .gltfApps, .usdzQuickLook, .objMaterials, .stlPrint, .threeMFPrint, .blenderComputer, .mapsPNG: .apps
+        case .gltfApps, .threeFolder, .usdzQuickLook, .objMaterials, .stlPrint, .threeMFPrint, .blenderComputer, .mapsPNG: .apps
         default: nil
         }
     }
