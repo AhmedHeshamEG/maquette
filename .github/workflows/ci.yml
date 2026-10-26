@@ -55,6 +55,7 @@ jobs:
               - 'Packages/Jolt/**'
               - 'Tools/godot/**'
               - 'Tools/check_look_render.py'
+              - 'Tools/check_threejs.mjs'
               - '.swiftlint.yml'
               - '.swiftformat'
               - '.github/workflows/ci.yml'
@@ -270,6 +271,48 @@ jobs:
           path: |
             look-render.png
             look-diff.png
+          retention-days: 7
+
+  threejs:
+    name: SPIKE (X1) the web folder in three.js 0.170 (node and Chromium)
+    needs: core-tests
+    runs-on: ubuntu-latest
+    # Node and a Chromium that draws WebGL with SwiftShader.
+    container: mcr.microsoft.com/playwright:v1.48.2-noble
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: acceptance
+          path: acceptance
+      - name: three.js, Playwright and the glTF Validator, pinned
+        run: |
+          mkdir -p /tmp/threecheck && cd /tmp/threecheck
+          npm init -y > /dev/null
+          npm install --silent three@0.170.0 playwright@1.48.2 gltf-validator@2.0.0-dev.3.10
+          cp "$GITHUB_WORKSPACE/Tools/check_threejs.mjs" "$GITHUB_WORKSPACE/Tools/validate_gltf.mjs" .
+      - name: GLTFLoader and ObjectLoader read the folder alike, and as Maquette wrote it
+        run: |
+          set -o pipefail
+          cd /tmp/threecheck
+          node check_threejs.mjs structure "$GITHUB_WORKSPACE/acceptance/threejs/night-room" | tee -a "$GITHUB_STEP_SUMMARY"
+      - name: Chromium plays the folder and draws what Maquette sees
+        run: |
+          set -o pipefail
+          cd /tmp/threecheck
+          HOME=/root node check_threejs.mjs render "$GITHUB_WORKSPACE/acceptance/threejs/night-room" | tee -a "$GITHUB_STEP_SUMMARY"
+      - name: The web GLB passes the Khronos glTF Validator
+        run: |
+          cd /tmp/threecheck
+          node validate_gltf.mjs "$GITHUB_WORKSPACE/acceptance/threejs/night-room/scene.glb"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: threejs-render
+          path: acceptance/threejs/night-room/rendered.png
           retention-days: 7
 
   interop:
@@ -626,7 +669,7 @@ jobs:
 
   result:
     name: CI result
-    needs: [changes, lint, core-tests, interop, godot, look-shader, tools, engine, features, app, appstore]
+    needs: [changes, lint, core-tests, interop, threejs, godot, look-shader, tools, engine, features, app, appstore]
     if: always()
     runs-on: ubuntu-latest
     steps:
