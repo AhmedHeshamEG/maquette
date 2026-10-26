@@ -88,6 +88,8 @@ final class ThreeProjectTests: XCTestCase {
         XCTAssertTrue(component.contains("'Coffee_table': { role: 'group'"))
         let info = try String(decoding: XCTUnwrap(files.first { $0.name == "maquette/scene.js" }?.data), as: UTF8.self)
         XCTAssertTrue(info.contains("\"camera\" : \"Wide\""), info)
+        // The Look travels as its numbers: Ink is toon bands with lines.
+        XCTAssertTrue(info.contains("\"model\" : \"toon\"") && info.contains("\"lines\" : {"), info)
     }
 
     func testSceneJSONIsTheGLBInThreesOwnFormat() throws {
