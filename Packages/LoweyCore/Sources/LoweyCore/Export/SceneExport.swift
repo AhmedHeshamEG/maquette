@@ -137,7 +137,9 @@ public enum SceneExport {
     }
 
     public static func material(of object: SceneObject, look: Look) -> ExportMaterial {
-        let color = object.color?.resolved(in: look.palette) ?? .blockout
+        var color = object.color?.resolved(in: look.palette) ?? .blockout
+        // A see-through thing (a room's ghosted wall, a shadow disc) is as see-through in every file.
+        if let opacity = object[.opacity]?.floatValue, opacity < 1 { color = RGBA(color.r, color.g, color.b, color.a * max(opacity, 0)) }
         let emissive = object.emissive?.resolved(in: look.palette) ?? (object.emissiveIntensity > 0 ? color : nil)
         return ExportMaterial(color: color, emissive: emissive, emissiveStrength: object.emissiveIntensity,
                               roughness: object[.roughness]?.floatValue ?? 0.85, metallic: object[.metallic]?.floatValue ?? 0)

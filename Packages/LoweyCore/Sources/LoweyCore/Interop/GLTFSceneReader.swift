@@ -64,6 +64,12 @@ public enum GLTFSceneReader {
         let file: GLTFReader.File
         var objects: [SceneObject] = []
         var objectOf: [Int: ObjectID] = [:]
+        /// Where keyed numbers land (`KHR_animation_pointer`): each material's, camera's and light's objects, and the
+        /// ids a Maquette file wrote (its kept keys name them).
+        var objectsOfMaterial: [Int: [ObjectID]] = [:]
+        var objectsOfCamera: [Int: [ObjectID]] = [:]
+        var objectsOfLight: [Int: [ObjectID]] = [:]
+        var objectOfWrittenID: [String: ObjectID] = [:]
 
         init(file: GLTFReader.File) {
             self.file = file
@@ -77,17 +83,22 @@ public enum GLTFSceneReader {
             objectOf[index] = id
             let name = GLTFReader.nodeName(node, index: index)
             var object = SceneObject(id: id, name: name, kind: .group, parent: parent, transform: GLTFReader.localTransform(node))
+            if let written = ((node["extras"] as? [String: Any])?["maquette"] as? [String: Any])?["id"] as? String {
+                objectOfWrittenID[written] = id
+            }
             let slot = objects.count
             objects.append(object)
             var children: [ObjectID] = []
             if let camera = node["camera"] as? Int {
                 object.kind = .camera
+                objectsOfCamera[camera, default: []].append(id)
                 let cameras = file.array("cameras")
                 if camera < cameras.count, let yfov = (cameras[camera]["perspective"] as? [String: Any])?["yfov"] as? Double {
                     object[.fieldOfView] = .float(yfov * 180 / .pi)
                 }
             } else if let light = lightIndex(node) {
                 applyLight(light, to: &object)
+                objectsOfLight[light, default: []].append(id)
                 // Ours: a soft panel written as a spot keeps its size in the node's extras.
                 if let panel = GLTFReader.numbers(((node["extras"] as? [String: Any])?["maquette"] as? [String: Any])?["panel"]), panel.count == 2 {
                     object.kind = .light(.area)
@@ -100,12 +111,14 @@ public enum GLTFSceneReader {
                 if pieces.count == 1, let piece = pieces.first {
                     object.kind = .mesh(piece.mesh)
                     apply(piece.material, to: &object)
+                    objectsOfMaterial[piece.index, default: []].append(id)
                 } else {
                     // Several materials: one modelled child per material under this node.
                     for piece in pieces {
                         let child: ObjectID = ids.next()
                         var part = SceneObject(id: child, name: piece.name, kind: .mesh(piece.mesh), parent: id)
                         apply(piece.material, to: &part)
+                        objectsOfMaterial[piece.index, default: []].append(child)
                         objects.append(part)
                         children.append(child)
                     }
@@ -140,6 +153,7 @@ public enum GLTFSceneReader {
             var name: String
             var mesh: EditableMesh
             var material: Material?
+            var index: Int
         }
 
         /// A glTF material's numbers as written (linear), before anything rounds them.
@@ -176,7 +190,7 @@ public enum GLTFSceneReader {
                                                             material: primitive["material"] as? Int ?? -1, skinned: false)
                 let mesh = MeshBuilder.mesh(from: part.mesh)
                 guard !mesh.isEmpty else { continue }
-                pieces.append(Piece(name: part.name, mesh: mesh, material: material(part.material)))
+                pieces.append(Piece(name: part.name, mesh: mesh, material: material(part.material), index: part.material))
             }
             return pieces
         }
@@ -203,6 +217,11 @@ public enum GLTFSceneReader {
             for animation in file.array("animations") {
                 let samplers = animation["samplers"] as? [[String: Any]] ?? []
                 for channel in animation["channels"] as? [[String: Any]] ?? [] {
+                    if let pointed = try pointerTracks(channel, samplers: samplers, ids: &ids) {
+                        result += pointed.tracks
+                        duration = max(duration, pointed.end)
+                        continue
+                    }
                     guard let target = channel["target"] as? [String: Any], let node = target["node"] as? Int, let id = objectOf[node],
                           let samplerIndex = channel["sampler"] as? Int, samplerIndex < samplers.count,
                           let property = Self.property(target["path"] as? String) else { continue }
@@ -227,7 +246,8 @@ public enum GLTFSceneReader {
                     result.append(Track(id: ids.next(), target: id, property: property, keyframes: keys))
                 }
             }
-            return (result, duration)
+            let kept = keptTracks(ids: &ids)
+            return (result + kept, max(duration, kept.compactMap { $0.keyframes.last?.time }.max() ?? 0))
         }
 
         static func property(_ path: String?) -> PropertyKey? {

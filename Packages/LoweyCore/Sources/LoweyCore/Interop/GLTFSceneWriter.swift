@@ -27,12 +27,14 @@ public enum GLTFScene {
     /// can't make itself (library models, prefabs), in the object's own space.
     /// `painted` gives a painted object's paint mesh and texture.
     /// `posed` gives a rigged object's surface as its skeleton bends it; `skinned` gives it as a skin with its bones
-    /// instead (game engines play those), and wins when both answer.
+    /// instead (game engines play those), and wins when both answer. `clearcoat` is the Look's lacquer on every surface.
     public static func glb(_ ids: [ObjectID]?, in scene: Scene, look: Look, parts: @escaping (SceneObject) -> [LocalPart] = { _ in [] },
                            painted: @escaping (SceneObject) -> PaintedExport? = { _ in nil },
                            posed: @escaping (SceneObject) -> [LocalPart]? = { _ in nil },
-                           skinned: @escaping (SceneObject) -> SkinnedExport? = { _ in nil }, generator: String = "Maquette") -> Data {
+                           skinned: @escaping (SceneObject) -> SkinnedExport? = { _ in nil }, clearcoat: Double = 0,
+                           generator: String = "Maquette") -> Data {
         var writer = GLTFSceneWriter(scene: scene, look: look, parts: parts)
+        writer.clearcoat = clearcoat
         writer.painted = painted
         writer.posed = posed
         writer.skinned = skinned
@@ -73,11 +75,21 @@ struct GLTFSceneWriter {
     /// Node index of each exported object, and the transform above it when its parent isn't exported.
     var nodeOf: [ObjectID: Int] = [:]
     var rootFrames: [ObjectID: Transform] = [:]
+    /// What keyed properties point at (`KHR_animation_pointer`): each object's materials, camera and light.
+    var materialsOf: [ObjectID: [Int]] = [:]
+    var cameraOf: [ObjectID: Int] = [:]
+    var lightOf: [ObjectID: Int] = [:]
+    /// The properties each object has keys for.
+    let animated: [ObjectID: Set<PropertyKey>]
+    /// The Look's lacquer (Clean product's reflection) as every surface's clearcoat; 0 is none.
+    var clearcoat = 0.0
+    var extensionsUsed: Set<String> = []
 
     init(scene: Scene, look: Look, parts: @escaping (SceneObject) -> [GLTFScene.LocalPart]) {
         self.scene = scene
         self.look = look
         self.parts = parts
+        animated = Dictionary(grouping: scene.timeline.tracks, by: \.target).mapValues { Set($0.map(\.property)) }
     }
 
     // MARK: Nodes
@@ -106,9 +118,12 @@ struct GLTFSceneWriter {
         switch object.kind {
         case .camera:
             node["camera"] = addCamera(object)
+            cameraOf[id] = cameras.count - 1
             extras["fieldOfView"] = object[.fieldOfView]?.floatValue ?? 50
         case let .light(type):
-            node["extensions"] = ["KHR_lights_punctual": ["light": addLight(object, type: type)]]
+            let light = addLight(object, type: type)
+            lightOf[id] = light
+            node["extensions"] = ["KHR_lights_punctual": ["light": light]]
             extras["intensity"] = object[.lightIntensity]?.floatValue ?? 1
             extras["shadows"] = object[.lightShadows]?.boolValue ?? (type == .directional)
             if type == .area { extras["panel"] = [object[.lightWidth]?.floatValue ?? 1, object[.lightHeight]?.floatValue ?? 0.6] }
@@ -151,9 +166,12 @@ struct GLTFSceneWriter {
         if let fur = FurSettings(object), let surface = pieces.first?.mesh {
             pieces += Self.furParts(fur, on: surface, name: object.name, material: SceneExport.material(of: object, look: look))
         }
+        let keyed = animated[object.id] ?? []
         let primitives = pieces.map { piece -> [String: Any] in
-            ["attributes": attributes(piece.mesh, colors: piece.colors, tangents: piece.tangents), "indices": indices(piece.mesh),
-             "material": addMaterial(piece)]
+            let material = addMaterial(piece, animated: keyed)
+            materialsOf[object.id, default: []].append(material)
+            return ["attributes": attributes(piece.mesh, colors: piece.colors, tangents: piece.tangents), "indices": indices(piece.mesh),
+                    "material": material]
         }
         meshes.append(["name": object.name, "primitives": primitives])
         return meshes.count - 1
@@ -198,7 +216,7 @@ struct GLTFSceneWriter {
         return addAccessor(data, target: Self.elementBuffer, componentType: Self.unsignedInt, count: mesh.indices.count, type: "SCALAR")
     }
 
-    mutating func addMaterial(_ piece: GLTFScene.LocalPart) -> Int {
+    mutating func addMaterial(_ piece: GLTFScene.LocalPart, animated: Set<PropertyKey> = []) -> Int {
         let linear = SceneExport.linear
         let surface = piece.material
         var material: [String: Any] = [
@@ -224,15 +242,20 @@ struct GLTFSceneWriter {
             pbr["roughnessFactor"] = 1.0
         }
         material["pbrMetallicRoughness"] = pbr
-        if let emissive = surface.emissive, surface.emissiveStrength > 0 {
-            let strength = min(surface.emissiveStrength, 1)
-            material["emissiveFactor"] = [linear(emissive.r) * strength, linear(emissive.g) * strength, linear(emissive.b) * strength]
+        if let emissive = surface.emissive, surface.emissiveStrength > 0 || animated.contains(.emissiveIntensity) {
+            addGlow(emissive, strength: surface.emissiveStrength, keyed: animated.contains(.emissiveIntensity), to: &material)
         }
         if let glow = surface.maps.emissive {
             material["emissiveTexture"] = ["index": addTexture(glow)]
             material["emissiveFactor"] = [1.0, 1.0, 1.0]
         }
         if let normal = surface.maps.normal { material["normalTexture"] = ["index": addTexture(normal)] }
+        if clearcoat > 0 {
+            var extensions = material["extensions"] as? [String: Any] ?? [:]
+            extensions["KHR_materials_clearcoat"] = ["clearcoatFactor": clearcoat, "clearcoatRoughnessFactor": 0.05]
+            material["extensions"] = extensions
+            extensionsUsed.insert("KHR_materials_clearcoat")
+        }
         materials.append(material)
         return materials.count - 1
     }
@@ -287,8 +310,12 @@ struct GLTFSceneWriter {
         for track in scene.timeline.tracks {
             // A joint's turn goes to its joint node; anything else the object's own node knows how to play.
             let joint = jointNode(for: track)
-            guard let node = joint ?? nodeOf[track.target], let path = joint == nil ? Self.path(track.property) : "rotation",
-                  track.keyframes.count >= 1 else { continue }
+            guard let node = joint ?? nodeOf[track.target], !track.keyframes.isEmpty else { continue }
+            guard let path = joint == nil ? Self.path(track.property) : "rotation" else {
+                // A material, light or lens number points at its place; anything else rides along for Maquette.
+                if !addPointer(track, samplers: &samplers, channels: &channels) { keptTracks.append(track) }
+                continue
+            }
             let (times, interpolation) = Self.times(track, fps: fps)
             var values: [Float] = []
             var previous: Quat?
@@ -309,6 +336,8 @@ struct GLTFSceneWriter {
     }
 
     var animations: [[String: Any]] = []
+    /// Keys glTF has no place for (face states, a reveal, a stepping): kept in the file's extras for Maquette.
+    var keptTracks: [Track] = []
 
     static func path(_ property: PropertyKey) -> String? {
         switch property {
@@ -417,10 +446,10 @@ struct GLTFSceneWriter {
             extensions["OMI_physics_shape"] = ["shapes": physicsShapes]
             used += ["OMI_physics_body", "OMI_physics_shape"]
         }
-        if !extensions.isEmpty {
-            json["extensions"] = extensions
-            json["extensionsUsed"] = used
-        }
+        used += extensionsUsed.sorted()
+        if !extensions.isEmpty { json["extensions"] = extensions }
+        if !used.isEmpty { json["extensionsUsed"] = used }
+        if let kept = keptTracksJSON() { json["extras"] = ["maquette": ["tracks": kept]] }
         return GLBContainer.pack(json: json, binary: binary)
     }
 }
@@ -448,26 +477,5 @@ enum GLBContainer {
             result.append(binary)
         }
         return result
-    }
-}
-
-extension GLTFSceneWriter {
-    mutating func addLight(_ object: SceneObject, type: LightType) -> Int {
-        let color = object[.lightColor]?.colorValue?.resolved(in: look.palette) ?? .white
-        var light: [String: Any] = [
-            // glTF has no area light: a soft panel travels as a wide, soft spot (its size rides in the node's extras).
-            "name": object.name, "type": type == .area ? LightType.spot.rawValue : type.rawValue,
-            "color": [SceneExport.linear(color.r), SceneExport.linear(color.g), SceneExport.linear(color.b)],
-            "intensity": object[.lightIntensity]?.floatValue ?? 1
-        ]
-        if type != .directional, let range = object[.lightRange]?.floatValue { light["range"] = range }
-        if type == .spot {
-            let outer = (object[.spotAngle]?.floatValue ?? 45) * .pi / 180 / 2
-            light["spot"] = ["innerConeAngle": outer * 0.8, "outerConeAngle": outer]
-        } else if type == .area {
-            light["spot"] = ["innerConeAngle": 0.0, "outerConeAngle": 80 * Double.pi / 180]
-        }
-        lights.append(light)
-        return lights.count - 1
     }
 }
