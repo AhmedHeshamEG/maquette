@@ -36,3 +36,6 @@ App/Widgets/Info.plist
 Tools/kit/.cache/
 Tools/kit/__pycache__/
 .acceptance/
+
+# Files the Core tests write for the interop checks (ACCEPTANCE_DIR)
+acceptance/
