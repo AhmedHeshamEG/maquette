@@ -604,6 +604,9 @@ tool's bar at the bottom of the stage (pick modes, sketch shapes, Done, grow / s
   `maquette/scene.js`, `Scene.jsx` (React Three Fiber, names and clips typed), `AGENTS.md` and three.js 0.170 carried.
   **glTF** also carries keyed material, light and lens numbers (`KHR_animation_pointer`), glow brighter than white,
   see-through and the Look's lacquer (clearcoat); keys it has no place for ride in its extras for Maquette.
+  **three.js in**: Library ▸ Import takes a three.js scene file (`scene.toJSON()`) into the open scene as one step:
+  meshes (buffer geometry, boxes, spheres, cylinders, cones, planes), materials, cameras, lights, an instanced mesh as
+  its copies, clips as keys; one toast line says what came and what couldn't (ambient light, points, shader code).
 
 ---
 

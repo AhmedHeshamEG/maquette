@@ -169,7 +169,8 @@ flowchart LR
   `GLTFSceneReader+Pointer` (both back as keys). `Interop/Three/`: `ThreeNames` (clean, unique names; the GLB's chunks),
   `ThreeObjectJSON` (+`Meshes`, +`Clips`: three.js's scene format from the GLB), `ThreeProject` (the folder, `scene.js`),
   `ThreeProject+Docs` (`ThreeContents`, `ThreeComponent`), `ThreeAgents`, `ThreeProjectScripts` (+`Modules`, +`Look`:
-  the JavaScript, as strings).
+  the JavaScript, as strings), `ThreeObjectReader` (+`Geometry`, +`Clips`: three.js's JSON in as a
+  `GLTFSceneReader.Result`, so `ModelingOperations.importScene` brings it in; Features' `EditorModel+Interop`).
 - **Engine**: `ModelExportFormat.web` and `ModelExport+Web` (reads three.js from `HmmWebPage.libraryFolder`).
 - **CI**: the `threejs` job (Playwright's image) runs `Tools/check_threejs.mjs`: `structure` (three.js 0.170 in node
   reads both scene files; they agree with each other and with `expected.json`) and `render` (Chromium plays the folder;

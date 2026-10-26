@@ -13,6 +13,8 @@ continues from 2.0 and numbers its phases again from 0.1 (each phase bumps the m
   `KHR_animation_pointer` and come back as keys; a glow brighter than white keeps its strength; see-through things are
   see-through in every file; Clean product's lacquer is a clearcoat; keys glTF has no place for (face states) ride in
   the file for Maquette to read back.
+- **three.js scenes come in**: Library ▸ Import takes a three.js scene file (`scene.toJSON()`) into the scene as
+  editable things, its lights and cameras as Maquette's, its clips as keys; a line says what couldn't come.
 - **`docs/INTEROP.md`**: every feature against every format, both ways, checked by CI against the tests that prove it.
 
 ## [0.28] — Maquette — AR, the web layer and the bridge (phase M12)

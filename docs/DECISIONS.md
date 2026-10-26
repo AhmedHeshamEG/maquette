@@ -3621,3 +3621,14 @@ direction (`carried`, `baked`, `extras`, `impossible`, `not offered`, `todo`). `
 exist, or when a proof no longer matches its cell. Unlisted rows take the section's "Not listed" line. The phase ends
 when no `todo` is left (333 at this point). *Rejected:* one wide table (24 rows × 20 formats × 2 directions doesn't
 read).
+
+**D-583 — three.js's JSON comes into the scene, not the library.** Library ▸ Import takes a `scene.toJSON()` file and
+brings it into the open scene as one step (as a glTF made editable): `BufferGeometry` as its triangles, three.js's
+boxes exactly, spheres, cylinders and cones as Maquette's own shapes at their sizes, planes as a quad standing in XY;
+standard and physical materials as colour, roughness, metal, glow and see-through; cameras and lights as ours (a light
+with no target aims at the origin, as three.js's does); an `InstancedMesh` as a thing a copy (the matrix says `baked`
+until copies become clones); clips' tracks as keys, by name or uuid. A file Maquette wrote gets its own names back from
+`userData.maquette.name`. What can't come in (ambient and hemisphere light, points and lines, custom shaders' code,
+pictures on surfaces for now, other parametric shapes) is said after, in the same toast line; nothing is asked first.
+*Rejected:* a library asset (a three.js scene is a scene, with cameras and clips, not a model to place).
+
