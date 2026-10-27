@@ -182,6 +182,31 @@ final class TextureExportTests: XCTestCase {
         }
         XCTAssertGreaterThan(total, source.triangleCount / 2)
         XCTAssertGreaterThanOrEqual(Double(close) / Double(max(total, 1)), 0.9, "\(close) of \(total) points kept their colour")
+        // The normal map: the same bumps in the new surface's frames (each texel back in the object's space agrees).
+        let normalIndex = try XCTUnwrap((material["normalTexture"] as? [String: Any])?["index"] as? Int)
+        let exportedNormals = try image(normalIndex, json: json, binary: binary)
+        let normals = try PNGCodec.decode(XCTUnwrap(paint.normalMap.flatMap { made.files[$0] }))
+        let sourceFrames = NormalBake.triangleFrames(source), frames = NormalBake.triangleFrames(surface)
+        func world(_ texel: RGBA, frame: (SIMD3<Float>, SIMD3<Float>), normal: SIMD3<Float>) -> SIMD3<Float> {
+            let t = SIMD3<Float>(Float(texel.r), Float(texel.g), Float(texel.b)) * 2 - 1
+            let (tangent, bitangent) = NormalBake.orthonormal(frame, normal: normal)
+            return normalize3(tangent * t.x + bitangent * t.y + normal * t.z, fallback: normal)
+        }
+        var agree = 0, compared = 0
+        for face in 0 ..< source.triangleCount {
+            let corners = (0 ..< 3).map { source.positions[Int(source.indices[face * 3 + $0])] }
+            let point = corners.reduce(SIMD3<Float>.zero, +) / 3
+            let facing = normalize3(cross3(corners[1] - corners[0], corners[2] - corners[0]), fallback: SIMD3<Float>(0, 1, 0))
+            let uv = (0 ..< 3).map { source.uvs[Int(source.indices[face * 3 + $0])] }.reduce(SIMD2<Float>.zero, +) / 3
+            guard let hit = grid.closest(to: point, within: 0.05, hint: nil) else { continue }
+            let at = (0 ..< 3).map { surface.uvs[Int(surface.indices[hit.triangle * 3 + $0])] }
+            let newUV = at[0] * hit.weights.x + at[1] * hit.weights.y + at[2] * hit.weights.z
+            let before = world(exportedNormals.sample(u: Double(uv.x), v: Double(uv.y)), frame: sourceFrames[face], normal: facing)
+            let after = world(normals.sample(u: Double(newUV.x), v: Double(newUV.y)), frame: frames[hit.triangle], normal: facing)
+            compared += 1
+            if dot3(before, after) > 0.96 { agree += 1 }
+        }
+        XCTAssertGreaterThanOrEqual(Double(agree) / Double(max(compared, 1)), 0.9, "\(agree) of \(compared) normals agree")
     }
 
     func testATextureTransformMovesTheUVs() {

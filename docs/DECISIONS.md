@@ -3677,3 +3677,9 @@ sphere) have uvs Maquette doesn't make the same way, so their pictures are said 
 `SkinImport` for both readers): its skeleton's bones in the bind pose (each bone's inverse seen from the mesh through
 its bind matrix), the geometry's `skinIndex` and `skinWeight` carried onto the surface, the bones' `quaternion` tracks
 as `bone.` keys, and the bones aren't things. A bone's other tracks are left out, as glTF's are (D-587).
+
+**D-590 — A glTF's normal map comes in too (amends D-584).** Each texel of the new surface finds its point on the
+model's own surface, reads the normal there in the model's tangent frame (glTF's: x along u, y up the picture), turns it
+into the object's space and writes it in the new unwrap's frame, so the same bumps catch the same light; it becomes the
+paint's normals (as "Normals from" does). A three.js file's `normalMap` isn't read yet (its tangent convention depends on
+`normalScale`'s sign); the line says so.

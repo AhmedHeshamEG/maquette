@@ -2,7 +2,8 @@ import Foundation
 
 /// A model's own pictures laid on its editable copy as paint (X1): the copy is laid flat as any shape is, each of its
 /// pixels finds its point on the model's own surface, and the pictures there (times the material's factors) become a
-/// first layer, "Model", with every map they had: colour, roughness, metal and glow. An empty layer sits above it.
+/// first layer, "Model", with every map they had: colour, roughness, metal and glow. An empty layer sits above it. A
+/// normal map is turned from the model's own tangent frames into the new surface's and becomes the paint's normals.
 public enum PaintImport {
     /// The paint of an object whose surface is `mesh` (its own space, as `PaintSource.unshaped` gives it).
     public static func paint(onto mesh: MeshData, pictures: GLTFPictures, images: [Int: RGBAImage], size: Int = PaintSurface.defaultSize,
@@ -21,6 +22,12 @@ public enum PaintImport {
                 files[name] = png
                 model[kind, tile] = name
             }
+        }
+        if let normal = pictures.normal.flatMap({ images[$0] }), let paintMesh = prepared.unwrap.mesh(over: mesh) {
+            let png = encode(normals(normal, source: source, paintMesh: paintMesh, size: size))
+            let name = PaintFiles.tileName(for: png)
+            files[name] = png
+            paint.normalMap = name
         }
         guard !model.isEmpty else { return (paint, files) }
         paint.layers.insert(model, at: 0)
@@ -58,6 +65,45 @@ public enum PaintImport {
                      tinted(texel.b, by: emissive[2] / strongest), 1)
             }))
         }
+        return result
+    }
+
+    /// A normal map on the model's own surface, each texel turned into the new surface's tangent frame (glTF's: x along u,
+    /// y up the picture, z out), so the same bumps catch the light.
+    static func normals(_ image: RGBAImage, source: MeshData, paintMesh: MeshData, size: Int) -> RGBAImage {
+        var result = RGBAImage(width: size, height: size, color: RGBA(0.5, 0.5, 1, 1))
+        var covered = [UInt8](repeating: 0, count: size * size)
+        guard let bounds = source.bounds, source.normals.count == source.positions.count else { return result }
+        let grid = TriangleGrid(source, cell: Float(max(bounds.size.length * 0.02, 1e-4)))
+        let sourceFrames = NormalBake.triangleFrames(source), frames = NormalBake.triangleFrames(paintMesh)
+        let hasNormals = paintMesh.normals.count == paintMesh.positions.count
+        let scale = Float(size)
+        var hint: Int?
+        for face in 0 ..< paintMesh.triangleCount {
+            let i = (0 ..< 3).map { Int(paintMesh.indices[face * 3 + $0]) }
+            let p = i.map { paintMesh.positions[$0] }
+            let flat = normalize3(cross3(p[1] - p[0], p[2] - p[0]), fallback: SIMD3<Float>(0, 1, 0))
+            PaintRaster.triangle(paintMesh.uvs[i[0]] * scale, paintMesh.uvs[i[1]] * scale, paintMesh.uvs[i[2]] * scale, width: size, height: size) { x, y, w in
+                let position = p[0] * w.x + p[1] * w.y + p[2] * w.z
+                let normal = hasNormals ? normalize3(paintMesh.normals[i[0]] * w.x + paintMesh.normals[i[1]] * w.y + paintMesh.normals[i[2]] * w.z,
+                                                     fallback: flat) : flat
+                guard let hit = grid.closest(to: position, within: grid.cell * 2, hint: hint) else { return }
+                hint = hit.triangle
+                let s = (0 ..< 3).map { Int(source.indices[hit.triangle * 3 + $0]) }
+                let uv = source.uvs[s[0]] * hit.weights.x + source.uvs[s[1]] * hit.weights.y + source.uvs[s[2]] * hit.weights.z
+                let own = normalize3(source.normals[s[0]] * hit.weights.x + source.normals[s[1]] * hit.weights.y + source.normals[s[2]] * hit.weights.z,
+                                     fallback: normal)
+                let texel = image.sample(u: Double(uv.x), v: Double(uv.y))
+                let t = SIMD3<Float>(Float(texel.r), Float(texel.g), Float(texel.b)) * 2 - 1
+                let (tangent, bitangent) = NormalBake.orthonormal(sourceFrames[hit.triangle], normal: own)
+                let detail = normalize3(tangent * t.x + bitangent * t.y + own * t.z, fallback: own)
+                let (newTangent, newBitangent) = NormalBake.orthonormal(frames[face], normal: normal)
+                let local = SIMD3<Float>(dot3(detail, newTangent), dot3(detail, newBitangent), dot3(detail, normal))
+                result.write((y * size + x) * 4, local * 0.5 + 0.5)
+                covered[y * size + x] = 1
+            }
+        }
+        PaintRaster.dilate(&result, coverage: covered)
         return result
     }
 

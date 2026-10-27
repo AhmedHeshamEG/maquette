@@ -9,6 +9,8 @@ public struct GLTFPictures: Sendable {
     /// Roughness in green, metal in blue (glTF's packing).
     public var metallicRoughness: Int?
     public var emissive: Int?
+    /// Tangent-space normals, as glTF reads them.
+    public var normal: Int?
     public var baseFactor: [Double]
     public var emissiveFactor: [Double]
     public var roughness: Double
@@ -16,7 +18,7 @@ public struct GLTFPictures: Sendable {
 
     /// The images it needs, by image index.
     public var images: Set<Int> {
-        Set([color, metallicRoughness, emissive].compactMap { $0 })
+        Set([color, metallicRoughness, emissive, normal].compactMap { $0 })
     }
 }
 
@@ -27,7 +29,7 @@ extension GLTFSceneReader.Builder {
         guard materials.indices.contains(materialIndex), let factors = material(materialIndex) else { return nil }
         let json = materials[materialIndex]
         let pbr = json["pbrMetallicRoughness"] as? [String: Any] ?? [:]
-        let infos = [pbr["baseColorTexture"], pbr["metallicRoughnessTexture"], json["emissiveTexture"]].map { $0 as? [String: Any] }
+        let infos = [pbr["baseColorTexture"], pbr["metallicRoughnessTexture"], json["emissiveTexture"], json["normalTexture"]].map { $0 as? [String: Any] }
         let images = infos.map { info in info.flatMap { $0["index"] as? Int }.flatMap { GLTFMeshReader.imageIndex(file, texture: $0) } }
         guard images.contains(where: { $0 != nil }), source.uvs.count == source.positions.count, !source.isEmpty else { return nil }
         var moved = source
@@ -35,7 +37,7 @@ extension GLTFSceneReader.Builder {
         if let transform = infos.lazy.compactMap({ ($0?["extensions"] as? [String: Any])?["KHR_texture_transform"] as? [String: Any] }).first {
             moved.uvs = moved.uvs.map { Self.transformed($0, by: transform) }
         }
-        return GLTFPictures(source: moved, color: images[0], metallicRoughness: images[1], emissive: images[2], baseFactor: factors.base,
+        return GLTFPictures(source: moved, color: images[0], metallicRoughness: images[1], emissive: images[2], normal: images[3], baseFactor: factors.base,
                             emissiveFactor: GLTFReader.numbers(json["emissiveFactor"]) ?? [0, 0, 0], roughness: factors.roughness,
                             metallic: factors.metallic)
     }

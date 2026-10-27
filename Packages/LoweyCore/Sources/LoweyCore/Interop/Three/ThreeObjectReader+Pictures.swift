@@ -22,7 +22,7 @@ extension ThreeReaderBuilder {
         let emissive = (material["emissive"] as? Int).map(Self.colour) ?? RGBA(0, 0, 0)
         let glow = material["emissiveIntensity"] as? Double ?? 1
         return GLTFPictures(source: moved, color: indices[0], metallicRoughness: indices[1] ?? metal.flatMap { textureIndex($0, textures: textureList) },
-                            emissive: indices[2], baseFactor: [color.r, color.g, color.b].map(ColorSpace.linear(fromSRGB:)) + [1],
+                            emissive: indices[2], normal: nil, baseFactor: [color.r, color.g, color.b].map(ColorSpace.linear(fromSRGB:)) + [1],
                             emissiveFactor: [emissive.r, emissive.g, emissive.b].map { ColorSpace.linear(fromSRGB: $0) * glow },
                             roughness: material["roughness"] as? Double ?? 1, metallic: material["metalness"] as? Double ?? 0)
     }
