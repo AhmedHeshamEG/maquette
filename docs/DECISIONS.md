@@ -3714,3 +3714,11 @@ the clock and before the page's own code, and `evaluate(_:atFrame:)` returns wha
 frame. That's all the recorder needs from the kit; the recorder itself is Core's (`ThreeRecorder`), so its JavaScript is
 checked in Chromium on CI (`Tools/record_threejs.mjs` plays the acceptance's island and compares with the fixture
 Core's tests read) as well as in the app's own WebKit (`ThreeProjectFlowTests`).
+
+**D-595 — three.js normal maps, and the way green leans (amends D-590).** A three.js file's `normalMap` comes in as a
+glTF's does. three.js reads green along +v, which is up the picture only when the picture was flipped (`flipY`, its
+default); unflipped (as `GLTFLoader` leaves glTF's, with `normalScale.y` negative) it means the other way, so the reader
+turns `normalScale` to glTF's way up and the transfer leans red and green by it (glTF's `normalTexture.scale` too).
+The same rule fixed our own `scene.json`: its pictures go out unflipped, and its normal maps now carry
+`normalScale: [s, -s]`, so three.js lights their bumps the right way up. A surface with no normals of its own (three.js
+geometry often has none) leans from each face's instead of coming in flat.
