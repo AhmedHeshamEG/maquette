@@ -12,6 +12,8 @@ public enum ThreeObjectReader {
         public var notes: [String]
         /// The file used toon materials: a toon Look would suit it.
         public var suggestsToon: Bool
+        /// What each three.js object (by uuid) became.
+        public var objects: [String: ObjectID] = [:]
     }
 
     public enum Failure: Error, Equatable, CustomStringConvertible {
@@ -43,7 +45,7 @@ public enum ThreeObjectReader {
         scene.pictures = builder.pictures
         scene.textures = builder.textures
         scene.files = builder.files
-        return Result(scene: scene, notes: builder.notes.sorted(), suggestsToon: builder.suggestsToon)
+        return Result(scene: scene, notes: builder.notes.sorted(), suggestsToon: builder.suggestsToon, objects: builder.objectOf)
     }
 }
 
