@@ -2,11 +2,13 @@
 """Splits the UI tests over CI's simulator jobs and picks the ones a draft change can affect.
 
     ui-shards.py --shards N --shard K [--changed FILE]
+    ui-shards.py --failed LOG
 
 Prints the `-only-testing:` arguments for shard K (1-based) of N, balanced by how long each test took on CI (the
 table below; a test not in it counts as two minutes). With --changed (a file listing changed paths, one a line) and a
 change that touches only some areas, only those areas' tests run; anything shared (the app, the shell, the engine, the
-core, the kit, the project) runs everything. The atlas runs in its own workflow and is never listed.
+core, the kit, the project) runs everything. The atlas runs in its own workflow and is never listed. With --failed it
+prints the arguments for the tests an xcodebuild log shows failing and never passing after, for a second attempt.
 """
 import pathlib
 import re
@@ -124,7 +126,21 @@ def shards(tests, count):
     return bins, loads
 
 
+def failed(log):
+    """The tests whose last result in an xcodebuild log is a failure (nothing when none is found: rerun them all)."""
+    last = {}
+    for line in pathlib.Path(log).read_text(encoding="utf-8", errors="replace").splitlines():
+        match = re.search(r"Test Case '-\[LoweyUITests\.(\w+) (\w+)\]' (passed|failed)", line)
+        if match:
+            last[f"{match.group(1)}/{match.group(2)}"] = match.group(3)
+    return [test for test, result in last.items() if result == "failed"]
+
+
 def main():
+    if "--failed" in sys.argv:
+        tests = failed(sys.argv[sys.argv.index("--failed") + 1])
+        print(" ".join(f"-only-testing:LoweyUITests/{test}" for test in tests))
+        return
     count = int(sys.argv[sys.argv.index("--shards") + 1])
     index = int(sys.argv[sys.argv.index("--shard") + 1]) - 1
     tests = all_tests()

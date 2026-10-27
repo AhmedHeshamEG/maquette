@@ -566,15 +566,18 @@ jobs:
           set -o pipefail
           XCTESTRUN=$(find DerivedData/Build/Products -maxdepth 1 -name "*.xctestrun" | head -1)
           # Each test gets up to three tries and the run a second attempt: the simulator now and then fails to
-          # terminate the app or stops answering a UI query (R33).
+          # terminate the app or stops answering a UI query (R33). The second attempt runs only what failed.
+          ARGS="${{ steps.tests.outputs.args }}"
           for attempt in 1 2; do
             rm -rf TestResults.xcresult
             xcodebuild test-without-building -xctestrun "$XCTESTRUN" -destination "id=${{ steps.sim.outputs.udid }}" \
               -resultBundlePath TestResults.xcresult -collect-test-diagnostics never -test-timeouts-enabled YES \
               -default-test-execution-time-allowance 300 -retry-tests-on-failure -test-iterations 3 \
-              ${{ steps.tests.outputs.args }} | tee xcodebuild.log | grep -E "error:|warning: |Test Case|Executed|\*\* " || true
+              $ARGS | tee xcodebuild.log | grep -E "error:|warning: |Test Case|Executed|\*\* " || true
             grep -q "\*\* TEST EXECUTE SUCCEEDED \*\*\|\*\* TEST SUCCEEDED \*\*" xcodebuild.log && exit 0
             echo "::warning::UI smoke tests failed on attempt $attempt"
+            FAILED=$(python3 Tools/ui-shards.py --failed xcodebuild.log)
+            [ -n "$FAILED" ] && ARGS="$FAILED"
           done
           exit 1
       - name: iPhone 6.9" App Store screenshot (the face companion)
@@ -628,7 +631,8 @@ jobs:
   # from the Release workflow.
   ipa:
     name: Maquette.ipa for this pull request
-    needs: [changes, lint]
+    # After the UI tests, so it never takes a Mac from them; `CI result` doesn't wait for it.
+    needs: [changes, ui]
     if: github.event_name == 'pull_request' && needs.changes.outputs.features == 'true'
     runs-on: xcode-27
     timeout-minutes: 45
@@ -741,7 +745,7 @@ jobs:
 
   result:
     name: CI result
-    needs: [changes, lint, core-tests, interop, godot, look-shader, tools, engine, features, app, ui, ipa, appstore]
+    needs: [changes, lint, core-tests, interop, godot, look-shader, tools, engine, features, app, ui, appstore]
     if: always()
     runs-on: ubuntu-latest
     steps:
