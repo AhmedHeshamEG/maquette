@@ -87,11 +87,15 @@ struct LibraryBrowser: View {
         }
         .fileImporter(isPresented: $importing, allowedContentTypes: LibraryModel.importTypes, allowsMultipleSelection: true) { result in
             guard case let .success(chosen) = result else { return }
-            // A three.js scene comes into the scene itself; models go to the library.
+            // three.js work (a scene file, a project folder or zip, a page) comes into the scene itself; models go to the library.
             for url in chosen where EditorModel.isThreeJSON(url) {
                 editor.bringInThreeJSON(url)
             }
-            let urls = chosen.filter { !EditorModel.isThreeJSON($0) }
+            let projects = chosen.filter { !EditorModel.isThreeJSON($0) && EditorModel.isWebProject($0) }
+            for url in projects {
+                editor.bringInThreeProject(url)
+            }
+            let urls = chosen.filter { !EditorModel.isThreeJSON($0) && !projects.contains($0) }
             guard !urls.isEmpty else { return }
             Task {
                 let count = await library.importFiles(urls)

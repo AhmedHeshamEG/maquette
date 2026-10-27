@@ -186,10 +186,25 @@ extension AppModel {
             landDrawing(url)
         case _ where BrushFileImport.fileExtensions.contains(ext):
             Task { await importBrushes(url) }
+        case "json" where EditorModel.isThreeSceneFile(url), "zip", "html", "htm":
+            landWeb(url)
+        case _ where url.hasDirectoryPath && EditorModel.isWebProject(url):
+            landWeb(url)
         case "json" where editor != nil:
             if let data = try? Data(contentsOf: url) { editor?.importScript(data, source: url.lastPathComponent) }
         default:
             landModels([url])
+        }
+    }
+
+    /// three.js work from elsewhere (X1): a scene file or a project (a page, a folder, a zip) comes into the open
+    /// project's scene, or a new one made for it.
+    func landWeb(_ url: URL) {
+        if editor == nil { startProject() }
+        if EditorModel.isThreeJSON(url) {
+            editor?.bringInThreeJSON(url)
+        } else {
+            editor?.bringInThreeProject(url)
         }
     }
 

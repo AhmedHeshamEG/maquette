@@ -203,6 +203,12 @@ targets:
               - studio.h.maquette.import.procreate-brushset
               - studio.h.maquette.import.procreate-brush
               - studio.h.maquette.import.photoshop-brushes
+          - CFBundleTypeName: Web project
+            CFBundleTypeRole: Viewer
+            LSHandlerRank: Alternate
+            LSItemContentTypes:
+              - public.zip-archive
+              - public.html
           - CFBundleTypeName: Layered drawing
             CFBundleTypeRole: Viewer
             LSHandlerRank: Alternate

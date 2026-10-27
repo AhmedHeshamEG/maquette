@@ -6965,6 +6965,22 @@
         }
       }
     },
+    "Couldn't open %@: %@": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Impossibile aprire %@: %@"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تعذّر فتح %@: %@"
+          }
+        }
+      }
+    },
     "Couldn't open that scene: %@": {
       "localizations": {
         "it": {
@@ -7337,6 +7353,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "تعذّر حفظ النواظم: %@"
+          }
+        }
+      }
+    },
+    "Couldn't save the page's copies: %@": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Impossibile salvare le copie della pagina: %@"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تعذّر حفظ نسخ الصفحة: %@"
           }
         }
       }
@@ -21905,6 +21937,22 @@
         }
       }
     },
+    "No three.js scene in it: it plays over the frame as a web piece": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nessuna scena three.js: viene riprodotta sopra l'inquadratura come contenuto web"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "لا يحتوي على مشهد three.js: سيُعرض فوق الإطار كقطعة ويب"
+          }
+        }
+      }
+    },
     "No versions yet": {
       "localizations": {
         "it": {
@@ -25773,6 +25821,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "رأس التشغيل"
+          }
+        }
+      }
+    },
+    "Playing %@ to bring it in…": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Riproduzione di %@ per importarlo…"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "جارٍ تشغيل %@ لاستيراده…"
           }
         }
       }

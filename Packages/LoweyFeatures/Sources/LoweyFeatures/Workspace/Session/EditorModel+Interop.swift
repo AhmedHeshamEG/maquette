@@ -10,6 +10,15 @@ extension EditorModel {
         url.pathExtension.lowercased() == "json"
     }
 
+    /// Whether a JSON file is three.js's own (`"metadata": {"type": "Object"}`), not a Scene Script or a Lottie file.
+    static func isThreeSceneFile(_ url: URL) -> Bool {
+        guard isThreeJSON(url) else { return false }
+        let access = url.startAccessingSecurityScopedResource()
+        defer { if access { url.stopAccessingSecurityScopedResource() } }
+        guard let data = try? Data(contentsOf: url), let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any] else { return false }
+        return (json["metadata"] as? [String: Any])?["type"] as? String == "Object"
+    }
+
     /// A three.js scene file into the scene as editable things and keys, as one step.
     @discardableResult
     func bringInThreeJSON(_ url: URL) -> Bool {
@@ -33,7 +42,7 @@ extension EditorModel {
     }
 
     /// One line: what came, then what changed on the way.
-    private func broughtIn(_ result: ThreeObjectReader.Result) {
+    func broughtIn(_ result: ThreeObjectReader.Result) {
         let count = result.scene.fragment.objects.count
         let notes = result.notes.joined(separator: " ")
         if notes.isEmpty {
@@ -46,7 +55,7 @@ extension EditorModel {
 
     /// A scene whose surfaces carry pictures or skins: the pictures are laid on as paint in the background, the skins'
     /// files written, then everything arrives as one step.
-    private func bringInPainted(_ result: ThreeObjectReader.Result) {
+    func bringInPainted(_ result: ThreeObjectReader.Result) {
         let folder = assetsFolder
         Task {
             let scene = result.scene
