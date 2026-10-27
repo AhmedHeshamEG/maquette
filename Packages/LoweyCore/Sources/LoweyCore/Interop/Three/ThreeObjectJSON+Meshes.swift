@@ -160,6 +160,12 @@ extension ThreeJSONBuilder {
                   let uuid = self.texture(texture, colour: map.colour) else { continue }
             json[map.key] = uuid
         }
+        // The pictures go in unflipped, as glTF's are, so green leans the other way along three.js's +v (GLTFLoader's
+        // own answer).
+        if json["normalMap"] != nil {
+            let strength = (source["normalTexture"] as? [String: Any])?["scale"] as? Double ?? 1
+            json["normalScale"] = [strength, -strength]
+        }
         return json
     }
 

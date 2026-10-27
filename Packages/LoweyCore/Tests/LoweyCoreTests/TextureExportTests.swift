@@ -115,6 +115,10 @@ final class TextureExportTests: XCTestCase {
             ("normal", XCTUnwrap((material["normalTexture"] as? [String: Any])?["index"] as? Int))
         ]
         XCTAssertEqual(pbr["roughnessFactor"] as? Double, 1, "the texture holds the roughness")
+        // three.js's own format keeps the pictures unflipped, so its normal map leans green the other way, as GLTFLoader does.
+        let three = try XCTUnwrap(JSONSerialization.jsonObject(with: ThreeObjectJSON.data(fromGLB: glb)) as? [String: Any])
+        let threeMaterial = try XCTUnwrap((three["materials"] as? [[String: Any]])?.first { $0["normalMap"] != nil })
+        XCTAssertEqual(GLTFReader.numbers(threeMaterial["normalScale"]), [1, -1])
         let attributes = try XCTUnwrap(((json["meshes"] as? [[String: Any]])?.first?["primitives"] as? [[String: Any]])?.first?["attributes"]
             as? [String: Int])
         XCTAssertNotNil(attributes["TANGENT"], "a normal map needs tangents")
