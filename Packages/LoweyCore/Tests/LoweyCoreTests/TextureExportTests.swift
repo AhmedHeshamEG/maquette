@@ -182,10 +182,16 @@ final class TextureExportTests: XCTestCase {
         }
         XCTAssertGreaterThan(total, source.triangleCount / 2)
         XCTAssertGreaterThanOrEqual(Double(close) / Double(max(total, 1)), 0.9, "\(close) of \(total) points kept their colour")
-        // The normal map: the same bumps in the new surface's frames (each texel back in the object's space agrees).
+        try assertNormalsCameAcross(material: material, json: json, binary: binary, paint: paint, files: made.files, source: source, surface: surface)
+    }
+
+    /// The normal map: the same bumps in the new surface's frames (each texel back in the object's space agrees).
+    private func assertNormalsCameAcross(material: [String: Any], json: [String: Any], binary: Data, paint: ObjectPaint, files: [String: Data],
+                                         source: MeshData, surface: MeshData) throws {
+        let grid = TriangleGrid(surface, cell: 0.05)
         let normalIndex = try XCTUnwrap((material["normalTexture"] as? [String: Any])?["index"] as? Int)
         let exportedNormals = try image(normalIndex, json: json, binary: binary)
-        let normals = try PNGCodec.decode(XCTUnwrap(paint.normalMap.flatMap { made.files[$0] }))
+        let normals = try PNGCodec.decode(XCTUnwrap(paint.normalMap.flatMap { files[$0] }))
         let sourceFrames = NormalBake.triangleFrames(source), frames = NormalBake.triangleFrames(surface)
         func world(_ texel: RGBA, frame: (SIMD3<Float>, SIMD3<Float>), normal: SIMD3<Float>) -> SIMD3<Float> {
             let t = SIMD3<Float>(Float(texel.r), Float(texel.g), Float(texel.b)) * 2 - 1
