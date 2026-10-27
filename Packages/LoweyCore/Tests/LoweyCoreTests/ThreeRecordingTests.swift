@@ -24,6 +24,16 @@ final class ThreeRecordingTests: XCTestCase {
         }
         if case .mesh = byName["Ground"]?.kind {} else { XCTFail("the ground is an editable mesh") }
         XCTAssertTrue(objects.contains { $0.kind == .camera }, "the camera the page draws with came in")
+        if case let .color(.rgba(ground)) = byName["Ground"]?[.color] {
+            XCTAssertEqual(ground.r, Double(0x7C) / 255, accuracy: 0.01, "the ground's material colour")
+        } else {
+            XCTFail("the ground keeps its colour")
+        }
+        if case let .light(type) = byName["Sun"]?.kind {
+            XCTAssertEqual(type, .directional)
+        } else {
+            XCTFail("the sun is a light")
+        }
         let trees = try XCTUnwrap(objects.first { $0.motionDesign?.clones != nil }, "the instanced trees are one thing with clones")
         if case let .placed(places) = trees.motionDesign?.clones?.layout {
             XCTAssertEqual(places.count, 12)

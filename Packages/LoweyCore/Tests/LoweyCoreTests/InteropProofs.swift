@@ -11,6 +11,8 @@ enum InteropProofs {
 
     static let gltf = "glTF (.glb, .gltf)", folder = "three.js folder (Export ▸ 3D ▸ three.js)"
     static let threeJSON = "three.js JSON (`scene.toJSON()`, `ObjectLoader`)", usd = "USD / USDZ", obj = "OBJ / MTL"
+    static let page = "three.js project (a page, a folder or a zip, played in the sandbox)"
+    static let island = "ThreeRecordingTests.testTheIslandComesInAsEditableThings"
     static let roundTrip = "InteropTests.testGLTFRoundTripKeepsHierarchyMaterialsAndAnimation"
     static let pointers = "GLTFPointerTests.testEveryKeyedNumberComesBack"
     static let threeJSONTest = "ThreeProjectTests.testSceneJSONIsTheGLBInThreesOwnFormat"
@@ -77,7 +79,14 @@ enum InteropProofs {
         ),
         Proof(format: threeJSON, feature: "Keys on any property", direction: "In", claim: "carried", test: threeJSONBack),
         Proof(format: threeJSON, feature: "Cameras", direction: "In", claim: "carried", test: threeJSONBack),
-        Proof(format: threeJSON, feature: "Lights", direction: "In", claim: "carried", test: threeJSONBack)
+        Proof(format: threeJSON, feature: "Lights", direction: "In", claim: "carried", test: threeJSONBack),
+        Proof(format: page, feature: "Meshes and hierarchy", direction: "In", claim: "carried", test: island),
+        Proof(format: page, feature: "Materials", direction: "In", claim: "carried", test: island),
+        Proof(format: page, feature: "Keys on any property", direction: "In", claim: "baked", test: "ThreeRecordingTests.testTheMotionBecomesKeys"),
+        Proof(format: page, feature: "Clones and links", direction: "In", claim: "carried", test: island),
+        Proof(format: page, feature: "Cameras", direction: "In", claim: "carried", test: island),
+        Proof(format: page, feature: "Lights", direction: "In", claim: "carried", test: island),
+        Proof(format: page, feature: "Web objects", direction: "In", claim: "carried", test: "ThreeRecordingTests.testTheShaderSeaStaysPlayingOnACard")
     ]
 
     static let otherProofs: [Proof] = [

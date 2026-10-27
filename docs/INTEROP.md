@@ -76,6 +76,23 @@ Not listed: todo
 
 Not listed: todo
 
+## three.js project (a page, a folder or a zip, played in the sandbox)
+
+Library ▸ Import, a drop or Files: the page plays offline on the piece's clock and Maquette's recorder takes its scene
+and 10 s of its motion (D-591). Out, a project is the three.js folder above.
+
+| Feature | Out | In |
+|---|---|---|
+| Meshes and hierarchy | not offered — Export ▸ 3D ▸ three.js writes a project | carried |
+| Materials | not offered — as above | carried — standard and physical materials; a surface drawn by its own shader stays playing (Web objects) |
+| Keys on any property | not offered — as above | baked — the page's motion sampled 30 times a second for 10 s (place, turn, size, visibility, colours, glow, opacity, lights, the lens), keys only where the motion bends |
+| Clones and links | not offered — as above | carried — an instanced mesh as placed clones; instances that move on their own come in where they stood |
+| Cameras | not offered — as above | carried — the camera the page draws with, where it stood |
+| Lights | not offered — as above | carried |
+| Web objects | not offered — as above | carried — a shader surface keeps playing on a card in its place, showing only itself; a page with no three.js scene plays over the frame |
+
+Not listed: todo
+
 ## USD / USDZ
 
 | Feature | Out | In |
