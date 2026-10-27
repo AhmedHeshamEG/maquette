@@ -129,11 +129,17 @@ def shards(tests, count):
 def failed(log):
     """The tests whose last result in an xcodebuild log is a failure (nothing when none is found: rerun them all)."""
     last = {}
+    listed = []
     for line in pathlib.Path(log).read_text(encoding="utf-8", errors="replace").splitlines():
-        match = re.search(r"Test Case '-\[LoweyUITests\.(\w+) (\w+)\]' (passed|failed)", line)
+        match = re.search(r"Test Case '-\[LoweyUITests\.(\w+) (\w+)\]' (passed|failed|exceeded)", line)
         if match:
             last[f"{match.group(1)}/{match.group(2)}"] = match.group(3)
-    return [test for test, result in last.items() if result == "failed"]
+        # xcodebuild's own list at the end ("Failing tests:"), which also names a test that hung.
+        match = re.match(r"\s+(\w+)\.(test\w+)\(\)\s*$", line)
+        if match:
+            listed.append(f"{match.group(1)}/{match.group(2)}")
+    tests = [test for test, result in last.items() if result != "passed"]
+    return tests + [test for test in listed if test not in tests]
 
 
 def main():
