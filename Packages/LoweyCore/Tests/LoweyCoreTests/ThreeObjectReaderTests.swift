@@ -113,6 +113,51 @@ final class ThreeObjectReaderTests: XCTestCase {
     }
 
     /// A picture the file carries comes in as paint: a sign, red on its left, blue on its right.
+    /// A three.js normal map leans the same way after it comes in: green is up the picture when it was flipped (three's
+    /// default), and the other way when it wasn't (as GLTFLoader leaves it, with `normalScale.y` negative).
+    func testANormalMapLeansTheSameWayAfterItComesIn() throws {
+        for (flipY, lean, expectedY) in [(true, 1.0, Float(1)), (false, -1.0, Float(-1))] {
+            var picture = RGBAImage.clear(width: 4, height: 4)
+            for y in 0 ..< 4 {
+                for x in 0 ..< 4 {
+                    picture.setPixel(x, y, RGBA(0.5, 0.85, 0.85, 1))
+                }
+            }
+            let url = "data:image/png;base64," + PNGCodec.encode(picture).base64EncodedString()
+            let json = """
+            {"metadata":{"version":4.6,"type":"Object","generator":"Object3D.toJSON"},
+             "geometries":[{"uuid":"g","type":"BufferGeometry","data":{"attributes":{
+               "position":{"itemSize":3,"type":"Float32Array","array":[0,0,0, 2,0,0, 2,1,0, 0,1,0]},
+               "uv":{"itemSize":2,"type":"Float32Array","array":[0,0, 1,0, 1,1, 0,1]}},
+               "index":{"type":"Uint16Array","array":[0,1,2, 0,2,3]}}}],
+             "materials":[{"uuid":"m","type":"MeshStandardMaterial","color":16777215,"normalMap":"t","normalScale":[1,\(lean)]}],
+             "textures":[{"uuid":"t","image":"i","repeat":[1,1],"offset":[0,0],"center":[0,0],"rotation":0,"flipY":\(flipY)}],
+             "images":[{"uuid":"i","url":"\(url)"}],
+             "object":{"uuid":"s","type":"Scene","matrix":[1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1],"children":[
+               {"uuid":"o","type":"Mesh","name":"Wall","geometry":"g","material":"m","matrix":[1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1]}]}}
+            """
+            var ids = IDFactory.sequential("n")
+            let result = try ThreeObjectReader.read(Data(json.utf8), ids: &ids)
+            let made = result.scene.paints(in: result.scene.fragment, size: 64)
+            guard case let .setPaint(_, paint?) = made.commands.first else { return XCTFail("no paint") }
+            let normals = try PNGCodec.decode(XCTUnwrap(paint.normalMap.flatMap { made.files[$0] }))
+            let surface = try PaintUnwrap(data: XCTUnwrap(made.files[paint.surface.unwrap])).surfaceMesh
+            let frames = NormalBake.triangleFrames(surface)
+            let grid = TriangleGrid(surface, cell: 0.2)
+            let hit = try XCTUnwrap(grid.closest(to: SIMD3<Float>(1, 0.5, 0), within: 0.2, hint: nil))
+            let corners = (0 ..< 3).map { surface.uvs[Int(surface.indices[hit.triangle * 3 + $0])] }
+            let uv = corners[0] * hit.weights.x + corners[1] * hit.weights.y + corners[2] * hit.weights.z
+            let texel = normals.sample(u: Double(uv.x), v: Double(uv.y))
+            let t = SIMD3<Float>(Float(texel.r), Float(texel.g), Float(texel.b)) * 2 - 1
+            let facing = SIMD3<Float>(0, 0, 1)
+            let (tangent, bitangent) = NormalBake.orthonormal(frames[hit.triangle], normal: facing)
+            let detail = normalize3(tangent * t.x + bitangent * t.y + facing * t.z, fallback: facing)
+            XCTAssertEqual(detail.y.sign, expectedY.sign, "flipY \(flipY): the bumps lean \(detail)")
+            XCTAssertGreaterThan(abs(detail.y), 0.4)
+            XCTAssertLessThan(abs(detail.x), 0.2)
+        }
+    }
+
     func testAPictureInTheFileComesInAsPaint() throws {
         var picture = RGBAImage.clear(width: 4, height: 4)
         for y in 0 ..< 4 {

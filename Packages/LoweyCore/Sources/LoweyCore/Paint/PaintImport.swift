@@ -24,7 +24,7 @@ public enum PaintImport {
             }
         }
         if let normal = pictures.normal.flatMap({ images[$0] }), let paintMesh = prepared.unwrap.mesh(over: mesh) {
-            let png = encode(normals(normal, source: source, paintMesh: paintMesh, size: size))
+            let png = encode(normals(normal, source: source, paintMesh: paintMesh, size: size, lean: pictures.normalScale))
             let name = PaintFiles.tileName(for: png)
             files[name] = png
             paint.normalMap = name
@@ -70,10 +70,12 @@ public enum PaintImport {
 
     /// A normal map on the model's own surface, each texel turned into the new surface's tangent frame (glTF's: x along u,
     /// y up the picture, z out), so the same bumps catch the light.
-    static func normals(_ image: RGBAImage, source: MeshData, paintMesh: MeshData, size: Int) -> RGBAImage {
+    static func normals(_ image: RGBAImage, source: MeshData, paintMesh: MeshData, size: Int, lean: SIMD2<Float> = SIMD2(1, 1)) -> RGBAImage {
         var result = RGBAImage(width: size, height: size, color: RGBA(0.5, 0.5, 1, 1))
         var covered = [UInt8](repeating: 0, count: size * size)
-        guard let bounds = source.bounds, source.normals.count == source.positions.count else { return result }
+        guard let bounds = source.bounds else { return result }
+        // A surface without its own normals (three.js geometry often has none) leans from each face's.
+        let sourceNormals = source.normals.count == source.positions.count
         let grid = TriangleGrid(source, cell: Float(max(bounds.size.length * 0.02, 1e-4)))
         let sourceFrames = NormalBake.triangleFrames(source), frames = NormalBake.triangleFrames(paintMesh)
         let hasNormals = paintMesh.normals.count == paintMesh.positions.count
@@ -91,10 +93,10 @@ public enum PaintImport {
                 hint = hit.triangle
                 let s = (0 ..< 3).map { Int(source.indices[hit.triangle * 3 + $0]) }
                 let uv = source.uvs[s[0]] * hit.weights.x + source.uvs[s[1]] * hit.weights.y + source.uvs[s[2]] * hit.weights.z
-                let own = normalize3(source.normals[s[0]] * hit.weights.x + source.normals[s[1]] * hit.weights.y + source.normals[s[2]] * hit.weights.z,
-                                     fallback: normal)
+                let own = sourceNormals ? normalize3(source.normals[s[0]] * hit.weights.x + source.normals[s[1]] * hit.weights.y
+                    + source.normals[s[2]] * hit.weights.z, fallback: normal) : faceNormal(source, hit.triangle, fallback: normal)
                 let texel = image.sample(u: Double(uv.x), v: Double(uv.y))
-                let t = SIMD3<Float>(Float(texel.r), Float(texel.g), Float(texel.b)) * 2 - 1
+                let t = leaning(texel, by: lean)
                 let (tangent, bitangent) = NormalBake.orthonormal(sourceFrames[hit.triangle], normal: own)
                 let detail = normalize3(tangent * t.x + bitangent * t.y + own * t.z, fallback: own)
                 let (newTangent, newBitangent) = NormalBake.orthonormal(frames[face], normal: normal)
@@ -105,6 +107,18 @@ public enum PaintImport {
         }
         PaintRaster.dilate(&result, coverage: covered)
         return result
+    }
+
+    /// A triangle's own facing.
+    static func faceNormal(_ mesh: MeshData, _ face: Int, fallback: SIMD3<Float>) -> SIMD3<Float> {
+        let p = (0 ..< 3).map { mesh.positions[Int(mesh.indices[face * 3 + $0])] }
+        return normalize3(cross3(p[1] - p[0], p[2] - p[0]), fallback: fallback)
+    }
+
+    /// A normal picture's texel as a tangent-space direction, its red and green leaned by `scale`.
+    static func leaning(_ texel: RGBA, by scale: SIMD2<Float>) -> SIMD3<Float> {
+        let t = SIMD3<Float>(Float(texel.r), Float(texel.g), Float(texel.b)) * 2 - 1
+        return SIMD3<Float>(t.x * scale.x, t.y * scale.y, t.z)
     }
 
     /// An sRGB value times a linear factor, back in sRGB.

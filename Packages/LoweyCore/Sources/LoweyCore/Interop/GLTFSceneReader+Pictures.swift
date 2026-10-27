@@ -15,6 +15,9 @@ public struct GLTFPictures: Sendable {
     public var emissiveFactor: [Double]
     public var roughness: Double
     public var metallic: Double
+    /// How strongly, and which way, the normal picture's red and green lean (glTF's `scale`; three.js's `normalScale`,
+    /// turned to glTF's way up).
+    public var normalScale = SIMD2<Float>(1, 1)
 
     /// The images it needs, by image index.
     public var images: Set<Int> {
@@ -37,9 +40,10 @@ extension GLTFSceneReader.Builder {
         if let transform = infos.lazy.compactMap({ ($0?["extensions"] as? [String: Any])?["KHR_texture_transform"] as? [String: Any] }).first {
             moved.uvs = moved.uvs.map { Self.transformed($0, by: transform) }
         }
+        let strength = Float(infos[3]?["scale"] as? Double ?? 1)
         return GLTFPictures(source: moved, color: images[0], metallicRoughness: images[1], emissive: images[2], normal: images[3], baseFactor: factors.base,
                             emissiveFactor: GLTFReader.numbers(json["emissiveFactor"]) ?? [0, 0, 0], roughness: factors.roughness,
-                            metallic: factors.metallic)
+                            metallic: factors.metallic, normalScale: SIMD2(strength, strength))
     }
 
     /// `KHR_texture_transform`: scale, then rotate, then offset (the extension's T · R · S).
