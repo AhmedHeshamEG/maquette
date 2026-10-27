@@ -7,8 +7,9 @@
 #   LoweyFeatures / App / UI tests   → + feature tests, app build and UI smoke tests
 #   main (every merge)               → everything, so a tagged commit always passed the UI tests
 #
-# The app job runs beside the Engine and Feature jobs (it builds the same sources itself), so the slowest path is
-# one simulator job, not three in a row. `CI result` is the single required check: branch protection and auto-merge
+# The app job runs beside the Engine and Feature jobs (it builds the same sources itself) and builds once for
+# testing; four UI shards then run a quarter of the suite each, balanced by Tools/ui-shards.py (a draft pull request
+# runs only the areas it changed). Every pull request also gets an installable Maquette.ipa. `CI result` is the single required check: branch protection and auto-merge
 # wait on it, and it is green when everything that had to run passed (skipped jobs are fine).
 name: CI
 
@@ -80,6 +81,7 @@ jobs:
               - 'Config/**'
               - 'Tools/check-feature-boundaries.py'
               - 'Tools/pick-simulator.py'
+              - 'Tools/ui-shards.py'
               - '.github/workflows/ci.yml'
             tools:
               - 'Tools/**'
@@ -474,12 +476,11 @@ jobs:
           retention-days: 7
 
   app:
-    name: iPad app build + UI smoke tests
+    name: iPad app build (for the UI tests)
     needs: [changes, lint]
     if: needs.changes.outputs.features == 'true'
     runs-on: xcode-27
-    # One attempt of the suite takes about an hour since 0.24; the second attempt has to fit too.
-    timeout-minutes: 180
+    timeout-minutes: 60
     steps:
       - uses: actions/checkout@v4
       - uses: actions/cache@v4
@@ -493,40 +494,103 @@ jobs:
           xcodebuild -downloadComponent MetalToolchain
       - name: Generate project
         run: xcodegen generate
+      # Built once for every simulator; the UI test shards run it without building.
+      - name: Build for testing
+        run: |
+          set -o pipefail
+          xcodebuild build-for-testing -project Lowey.xcodeproj -scheme Lowey -destination "generic/platform=iOS Simulator" \
+            -derivedDataPath DerivedData -skipPackagePluginValidation CODE_SIGNING_ALLOWED=NO \
+            | tee xcodebuild.log | grep -E "error:|warning: |\*\* " || true
+          grep -q "\*\* TEST BUILD SUCCEEDED \*\*" xcodebuild.log
+      - name: Pack the build
+        run: tar -cf ui-build.tar -C DerivedData Build/Products
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ui-build
+          path: ui-build.tar
+          retention-days: 1
+          compression-level: 1
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: xcodebuild-log
+          path: xcodebuild.log
+          retention-days: 7
+
+  ui:
+    name: UI smoke tests (${{ matrix.shard }} of 4)
+    needs: app
+    runs-on: xcode-27
+    # A shard is about a quarter of the suite (~16 min); the second attempt has to fit too.
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2, 3, 4]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: ui-build
+      - name: Unpack the build
+        run: mkdir -p DerivedData && tar -xf ui-build.tar -C DerivedData
+      # A draft pull request runs only the tests of the areas it changed (Tools/ui-shards.py); ready, main and a
+      # manual run run everything.
+      - name: Pick this shard's tests
+        id: tests
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if [[ "${{ github.event_name }}" == "pull_request" && "${{ github.event.pull_request.draft }}" == "true" ]]; then
+            gh api "repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/files" --paginate \
+              --jq '.[].filename' > changed.txt
+            ARGS=$(python3 Tools/ui-shards.py --shards 4 --shard ${{ matrix.shard }} --changed changed.txt)
+          else
+            ARGS=$(python3 Tools/ui-shards.py --shards 4 --shard ${{ matrix.shard }})
+          fi
+          echo "args=$ARGS" >> "$GITHUB_OUTPUT"
       - name: Pick an iPad simulator
+        if: steps.tests.outputs.args != ''
         id: sim
         run: echo "udid=$(python3 Tools/pick-simulator.py)" >> "$GITHUB_OUTPUT"
       # The first test used to pay for a cold simulator: its first UI query could hang past the five-minute allowance,
       # which fails the whole first attempt (D-216).
       - name: Boot the simulator
+        if: steps.tests.outputs.args != ''
         run: |
           xcrun simctl boot "${{ steps.sim.outputs.udid }}" || true
           xcrun simctl bootstatus "${{ steps.sim.outputs.udid }}" -b
-      - name: Build and run the UI smoke tests
+      - name: Run the UI smoke tests
+        if: steps.tests.outputs.args != ''
         run: |
           set -o pipefail
+          XCTESTRUN=$(find DerivedData/Build/Products -maxdepth 1 -name "*.xctestrun" | head -1)
           # Each test gets up to three tries and the run a second attempt: the simulator now and then fails to
-          # terminate the app or stops answering a UI query (R33).
+          # terminate the app or stops answering a UI query (R33). The second attempt runs only what failed.
+          ARGS="${{ steps.tests.outputs.args }}"
           for attempt in 1 2; do
             rm -rf TestResults.xcresult
-            xcodebuild test -project Lowey.xcodeproj -scheme Lowey -destination "id=${{ steps.sim.outputs.udid }}" \
-              -derivedDataPath DerivedData -resultBundlePath TestResults.xcresult -skipPackagePluginValidation \
-              -collect-test-diagnostics never -test-timeouts-enabled YES -default-test-execution-time-allowance 300 -retry-tests-on-failure -test-iterations 3 \
-              CODE_SIGNING_ALLOWED=NO | tee xcodebuild.log | grep -E "error:|warning: |Test Case|Executed|\*\* " || true
-            grep -q "\*\* TEST SUCCEEDED \*\*" xcodebuild.log && exit 0
+            xcodebuild test-without-building -xctestrun "$XCTESTRUN" -destination "id=${{ steps.sim.outputs.udid }}" \
+              -resultBundlePath TestResults.xcresult -collect-test-diagnostics never -test-timeouts-enabled YES \
+              -default-test-execution-time-allowance 300 -retry-tests-on-failure -test-iterations 3 \
+              $ARGS | tee xcodebuild.log | grep -E "error:|warning: |Test Case|Executed|\*\* " || true
+            grep -q "\*\* TEST EXECUTE SUCCEEDED \*\*\|\*\* TEST SUCCEEDED \*\*" xcodebuild.log && exit 0
             echo "::warning::UI smoke tests failed on attempt $attempt"
+            FAILED=$(python3 Tools/ui-shards.py --failed xcodebuild.log)
+            [ -n "$FAILED" ] && ARGS="$FAILED"
           done
           exit 1
       - name: iPhone 6.9" App Store screenshot (the face companion)
-        if: success() && github.event_name != 'pull_request'
+        if: success() && github.event_name != 'pull_request' && matrix.shard == 1
         run: |
           set -o pipefail
           PHONE=$(python3 Tools/pick-simulator.py --iphone)
-          xcodebuild test -project Lowey.xcodeproj -scheme Lowey -destination "id=$PHONE" -derivedDataPath DerivedData \
-            -resultBundlePath PhoneScreenshots.xcresult -skipPackagePluginValidation -only-testing:LoweyUITests/ScreenshotTests/testIPhoneCompanion \
-            CODE_SIGNING_ALLOWED=NO | grep -E "error:|Test Case|\*\* " || true
+          XCTESTRUN=$(find DerivedData/Build/Products -maxdepth 1 -name "*.xctestrun" | head -1)
+          xcodebuild test-without-building -xctestrun "$XCTESTRUN" -destination "id=$PHONE" \
+            -resultBundlePath PhoneScreenshots.xcresult -only-testing:LoweyUITests/ScreenshotTests/testIPhoneCompanion \
+            | grep -E "error:|Test Case|\*\* " || true
       - name: Export screenshots
-        if: always()
+        if: always() && steps.tests.outputs.args != ''
         run: |
           mkdir -p attachments app-store
           xcrun xcresulttool export attachments --path TestResults.xcresult --output-path attachments || true
@@ -544,28 +608,83 @@ jobs:
           PY
           ls app-store || true
       - uses: actions/upload-artifact@v4
-        if: always()
+        if: always() && steps.tests.outputs.args != ''
         with:
-          name: app-store-screenshots
+          name: app-store-screenshots-${{ matrix.shard }}
           path: app-store
           retention-days: 30
+          if-no-files-found: ignore
       - uses: actions/upload-artifact@v4
-        if: always()
+        if: always() && steps.tests.outputs.args != ''
         with:
-          name: screenshots
+          name: screenshots-${{ matrix.shard }}
           path: attachments
           retention-days: 14
       - uses: actions/upload-artifact@v4
         if: failure()
         with:
-          name: xcodebuild-log
+          name: xcodebuild-log-${{ matrix.shard }}
           path: xcodebuild.log
           retention-days: 7
+
+  # An installable build of every pull request, to sideload a phase before it's merged and tagged. Main's comes
+  # from the Release workflow.
+  ipa:
+    name: Maquette.ipa for this pull request
+    # After the UI tests, so it never takes a Mac from them; `CI result` doesn't wait for it.
+    needs: [changes, ui]
+    if: github.event_name == 'pull_request' && needs.changes.outputs.features == 'true'
+    runs-on: xcode-27
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install XcodeGen and the Metal toolchain
+        run: |
+          brew install xcodegen
+          xcodebuild -downloadComponent MetalToolchain
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/Library/Caches/org.swift.swiftpm
+            build/SourcePackages
+          key: spm-release-${{ hashFiles('project.yml', 'Packages/*/Package.swift') }}
+      - name: Generate project
+        run: xcodegen generate
+      - name: Unsigned device build
+        run: |
+          set -o pipefail
+          xcodebuild build -project Lowey.xcodeproj -scheme Lowey -configuration Release \
+            -sdk iphoneos -destination 'generic/platform=iOS' -derivedDataPath build -skipPackagePluginValidation \
+            CURRENT_PROJECT_VERSION=${{ github.run_number }} \
+            CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY="" \
+            | tee build.log | grep -E "error:|\*\* BUILD" || true
+          grep -q "\*\* BUILD SUCCEEDED \*\*" build.log
+      - name: Ad-hoc codesign and package
+        run: |
+          set -euo pipefail
+          APP=build/Build/Products/Release-iphoneos/Lowey.app
+          test -d "$APP"
+          # Inside out, as in the Release workflow (Sideloadly needs signatures to replace).
+          find "$APP/Frameworks" -maxdepth 1 \( -name "*.framework" -o -name "*.dylib" \) -exec codesign --force --sign - --timestamp=none {} \; 2>/dev/null || true
+          find "$APP/PlugIns" -maxdepth 1 -name "*.appex" -exec codesign --force --sign - --timestamp=none {} \; 2>/dev/null || true
+          codesign --force --sign - --timestamp=none "$APP"
+          codesign --verify --deep --verbose=2 "$APP"
+          mkdir -p Payload
+          cp -R "$APP" Payload/
+          zip -qry Maquette.ipa Payload
+          ls -lh Maquette.ipa
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Maquette-pr${{ github.event.pull_request.number }}-${{ github.run_number }}
+          path: Maquette.ipa
+          retention-days: 14
 
   appstore:
     name: App Store build (held features held back)
     needs: [changes, lint]
-    if: needs.changes.outputs.features == 'true'
+    # Off until the launch phase: nothing has been held since 0.28, so this walk repeated the app job on a Mac of
+    # its own. Turned back on for the App Store build.
+    if: false
     runs-on: xcode-27
     timeout-minutes: 120
     steps:
@@ -626,7 +745,7 @@ jobs:
 
   result:
     name: CI result
-    needs: [changes, lint, core-tests, interop, godot, look-shader, tools, engine, features, app, appstore]
+    needs: [changes, lint, core-tests, interop, godot, look-shader, tools, engine, features, app, ui, appstore]
     if: always()
     runs-on: ubuntu-latest
     steps:
