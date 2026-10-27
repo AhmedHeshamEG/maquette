@@ -74,6 +74,58 @@ final class ThreeObjectReaderTests: XCTestCase {
         XCTAssertEqual(label, "Import")
     }
 
+    /// A picture the file carries comes in as paint: a sign, red on its left, blue on its right.
+    func testAPictureInTheFileComesInAsPaint() throws {
+        var picture = RGBAImage.clear(width: 4, height: 4)
+        for y in 0 ..< 4 {
+            for x in 0 ..< 4 {
+                picture.setPixel(x, y, x < 2 ? RGBA(1, 0, 0, 1) : RGBA(0, 0, 1, 1))
+            }
+        }
+        let url = "data:image/png;base64," + PNGCodec.encode(picture).base64EncodedString()
+        let json = """
+        {"metadata":{"version":4.6,"type":"Object","generator":"Object3D.toJSON"},
+         "geometries":[{"uuid":"g","type":"BufferGeometry","data":{"attributes":{
+           "position":{"itemSize":3,"type":"Float32Array","array":[0,0,0, 2,0,0, 2,1,0, 0,1,0]},
+           "uv":{"itemSize":2,"type":"Float32Array","array":[0,0, 1,0, 1,1, 0,1]}},
+           "index":{"type":"Uint16Array","array":[0,1,2, 0,2,3]}}}],
+         "materials":[{"uuid":"m","type":"MeshStandardMaterial","color":16777215,"roughness":0.5,"metalness":0,"map":"t"}],
+         "textures":[{"uuid":"t","image":"i","repeat":[1,1],"offset":[0,0],"center":[0,0],"rotation":0,"flipY":true}],
+         "images":[{"uuid":"i","url":"\(url)"}],
+         "object":{"uuid":"s","type":"Scene","matrix":[1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1],"children":[
+           {"uuid":"o","type":"Mesh","name":"Sign","geometry":"g","material":"m","matrix":[1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1]}]}}
+        """
+        var ids = IDFactory.sequential("p")
+        let result = try ThreeObjectReader.read(Data(json.utf8), ids: &ids)
+        XCTAssertFalse(result.notes.contains { $0.hasPrefix("Pictures") }, result.notes.joined(separator: " "))
+        let sign = try XCTUnwrap(result.scene.fragment.objects.first { $0.name == "Sign" })
+        XCTAssertNotNil(result.scene.pictures[sign.id])
+        let made = result.scene.paints(in: result.scene.fragment, size: 256)
+        guard case let .setPaint(_, paint?) = made.commands.first else { return XCTFail("no paint") }
+        let model = paint.layers[0]
+        XCTAssertEqual(model.name, "Model")
+        // Where the sign's left and right ends lie on the new surface, and their colours there.
+        let surface = try PaintUnwrap(data: XCTUnwrap(made.files[paint.surface.unwrap])).surfaceMesh
+        func colour(at point: SIMD3<Float>) throws -> RGBA {
+            let grid = TriangleGrid(surface, cell: 0.2)
+            let hit = try XCTUnwrap(grid.closest(to: point, within: 0.2, hint: nil))
+            let corners = (0 ..< 3).map { surface.uvs[Int(surface.indices[hit.triangle * 3 + $0])] }
+            let uv = corners[0] * hit.weights.x + corners[1] * hit.weights.y + corners[2] * hit.weights.z
+            let x = min(Int(uv.x * 256), 255), y = min(Int(uv.y * 256), 255)
+            let name = try XCTUnwrap(model[.color, PaintTileIndex(column: 0, row: 0)])
+            return try PNGCodec.decode(XCTUnwrap(made.files[name])).pixel(x, y)
+        }
+        let left = try colour(at: SIMD3<Float>(0.3, 0.5, 0)), right = try colour(at: SIMD3<Float>(1.7, 0.5, 0))
+        XCTAssertGreaterThan(left.r, 0.9)
+        XCTAssertLessThan(left.b, 0.1)
+        XCTAssertGreaterThan(right.b, 0.9)
+        XCTAssertLessThan(right.r, 0.1)
+        // three.js's uv transform: repeat about the centre, then the flip.
+        let moved = ThreeReaderBuilder.placed(SIMD2<Float>(0.25, 0.25), by: ["repeat": [2.0, 2.0], "center": [0.5, 0.5], "offset": [0.1, 0.0]])
+        XCTAssertEqual(moved.x, 0.1, accuracy: 1e-6)
+        XCTAssertEqual(moved.y, 1, accuracy: 1e-6)
+    }
+
     /// What `scene.toJSON()` writes for a small island an agent made: parametric geometries, toon and shader materials,
     /// an instanced forest, lights three.js has and Maquette doesn't, and a spinning clip.
     static let island = """

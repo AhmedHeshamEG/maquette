@@ -53,8 +53,8 @@ extension ThreeReaderBuilder {
         return data
     }
 
-    /// `BufferGeometry`'s positions and index (no index: every three corners a triangle).
-    func buffer(_ data: [String: Any]) -> MeshData? {
+    /// `BufferGeometry`'s positions and index (no index: every three corners a triangle), and its uvs when asked.
+    func buffer(_ data: [String: Any], uvs: Bool = false) -> MeshData? {
         let attributes = data["attributes"] as? [String: Any] ?? [:]
         guard let position = attributes["position"] as? [String: Any], let values = GLTFReader.numbers(position["array"]) else { return nil }
         let size = position["itemSize"] as? Int ?? 3
@@ -63,7 +63,12 @@ extension ThreeReaderBuilder {
         let positions = (0 ..< count).map { SIMD3<Float>(Float(values[$0 * size]), Float(values[$0 * size + 1]), Float(values[$0 * size + 2])) }
         let indices = GLTFReader.numbers((data["index"] as? [String: Any])?["array"]).map { $0.map { UInt32(max($0, 0)) } }
             ?? (0 ..< UInt32(count - count % 3)).map { $0 }
-        return MeshData(positions: positions, indices: indices.filter { Int($0) < count })
+        var mesh = MeshData(positions: positions, indices: indices.filter { Int($0) < count })
+        if uvs, let uv = attributes["uv"] as? [String: Any], let values = GLTFReader.numbers(uv["array"]), (uv["itemSize"] as? Int ?? 2) == 2,
+           values.count >= count * 2 {
+            mesh.uvs = (0 ..< count).map { SIMD2<Float>(Float(values[$0 * 2]), Float(values[$0 * 2 + 1])) }
+        }
+        return mesh
     }
 
     /// A three.js material as colour, roughness, metal, glow and see-through.
@@ -75,9 +80,6 @@ extension ThreeReaderBuilder {
         }
         if ["ShaderMaterial", "RawShaderMaterial"].contains(type) {
             notes.insert("Custom shaders: a file can't carry their code, so those surfaces came in plain (bring the project folder in to keep them).")
-        }
-        if material["map"] != nil || material["normalMap"] != nil {
-            notes.insert("Pictures on surfaces: not read from three.js's JSON yet; the surfaces kept their colours.")
         }
         object[.color] = .color(.rgba(Self.colour(material["color"] as? Int ?? 0xFFFFFF)))
         if let roughness = material["roughness"] as? Double { object[.roughness] = .float(roughness) }

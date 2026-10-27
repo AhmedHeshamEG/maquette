@@ -3666,3 +3666,9 @@ closest point (cut finer at the bones first, as drawing a rig does, since faces 
 and each joint's turns become `bone.` keys. The joint nodes aren't things. A joint's moves and sizes are left out:
 Maquette's bones keep their length, and only a turn is a pose. *Rejected:* computing new weights by bone heat (the
 artist's weights are the work), keeping the file's own vertices (modelling rebuilds them).
+
+**D-588 — three.js's pictures come in too.** A three.js scene file's `map`, `roughnessMap` / `metalnessMap` and
+`emissiveMap` come in as paint the way a glTF's do (D-584), when the file carries the image (as `toJSON` does, a data
+URL) on a buffer geometry's own uvs. The uvs move as three.js moves them (repeat and rotation about the centre, then
+the offset) and flip for a picture uploaded upside down (`flipY`, three.js's default). three.js's own shapes (a box, a
+sphere) have uvs Maquette doesn't make the same way, so their pictures are said in the line instead.

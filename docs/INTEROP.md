@@ -67,6 +67,7 @@ Not listed: todo
 |---|---|---|
 | Meshes and hierarchy | carried | carried |
 | Materials | carried | carried |
+| Paint layers and maps | todo | baked — pictures the file carries (colour, roughness and metal, glow) become a first layer, Model, as glTF's do |
 | Clones and links | todo | carried |
 | Keys on any property | carried | carried |
 | Cameras | carried | carried |

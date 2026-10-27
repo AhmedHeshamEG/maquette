@@ -1,6 +1,7 @@
 import Foundation
 import HmmDesign
 import LoweyCore
+import LoweyEngine
 
 /// Bringing work in from other tools (X1): it comes in first and says afterwards, in a line, what changed on the way.
 extension EditorModel {
@@ -18,20 +19,49 @@ extension EditorModel {
         defer { operations.ids = ids }
         do {
             let result = try ThreeObjectReader.read(Data(contentsOf: url), ids: &ids)
-            guard perform(ModelingOperations.importScene(result.scene, in: baseScene)) else { return false }
-            let count = result.scene.fragment.objects.count
-            // One line: what came, then what changed on the way.
-            let notes = result.notes.joined(separator: " ")
-            if notes.isEmpty {
-                app.show("Brought in \(count) things from three.js")
-            } else {
-                app.show("Brought in \(count) things from three.js. \(notes)")
+            guard result.scene.pictures.isEmpty else {
+                bringInPainted(result)
+                return true
             }
-            HmmHaptics.play(.commit)
+            guard perform(ModelingOperations.importScene(result.scene, in: baseScene)) else { return false }
+            broughtIn(result)
             return true
         } catch {
             app.show(String.LocalizationValue(String(describing: error)), kind: .error)
             return false
+        }
+    }
+
+    /// One line: what came, then what changed on the way.
+    private func broughtIn(_ result: ThreeObjectReader.Result) {
+        let count = result.scene.fragment.objects.count
+        let notes = result.notes.joined(separator: " ")
+        if notes.isEmpty {
+            app.show("Brought in \(count) things from three.js")
+        } else {
+            app.show("Brought in \(count) things from three.js. \(notes)")
+        }
+        HmmHaptics.play(.commit)
+    }
+
+    /// A scene whose surfaces carry pictures: they're laid on as paint in the background, then everything arrives as
+    /// one step.
+    private func bringInPainted(_ result: ThreeObjectReader.Result) {
+        let folder = assetsFolder
+        Task {
+            let scene = result.scene
+            let made = await Task.detached(priority: .userInitiated) {
+                scene.paints(in: scene.fragment, decode: { AssetPaint.decode($0.data) }, encode: PaintPixels.png)
+            }.value
+            do {
+                try await Self.write(made.files, to: folder)
+            } catch {
+                app.show("Couldn't save the painting's files: \(error.localizedDescription)", kind: .error)
+                return
+            }
+            guard case let .batch(name, commands) = ModelingOperations.importScene(scene, in: baseScene),
+                  perform(.batch(name, commands + made.commands)) else { return }
+            broughtIn(result)
         }
     }
 }

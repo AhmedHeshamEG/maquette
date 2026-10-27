@@ -39,7 +39,9 @@ public enum ThreeObjectReader {
         guard !roots.isEmpty else { throw Failure.empty }
         guard builder.triangles <= GLTFSceneReader.triangleLimit else { throw GLTFSceneReader.Failure.tooBig(builder.triangles) }
         let (tracks, duration) = builder.tracks(ids: &ids)
-        let scene = GLTFSceneReader.Result(fragment: SceneFragment(objects: builder.objects, roots: roots), tracks: tracks, duration: duration)
+        var scene = GLTFSceneReader.Result(fragment: SceneFragment(objects: builder.objects, roots: roots), tracks: tracks, duration: duration)
+        scene.pictures = builder.pictures
+        scene.textures = builder.textures
         return Result(scene: scene, notes: builder.notes.sorted(), suggestsToon: builder.suggestsToon)
     }
 }
@@ -57,6 +59,10 @@ struct ThreeReaderBuilder {
     var notes = Set<String>()
     var suggestsToon = false
     var triangles = 0
+    /// Pictures carried in the file, laid on surfaces as paint (`PaintImport`).
+    var pictures: [ObjectID: GLTFPictures] = [:]
+    var textures: [ImportedTexture] = []
+    var imageIndex: [String: Int] = [:]
 
     init(json: [String: Any]) {
         self.json = json
@@ -146,7 +152,13 @@ struct ThreeReaderBuilder {
         case .mesh:
             let reference = source["material"]
             let uuid = (reference as? String) ?? (reference as? [String])?.first
-            if let uuid, let material = materials[uuid] { apply(material, to: &object) }
+            if let uuid, let material = materials[uuid] {
+                apply(material, to: &object)
+                pictures[object.id] = pictures(material, geometry: source["geometry"] as? String)
+                if pictures[object.id] == nil, ["map", "normalMap", "roughnessMap", "emissiveMap"].contains(where: { material[$0] != nil }) {
+                    notes.insert("Pictures on surfaces: only pictures the file carries on its own triangles come in; the others kept their colours.")
+                }
+            }
         default:
             break
         }
