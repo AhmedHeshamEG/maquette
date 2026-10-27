@@ -3672,3 +3672,8 @@ artist's weights are the work), keeping the file's own vertices (modelling rebui
 URL) on a buffer geometry's own uvs. The uvs move as three.js moves them (repeat and rotation about the centre, then
 the offset) and flip for a picture uploaded upside down (`flipY`, three.js's default). three.js's own shapes (a box, a
 sphere) have uvs Maquette doesn't make the same way, so their pictures are said in the line instead.
+
+**D-589 — three.js skins come in as glTF's do.** A `SkinnedMesh` in a three.js scene file is rigged the same way (one
+`SkinImport` for both readers): its skeleton's bones in the bind pose (each bone's inverse seen from the mesh through
+its bind matrix), the geometry's `skinIndex` and `skinWeight` carried onto the surface, the bones' `quaternion` tracks
+as `bone.` keys, and the bones aren't things. A bone's other tracks are left out, as glTF's are (D-587).

@@ -8,6 +8,11 @@ extension ThreeReaderBuilder {
         var end = 0.0
         for clip in json["animations"] as? [[String: Any]] ?? [] {
             for track in clip["tracks"] as? [[String: Any]] ?? [] {
+                if let turns = boneTracks(track, ids: &ids) {
+                    result += turns
+                    end = max(end, turns.compactMap { $0.keyframes.last?.time }.max() ?? 0)
+                    continue
+                }
                 guard let made = self.track(track, ids: &ids) else { continue }
                 end = max(end, made.keyframes.last?.time ?? 0)
                 result.append(made)

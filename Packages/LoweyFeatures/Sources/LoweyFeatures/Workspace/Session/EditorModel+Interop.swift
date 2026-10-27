@@ -19,7 +19,7 @@ extension EditorModel {
         defer { operations.ids = ids }
         do {
             let result = try ThreeObjectReader.read(Data(contentsOf: url), ids: &ids)
-            guard result.scene.pictures.isEmpty else {
+            guard result.scene.pictures.isEmpty, result.scene.files.isEmpty else {
                 bringInPainted(result)
                 return true
             }
@@ -44,8 +44,8 @@ extension EditorModel {
         HmmHaptics.play(.commit)
     }
 
-    /// A scene whose surfaces carry pictures: they're laid on as paint in the background, then everything arrives as
-    /// one step.
+    /// A scene whose surfaces carry pictures or skins: the pictures are laid on as paint in the background, the skins'
+    /// files written, then everything arrives as one step.
     private func bringInPainted(_ result: ThreeObjectReader.Result) {
         let folder = assetsFolder
         Task {
@@ -54,7 +54,7 @@ extension EditorModel {
                 scene.paints(in: scene.fragment, decode: { AssetPaint.decode($0.data) }, encode: PaintPixels.png)
             }.value
             do {
-                try await Self.write(made.files, to: folder)
+                try await Self.write(made.files.merging(scene.files) { first, _ in first }, to: folder)
             } catch {
                 app.show("Couldn't save the painting's files: \(error.localizedDescription)", kind: .error)
                 return

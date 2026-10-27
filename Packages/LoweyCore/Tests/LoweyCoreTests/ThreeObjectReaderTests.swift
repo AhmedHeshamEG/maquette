@@ -74,6 +74,44 @@ final class ThreeObjectReaderTests: XCTestCase {
         XCTAssertEqual(label, "Import")
     }
 
+    /// A skinned arm comes in rigged: two bones in their bind places, the weights on the surface, the elbow's turn as
+    /// keys, and no bones as things.
+    func testASkinnedMeshComesInRigged() throws {
+        let json = """
+        {"metadata":{"version":4.6,"type":"Object","generator":"Object3D.toJSON"},
+         "geometries":[{"uuid":"g","type":"BufferGeometry","data":{"attributes":{
+           "position":{"itemSize":3,"type":"Float32Array","array":[0,0,0, 1,0,0, 2,0,0, 0,0.2,0, 1,0.2,0, 2,0.2,0]},
+           "skinIndex":{"itemSize":4,"type":"Uint16Array","array":[0,0,0,0, 0,1,0,0, 1,0,0,0, 0,0,0,0, 0,1,0,0, 1,0,0,0]},
+           "skinWeight":{"itemSize":4,"type":"Float32Array","array":[1,0,0,0, 0.5,0.5,0,0, 1,0,0,0, 1,0,0,0, 0.5,0.5,0,0, 1,0,0,0]}},
+           "index":{"type":"Uint16Array","array":[0,1,4, 0,4,3, 1,2,5, 1,5,4]}}}],
+         "materials":[{"uuid":"m","type":"MeshStandardMaterial","color":16777215}],
+         "skeletons":[{"uuid":"k","bones":["b1","b2"],"boneInverses":[[1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1],[1,0,0,0,0,1,0,0,0,0,1,0,-1,0,0,1]]}],
+         "object":{"uuid":"s","type":"Scene","matrix":[1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1],"animations":["c"],"children":[
+           {"uuid":"o","type":"SkinnedMesh","name":"Arm","geometry":"g","material":"m","skeleton":"k","bindMode":"attached",
+            "bindMatrix":[1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1],"matrix":[1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1],"children":[
+             {"uuid":"b1","type":"Bone","name":"Upper","matrix":[1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1],"children":[
+               {"uuid":"b2","type":"Bone","name":"Lower","matrix":[1,0,0,0,0,1,0,0,0,0,1,0,1,0,0,1]}]}]}]},
+         "animations":[{"uuid":"c","name":"wave","duration":1,"tracks":[
+           {"name":"Lower.quaternion","type":"quaternion","times":[0,1],"values":[0,0,0,1, 0,0,0.7071068,0.7071068]}]}]}
+        """
+        var ids = IDFactory.sequential("k")
+        let result = try ThreeObjectReader.read(Data(json.utf8), ids: &ids)
+        XCTAssertFalse(result.notes.contains { $0.hasPrefix("Skinned") }, result.notes.joined(separator: " "))
+        let objects = result.scene.fragment.objects
+        XCTAssertFalse(objects.contains { $0.name == "Upper" || $0.name == "Lower" }, "bones aren't things")
+        let arm = try XCTUnwrap(objects.first { $0.name == "Arm" })
+        let rig = try XCTUnwrap(arm.rig)
+        XCTAssertEqual(rig.skeleton.names, ["Upper", "Lower"])
+        XCTAssertEqual(rig.skeleton.modelRest[1].position.x, 1, accuracy: 1e-9)
+        let weights = try SkinWeights(data: XCTUnwrap(rig.skin.flatMap { result.scene.files[$0] }))
+        let surface = try XCTUnwrap(PaintSource.unshaped(of: arm))
+        let far = try XCTUnwrap(surface.positions.indices.max { surface.positions[$0].x < surface.positions[$1].x })
+        XCTAssertGreaterThan(weights.weight(of: 1, at: far), 0.9, "the hand's end follows the elbow")
+        let wave = try XCTUnwrap(result.scene.tracks.first { $0.property == .boneTurn("Lower") })
+        XCTAssertEqual(wave.target, arm.id)
+        XCTAssertEqual(wave.keyframes.count, 2)
+    }
+
     /// A picture the file carries comes in as paint: a sign, red on its left, blue on its right.
     func testAPictureInTheFileComesInAsPaint() throws {
         var picture = RGBAImage.clear(width: 4, height: 4)

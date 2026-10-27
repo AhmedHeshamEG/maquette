@@ -67,6 +67,7 @@ Not listed: todo
 |---|---|---|
 | Meshes and hierarchy | carried | carried |
 | Materials | carried | carried |
+| Rigs and skins | todo | carried — a skinned mesh's skeleton in its bind pose, its weights on the surface, its bones' turns as bone keys |
 | Paint layers and maps | todo | baked — pictures the file carries (colour, roughness and metal, glow) become a first layer, Model, as glTF's do |
 | Clones and links | todo | carried |
 | Keys on any property | carried | carried |

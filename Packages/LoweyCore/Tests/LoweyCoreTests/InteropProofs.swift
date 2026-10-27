@@ -65,6 +65,7 @@ enum InteropProofs {
         Proof(format: threeJSON, feature: "Lights", direction: "Out", claim: "carried", test: threeJSONTest),
         Proof(format: threeJSON, feature: "Meshes and hierarchy", direction: "In", claim: "carried", test: threeJSONBack),
         Proof(format: threeJSON, feature: "Materials", direction: "In", claim: "carried", test: threeJSONBack),
+        Proof(format: threeJSON, feature: "Rigs and skins", direction: "In", claim: "carried", test: "ThreeObjectReaderTests.testASkinnedMeshComesInRigged"),
         Proof(format: threeJSON, feature: "Paint layers and maps", direction: "In", claim: "baked",
               test: "ThreeObjectReaderTests.testAPictureInTheFileComesInAsPaint"),
         Proof(

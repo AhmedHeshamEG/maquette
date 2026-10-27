@@ -42,6 +42,7 @@ public enum ThreeObjectReader {
         var scene = GLTFSceneReader.Result(fragment: SceneFragment(objects: builder.objects, roots: roots), tracks: tracks, duration: duration)
         scene.pictures = builder.pictures
         scene.textures = builder.textures
+        scene.files = builder.files
         return Result(scene: scene, notes: builder.notes.sorted(), suggestsToon: builder.suggestsToon)
     }
 }
@@ -63,6 +64,11 @@ struct ThreeReaderBuilder {
     var pictures: [ObjectID: GLTFPictures] = [:]
     var textures: [ImportedTexture] = []
     var imageIndex: [String: Int] = [:]
+    /// Skins: the object tree (parents, bones, names), which rigged things each bone turns (by uuid and name), and the
+    /// `.skin` files they need.
+    let tree: (parents: [String: String], bones: Set<String>, names: [String: String])
+    var boneTargets: [String: [(object: ObjectID, joint: String)]] = [:]
+    var files: [String: Data] = [:]
 
     init(json: [String: Any]) {
         self.json = json
@@ -75,6 +81,7 @@ struct ThreeReaderBuilder {
         }
         if let root = json["object"] as? [String: Any] { collect(root) }
         lightTargets = targets
+        tree = Self.tree(json)
     }
 
     static func byUUID(_ list: Any?) -> [String: [String: Any]] {
@@ -98,6 +105,9 @@ struct ThreeReaderBuilder {
         }
         var object = SceneObject(id: id, name: name, kind: kind, parent: parent, transform: transform)
         dress(&object, type: type, source: source)
+        if type == "SkinnedMesh", !skin(&object, source: source) {
+            notes.insert("Skinned meshes: brought in at their bind pose; their skeleton wasn't in the file.")
+        }
         objectOf[uuid] = id
         if !threeName.isEmpty { named[threeName] = id }
         let slot = objects.count
@@ -113,8 +123,9 @@ struct ThreeReaderBuilder {
     /// What a three.js object becomes; nil (with a note) for what has no place here.
     mutating func kind(_ type: String, source: [String: Any]) -> ObjectKind? {
         switch type {
+        case "Bone":
+            return nil
         case "Mesh", "SkinnedMesh":
-            if type == "SkinnedMesh" { notes.insert("Skinned meshes: brought in at their bind pose; their bones aren't read yet.") }
             return mesh(source["geometry"] as? String).map { .mesh($0) } ?? .group
         case "InstancedMesh":
             return .group
