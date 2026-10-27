@@ -15,6 +15,11 @@ continues from 2.0 and numbers its phases again from 0.1 (each phase bumps the m
   the file for Maquette to read back.
 - **three.js scenes come in**: Library ▸ Import takes a three.js scene file (`scene.toJSON()`) into the scene as
   editable things, its lights and cameras as Maquette's, its clips as keys; a line says what couldn't come.
+- **three.js projects come in**: a page, a folder with one or a zip (Library ▸ Import, a drop, or Open in Maquette from
+  Files) plays offline, and its scene comes in as editable things with ten seconds of its motion as keys; a surface
+  drawn by its own shader (a water shader) keeps playing on a card in its place; a page with no three.js scene plays
+  over the frame. Pictures, skins and instanced meshes in a three.js scene file or a glTF come in as paint, rigs and
+  clones.
 - **`docs/INTEROP.md`**: every feature against every format, both ways, checked by CI against the tests that prove it.
 
 ## [0.28] — Maquette — AR, the web layer and the bridge (phase M12)

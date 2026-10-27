@@ -606,7 +606,11 @@ tool's bar at the bottom of the stage (pick modes, sketch shapes, Done, grow / s
   see-through and the Look's lacquer (clearcoat); keys it has no place for ride in its extras for Maquette.
   **three.js in**: Library ▸ Import takes a three.js scene file (`scene.toJSON()`) into the open scene as one step:
   meshes (buffer geometry, boxes, spheres, cylinders, cones, planes), materials, cameras, lights, an instanced mesh as
-  its copies, clips as keys; one toast line says what came and what couldn't (ambient light, points, shader code).
+  placed clones, pictures as paint, skinned meshes rigged, clips as keys; one toast line says what came and what
+  couldn't (ambient light, points). **A three.js project** (a page, a folder with one or a zip, from Library ▸ Import,
+  a drop or Files) plays offline in the web sandbox; a recorder hooked in before the page's code takes the scene it
+  draws (its camera too) and 10 s of its motion as keys where the motion bends; a shader surface keeps playing on a
+  card in its place, showing only itself; a page with no three.js scene plays over the frame (D-591 … D-594).
 
 ---
 

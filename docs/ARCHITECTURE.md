@@ -162,6 +162,9 @@ flowchart LR
     Kit[HmmWeb lib/three r170] --> TP
     TP --> Zip[&lt;name&gt; for the web.zip]
     GLB --> GR[GLTFSceneReader<br/>+Pointer: keys back, extras' tracks back]
+    Page[a three.js page · folder · zip] --> Player[HmmWebPlayer<br/>+ ThreeRecorder.hook]
+    Player -->|toJSON + sampled tracks| TR[ThreeRecording<br/>stand-in cards]
+    TR --> OR[ThreeObjectReader]
 ```
 
 - **Core `Interop/`**: `GLTFSceneWriter+Pointer` (keyed material, light and lens numbers as pointer channels; keys glTF
@@ -170,12 +173,17 @@ flowchart LR
   `ThreeObjectJSON` (+`Meshes`, +`Clips`: three.js's scene format from the GLB), `ThreeProject` (the folder, `scene.js`),
   `ThreeProject+Docs` (`ThreeContents`, `ThreeComponent`), `ThreeAgents`, `ThreeProjectScripts` (+`Modules`, +`Look`:
   the JavaScript, as strings), `ThreeObjectReader` (+`Geometry`, +`Clips`: three.js's JSON in as a
-  `GLTFSceneReader.Result`, so `ModelingOperations.importScene` brings it in; Features' `EditorModel+Interop`).
+  `GLTFSceneReader.Result`, so `ModelingOperations.importScene` brings it in; Features' `EditorModel+Interop`),
+  `ThreeRecorder` (the JavaScript that finds a running page's scene through `__THREE_DEVTOOLS__`, writes it with
+  `toJSON` and samples its motion; `solo` shows one shader surface straight on) and `ThreeRecording` (its output as a
+  reader result plus a card under each shader surface's group; Features' `EditorModel+ThreeProject` plays the page with
+  `HmmWebPlayer(piece:scripts:)` and `evaluate`, writes the `maquette-solo-n.html` copies, D-591 … D-594).
 - **Engine**: `ModelExportFormat.web` and `ModelExport+Web` (reads three.js from `HmmWebPage.libraryFolder`).
 - **CI**: the `threejs` job (Playwright's image) runs `Tools/check_threejs.mjs`: `structure` (three.js 0.170 in node
   reads both scene files; they agree with each other and with `expected.json`) and `render` (Chromium plays the folder;
   its picture must cover `expected-mask.pgm`, Maquette's own silhouette of the moment from `ThreeSilhouette`), then the
-  Khronos validator on the web GLB.
+  Khronos validator on the web GLB; and `Tools/record_threejs.mjs` plays the acceptance island in Chromium with the
+  sandbox's clock and the recorder (both written by `ThreeRecordingTests`), compared with the recording Core reads.
 
 ## Brushes (0.5)
 
@@ -935,10 +943,11 @@ flowchart LR
     Renderer --> Compose[one pass: camera YCbCr under the frame]
 ```
 
-- **Kit `HmmWeb`** (0.17.0): `HmmWebClock` (the script before the page's own: time stands still until stepped),
+- **Kit `HmmWeb`** (0.18.0): `HmmWebClock` (the script before the page's own: time stands still until stepped),
   `HmmWebPage` (policy, viewport, CDN → carried libraries, import map, the Lottie host), `HmmWebSchemeHandler`
   (`hmm-web://piece/…` and `…/lib/…`, nothing outside), `HmmWebPlayer` (one offscreen `WKWebView`, non-persistent, a rule
-  list blocking http(s) and sockets; forward steps, back reloads), `HmmWebFrames` (a player a piece, four live; `frame`
+  list blocking http(s) and sockets; forward steps, back reloads; scripts added before the page's and `evaluate` at a
+  frame, for the three.js recorder), `HmmWebFrames` (a player a piece, four live; `frame`
   waits, `frameNow` never does). three.js 0.170 and lottie-web 5.12 under `Sources/HmmWeb/Web/lib/`.
 - **Core**: `Text/WebPiece` (`WebPiece`, `WebFrameKey`, `Scene.webPiece`); `CardRecipe.web`, `OverlayRecipe.web`;
   `AI/ScriptCompiler+Web` (`web`: add, edit, list), `+App` (`AppAsk`, the `app` verb, riding in `ScriptResult.app`),

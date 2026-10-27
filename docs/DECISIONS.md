@@ -3683,3 +3683,34 @@ model's own surface, reads the normal there in the model's tangent frame (glTF's
 into the object's space and writes it in the new unwrap's frame, so the same bumps catch the same light; it becomes the
 paint's normals (as "Normals from" does). A three.js file's `normalMap` isn't read yet (its tangent convention depends on
 `normalScale`'s sign); the line says so.
+
+**D-591 — A three.js project comes in by playing it.** Library ▸ Import, a drop or Files takes a page, a folder with
+one or a zip: it's copied into `assets/`, plays offscreen in the web sandbox (no network, three.js from a CDN served from
+the kit's copy) on the piece's clock, and a recorder added before the page's own code finds its scene through the hook
+three.js calls for its devtools (`__THREE_DEVTOOLS__`: every `Scene` and `WebGLRenderer` announces itself, and each
+render says which scene and camera it draws). The scene it draws with the most in it is written with three.js's own
+`toJSON` at frame 0 and comes in as a scene file does (D-583 … D-589), the camera it draws with included; then 10 s of
+its motion is sampled 30 times a second (place, turn, size, visibility, material colours, glow and opacity, lights, the
+lens) and kept as keys only where the motion bends (a steady spin is a few dozen keys, a still thing none). It waits for
+the scene to stop growing first (models loaded on real time, four seconds at most). Nothing is asked; the length and
+the moment are the bridge's to change (step 7). Morph weights and instances that move on their own come in as they
+stood, said in the line. *Rejected:* patching the page's `three` (it may be bundled into its own code), asking for a
+length first (import never asks, step 6), keeping every sample (600 keys a channel nobody can edit).
+
+**D-592 — A shader surface keeps playing on a card in its place.** A mesh drawn by a `ShaderMaterial` can't become
+ours: its place stays as a group, and a card under it, lying across its box's two longest sides and facing along the
+thinnest (a sea plane lies flat), plays a copy of the page (`maquette-solo-n.html` beside it) that hides everything else
+and draws it straight on with an orthographic view the size of its box, so its colours move as before. The line says
+"Sea shader: kept as a web object, plays as before". The surface is found by its child-index path, which is the same on
+every run of the same page. *Rejected:* baking the shader to a texture (it moves), rendering it in its own uv space (a
+vertex shader's waves would be lost along with the camera it expects).
+
+**D-593 — A page with no three.js scene plays over the frame.** An HTML composition (HyperFrames and the like) brought
+in the same way has no scene to take apart: it comes in as a web piece over the frame on the timeline's clock (M12),
+and the line says so.
+
+**D-594 — hmm-kit 0.18.0: the web player takes scripts and answers.** `HmmWebPlayer(piece:scripts:)` adds scripts after
+the clock and before the page's own code, and `evaluate(_:atFrame:)` returns what a piece of JavaScript reads at a
+frame. That's all the recorder needs from the kit; the recorder itself is Core's (`ThreeRecorder`), so its JavaScript is
+checked in Chromium on CI (`Tools/record_threejs.mjs` plays the acceptance's island and compares with the fixture
+Core's tests read) as well as in the app's own WebKit (`ThreeProjectFlowTests`).
