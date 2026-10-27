@@ -3658,3 +3658,11 @@ instance isn't the node itself (a ring's first copy is on the ring), the mesh co
 extension is used, not required, so a reader without it shows the thing once. *Rejected:* a node a copy (a thousand
 nodes for a forest, and nothing to come back as clones), baking the effects' motion into instance keys (glTF has no
 place for keyed instances).
+
+**D-587 — A skin comes in as a rig.** Making a skinned glTF editable gives a rigged thing, not a frozen pose: its
+skeleton is the skin's joints in the bind pose (from the inverse bind matrices, parents first, names made unique), the
+thing stands where the bind pose's space is, the file's weights are carried onto the surface the app draws by the
+closest point (cut finer at the bones first, as drawing a rig does, since faces made whole again are too big to bend),
+and each joint's turns become `bone.` keys. The joint nodes aren't things. A joint's moves and sizes are left out:
+Maquette's bones keep their length, and only a turn is a pose. *Rejected:* computing new weights by bone heat (the
+artist's weights are the work), keeping the file's own vertices (modelling rebuilds them).

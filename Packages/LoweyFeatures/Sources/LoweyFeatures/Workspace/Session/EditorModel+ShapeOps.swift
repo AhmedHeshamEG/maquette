@@ -195,7 +195,7 @@ extension EditorModel {
         do {
             if asset.format == .glb || asset.format == .gltf {
                 let result = try GLTFSceneReader.read(Data(contentsOf: url), baseURL: url.deletingLastPathComponent(), ids: &ids)
-                guard result.pictures.isEmpty else { return makePicturedEditable(id, result: result) }
+                guard result.pictures.isEmpty, result.files.isEmpty else { return makeFiledEditable(id, result: result) }
                 (parts, tracks) = (result.fragment, result.tracks)
             } else if let model = library.models.model(asset, catalog: library.catalog) {
                 parts = try ModelingOperations.editableParts(of: model, ids: &ids)
@@ -212,9 +212,9 @@ extension EditorModel {
         HmmHaptics.play(.commit)
     }
 
-    /// A model whose materials show pictures: its parts keep them as paint (each laid flat in the background), and
-    /// everything arrives as one step once it's ready.
-    private func makePicturedEditable(_ id: ObjectID, result: GLTFSceneReader.Result) {
+    /// A model whose materials show pictures or whose surface has a skin: its parts keep the pictures as paint (each
+    /// laid flat in the background) and the skin as their rig, and everything arrives as one step once it's ready.
+    private func makeFiledEditable(_ id: ObjectID, result: GLTFSceneReader.Result) {
         guard !colourPaint.preparing.contains(id) else { return }
         colourPaint.preparing.insert(id)
         let folder = assetsFolder
@@ -224,7 +224,7 @@ extension EditorModel {
             }.value
             colourPaint.preparing.remove(id)
             do {
-                try await Self.write(made.files, to: folder)
+                try await Self.write(made.files.merging(result.files) { first, _ in first }, to: folder)
             } catch {
                 app.show("Couldn't save the painting's files: \(error.localizedDescription)", kind: .error)
                 return

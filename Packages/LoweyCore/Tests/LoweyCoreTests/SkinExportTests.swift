@@ -47,6 +47,51 @@ final class SkinExportTests: XCTestCase {
         }
     }
 
+    /// X1: the skin comes back as a rigged thing: the same joints where they were, weights for every corner of the
+    /// surface it draws, and the joints' keys as its `bone.` keys.
+    func testASkinComesBackRigged() throws {
+        let (scene, skin) = try Self.animatedTail()
+        let glb = GLTFScene.glb(nil, in: scene, look: Look(), skinned: { $0.rig == nil ? nil : skin })
+        var ids = IDFactory.sequential("r")
+        let result = try GLTFSceneReader.read(glb, ids: &ids)
+        let objects = Dictionary(uniqueKeysWithValues: result.fragment.objects.map { ($0.id, $0) })
+        let rigged = try XCTUnwrap(result.fragment.objects.first { $0.rig != nil })
+        let rig = try XCTUnwrap(rigged.rig)
+        XCTAssertEqual(rig.skeleton.names.sorted(), skin.rig.skeleton.names.sorted())
+        XCTAssertFalse(result.fragment.objects.contains { skin.rig.skeleton.names.contains($0.name) }, "joints aren't things")
+        var world = rigged.transform
+        var parent = rigged.parent
+        while let id = parent, let above = objects[id] {
+            world = above.transform * world
+            parent = above.parent
+        }
+        let original = try XCTUnwrap(scene.objects["creature"]).transform
+        for (name, position) in zip(skin.rig.skeleton.names, skin.rig.restPositions) {
+            let index = try XCTUnwrap(rig.skeleton.index(of: name))
+            XCTAssertLessThan(world.apply(to: rig.skeleton.modelRest[index].position).distance(to: original.apply(to: position)), 1e-4, name)
+        }
+        let file = try XCTUnwrap(rig.skin.flatMap { result.files[$0] })
+        let weights = try SkinWeights(data: file)
+        XCTAssertEqual(weights.count, PaintSource.unshaped(of: rigged)?.positions.count)
+        XCTAssertEqual(rig.surface, PaintSource.unshaped(of: rigged).map(PaintMesh.fingerprint))
+        // Every joint moves as much of the surface as it did: the weights came across, not a guess.
+        let source = skin.weights[0]
+        for (joint, name) in skin.rig.skeleton.names.enumerated() {
+            let mine = try XCTUnwrap(rig.skeleton.index(of: name))
+            let before = source.weights.indices.map { source.weight(of: joint, at: $0) }.max() ?? 0
+            let after = weights.weights.indices.map { weights.weight(of: mine, at: $0) }.max() ?? 0
+            XCTAssertEqual(after, before, accuracy: 0.1, name)
+        }
+        // The keys: every turned joint, the same turn a second in.
+        let turns = result.tracks.filter { $0.target == rigged.id && $0.property.boneJoint != nil }
+        XCTAssertEqual(Set(turns.map(\.property)), Set(scene.timeline.tracks.map(\.property)))
+        for track in scene.timeline.tracks {
+            let read = try XCTUnwrap(turns.first { $0.property == track.property })
+            let want = try XCTUnwrap(track.keyframes.last?.value.quatValue), got = try XCTUnwrap(read.keyframes.last?.value.quatValue)
+            XCTAssertGreaterThan(abs(want.x * got.x + want.y * got.y + want.z * got.z + want.w * got.w), 1 - 1e-4, track.property.rawValue)
+        }
+    }
+
     /// SPIKE (U4 step 7): our own FBX writer. CI opens this file in Godot (ufbx) and Blender.
     func testARiggedThingLeavesAsAnFBXOfItsOwn() throws {
         let (scene, skin) = try Self.animatedTail()

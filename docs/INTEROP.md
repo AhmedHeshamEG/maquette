@@ -29,7 +29,7 @@ Scenes and shots · Units and dimensions · The artist's credit.
 | The Looks | impossible — glTF holds surfaces, not a picture's style (the three.js folder and the engine shaders carry it) | impossible — as out |
 | Ink and flipbooks | todo | todo |
 | Sheets | todo | todo |
-| Rigs and skins | carried | todo |
+| Rigs and skins | carried | carried — the skeleton in its bind pose, the weights carried onto the editable surface, joints' turns as bone keys (their moves and sizes are left out) |
 | Face states | extras | extras |
 | Clips | todo | todo |
 | Keys on any property | carried | carried |
