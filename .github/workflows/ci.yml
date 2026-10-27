@@ -304,6 +304,13 @@ jobs:
           set -o pipefail
           cd /tmp/threecheck
           HOME=/root node check_threejs.mjs render "$GITHUB_WORKSPACE/acceptance/threejs/night-room" | tee -a "$GITHUB_STEP_SUMMARY"
+      - name: A three.js project plays as in the sandbox and the recorder says what Maquette's tests read
+        run: |
+          set -o pipefail
+          cd /tmp/threecheck
+          cp "$GITHUB_WORKSPACE/Tools/record_threejs.mjs" .
+          fixture="$GITHUB_WORKSPACE/Packages/LoweyCore/Tests/LoweyCoreTests/Fixtures/three-island"
+          HOME=/root node record_threejs.mjs "$GITHUB_WORKSPACE/acceptance/threejs/recorder" "$fixture" /tmp/island.json "$fixture/recording.json" | tee -a "$GITHUB_STEP_SUMMARY"
       - name: The web GLB passes the Khronos glTF Validator
         run: |
           cd /tmp/threecheck
