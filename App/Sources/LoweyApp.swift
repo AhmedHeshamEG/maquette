@@ -8,11 +8,6 @@ struct LoweyApp: App {
     @State private var exportReporter = ExportLiveActivity()
     @Environment(\.scenePhase) private var phase
 
-    init() {
-        // UI tests don't wait for sheets and panels to animate in (the screenshots keep them, as people see them).
-        if AppIdentity.isUITesting, !AppIdentity.isTakingScreenshots { UIView.setAnimationsEnabled(false) }
-    }
-
     var body: some Scene {
         WindowGroup {
             if UIDevice.current.userInterfaceIdiom == .phone {
