@@ -71,6 +71,17 @@
             XCTAssertNotNil(blue, "three.js drew with WebGL from the carried copy; errors: \(straight.errors)")
         }
 
+        func testAScriptAddedFirstReadsThePageAtAFrame() async throws {
+            // three.js tells `__THREE_DEVTOOLS__` about every scene it makes: a script added before the page's own sees it.
+            let hook = "window.__seen = []; window.__THREE_DEVTOOLS__ = new EventTarget();"
+                + "__THREE_DEVTOOLS__.addEventListener('observe', e => { if (e.detail.isScene) __seen.push(e.detail); });"
+            let player = HmmWebPlayer(piece: HmmWebPiece(kind: .html, source: .inline(Self.three), width: 240, height: 120), scripts: [hook])
+            let x = await player.evaluate("return window.__seen[0].children[0].position.x;", atFrame: 60)
+            XCTAssertEqual((x as? NSNumber)?.doubleValue ?? .nan, -0.5, accuracy: 0.02, "one second in; errors: \(player.errors)")
+            let earlier = await player.evaluate("return window.__seen.length;", atFrame: 30)
+            XCTAssertEqual((earlier as? NSNumber)?.intValue, 1, "going back starts the page over, with the script again")
+        }
+
         func testALottieFileTurnsOnTheClock() async throws {
             let player = HmmWebPlayer(piece: HmmWebPiece(kind: .lottie, source: .inline(Self.lottie), width: 200, height: 100))
             let half = try await XCTUnwrapAsync(player.image(atFrame: 30))

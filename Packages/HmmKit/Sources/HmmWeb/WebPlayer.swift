@@ -11,6 +11,8 @@
         public static var windowScene: (@MainActor () -> UIWindowScene?)?
 
         public let piece: HmmWebPiece
+        /// Scripts added to the page after the clock and before any of its own code (a recorder, a hook).
+        public let scripts: [String]
         /// The frame the page is showing, or nil before it has loaded.
         public private(set) var frame: Int?
         /// What the page threw (kept for the bridge's report and the diagnostics).
@@ -22,8 +24,9 @@
         private let navigation = HmmWebNavigation()
         private var loading: Task<Bool, Never>?
 
-        public init(piece: HmmWebPiece) {
+        public init(piece: HmmWebPiece, scripts: [String] = []) {
             self.piece = piece
+            self.scripts = scripts
             handler = HmmWebSchemeHandler(piece: piece)
         }
 
@@ -35,6 +38,22 @@
             await step(to: target)
             guard frame == target else { return nil }
             return await snapshot(scale: scale)
+        }
+
+        /// What `body` (the body of an async JavaScript function) returns once the page shows `frame`, or nil if the page
+        /// can't be shown or the code threw (kept in `errors`). Plain values only: numbers, strings, arrays, objects.
+        public func evaluate(_ body: String, atFrame target: Int) async -> Any? {
+            let target = max(target, 0)
+            if let frame, target < frame { await reload() }
+            guard await loaded() else { return nil }
+            await step(to: target)
+            guard frame == target, let webView else { return nil }
+            do {
+                return try await webView.callAsyncJavaScript(body, arguments: [:], in: nil, contentWorld: .page)
+            } catch {
+                errors = Array((errors + [String(describing: error)]).suffix(20))
+                return nil
+            }
         }
 
         /// Drops the page (memory); the next picture loads it again.
@@ -96,6 +115,9 @@
             configuration.suppressesIncrementalRendering = true
             let content = WKUserContentController()
             content.addUserScript(WKUserScript(source: HmmWebClock.script, injectionTime: .atDocumentStart, forMainFrameOnly: false))
+            for script in scripts {
+                content.addUserScript(WKUserScript(source: script, injectionTime: .atDocumentStart, forMainFrameOnly: true))
+            }
             if let rules = await Self.offline() { content.add(rules) }
             configuration.userContentController = content
             let size = CGRect(x: 0, y: 0, width: piece.width, height: piece.height)
