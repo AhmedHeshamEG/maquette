@@ -12,7 +12,7 @@ final class InteropMatrixTests: XCTestCase {
         "Physics bodies and joints", "Baked runs", "Clones and links", "Text and logos", "Sound and words", "Web objects",
         "Scenes and shots", "Units and dimensions", "The artist's credit"
     ]
-    static let words: Set = ["carried", "baked", "extras", "impossible", "not offered", "todo"]
+    static let words: Set = ["carried", "baked", "extras", "impossible", "not offered", "after 1.0"]
 
     struct Cell: Hashable {
         var format: String
@@ -99,7 +99,13 @@ final class InteropMatrixTests: XCTestCase {
             let found = sources.contains { $0.contains("class \(parts[0])") && $0.contains("func \(parts.last ?? "")(") }
             XCTAssertTrue(found, "\(proof.test) isn't a test")
         }
-        let open = try Self.matrix().values.filter { Self.word($0) == "todo" }.count
-        print("INTEROP: \(open) cells still to do")
+        let later = try Self.matrix().values.filter { Self.word($0) == "after 1.0" }.count
+        print("INTEROP: \(later) cells wait for after 1.0")
+    }
+
+    /// X1 closed (CONTEXT §D.21, D-596): no cell is left `todo`; what isn't proved says "after 1.0".
+    func testNoCellIsLeftToDo() throws {
+        let open = try Self.matrix().filter { Self.word($0.value) == "todo" }
+        XCTAssertEqual(open.count, 0, open.keys.map { "\($0.format) ▸ \($0.feature) ▸ \($0.direction)" }.sorted().joined(separator: ", "))
     }
 }
