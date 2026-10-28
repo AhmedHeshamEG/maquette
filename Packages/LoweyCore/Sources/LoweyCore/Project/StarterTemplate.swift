@@ -67,7 +67,8 @@ public struct StarterTemplate: Hashable, Sendable, Identifiable {
 
     /// What "Set up for" offers, in an open project and on Home's quiet row: each changes what is in reach (units,
     /// snapping, the grid, the printer, the timeline, the guest kit in Model ▸ Add), never the project. G1's order.
-    public static let setUps: [Kind] = [.blank, .room, .print, .game, .study, .animation]
+    /// Study was removed in 0.29 (CONTEXT §D.24): its template stays so old projects read, and they open as Blank.
+    public static let setUps: [Kind] = [.blank, .room, .print, .game, .animation]
 
     /// The + on Home: an empty project in the dark studio.
     public static let blank = StarterTemplate(

@@ -65,8 +65,8 @@ final class GuestBridgeTests: XCTestCase {
         XCTAssertEqual(scene.objects.values.first { $0.name == "Pose" }?[.characterStart]?.stringValue, "mannequin")
     }
 
-    func testTheGameAndStudySetUps() {
-        XCTAssertEqual(StarterTemplate.setUps, [.blank, .room, .print, .game, .study, .animation])
+    func testTheGameSetUpAndStudyIsGone() {
+        XCTAssertEqual(StarterTemplate.setUps, [.blank, .room, .print, .game, .animation], "Study was removed (§D.24)")
         let game = ProjectWorkspace().settingUp(for: .game)
         XCTAssertEqual(game.units, .metre)
         XCTAssertEqual(game.snap.gridSize, 1)
@@ -75,5 +75,6 @@ final class GuestBridgeTests: XCTestCase {
         XCTAssertEqual(study.units, .millimetre)
         XCTAssertTrue(study.showsDimensions)
         XCTAssertEqual(StarterTemplate.template(.study).lookPresetID, LookPreset.cleanProduct.id)
+        XCTAssertEqual(study.setUp, .blank, "a project made for Study opens as Blank")
     }
 }
