@@ -1023,10 +1023,12 @@ pinned spot and its chip are `Shell/FloatingInspector`; panels moved by hand are
 `hmmPanelBounds` (set by `StageChrome`). The undo line and the guide line are hmm-kit's presenters on `EditorScreen`
 (`EditorModel.undoLine`, `guideLine`); `Hint` obeys hmm-kit's instructions switch; `shown(_:)` hides what can't act.
 
-**Held features** (CONTEXT §5, D-228): `Workspace/Support/Held.swift` lists `MaquetteHeld`; `Held.isOn(_:)` reads
-hmm-kit's `HmmHeld` from the Info.plist key `HmmHeld`, filled from `project.yml`'s `MAQUETTE_HELD` (set only in the
-AppStore configuration). Only entry points ask. The `appstore` CI job builds that configuration and walks LAYOUT.md,
-asserting rows marked *(held: 1.x)* are absent.
+**Held features** (CONTEXT §5, §D.25, D-228, D-597): `Workspace/Support/Held.swift` lists `MaquetteHeld` (nine names
+since 0.29); `Held.isOn(_:)` reads hmm-kit's `HmmHeld` from the Info.plist key `HmmHeld`, filled from `project.yml`'s
+`MAQUETTE_HELD` (set only in the AppStore configuration, which is also iPad only while the companion is held).
+`Tools/check_held.py` keeps the two in step. Only entry points ask (tiles, menu commands, the export sheet's formats,
+the link and review listeners); Core's verbs never do. The `appstore` CI job (ready PRs and main) builds that
+configuration, checks its Info.plist and walks LAYOUT.md, asserting rows marked *(held: 1.0)* are absent.
 
 **The editor's colours** (grid strengths, axes, selection outline) are Core's `StageColors`, which the renderer reads
 and `StageColorsTests` checks against the dark studio's ground. `RootView` shows Home (`TheaterView`) and presents the open project

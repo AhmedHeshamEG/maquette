@@ -3722,3 +3722,64 @@ turns `normalScale` to glTF's way up and the transfer leans red and green by it 
 The same rule fixed our own `scene.json`: its pictures go out unflipped, and its normal maps now carry
 `normalScale: [s, -s]`, so three.js lights their bumps the right way up. A surface with no normals of its own (three.js
 geometry often has none) leans from each face's instead of coming in flat.
+
+## X1 closed and the held parts (2026-10-28, CONTEXT §D.21–D.29)
+
+**D-596 — X1 closes where it stands.** The 2026-10-28 converge stopped new features until launch (§D.21), so X1 ends
+with what sessions 1–3 built: three.js out (the folder, `scene.json`, `Scene.jsx`, `AGENTS.md`, keyed numbers as
+`KHR_animation_pointer`), three.js in (JSON, projects, pages, zips, the island), glTF's pictures, instances and skins
+both ways. Every matrix cell no test proves says **after 1.0** instead of `todo` (110 cells), and `InteropMatrixTests`
+fails on a `todo`. What waits: `KHR_texture_transform` out, `KHR_materials_variants`, `EXT_meshopt_compression`, the
+Rapier switch, Web Audio, step 4's formats (USD in, FBX in, PLY, Collada, BVH, VRM, Alembic, STEP, the Blender add-on),
+step 5's five round-trip fixtures, step 7's `import`/`export` verbs and the skill's interop module. Step 6 (Export opens
+on what it's for) moves to U9, whose menus are rebuilt around §D.24's places. *Rejected:* finishing the 327 cells
+before launch ("full support for everything" has no end, the converge's read); deleting the unproven cells (the
+matrix keeps saying what isn't proved).
+
+**D-597 — Nine held parts, reversing D-558.** `MaquetteHeld` names `buildingFiles`, `technicalSheets`, `threads`,
+`papercraft`, `roomScan`, `board`, `faceTimeReview`, `webPieces`, `companion`; `project.yml` lists them for the
+AppStore configuration only, so Debug and the sideloaded Release build show everything for T1. Each leaves the list
+when it passes on the device (its test task, its checks, no P0 bug); the launch never waits for one (§D.25).
+`Tools/check_held.py` (in the lint job) keeps `project.yml` and `Held.swift` in step; the App Store job checks the
+built Info.plist holds exactly that list and walks LAYOUT.md, held rows absent, the rest there. The job is on again
+for ready PRs and main (it was `if: false` since PR #53). *Rejected:* compile-time flags (packages don't see the app's
+conditions, D-228); deleting the code.
+
+**D-598 — "IFC" holds the building's files, not its tools.** `buildingFiles` hides IFC out, Plans and elevations (the
+sheet, its menu command, PDF, DXF and SVG out) and underlays; walls, doors, roofs, walking through and matching a photo
+stay, since building a place is one of §D.24's things anyone can do. *Rejected:* holding the whole Room kit (the
+converge kept "build a place").
+
+**D-599 — Threads hold the Print pieces.** The jar and lid, the bolt and the nut are all ISO threads, so with
+`threads` held Model ▸ Add shows no Print section, and Model ▸ Edit ▸ 3D print hides the hole and screw pickers: a
+hole is a plain clearance one. Best way up, split, hollow, words, fit, size, the slicer and the object scan stay.
+
+**D-600 — Web pieces by hand are held; three.js work still comes in.** `webPieces` hides Model ▸ Add ▸ Web page or
+Lottie, and a page or Lottie file reaching `importMedia` (the bridge's media route) says "Web pages and Lottie files
+aren't in this version yet". A three.js file or project (Library, a drop, Files) still comes in as X1 made it, and the
+shader surface or page it brings keeps playing: it's the import's result, not a piece added by hand. *Rejected:*
+holding the three.js import too (it's the point of X1, §D.11).
+
+**D-601 — With the companion held the store build is iPad only.** An iPhone install would open on a screen that's held,
+which App Review refuses, so the AppStore configuration sets `TARGETED_DEVICE_FAMILY` 2 next to the list (CI checks
+`UIDeviceFamily`). On the iPad: Actions' and the Scene menu's Your iPhone, the face capture's My iPhone, and the
+iPhone's room and object scans are hidden, and the link never starts listening. Releasing the companion means both
+lines.
+
+**D-602 — Reviews over FaceTime held both ways.** With `faceTimeReview` held the iPad neither offers Review over
+FaceTime nor joins one another iPad starts. Notes on spots stay (they need no call).
+
+**D-603 — The bridge still reaches held parts.** Only entry points ask (HmmHeld's rule): Core's verbs (`guest`,
+`board`, `app` with `panel: phone`) still work, so an agent can build what a person can't open yet. The assistant is
+off by default, and no Learn lesson names a held part (checked when the list was made). *Rejected:* refusing held verbs in Core (Core
+doesn't know the build; every coverage test would need a held variant).
+
+**D-604 — Study is removed, not held (§D.24).** `StarterTemplate.setUps` drops `.study`: Home's quiet row, Set up for and
+Settings ▸ New projects no longer offer it, and a project made for Study opens as Blank. The template stays so old
+projects read; the exploded view and the forces arrows have no button (the `kit.explode` command stays for the bridge;
+its menu section goes). Omar's UI test went with it. Engineer was never built, so nothing else goes.
+
+**D-605 — Tier B on CI: fifty things at 60 fps.** `TierBenchmarkTests` draws fifty bevelled shapes in Ink at an 11-inch
+iPad's size times Tier B's top render scale (2006 × 1394), 150 frames, the first 30 as warm-up, each built, drawn and
+waited for before the next, and fails if p95 passes 16.7 ms. Not overlapping CPU and GPU makes it stricter than the
+stage. Diagnostics ▸ Run as Tier B (U1) is the device side (§D.27).

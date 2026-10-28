@@ -3,6 +3,23 @@
 One task per feature for the two test weeks (between M14 and M16), written for its person in `studio-h/USERS.md`. A
 task says what to make, never which buttons to press; the tester says where they got stuck.
 
+## 0.29 (X1): the three.js import, and the held parts
+
+On the sideloaded build (it holds nothing). A held part leaves `MAQUETTE_HELD` when its task is done without
+frustration, its checks are closed and it has no P0 bug (CONTEXT §D.25). Each line names the part.
+
+- **The explainer maker:** drop a three.js project folder from Files onto the stage; its scene stands there as things
+  you can pick, its motion is keys, and its water still moves.
+- **Building files:** draw two rooms, open Plans, set an underlay to scale and trace a wall, export IFC and the DXF.
+- **Technical sheets:** group two parts and export the technical drawing on A4; read its sizes.
+- **Threads:** add the jar and lid, print-check it, share it to the slicer; put a threaded M5 hole in a block.
+- **Papercraft:** export a cube as papercraft on A4, cut it out and fold it.
+- **Room scan:** scan a room (an iPad with LiDAR, or the iPhone) and walk through it.
+- **The Board:** plan a scene on the Board with notes, arrows and a picture, pin the picture and stand it in the scene.
+- **FaceTime review:** on a call with a second iPad, start a review, both turn the view and leave a note.
+- **Web pieces:** put a web page on a screen in the scene and a Lottie over the frame; scrub and export.
+- **The companion:** use the iPhone as your face for a character, as a camera, as the remote, then scan an object with it.
+
 ## 0.28 (M12): AR, web pieces and the bridge
 
 - **The architect:** stand the Keeper's Tower on a real table in AR, then make it life size and stand inside its door;

@@ -34,6 +34,7 @@ reference and stays.
 | Fixes (Q1): the Reference window made like Procreate's (Canvas, Image, Face; a bar to move it, a corner to size it, ✕; it comes back where it was), the sheet laid on a face precisely (the lit face and its ghost under the hovering Pencil, fitted and lined up, snaps, offset / turn / size on its chip), the device sweep | **0.27.** D-540 … D-557. A held finger stays the eyedropper, so only the hovering Pencil previews (D-552). |
 | Yours (U8): the left hand mirrors the chrome, each corner arranged (order, hidden) within itself, the sidebar along its edge, rebindable keys, defaults for the +; Present (the film, a walk, the model); review notes on spots, answered in place; reviews over FaceTime; the iPhone companion (face, camera, remote, AR, room and object scans) | **0.26.** D-524 … D-539. Reviews need the developer account's signing (D-532); the stage's transport keys stay fixed (D-527). |
 | AR, the web layer and the bridge (M12): View in AR on the iPad (our own renderer over the camera; table or life size, move, turn, pinch, play), Share for AR (USDZ for AR Quick Look); web pieces (HTML, three.js, Lottie) on a card or over the frame, offline on a stepped clock (preview = export); the `web`, `app` and `duplicate` verbs; every menu command reaches the bridge; nothing held | **0.28.** D-558 … D-574. No ground shadow in AR yet (D-567); a piece is drawn at its own size (D-564). |
+| Import & export, closed, and the held parts (X1): three.js out (the folder, `scene.json`, `Scene.jsx`, `AGENTS.md`), three.js in (JSON, projects, pages, zips), glTF's pictures, instances, skins and keyed numbers both ways; the interop matrix; nine parts held in the App Store build; Study removed; the Tier B benchmark on CI | **0.29.** D-575 … D-605. What no test proves says "after 1.0" (D-596); the store build is iPad only while the companion is held (D-601). |
 | Texture (the full colour picker, layers, smudge on paint) | U7 |
 | Content and finish: the house kit, waiting designed, the Board's finish | M14 |
 | Tutorials in Hesham's voice, artist info, Content Credentials, Time-lapse, Report a problem | M16 |
@@ -65,7 +66,10 @@ still works the same way.
 
 ### Guest kits (0.25)
 
-- **Set up for** (D-497): the scene's name ▸ Set up for: Blank, Room, Print, Game, Study, Animation; Home's quiet row
+- **Held in the App Store build** (D-597 … D-603, CONTEXT §D.25): IFC, plans and underlays; technical sheets; ISO threads
+  and the Print pieces; papercraft; the room scan; the Board; reviews over FaceTime; web pieces by hand; the iPhone
+  companion. Every other build has them; each ships once it passes on the device.
+- **Set up for** (D-497, D-604): the scene's name ▸ Set up for: Blank, Room, Print, Game, Animation (Study left in 0.29); Home's quiet row
   starts any of them. A set-up's kit is in Model ▸ Add and Model ▸ Edit; Blank shows none.
 - **Room** (D-499 … D-507): Model ▸ Add ▸ Building (walls, floor, door, window, stairs, roof and its kind, column, beam,
   railing, person, room name, terrain); Plans and the site (Plans: each floor's plan with the rooms' areas and the four
@@ -74,7 +78,8 @@ still works the same way.
 - **Print** (D-508 … D-511): Model ▸ Add ▸ Print (Jar & lid, Bolt, Nut; the screw size); Model ▸ Edit ▸ 3D print: Show
   overhangs, Best way up, Split (across height, width or depth), Hollow, Screw hole and Write on it (then tap the part),
   the hole's kind and the screw, the words, the Fit, Scale to size, Share to the slicer, Scan an object.
-- **Study** (D-512, D-513): Model ▸ Edit ▸ Study: Explode (a group), Forces; Export ▸ Paper ▸ Technical drawing (A4, A3).
+- **Study** (D-512, D-513; removed as a set-up in 0.29, D-604): Explode and Forces have no button; Export ▸ Paper ▸
+  Technical drawing (A4, A3) stays, held in the store build.
 - **Game** (D-514, D-515): Model ▸ Add ▸ Greybox; Model ▸ Edit ▸ Game: Freeze transforms; Export ▸ 3D ▸ Game level (for
   Godot, Unity, Unreal; One texture for everything).
 - **For illustrators** (D-516): Characters ▸ New ▸ Mannequin; Export ▸ Picture ▸ Layered PSD, Ink as SVG; Library ▸ Yours
