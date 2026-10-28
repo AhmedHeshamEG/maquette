@@ -773,7 +773,8 @@ jobs:
               -skipPackagePluginValidation -collect-test-diagnostics never -test-timeouts-enabled YES \
               -default-test-execution-time-allowance 600 -retry-tests-on-failure -test-iterations 3 \
               -only-testing:LoweyUITests/LayoutTests/testHomeControlsAreReachable \
-              -only-testing:LoweyUITests/LayoutTests/testPanelAndChromeControlsAreReachable               -only-testing:LoweyUITests/LayoutTests/testMakingControlsAreReachable \
+              -only-testing:LoweyUITests/LayoutTests/testPanelAndChromeControlsAreReachable \
+              -only-testing:LoweyUITests/LayoutTests/testMakingControlsAreReachable \
               -only-testing:LoweyUITests/LayoutTests/testModelControlsAreReachable \
               -only-testing:LoweyUITests/LayoutTests/testMoreModelControlsAreReachable \
               -only-testing:LoweyUITests/LayoutTests/testSelectionControlsAreReachable \
@@ -785,7 +786,7 @@ jobs:
           exit 1
       - name: The App Store build holds the list and is iPad only; Debug holds nothing
         run: |
-          PLIST=$(find DerivedData/Build/Products -path "*AppStore-iphonesimulator/*.app/Info.plist" -maxdepth 4 | head -1)
+          PLIST=$(find DerivedData/Build/Products/AppStore-iphonesimulator -maxdepth 2 -path "*.app/Info.plist" -not -path "*Runner.app/*" | head -1)
           test -n "$PLIST" || { echo "::error::No App Store build found"; exit 1; }
           HELD=$(/usr/libexec/PlistBuddy -c "Print :HmmHeld" "$PLIST" 2>/dev/null || true)
           WANT=$(python3 Tools/check_held.py)
