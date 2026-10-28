@@ -242,7 +242,7 @@ private let layoutWalkRows: [LayoutWalk.Row] = [
                    control: "Edit: 3D print: the printer, check for printing, repair",
                    steps: ["Model", "model-shape", "print-check"], held: ""),
     LayoutWalk.Row(home: "Model", precondition: "",
-                   control: "Edit: 3D print, set up for Print (G1): overhangs, best way up, split, hollow, holes (screw and threaded holes held), words, fit, size, slicer, scan",
+                   control: "Edit: 3D print, set up for Print (G1): overhangs, best way up, split, hollow, holes (threads held), words, fit, size, slicer",
                    steps: ["scene-name", "setup-print", "Model", "model-shape", "print-split"], held: ""),
     LayoutWalk.Row(home: "Model", precondition: "",
                    control: "Edit: Game (G1): freeze transforms",

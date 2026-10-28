@@ -40949,6 +40949,22 @@
         }
       }
     },
+    "Web pages and Lottie files aren't in this version yet": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le pagine web e i file Lottie non sono ancora in questa versione"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "صفحات الويب وملفات Lottie ليست في هذا الإصدار بعد"
+          }
+        }
+      }
+    },
     "Weighs": {
       "localizations": {
         "it": {

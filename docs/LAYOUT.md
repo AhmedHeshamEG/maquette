@@ -200,7 +200,7 @@ Three short pages; the page is remembered.
 | Edit: Shape it: Shape, Brush, Cage, Bend (no buttons for faces, edges or corners: the Pencil touches the part, U6) | `Model › model-shape › model-verb-shape` |
 | | `Model › model-shape › model-verb-cage` |
 | Edit: 3D print: the printer, check for printing, repair | `Model › model-shape › print-check` |
-| Edit: 3D print, set up for Print (G1): overhangs, best way up, split, hollow, holes (screw and threaded holes held), words, fit, size, slicer, scan | `scene-name › setup-print › Model › model-shape › print-split` |
+| Edit: 3D print, set up for Print (G1): overhangs, best way up, split, hollow, holes (threads held), words, fit, size, slicer | `scene-name › setup-print › Model › model-shape › print-split` |
 | Edit: Game (G1): freeze transforms | `scene-name › setup-game › Model › model-shape › game-freeze` |
 | Model's bar: Shape · Brush · Cage · Bend · Measure; the brushes (grab, smooth, inflate) and their mirror; the cage on, back or off; the bend's kind, axis and amount; the measurement and Keep, ✕ | shown at the bottom while the Model tool is on |
 | Touch and drag (U6): over the selected shape the Pencil lights the face, edge or corner under its tip; a drag pulls a face, rounds an edge, moves a corner; a tap picks it | the Pencil on the selected shape, with any tool but Draw |
