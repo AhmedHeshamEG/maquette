@@ -6,8 +6,7 @@ import XCTest
 final class LayoutTests: XCTestCase {
     private var app: XCUIApplication!
     private let panels: Set<String> = ["Model", "Draw", "Rig", "Actions", "Look", "Library", "scene-name"]
-    /// The App Store configuration's walk (M12): nothing is held there any more, so no row may be marked held and every
-    /// row must be present (CONTEXT §D.3).
+    /// The App Store configuration's walk (CONTEXT §D.25): a row marked held must be absent there, every other row present.
     private static let checkingHeld = ProcessInfo.processInfo.environment["MAQUETTE_HELD_CHECK"] == "1"
 
     override func setUp() async throws {
@@ -211,12 +210,17 @@ final class LayoutTests: XCTestCase {
 
     /// Taps every step but the last; the last must be there (in the App Store build, a held row's last must not be).
     private func walk(_ row: LayoutWalk.Row) {
-        if Self.checkingHeld {
-            XCTAssertTrue(row.held.isEmpty, "\(row.control) is marked held for \(row.held): the store build holds nothing")
-        }
         // A row that calls the timeline or reaches into one of Draw's pop-overs leaves it open: the next row starts afresh.
         let reachesIntoDraw = row.steps.first == "Draw" && row.steps.count > 2
         defer { if !row.held.isEmpty || row.steps.first == "Animate" || reachesIntoDraw { startAfresh(row.precondition) } }
+        if Self.checkingHeld, !row.held.isEmpty, let last = row.steps.last {
+            for step in row.steps.dropLast() {
+                XCTAssertTrue(tap(step), "\(row.home) › \(row.control): \(step) isn't there")
+                if panels.contains(step) || step.hasPrefix("model-") { settle(1) }
+            }
+            XCTAssertFalse(element(last).waitForExistence(timeout: 2), "\(row.home) › \(row.control) is held but \(last) is there")
+            return
+        }
         for step in row.steps.dropLast() {
             XCTAssertTrue(tap(step), "\(row.home) › \(row.control): \(step) isn't there")
             if panels.contains(step) || step.hasPrefix("model-") { settle(step == "Look" ? 3 : 1) }

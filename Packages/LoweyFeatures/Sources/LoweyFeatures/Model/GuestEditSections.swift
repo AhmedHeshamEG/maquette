@@ -30,7 +30,7 @@ struct PrintToolControls: View {
                 }
                 if ObjectScanSheet.isSupported {
                     TileButton(title: "Scan an object", systemName: "viewfinder", identifier: "print-scan") { editor.sheet = .objectScan }
-                } else {
+                } else if Held.isOn(.companion) {
                     TileButton(title: "Scan with your iPhone", systemName: "iphone", identifier: "print-scan-phone") {
                         editor.ask(.objectScan)
                         editor.sheet = .phone
@@ -44,12 +44,15 @@ struct PrintToolControls: View {
             }
             .pickerStyle(.segmented)
             .accessibilityIdentifier("print-split-axis")
-            HStack(spacing: HmmSpacing.s) {
-                Picker("Hole", selection: $editor.guest.hole) {
-                    ForEach(ScrewHole.allCases, id: \.self) { Text(LocalizedStringKey($0.title)).tag($0) }
-                }
-                Picker("Screw", selection: $editor.guest.screw) {
-                    ForEach(MetricScrew.allCases) { Text($0.rawValue).tag($0) }
+            // ISO screws and threads are held (§D.25): without them a hole is a plain round one, no picker.
+            if Held.isOn(.threads) {
+                HStack(spacing: HmmSpacing.s) {
+                    Picker("Hole", selection: $editor.guest.hole) {
+                        ForEach(ScrewHole.allCases, id: \.self) { Text(LocalizedStringKey($0.title)).tag($0) }
+                    }
+                    Picker("Screw", selection: $editor.guest.screw) {
+                        ForEach(MetricScrew.allCases) { Text($0.rawValue).tag($0) }
+                    }
                 }
             }
             TextField("Words to write", text: $editor.guest.text).textFieldStyle(.roundedBorder).accessibilityIdentifier("print-text")

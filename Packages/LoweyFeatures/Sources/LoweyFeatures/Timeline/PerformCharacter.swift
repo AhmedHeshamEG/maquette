@@ -102,7 +102,9 @@ struct FaceSection: View {
                 HStack(spacing: HmmSpacing.xs) {
                     HmmPillButton("Front camera", systemName: "camera.fill") { editor.startFaceCapture(useIPhone: false) }
                         .accessibilityIdentifier("face-camera")
-                    HmmPillButton("My iPhone", systemName: "iphone") { editor.startFaceCapture(useIPhone: true) }
+                    if Held.isOn(.companion) {
+                        HmmPillButton("My iPhone", systemName: "iphone") { editor.startFaceCapture(useIPhone: true) }
+                    }
                 }
             }
         }

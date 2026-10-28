@@ -46,7 +46,7 @@ final class ReviewRoom {
 
     /// Listens for sessions (started here or by someone else on the call), once, at launch.
     func listen(for app: AppModel) {
-        guard listening == nil else { return }
+        guard Held.isOn(.faceTimeReview), listening == nil else { return }
         self.app = app
         together.onMessage = { [weak self] data in self?.received(data) }
         together.onFile = { [weak self] url in self?.projectArrived(url) }
@@ -156,7 +156,7 @@ extension AppModel {
 
     /// Review over FaceTime with the open project.
     func startReview() {
-        guard let editor, let project = projects.first(where: { $0.url == editor.projectURL }) else { return }
+        guard Held.isOn(.faceTimeReview), let editor, let project = projects.first(where: { $0.url == editor.projectURL }) else { return }
         Task {
             await editor.saveNow(thumbnail: false)
             guard let package = package(project) else { return }

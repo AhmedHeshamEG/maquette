@@ -114,6 +114,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: The held list agrees with Held.swift (CONTEXT §D.25)
+        run: python3 Tools/check_held.py
       - name: SwiftFormat
         run: |
           curl -sSL -o swiftformat.zip https://github.com/nicklockwood/SwiftFormat/releases/download/0.63.0/swiftformat_linux.zip
@@ -638,8 +640,8 @@ jobs:
         run: |
           xcrun simctl boot "${{ steps.sim.outputs.udid }}" || true
           xcrun simctl bootstatus "${{ steps.sim.outputs.udid }}" -b
-      # Since 0.28 the App Store configuration holds nothing (CONTEXT §D.3): the layout walk asserts no row of
-      # docs/LAYOUT.md is held and every row is there.
+      # The App Store configuration holds what project.yml lists (CONTEXT §D.25): the layout walk asserts every row of
+      # docs/LAYOUT.md marked held is absent and every other row is there.
       - name: Walk the layout in the App Store configuration
         run: |
           set -o pipefail
@@ -660,13 +662,17 @@ jobs:
             echo "::warning::The App Store walk failed on attempt $attempt"
           done
           exit 1
-      - name: The App Store build holds nothing (its Info.plist's HmmHeld is empty)
+      - name: The App Store build holds the list and is iPad only; Debug holds nothing
         run: |
           PLIST=$(find DerivedData/Build/Products -path "*AppStore-iphonesimulator/*.app/Info.plist" -maxdepth 4 | head -1)
           test -n "$PLIST" || { echo "::error::No App Store build found"; exit 1; }
           HELD=$(/usr/libexec/PlistBuddy -c "Print :HmmHeld" "$PLIST" 2>/dev/null || true)
-          test -z "$HELD" || { echo "::error::The App Store build holds: $HELD"; exit 1; }
-          echo "The App Store build ($PLIST) holds nothing."
+          WANT=$(python3 Tools/check_held.py)
+          test "$HELD" = "$WANT" || { echo "::error::The App Store build holds '$HELD', not '$WANT'"; exit 1; }
+          FAMILY=$(/usr/libexec/PlistBuddy -c "Print :UIDeviceFamily" "$PLIST" | tr -d ' 
+')
+          echo "$FAMILY" | grep -q "^Array{2}$" || { echo "::error::The App Store build's devices are $FAMILY, not the iPad alone"; exit 1; }
+          echo "The App Store build ($PLIST) holds: $HELD"
       - uses: actions/upload-artifact@v4
         if: failure()
         with:

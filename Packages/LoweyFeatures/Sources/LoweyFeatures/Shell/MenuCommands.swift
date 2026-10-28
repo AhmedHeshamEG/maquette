@@ -127,7 +127,9 @@ public struct LoweyMenuCommands: Commands {
         }
         CommandMenu("Kit") {
             Section("Room") {
-                Button("Plans and Elevations") { editor?.sheet = .plans }.hmmKeyboardShortcut(KeyCommands.kitPlansAndElevations, in: keyboard)
+                if Held.isOn(.buildingFiles) {
+                    Button("Plans and Elevations") { editor?.sheet = .plans }.hmmKeyboardShortcut(KeyCommands.kitPlansAndElevations, in: keyboard)
+                }
                 Button("Walk Through") { editor.map { $0.guest.walkHeight == nil ? $0.startWalking() : $0.stopWalking() } }
                     .hmmKeyboardShortcut(KeyCommands.kitWalkThrough, in: keyboard)
                 Button("Match a Photo…") { editor?.sheet = .matchPhoto }.hmmKeyboardShortcut(KeyCommands.kitMatchAPhoto, in: keyboard)
@@ -137,9 +139,6 @@ public struct LoweyMenuCommands: Commands {
                 Button("Split for Printing") { stageEditor?.splitForPrinting() }.hmmKeyboardShortcut(KeyCommands.kitSplitForPrinting, in: keyboard)
                 Button("Hollow") { stageEditor?.hollowForPrinting() }.hmmKeyboardShortcut(KeyCommands.kitHollow, in: keyboard)
                 Button("Show Overhangs") { stageEditor?.guest.overhangs.toggle() }.hmmKeyboardShortcut(KeyCommands.kitShowOverhangs, in: keyboard)
-            }
-            Section("Study") {
-                Button("Explode") { stageEditor?.toggleExplode() }.hmmKeyboardShortcut(KeyCommands.kitExplode, in: keyboard)
             }
             Section("Game") {
                 Button("Freeze Transforms") { stageEditor?.freezeTransforms() }.hmmKeyboardShortcut(KeyCommands.kitFreezeTransforms, in: keyboard)
@@ -166,8 +165,10 @@ public struct LoweyMenuCommands: Commands {
                 .hmmKeyboardShortcut(KeyCommands.scenePresent, in: keyboard)
             Button("Notes") { stageEditor.map { $0.setNotesShown(!$0.together.notesShown) } }
                 .hmmKeyboardShortcut(KeyCommands.sceneNotes, in: keyboard)
-            Button("Your iPhone…") { editor?.sheet = .phone }
-                .hmmKeyboardShortcut(KeyCommands.sceneYourIPhone, in: keyboard)
+            if Held.isOn(.companion) {
+                Button("Your iPhone…") { editor?.sheet = .phone }
+                    .hmmKeyboardShortcut(KeyCommands.sceneYourIPhone, in: keyboard)
+            }
             if stageEditor?.canShowAR == true {
                 Button("View in AR") { stageEditor?.openAR() }.hmmKeyboardShortcut(KeyCommands.sceneViewInAR, in: keyboard)
             }

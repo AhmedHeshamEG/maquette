@@ -175,7 +175,7 @@ struct EditorScreen: View {
                 // The Reference window and pictures pinned from the board float under the chrome: a panel always opens
                 // over them.
                 if !editor.references.isEmpty {
-                    ReferenceCards(editor: editor, boardEnabled: boardEnabled)
+                    ReferenceCards(editor: editor, boardEnabled: boardEnabled && Held.isOn(.board))
                         .opacity(editor.chromeFaded ? 0 : 1)
                 }
                 if editor.referenceOpen {

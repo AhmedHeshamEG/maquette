@@ -47,8 +47,10 @@ end says what came from where.
    selection. A label is never cut: it takes a second line.
 8. **Every panel resizes** from the grip in its corner and **moves by hand** from its title row (double-tap the title
    to send it home, double-tap the grip for the original size); each remembers both on the device.
-9. **Nothing is held** (since 0.28, CONTEXT §D.3): every row is in every build, the App Store one included. A row may
-   still be marked *(held: 1.x)* by the mechanism, but none is, and the App Store walk fails if one ever is.
+9. **Held rows** (CONTEXT §D.25, since 0.29): a row marked *(held: 1.0)* is in every build but the App Store one, until it
+   passes on the device (then its mark goes, with its name in `project.yml`). The App Store walk asserts a held row's
+   last step is absent and every other row's is there. Held: the building files (IFC, plans, underlays), technical
+   sheets, ISO threads, papercraft, the room scan, the Board, reviews over FaceTime, web pieces and the iPhone companion.
 
 ## The walk
 
@@ -57,17 +59,16 @@ and the last must be there. A step is an accessibility identifier (or the contro
 `section-<its title>`). A row may start with a precondition: `[cube]` a cube is added and selected, `[blob]` a Blob is
 added, `[timeline]` the whole timeline is open, `[transport]` the slim transport is showing, `[home]` the steps start
 on Home instead of in a project. `Tools/layout_walk.py` turns this file into `AppUITests/LayoutWalk.swift`; CI fails
-when they disagree. In the App Store configuration the walk asserts no row is held and every row's last step is **there**.
+when they disagree. In the App Store configuration the walk asserts a held row's last step is **absent** and every other row's is **there**.
 
 ## Home
 
 | Control | Walk |
 |---|---|
 | New project: the + opens a blank project in the dark studio, named by itself | `[home] new-project` |
-| Or start set up for Room, Print, Game, Study or Animation (the quiet row under the title) | `[home] start-print` |
+| Or start set up for Room, Print, Game or Animation (the quiet row under the title) | `[home] start-print` |
 | | `[home] start-room` |
 | | `[home] start-game` |
-| | `[home] start-study` |
 | Search projects and stacks | `[home] gallery-search` |
 | Sort (Recent, Name, Date created) | `[home] gallery-sort` |
 | Select several (stack, move out, duplicate, archive, delete: shown once something is chosen) | `[home] gallery-select` |
@@ -94,18 +95,18 @@ when they disagree. In the App Store configuration the walk asserts no row is he
 | Export: Video · Picture · 3D · Paper, then the format, then its presets; Final and the options beside them | `Actions › open-export` |
 | Export (F1): Video ▸ Animatic, Spatial video (where the iPad encodes it), 360° video, HEVC ▸ HDR; Picture ▸ Spatial photo, 360° panorama, PNG ▸ Wide colour; Paper ▸ Storyboard | in the Export sheet |
 | Export (D1): loops seamlessly, or what jumps when it loops and Close the loop | in the Export sheet, beside a video or GIF preset |
-| Export (G1): Picture ▸ Layered PSD, Ink as SVG; 3D ▸ IFC (when there's a building), Game level for Godot, Unity, Unreal (one texture for everything); Paper ▸ Plans & elevations (PDF, DXF, SVG; when there's a building), Technical drawing, Papercraft (and a laser net) | in the Export sheet |
+| Export (G1): Picture ▸ Layered PSD, Ink as SVG; 3D ▸ IFC (when there's a building; *held*), Game level for Godot, Unity, Unreal (one texture for everything); Paper ▸ Plans & elevations (PDF, DXF, SVG; when there's a building), Technical drawing, Papercraft (and a laser net) (the IFC, the plans, the technical drawing and papercraft are held, rule 9) | in the Export sheet |
 | Share the project file | `Actions › Project file` |
 | Monitor window (Stage Manager, external display) | `Actions › open-monitor` |
 | Present: the stage fills the screen (a TV by AirPlay or a cable); a tap brings back its few controls (U8) | `Actions › present` |
 | Notes: the review pins on their spots; tap one for its thread (reply, Resolve, Delete) (U8) | `Actions › open-notes` |
 | Add a note: then tap the spot; the words, signed with your name (U8) | `Actions › add-note` |
 | Clear resolved notes (U8) | Actions, while the notes show and one is resolved |
-| Review over FaceTime: the project goes to the people on the call; everyone turns the same view and leaves notes (U8) | Actions, during a FaceTime call |
-| Your iPhone: use it as your face, a camera, the remote, an AR view, a room or object scanner (U8) | `Actions › open-phone` |
+| Review over FaceTime: the project goes to the people on the call; everyone turns the same view and leaves notes (U8) *(held: 1.0)* | Actions, during a FaceTime call |
+| Your iPhone: use it as your face, a camera, the remote, an AR view, a room or object scanner (U8) *(held: 1.0)* | `Actions › open-phone` |
 | Share for AR: the scene as a USDZ any iPhone or iPad opens in AR Quick Look (M12) | `Actions › share-ar` |
 | View in AR: the scene on your floor or table, in its own Look; table or life size, play, share (M12; an iPad with a rear camera) | Actions, on an iPad that can |
-| The Board: plan before building (below) | `Actions › open-board` |
+| The Board: plan before building (below) *(held: 1.0)* | `Actions › open-board` |
 | The Reference window (Q1): the whole scene from its own camera, a picture (Import, Paste, Clear; one finger pans it, two zoom it) or the front camera; drag its bar, size it by its corner or a pinch on the bar, ✕ closes it; Pick takes a colour from it; a two-finger tap hides it a moment | Actions ▸ Reference, or ⌘⌥R |
 | Rotoscope: a video behind the stage, its frame the one under the playhead (opacity, over the scene, start at the playhead); never exported (F1) | Actions ▸ Rotoscope, once a video is picked from Photos |
 | History scrubber, versions; over it, the selected thing's modelling steps to change (H1) | `Actions › open-history` |
@@ -165,9 +166,8 @@ Three short pages; the page is remembered.
 
 | Control | Walk |
 |---|---|
-| Set up for: Blank, Room, Print, Game, Study, Animation (what's in reach changes, never the project) | `scene-name › setup-room` |
+| Set up for: Blank, Room, Print, Game, Animation (what's in reach changes, never the project; Study was removed in 0.29, §D.24) | `scene-name › setup-room` |
 | | `scene-name › setup-game` |
-| | `scene-name › setup-study` |
 | Scenes: switch, new, duplicate, rename; copy this scene to another project | `scene-name › scene-rename` |
 | Physics: gravity, wind, a solid ground, when things start; the run and Keep it | `scene-name › gravity-moon` |
 | The objects (the outliner): pick, show or hide, lock; a row's hold menu (also: to top level, into a group, frame) | `scene-name › outliner` |
@@ -187,19 +187,20 @@ Three short pages; the page is remembered.
 | Add: a photo or video (a card in the world) | `Model › model-add › add-media` |
 | Add: a logo (an SVG: one solid a colour, the upper colours standing proud) | `Model › model-add › add-logo` |
 | Add: a drawing (PSD, PSB, Procreate): a painted sheet a layer, stacked in depth, ready to pin and rig (L2) | `Model › model-add › add-drawing` |
-| Add: a web page, a folder with one or a Lottie file, on a screen in the scene or over the frame (M12) | `Model › model-add › add-web` |
+| Add: a web page, a folder with one or a Lottie file, on a screen in the scene or over the frame (M12) *(held: 1.0)* | `Model › model-add › add-web` |
 | Add: effects (fire, sparks, smoke…) | `Model › model-add › add-fx-fire` |
 | Add: forces (fan, pull, whirl) and fluids (pour water, splash, billowing smoke, flames) | `Model › model-add › add-force-fan` |
 | | `Model › model-add › add-fluid-pour` |
 | Add: Building: walls, floor, door, window, stairs; roof, column, beam, railing, person, room name, terrain (G1) | `scene-name › setup-room › Model › model-add › build-roof` |
-| Add: Plans and the site: plans with areas, walk through, an underlay set to scale, match a photo, scan a room (G1) | `scene-name › setup-room › Model › model-add › room-plans` |
-| Add: Print: a jar with a screw-on lid, a bolt, a nut (M2…M10) (G1) | `scene-name › setup-print › Model › model-add › print-jar` |
+| Add: Plans and the site: walk through, match a photo (G1) | `scene-name › setup-room › Model › model-add › room-walk` |
+| Add: plans with areas, an underlay set to scale (G1) *(held: 1.0)* | `scene-name › setup-room › Model › model-add › room-plans` |
+| Add: scan a room, here or with the iPhone (G1) *(held: 1.0)* | a room scan, on an iPad with LiDAR (else the iPhone) |
+| Add: Print: a jar with a screw-on lid, a bolt, a nut (M2…M10) (G1) *(held: 1.0)* | `scene-name › setup-print › Model › model-add › print-jar` |
 | Add: Greybox: floors, walls, doorways, windows, ramps, stairs, blocks, pillars on the metre grid (G1) | `scene-name › setup-game › Model › model-add › greybox-ramp` |
 | Edit: Shape it: Shape, Brush, Cage, Bend (no buttons for faces, edges or corners: the Pencil touches the part, U6) | `Model › model-shape › model-verb-shape` |
 | | `Model › model-shape › model-verb-cage` |
 | Edit: 3D print: the printer, check for printing, repair | `Model › model-shape › print-check` |
-| Edit: 3D print, set up for Print (G1): overhangs, best way up, split, hollow, holes, words, fit, size, slicer, scan | `scene-name › setup-print › Model › model-shape › print-split` |
-| Edit: Study (G1): explode the chosen group (again: together), the forces | `scene-name › setup-study › Model › model-shape › study-explode` |
+| Edit: 3D print, set up for Print (G1): overhangs, best way up, split, hollow, holes (screw and threaded holes held), words, fit, size, slicer, scan | `scene-name › setup-print › Model › model-shape › print-split` |
 | Edit: Game (G1): freeze transforms | `scene-name › setup-game › Model › model-shape › game-freeze` |
 | Model's bar: Shape · Brush · Cage · Bend · Measure; the brushes (grab, smooth, inflate) and their mirror; the cage on, back or off; the bend's kind, axis and amount; the measurement and Keep, ✕ | shown at the bottom while the Model tool is on |
 | Touch and drag (U6): over the selected shape the Pencil lights the face, edge or corner under its tip; a drag pulls a face, rounds an edge, moves a corner; a tap picks it | the Pencil on the selected shape, with any tool but Draw |
@@ -390,7 +391,7 @@ titles are 3D text that sticks to the camera, screen effects are in Look ▸ Fin
 
 ## The Board
 
-A 2D sheet for planning, one in every project (CONTEXT §10.7). It covers the stage while it's open and has the same
+*Held in the App Store build until it passes on the device (rule 9).* A 2D sheet for planning, one in every project (CONTEXT §10.7). It covers the stage while it's open and has the same
 grammar: the board itself top left, the making tools top right, the sidebar, the hold menu. It is hmm-kit's
 `HmmBoardScreen`, so Cutaway's board will be the same board.
 
@@ -428,7 +429,7 @@ In this order. From Home (the gear) and from Actions.
 |---|---|
 | Pencil or hand: draw with a finger too (automatic otherwise: a finger makes until an Apple Pencil has touched); the Pencil's hover point; the quick menu's six slots | Settings ▸ Pencil and hands |
 | Every gesture and shortcut; show undo buttons | Settings ▸ Gestures |
-| Always show the sidebar, always full resolution, moving-around speed, dock the object panel, the joystick and its speed, the Board on or off | Settings ▸ Stage |
+| Always show the sidebar, always full resolution, moving-around speed, dock the object panel, the joystick and its speed, the Board on or off (not while the Board is held) | Settings ▸ Stage |
 | Your layout: the hand (left mirrors the chrome), each corner's buttons in your order or hidden (within the corner), the sidebar's place, Reset layout (U8) | Settings ▸ Yours ▸ Your layout |
 | Keyboard: any command's keys, pressed to set them (U8) | Settings ▸ Yours ▸ Keyboard |
 | New projects: the set-up, Look, units and brush the + makes (U8) | Settings ▸ Yours ▸ New projects |
