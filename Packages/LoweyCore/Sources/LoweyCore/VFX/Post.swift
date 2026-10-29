@@ -162,13 +162,26 @@ public struct PostSettings: Codable, Hashable, Sendable {
 }
 
 /// A timed effect on the whole frame: flash, shake, speed lines, zoom blur, glitch, and the drawn set (D-483): an impact
-/// frame, focus lines closing in on a point, Kirby dots crackling round it.
+/// frame, focus lines closing in on a point, Comic dots crackling round it.
 public struct ScreenEffect: Codable, Hashable, Sendable, Identifiable {
     public enum Kind: String, Codable, Sendable, CaseIterable, Identifiable {
         case flash, shake, speedLines, zoomBlur, glitch
-        case impact, focusLines, kirbyDots
+        case impact, focusLines, comicDots
 
         public var id: String { rawValue }
+
+        /// A kind by its name, the one Comic dots had before 0.30 included (Q2's legal pass renamed them).
+        public init?(named name: String) {
+            self.init(rawValue: name == "kirbyDots" ? Self.comicDots.rawValue : name)
+        }
+
+        public init(from decoder: Decoder) throws {
+            let name = try decoder.singleValueContainer().decode(String.self)
+            guard let kind = Self(named: name) else {
+                throw DecodingError.dataCorrupted(.init(codingPath: decoder.codingPath, debugDescription: "Unknown screen effect \(name)"))
+            }
+            self = kind
+        }
 
         public var title: String {
             switch self {
@@ -179,7 +192,7 @@ public struct ScreenEffect: Codable, Hashable, Sendable, Identifiable {
             case .glitch: "Glitch"
             case .impact: "Impact frame"
             case .focusLines: "Focus lines"
-            case .kirbyDots: "Kirby dots"
+            case .comicDots: "Comic dots"
             }
         }
 
@@ -192,7 +205,7 @@ public struct ScreenEffect: Codable, Hashable, Sendable, Identifiable {
             case .glitch: "tv"
             case .impact: "burst.fill"
             case .focusLines: "dot.circle.viewfinder"
-            case .kirbyDots: "circle.hexagongrid"
+            case .comicDots: "circle.hexagongrid"
             }
         }
 
@@ -205,12 +218,12 @@ public struct ScreenEffect: Codable, Hashable, Sendable, Identifiable {
             case .glitch: 0.5
             case .impact: 0.25
             case .focusLines: 1.2
-            case .kirbyDots: 1.5
+            case .comicDots: 1.5
             }
         }
 
         /// The drawn ones aim at a point of the frame, or follow a thing.
-        public var aims: Bool { self == .focusLines || self == .kirbyDots || self == .impact }
+        public var aims: Bool { self == .focusLines || self == .comicDots || self == .impact }
     }
 
     public var id: String
@@ -284,17 +297,17 @@ public struct ScreenState: Hashable, Sendable {
     /// them on twos, as a hand would.
     public var impact: Double = 0
     public var focusLines: Double = 0
-    public var kirbyDots: Double = 0
-    /// How far Kirby dots have spread out (0 at their start … 1 at their end).
-    public var kirbySpread: Double = 0
+    public var comicDots: Double = 0
+    /// How far Comic dots have spread out (0 at their start … 1 at their end).
+    public var comicSpread: Double = 0
     public var focusCenter = Vec2(0.5, 0.5)
-    public var kirbyCenter = Vec2(0.5, 0.5)
+    public var comicCenter = Vec2(0.5, 0.5)
     public var drawnSeed: UInt64 = 0
 
     public init() {}
 
     public var isEmpty: Bool {
-        flash == 0 && shake == .zero && speedLines == 0 && zoomBlur == 0 && glitch == 0 && impact == 0 && focusLines == 0 && kirbyDots == 0
+        flash == 0 && shake == .zero && speedLines == 0 && zoomBlur == 0 && glitch == 0 && impact == 0 && focusLines == 0 && comicDots == 0
     }
 }
 
@@ -346,14 +359,14 @@ public enum ScreenEffects {
                 let on = ParticleSimulator.unit(Noise.seed(effect.id), Int(frame), 3) > 0.25
                 state.glitch = max(state.glitch, on ? strength * envelope(local, attack: 0.05, release: 0.2) : 0)
                 state.glitchSeed = frame &* 2_654_435_761 &+ Noise.seed(effect.id)
-            case .impact, .focusLines, .kirbyDots:
+            case .impact, .focusLines, .comicDots:
                 break
             }
         }
         return state
     }
 
-    /// The drawn set: an impact frame is there at once and holds; focus lines close in, hold, open out; Kirby dots crackle
+    /// The drawn set: an impact frame is there at once and holds; focus lines close in, hold, open out; Comic dots crackle
     /// out from the point as they fade.
     static func drawn(_ effect: ScreenEffect, at time: Double, into state: inout ScreenState, place: Vec2) {
         let local = (time - effect.start) / effect.duration
@@ -365,10 +378,10 @@ public enum ScreenEffects {
         case .focusLines:
             state.focusLines = max(state.focusLines, strength * envelope(local, attack: 0.12, release: 0.25))
             state.focusCenter = place
-        case .kirbyDots:
-            state.kirbyDots = max(state.kirbyDots, strength * envelope(local, attack: 0.08, release: 0.35))
-            state.kirbySpread = local
-            state.kirbyCenter = place
+        case .comicDots:
+            state.comicDots = max(state.comicDots, strength * envelope(local, attack: 0.08, release: 0.35))
+            state.comicSpread = local
+            state.comicCenter = place
         default:
             break
         }

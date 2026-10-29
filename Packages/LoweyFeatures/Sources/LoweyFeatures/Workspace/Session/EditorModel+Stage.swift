@@ -13,9 +13,13 @@ extension EditorModel {
     /// Called by the stage host once the Metal view exists.
     func attach(_ stage: StageView) {
         self.stage = stage
-        stage.setViewpoint(baseScene.viewpoint, notify: false)
+        var viewpoint = baseScene.viewpoint
+        if AppIdentity.isUITesting, let view = AppIdentity.uiTestingView {
+            (viewpoint.yaw, viewpoint.pitch, viewpoint.distance) = view
+        }
+        stage.setViewpoint(viewpoint, notify: false)
         projection = baseScene.viewpoint.projection
-        viewYaw = baseScene.viewpoint.yaw
+        viewYaw = viewpoint.yaw
         stage.showsGrid = showsGrid
         stage.gizmoMode = gizmoMode
         stage.dynamicScale.enabled = !UserDefaults.standard.bool(forKey: AppSettings.fullResolutionStage)
@@ -45,6 +49,8 @@ extension EditorModel {
         input.smears = smears()
         input.paintFile = paintFiles
         input.weightView = weightView
+        // Bent surfaces at this moment: a run's cloth and jelly, made characters' face states and named regions.
+        input.simulated = displayed.simulated
         var request = FrameRequest(input: input, camera: stage.camera, frameIndex: timeline.frame(for: time))
         if let director {
             request.lens = displayed.scene.objects[director.id].map(CameraLens.init)
@@ -260,12 +266,17 @@ extension EditorModel {
     /// Where new things appear: the surface in the middle of the view (or under a point), else the ground.
     func dropPoint(at screenPoint: CGPoint? = nil) -> Vec3 {
         guard let stage else { return .zero }
+        // A UI test that sets the view exactly also wants new things exactly under what it looks at.
+        if screenPoint == nil, AppIdentity.isUITesting, AppIdentity.uiTestingView != nil {
+            return Vec3(stage.viewpoint.target.x, 0, stage.viewpoint.target.z)
+        }
         let point = screenPoint ?? CGPoint(x: stage.bounds.midX, y: stage.bounds.midY)
         if let (_, hit) = stage.pickObject(at: point), hit.normal.y > 0.6 {
             return snapping.grid ? Snapping.snapToGrid(hit.point, size: snapping.gridSize) : hit.point
         }
         let target = stage.viewpoint.target
-        let ground = stage.groundPoint(at: point) ?? baseScene.viewpoint.target
+        // A level or upward view never meets the ground: drop onto the ground under what the view looks at, not in mid-air.
+        let ground = stage.groundPoint(at: point) ?? Vec3(target.x, 0, target.z)
         let clamped = ground.distance(to: target) > 60 ? Vec3(target.x, 0, target.z) : ground
         return snapping.grid ? Snapping.snapToGrid(clamped, size: snapping.gridSize) : clamped
     }

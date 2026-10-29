@@ -4,6 +4,9 @@ import Foundation
 public enum AppSettings {
     /// Show where the Apple Pencil will land while it hovers (off: it would follow the Pencil everywhere).
     public static let pencilHoverPreview = "pencilHoverPreview"
+    /// Diagnostics ▸ Apple Pencil (Q2): the hover mark sits where a stroke begun there would land, not at the tip, so
+    /// any offset between the two shows on the device.
+    public static let pencilLandingDot = "pencilLandingDot"
     /// The Pencil, hovering, lights what a tap would land on (U5: on by default, "it adds much to the feel").
     public static let pencilHoverLights = "pencilHoverLights"
     /// Settings ▸ Gestures: undo and redo buttons in the sidebar (off: the two- and three-finger taps, U5).

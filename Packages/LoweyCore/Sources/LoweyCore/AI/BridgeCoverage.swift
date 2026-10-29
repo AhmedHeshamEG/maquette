@@ -48,7 +48,7 @@ public enum BridgeCoverage {
 
     private static let lookCommands: [String: Path] = [
         "look.nextLook": .verb("look"), "look.previousLook": .verb("look"), "look.impactFrame": .verb("effect"),
-        "look.focusLines": .verb("effect"), "look.kirbyDots": .verb("effect")
+        "look.focusLines": .verb("effect"), "look.comicDots": .verb("effect")
     ]
 
     private static let physicsCommands: [String: Path] = [
@@ -58,6 +58,7 @@ public enum BridgeCoverage {
     ]
 
     private static let characterCommands: [String: Path] = [
+        "character.makeItACharacter": .verb("character", op: "adopt"),
         "character.newCharacter": .verb("character", op: "new"), "character.newPerson": .verb("character", op: "new"),
         "character.newFourLegged": .verb("character", op: "new"), "character.newCreatureFromNothing": .verb("character", op: "new"),
         "character.mirrorParts": .verb("character", op: "add"), "character.rigItAgain": .verb("character", op: "rig"),

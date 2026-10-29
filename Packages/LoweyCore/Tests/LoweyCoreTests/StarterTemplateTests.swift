@@ -56,6 +56,22 @@ final class StarterTemplateTests: XCTestCase {
         XCTAssertLessThan(ground.r + ground.g + ground.b, 0.4, "a near-black ground")
     }
 
+    /// The first open (Q2): the horizon is in the picture (in its top third, at any iPad shape) and the world's middle,
+    /// where new things land, sits just under the centre.
+    func testABlankProjectOpensWithTheHorizonInView() throws {
+        let store = try ProjectStore(root: temporaryDirectory())
+        let (_, document) = try store.createProject(name: "Untitled", template: .blank)
+        let view = document.scene.viewpoint
+        XCTAssertEqual(view, StarterTemplate.firstOpen)
+        let half = view.fieldOfView / 2
+        // Up from the centre, as a share of half the picture's height (the field of view taken as the height's).
+        let horizon = tan(view.pitch * .pi / 180) / tan(half * .pi / 180)
+        XCTAssertGreaterThan(horizon, 0.33, "the horizon above the middle")
+        XCTAssertLessThan(horizon, 0.85, "the horizon inside the picture, with sky above it")
+        let below = atan(view.target.y / view.distance) * 180 / .pi
+        XCTAssertLessThan(below, half * 0.3, "the world's middle near the centre")
+    }
+
     func testSettingUpChangesWhatIsInReachNotTheProject() {
         var workspace = ProjectWorkspace(template: .blank, timeline: .transport, timelineHeight: 400)
         workspace.references = [ReferenceCard(id: "r", image: "assets/references/r.png", title: "Ref")]

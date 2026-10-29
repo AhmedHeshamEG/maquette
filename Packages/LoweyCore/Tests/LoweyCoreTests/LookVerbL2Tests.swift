@@ -34,9 +34,9 @@ final class LookVerbL2Tests: XCTestCase {
 
     func testDrawnEffectsAim() throws {
         let result = try run(#"{"do": "effect", "kind": "focusLines", "at": 2, "target": "Door"}, "#
-            + #"{"do": "effect", "kind": "kirbyDots", "at": 3, "center": [0.2, 0.7]}"#)
+            + #"{"do": "effect", "kind": "comicDots", "at": 3, "center": [0.2, 0.7]}"#)
         let effects = result.document.scene.timeline.effects
-        XCTAssertEqual(effects.map(\.kind), [.focusLines, .kirbyDots])
+        XCTAssertEqual(effects.map(\.kind), [.focusLines, .comicDots])
         XCTAssertEqual(effects[0].target, "door")
         XCTAssertEqual(effects[1].center, Vec2(0.2, 0.7))
         XCTAssertEqual(try run(#"{"do": "effect", "kind": "impact", "at": 1}"#).document.scene.timeline.effects.first?.duration, 0.25)

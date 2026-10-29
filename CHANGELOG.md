@@ -3,6 +3,28 @@
 All notable changes. 1.x grew in four phases (v0.1 → v1.4); 2.0 is the remaster, released as betas first. Maquette
 continues from 2.0 and numbers its phases again from 0.1 (each phase bumps the minor version until 1.0).
 
+## [0.30] — Maquette — Draw, characters and the legal pass (phase Q2, in progress)
+
+- **A line lands exactly under the Pencil**, on a surface seen at any angle and on the sheet: it was lifted along the
+  surface and slid sideways on screen. Diagnostics ▸ Apple Pencil ▸ Mark where a line lands shows where a line begun
+  under the hovering tip would land.
+- **Drawing lines no longer pops the drawing's panel up beside them**, where it took the next stroke.
+- **Comic Dots** is the new name of Look ▸ Finish's Kirby Dots; old projects and scripts open with them.
+- **Make it a character**: your own model becomes the character, where it stands, instead of a new one beside it. Its
+  dots are guessed from its shape; drag the wrong ones and Rig. Every Character entry does this when something is
+  selected.
+- **Name its parts**: tap a piece, or circle an area of a one-piece model with the Pencil, and call it its eye, mouth
+  or brow. Its own eye blinks, its own mouth makes the 14 mouth shapes and says a line, bent from its own geometry.
+- **A level view adds new shapes on the ground**, not in mid-air.
+- **Cloth, jelly and a made mouth's shapes show on the stage**, not only in exports.
+- **A new project opens on a place, not a sheet of lines**: seen from a few steps back with the horizon in view,
+  and the empty stage says once where things come from (Model, Draw, the Library).
+- **The house kit**: Library ▸ Things opens on Maquette's own things, 32 of them in seven groups (home, building,
+  nature, city, props, game blocks, scale people), soft and chunky so they sit together in every Look. Each lands as
+  a group of ordinary shapes you can take apart, recolour and paint. The free CC0 packs are under More sets.
+- **Library pictures drawn at the same moment each show their own thing**; before, tiles appearing together could
+  all show whichever was drawn last.
+
 ## [0.29] — Maquette — Import and export, closed; the held parts (phase X1)
 
 three.js both ways, and the app narrowed to what 1.0 is (CONTEXT §D.21–D.29): no new features until launch.

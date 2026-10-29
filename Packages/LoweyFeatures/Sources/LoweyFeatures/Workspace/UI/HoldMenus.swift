@@ -182,6 +182,10 @@ extension EditorModel {
         if objects.count == 1 {
             items.append(HmmHoldMenu.Item("Clone…", systemName: "square.grid.3x3.square", action: on(ids) { $0.cloneSelection() }))
             items.append(HmmHoldMenu.Item("Morph into…", systemName: "wand.and.rays", action: on(ids) { $0.beginMorph() }))
+            // His own model as his character (Q2), not a new one beside it.
+            if canMakeCharacter(objects[0]) {
+                items.append(HmmHoldMenu.Item("Make it a character", systemName: "face.smiling", action: on(ids) { $0.makeCharacter(from: ids[0]) }))
+            }
         }
         items.append(HmmHoldMenu.Item("To the ground", systemName: "arrow.down.to.line", action: on(ids) { $0.dropSelectionToGround() }))
         items.append(HmmHoldMenu.Item("Settle", systemName: "cube.transparent", action: on(ids) { $0.settleSelection() }))

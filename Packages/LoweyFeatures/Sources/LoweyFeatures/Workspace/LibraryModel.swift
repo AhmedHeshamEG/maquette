@@ -383,3 +383,29 @@ struct LibraryEntryEditor {
         change(&manifest[keyPath: path][index])
     }
 }
+
+// MARK: The house kit's pictures
+
+extension LibraryModel {
+    /// A house kit thing's picture: kept with the library's once it's made (named for the kit's version, so a changed
+    /// kit makes new ones).
+    static func houseThumbnailName(_ item: HouseKit.Item) -> String { "house-v1.\(item.rawValue).png" }
+
+    func houseThumbnail(_ item: HouseKit.Item) -> UIImage? { thumbnails[Self.houseThumbnailName(item)] }
+
+    /// Reads the picture kept from before, or makes it.
+    func requestHouseThumbnail(_ item: HouseKit.Item) {
+        let name = Self.houseThumbnailName(item)
+        guard thumbnails[name] == nil, !readingPictures.contains(name) else { return }
+        readingPictures.insert(name)
+        let url = store.thumbnailURL(named: name)
+        Task {
+            if let data = try? Data(contentsOf: url), let image = UIImage(data: data) {
+                thumbnails[name] = image
+            } else {
+                await renderThumbnail(of: HouseKit.build(item), named: name)
+            }
+            readingPictures.remove(name)
+        }
+    }
+}

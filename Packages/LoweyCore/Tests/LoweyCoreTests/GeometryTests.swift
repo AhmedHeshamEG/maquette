@@ -298,4 +298,24 @@ final class MeshRaycastTests: XCTestCase {
         let inside = try XCTUnwrap(MeshRaycast.intersect(Ray(origin: Vec3(0, 0.5, 0), direction: .unitX), mesh: cube))
         XCTAssertEqual(inside.normal.x, -1, accuracy: 1e-5)
     }
+
+    /// Q2: a line's lift keeps it on the ray under the tip at 0°, 45° and 70° to the surface, and keeps its clearance.
+    func testLiftStaysOnTheRayUnderTheTip() throws {
+        let plane = GuideSurface.plane(origin: .zero, normal: .unitY)
+        for degrees in [0.0, 45, 70] {
+            let tilt = degrees * .pi / 180
+            let eye = Vec3(0, cos(tilt), sin(tilt)) * 2
+            let ray = Ray(origin: eye, direction: Vec3(0.1, 0, 0) - eye)
+            let hit = try XCTUnwrap(plane.intersect(ray))
+            let lifted = hit.lifted(by: 0.01, along: ray)
+            let off = lifted - ray.origin
+            let sideways = (off - ray.direction * off.dot(ray.direction)).length
+            XCTAssertLessThan(sideways, 1e-9, "\(degrees)°: the lifted point left the ray")
+            XCTAssertEqual(lifted.y, 0.01, accuracy: 1e-9, "\(degrees)°: the clearance along the normal changed")
+        }
+        // Grazing: the lift along the ray stops at four times the clearance.
+        let grazing = Ray(origin: Vec3(0, 0.01, 2), direction: Vec3(0, -0.01, -2))
+        let hit = try XCTUnwrap(plane.intersect(grazing))
+        XCTAssertEqual((hit.lifted(by: 0.01, along: grazing) - hit.point).length, 0.04, accuracy: 1e-9)
+    }
 }

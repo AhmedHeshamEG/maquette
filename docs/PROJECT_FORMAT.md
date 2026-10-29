@@ -648,7 +648,7 @@ Schema 22 only added optional keys; files from schema 21 open unchanged, and Maq
   `watercolour`, `gouache`, `paperman`, `animeCel`, `cleanProduct`, `pixel`.
 - **The Finish** (`post`) can carry `misregistration` (bool), `boil` (0–1) and `benDay` (0–1); `texture` adds `newsprint`,
   `riso`, `canvas`. All off when missing.
-- **Screen effects** add the kinds `impact`, `focusLines` and `kirbyDots`, and `center` (`[x, y]`, 0–1 from the top left) or
+- **Screen effects** add the kinds `impact`, `focusLines` and `comicDots`, and `center` (`[x, y]`, 0–1 from the top left) or
   `target` (a thing's id: the middle of its box as the shot's camera sees it).
 - **The ground** can carry `surface` (absent: plain): `desert`, `grass`, `snow`, `rock`, `sand`, `pavement`, `waterEdge`,
   `roomFloor`.

@@ -43,7 +43,9 @@ extension SceneCompiler {
                     GPUMesh(device: device, mesh: part.mesh, joints: part.joints, weights: part.weights, label: part.name)
                 }
             }
-            guard let mesh = made else { continue }
+            guard let unbent = made else { continue }
+            // Its own eyes and mouth (Q2), on a model whose parts don't move with a skeleton of their own.
+            let mesh = part.isSkinned ? unbent : regionMesh(unbent, object: object, input: input)?.mesh ?? unbent
             var uniforms = base
             let material = model.materials.indices.contains(part.material) ? model.materials[part.material] : ImportedMaterial()
             var texture: MTLTexture?

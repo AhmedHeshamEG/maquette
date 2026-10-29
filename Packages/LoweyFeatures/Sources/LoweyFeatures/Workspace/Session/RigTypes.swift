@@ -10,6 +10,8 @@ public struct RigSettings: Equatable {
         case marks
         /// The brush adds the chosen bone's weight where it passes (or takes it away).
         case weights
+        /// A character's own parts (Q2): a tap names a piece, a circle with the Pencil names an area of a one-piece model.
+        case parts
 
         public var id: String { rawValue }
 
@@ -17,6 +19,7 @@ public struct RigSettings: Equatable {
             switch self {
             case .marks: "Pins and dots"
             case .weights: "Paint weights"
+            case .parts: "Name its parts"
             }
         }
 
@@ -24,6 +27,7 @@ public struct RigSettings: Equatable {
             switch self {
             case .marks: "smallcircle.filled.circle"
             case .weights: "paintbrush.pointed"
+            case .parts: "face.dashed"
             }
         }
     }
@@ -63,8 +67,17 @@ public struct RigSettings: Equatable {
     public var person: PersonRigging?
     /// A body shortcut being guessed (its dots appear when it lands; nothing says so).
     public var guessing: ObjectID?
+    /// A piece tapped, or an area circled, waiting for its name (Name its parts).
+    public var naming: PartNaming?
 
     public init() {}
+}
+
+/// What "Name its parts" is about to name (Q2): a piece of a character, or an area of one (the points circled, in the
+/// piece's own space).
+public struct PartNaming: Equatable {
+    public var piece: ObjectID
+    public var points: [Vec3]?
 }
 
 /// The dots of "Rig as a person", in the rig's space on the plane through the model's middle (the stage looks at its

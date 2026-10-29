@@ -5,14 +5,18 @@ import Foundation
 public struct SimulatedShapes: Sendable {
     public var meshes: [ObjectID: MeshData]
     public var fluids: [ObjectID: PhysicsFrames.FluidLook]
+    /// Named regions of models made characters, bent by their face states (`FaceRegions`): moved on the model's own
+    /// corners, before its rig and its paint.
+    public var regions: [ObjectID: [FaceRegionBend]]
 
-    public init(meshes: [ObjectID: MeshData] = [:], fluids: [ObjectID: PhysicsFrames.FluidLook] = [:]) {
+    public init(meshes: [ObjectID: MeshData] = [:], fluids: [ObjectID: PhysicsFrames.FluidLook] = [:], regions: [ObjectID: [FaceRegionBend]] = [:]) {
         self.meshes = meshes
         self.fluids = fluids
+        self.regions = regions
     }
 
     public static let none = SimulatedShapes()
-    public var isEmpty: Bool { meshes.isEmpty && fluids.isEmpty }
+    public var isEmpty: Bool { meshes.isEmpty && fluids.isEmpty && regions.isEmpty }
 }
 
 /// A run played at a moment: the places of real things and ragdolls' joint turns as live values (so keys, clips and

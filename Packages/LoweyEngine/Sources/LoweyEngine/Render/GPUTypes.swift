@@ -110,11 +110,11 @@ struct CompositeUniforms {
     var output = SIMD4<Float>.zero
     /// x = on, y = opacity, z = 1 over the scene, w = the video's aspect.
     var rotoscope = SIMD4<Float>.zero
-    /// The drawn set (L2): x = impact frame, y = focus lines, z = Kirby dots, w = the drawing's seed (on twos).
+    /// The drawn set (L2): x = impact frame, y = focus lines, z = Comic dots, w = the drawing's seed (on twos).
     var drawn = SIMD4<Float>.zero
-    /// xy = where focus lines and an impact aim, zw = where Kirby dots crackle (0…1 from the top left).
+    /// xy = where focus lines and an impact aim, zw = where Comic dots crackle (0…1 from the top left).
     var drawnPlace = SIMD4<Float>(0.5, 0.5, 0.5, 0.5)
-    /// x = how far Kirby dots have spread (0…1).
+    /// x = how far Comic dots have spread (0…1).
     var drawnSpread = SIMD4<Float>.zero
     /// x = how far the frame is zoomed so a shake's edges never show (1 under the Pixel Look: its blocks stay whole).
     var margin = SIMD4<Float>(1.04, 0, 0, 0)

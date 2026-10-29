@@ -100,9 +100,11 @@ public struct CharacterPart: Codable, Hashable, Sendable {
     /// A drawing of one face state ("oh", "blink", "angry"): it shows only while its part is in that state, in place of
     /// the part. Nil for the part itself.
     public var shows: String?
+    /// Areas of this piece named as parts of their own (Q2: a model made a character, its own eyes, mouth and brows).
+    public var regions: [CharacterRegion]
 
     public init(job: Job, side: Side = .middle, style: String, segment: Int = 0, limb: String = "", states: [String: FaceBend] = [:],
-                shows: String? = nil) {
+                shows: String? = nil, regions: [CharacterRegion] = []) {
         self.job = job
         self.side = side
         self.style = style
@@ -110,9 +112,10 @@ public struct CharacterPart: Codable, Hashable, Sendable {
         self.limb = limb
         self.states = states
         self.shows = shows
+        self.regions = regions
     }
 
-    private enum CodingKeys: String, CodingKey { case job, side, style, segment, limb, states, shows }
+    private enum CodingKeys: String, CodingKey { case job, side, style, segment, limb, states, shows, regions }
 
     public init(from decoder: Decoder) throws {
         let c = try decoder.container(keyedBy: CodingKeys.self)
@@ -123,6 +126,7 @@ public struct CharacterPart: Codable, Hashable, Sendable {
         limb = try c.decodeIfPresent(String.self, forKey: .limb) ?? ""
         states = try c.decodeIfPresent([String: FaceBend].self, forKey: .states) ?? [:]
         shows = try c.decodeIfPresent(String.self, forKey: .shows)
+        regions = try c.decodeIfPresent([CharacterRegion].self, forKey: .regions) ?? []
     }
 
     public func encode(to encoder: Encoder) throws {
@@ -134,6 +138,7 @@ public struct CharacterPart: Codable, Hashable, Sendable {
         if !limb.isEmpty { try c.encode(limb, forKey: .limb) }
         if !states.isEmpty { try c.encode(states, forKey: .states) }
         try c.encodeIfPresent(shows, forKey: .shows)
+        if !regions.isEmpty { try c.encode(regions, forKey: .regions) }
     }
 
     /// The face rig's role for this part: eyes blink and their pupils look through it ("eye.L"). Brows and mouths bend

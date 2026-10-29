@@ -135,4 +135,38 @@ final class RigTests: XCTestCase {
         add(report)
         XCTAssertLessThan(elapsed, 45)
     }
+
+    /// Q2: a model of its own becomes the character in place (no new character beside it), its dots guessed from its shape;
+    /// then an area of it is named as its mouth.
+    func testHisOwnModelBecomesTheCharacterInPlace() {
+        newProject()
+        tap("Library")
+        let search = element("library-search")
+        XCTAssertTrue(search.waitForExistence(timeout: 5))
+        search.tap()
+        search.typeText("astronaut")
+        XCTAssertTrue(tap("library-item-Astronaut a", timeout: 10), "a model standing in for his")
+        XCTAssertTrue(waitForTrail("sel=[Astronaut", timeout: 15), "the model is placed: \(trail)")
+        tap("Rig")
+        XCTAssertTrue(tap("rig-make-character"), "Rig offers to make the selected model a character")
+        XCTAssertTrue(waitForTrail("adopted=Astronaut", timeout: 5), "the model itself became the character: \(trail)")
+        let wrist = app.descendants(matching: .any).matching(NSPredicate(format: "label == %@", "a wrist")).firstMatch
+        XCTAssertTrue(wrist.waitForExistence(timeout: 10), "its dots are guessed on its front view")
+        _ = XCTWaiter.wait(for: [XCTestExpectation(description: "the guess lands")], timeout: 1.5)
+        shot("His model made a character, its dots guessed")
+        tap("rig-person-done")
+        XCTAssertTrue(waitForTrail("as a person"), "the rig was stored on the model itself: \(trail)")
+        XCTAssertFalse(trail.contains("cmd=New "), "no new character was made: \(trail)")
+
+        // Its own parts: an area circled with the Pencil (here a line across its middle) named as its mouth.
+        tap("Rig")
+        XCTAssertTrue(tap("rig-name-parts"), "Rig offers to name a character's parts")
+        XCTAssertTrue(waitForTrail("naming=Astronaut", timeout: 5), "naming its parts: \(trail)")
+        point(0.46, 0.5).press(forDuration: 0.05, thenDragTo: point(0.54, 0.52))
+        XCTAssertTrue(tap("name-part-mouth"), "the area waits for its name")
+        XCTAssertTrue(waitForTrail("named=mouth", timeout: 5), "the area is its mouth: \(trail)")
+        XCTAssertTrue(element("part-label-mouth").waitForExistence(timeout: 5), "its mouth wears a label")
+        XCTAssertFalse(element("add-missing-mouth").exists, "it has a mouth now, so none is offered")
+        shot("Its own mouth, named")
+    }
 }

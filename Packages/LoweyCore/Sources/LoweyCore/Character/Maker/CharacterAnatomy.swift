@@ -34,8 +34,10 @@ public struct CharacterAnatomy: Sendable {
         self.root = root
         start = object[.characterStart]?.stringValue.flatMap(CharacterStart.init(rawValue:)) ?? .nothing
         let rootWorld = scene.worldTransform(of: root)
+        // A thing made a character is its own body (Q2): the root counts as a piece when it has a job.
         pieces = scene.subtree(of: root).compactMap { id -> Piece? in
-            guard id != root, let child = scene.objects[id], let part = child.part else { return nil }
+            guard let child = scene.objects[id], let part = child.part else { return nil }
+            if id == root { return Piece(id: id, parent: nil, part: part, toRoot: .identity, bounds: shapeBounds(child)) }
             let toRoot = Transform.relative(world: scene.worldTransform(of: id), toParent: rootWorld)
             return Piece(id: id, parent: child.parent, part: part, toRoot: toRoot, bounds: shapeBounds(child))
         }

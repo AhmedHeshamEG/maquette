@@ -68,7 +68,9 @@ public enum ProjectHistory {
         // 24 → 25 only adds the optional web pieces (edited with `setKind`).
         24: { $0 },
         // 25 → 26 only adds a clone layout (`placed`, inside `setMotionDesign` and `insert`).
-        25: { $0 }
+        25: { $0 },
+        // 26 → 27 only adds parts' optional regions (inside `setPart`).
+        26: { $0 }
     ]
     /// The first schema journals were written with (Maquette 0.1).
     public static let firstJournalSchema = 4

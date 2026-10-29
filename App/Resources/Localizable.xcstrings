@@ -129,6 +129,22 @@
         }
       }
     },
+    "%@ is a character. Its parts are in its panel": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ è un personaggio. Le sue parti sono nel suo pannello"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ أصبح شخصية. أجزاؤه في لوحته"
+          }
+        }
+      }
+    },
     "%@ is a fill: give it a mask and paint the mask": {
       "localizations": {
         "it": {
@@ -2653,6 +2669,22 @@
         }
       }
     },
+    "An empty stage": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Una scena vuota"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "مسرح فارغ"
+          }
+        }
+      }
+    },
     "An empty stage, ready for anything.": {
       "localizations": {
         "it": {
@@ -3177,6 +3209,22 @@
         }
       }
     },
+    "Arm": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Braccio"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ذراع"
+          }
+        }
+      }
+    },
     "Arms": {
       "localizations": {
         "it": {
@@ -3625,6 +3673,22 @@
         }
       }
     },
+    "Ball": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Palla"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "كرة"
+          }
+        }
+      }
+    },
     "Ball joint": {
       "localizations": {
         "it": {
@@ -3669,6 +3733,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "الأشرطة تظليل مسطّح؛ والناعم ضوء كما في الصورة. صبغة الظل تضع لونًا واحدًا فوق كل ظل."
+          }
+        }
+      }
+    },
+    "Barrel": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Botte"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "برميل"
           }
         }
       }
@@ -3753,6 +3833,22 @@
         }
       }
     },
+    "Bed": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Letto"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "سرير"
+          }
+        }
+      }
+    },
     "Before going back %lld steps": {
       "localizations": {
         "it": {
@@ -3797,6 +3893,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "قبل: %lld"
+          }
+        }
+      }
+    },
+    "Bench": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Panchina"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "مقعد"
           }
         }
       }
@@ -4265,6 +4377,22 @@
         }
       }
     },
+    "Books": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Libri"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "كتب"
+          }
+        }
+      }
+    },
     "Booleans on solids (union, subtract, intersect). Copyright The Manifold Authors. Apache License 2.0.": {
       "localizations": {
         "it": {
@@ -4581,6 +4709,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "تم جلب %lld عنصرًا من three.js. %@"
+          }
+        }
+      }
+    },
+    "Brow": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sopracciglio"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "حاجب"
           }
         }
       }
@@ -4905,6 +5049,22 @@
         }
       }
     },
+    "Bush": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cespuglio"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "شجيرة"
+          }
+        }
+      }
+    },
     "Buttons": {
       "localizations": {
         "it": {
@@ -5129,6 +5289,22 @@
         }
       }
     },
+    "Car": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Auto"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "سيارة"
+          }
+        }
+      }
+    },
     "Card": {
       "localizations": {
         "it": {
@@ -5269,6 +5445,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "سلسلة"
+          }
+        }
+      }
+    },
+    "Chair": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sedia"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "كرسي"
           }
         }
       }
@@ -5641,6 +5833,22 @@
         }
       }
     },
+    "Circle its eye or its mouth with the Pencil": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cerchia il suo occhio o la sua bocca con la Pencil"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ارسم دائرة حول عينه أو فمه بالقلم"
+          }
+        }
+      }
+    },
     "Circle of 12": {
       "localizations": {
         "it": {
@@ -5669,6 +5877,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "دائرة من 8"
+          }
+        }
+      }
+    },
+    "City": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Città"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "المدينة"
           }
         }
       }
@@ -6245,6 +6469,22 @@
         }
       }
     },
+    "Coin": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Moneta"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "عملة"
+          }
+        }
+      }
+    },
     "Collage": {
       "localizations": {
         "it": {
@@ -6385,6 +6625,38 @@
           "stringUnit": {
             "state": "translated",
             "value": "مضمّنة في Maquette"
+          }
+        }
+      }
+    },
+    "Comic Dots": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Puntini da fumetto"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "نقاط الكوميكس"
+          }
+        }
+      }
+    },
+    "Comic dots": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Puntini da fumetto"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "نقاط الكوميكس"
           }
         }
       }
@@ -6641,6 +6913,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "الزوايا"
+          }
+        }
+      }
+    },
+    "Cottage": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Casetta"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "كوخ"
           }
         }
       }
@@ -7649,6 +7937,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "رافعة"
+          }
+        }
+      }
+    },
+    "Crate": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cassa"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "صندوق"
           }
         }
       }
@@ -9277,6 +9581,22 @@
         }
       }
     },
+    "Drag the dots that are wrong, then Rig": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Trascina i punti sbagliati, poi Rig"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "اسحب النقاط الخاطئة، ثم اضغط Rig"
+          }
+        }
+      }
+    },
     "Drag the handle to bend, twist, taper or bulge the thing": {
       "localizations": {
         "it": {
@@ -10249,6 +10569,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "يمكن إيقاف كل واحدة. لا شيء هنا يظهر على الشاشة: إنها تُحَسّ في اليد."
+          }
+        }
+      }
+    },
+    "Ear": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Orecchio"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "أذن"
           }
         }
       }
@@ -11453,6 +11789,22 @@
         }
       }
     },
+    "Extra": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Extra"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "إضافي"
+          }
+        }
+      }
+    },
     "Extra smoothing": {
       "localizations": {
         "it": {
@@ -11529,6 +11881,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "بثق"
+          }
+        }
+      }
+    },
+    "Eye": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Occhio"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "عين"
           }
         }
       }
@@ -11989,6 +12357,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "تبقى القدمان على الأرض"
+          }
+        }
+      }
+    },
+    "Fewer sets": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Meno set"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "مجموعات أقل"
           }
         }
       }
@@ -12689,6 +13073,22 @@
         }
       }
     },
+    "Floor lamp": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lampada da terra"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "مصباح أرضي"
+          }
+        }
+      }
+    },
     "Flow": {
       "localizations": {
         "it": {
@@ -12701,6 +13101,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "التدفق"
+          }
+        }
+      }
+    },
+    "Flower": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fiore"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "زهرة"
           }
         }
       }
@@ -13977,6 +14393,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "لعبة"
+          }
+        }
+      }
+    },
+    "Game blocks": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Blocchi di gioco"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "مكعبات الألعاب"
           }
         }
       }
@@ -17305,38 +17737,6 @@
         }
       }
     },
-    "Kirby Dots": {
-      "localizations": {
-        "it": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Punti Kirby"
-          }
-        },
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "نقاط كيربي"
-          }
-        }
-      }
-    },
-    "Kirby dots": {
-      "localizations": {
-        "it": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Punti Kirby"
-          }
-        },
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "نقاط كيربي"
-          }
-        }
-      }
-    },
     "Knife: draw a line across": {
       "localizations": {
         "it": {
@@ -17817,6 +18217,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "يسار ← يمين"
+          }
+        }
+      }
+    },
+    "Leg": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gamba"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ساق"
           }
         }
       }
@@ -19101,6 +19517,38 @@
         }
       }
     },
+    "Make It a Character": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rendilo un personaggio"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "اجعله شخصية"
+          }
+        }
+      }
+    },
+    "Make it a character": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rendilo un personaggio"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "اجعله شخصية"
+          }
+        }
+      }
+    },
     "Make it move": {
       "localizations": {
         "it": {
@@ -19353,6 +19801,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "رخام"
+          }
+        }
+      }
+    },
+    "Mark where a line lands": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Segna dove atterra una linea"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "علّم مكان نزول الخط"
           }
         }
       }
@@ -20025,6 +20489,22 @@
         }
       }
     },
+    "Model adds a shape, Draw sketches with the Pencil, the Library has ready-made things.": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Modella aggiunge una forma, Disegna schizza con la Pencil, la Libreria ha cose già pronte."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "النمذجة تضيف شكلًا، والرسم يرسم بالقلم، والمكتبة فيها أشياء جاهزة."
+          }
+        }
+      }
+    },
     "Model adds shapes, lights and words; Draw, Paint, Rig and Animate do the rest. Ready-made things are in the Library.": {
       "localizations": {
         "it": {
@@ -20245,6 +20725,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "بكسلات أكثر للتفاصيل الدقيقة، وأقل لملف خفيف. تبقى كل الطبقات."
+          }
+        }
+      }
+    },
+    "More sets": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Altri set"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "مجموعات أخرى"
           }
         }
       }
@@ -21025,6 +21521,22 @@
         }
       }
     },
+    "Mug": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tazza"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "كوب"
+          }
+        }
+      }
+    },
     "Multiply": {
       "localizations": {
         "it": {
@@ -21153,6 +21665,22 @@
         }
       }
     },
+    "Name its parts": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dai un nome alle sue parti"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "سمِّ أجزاءه"
+          }
+        }
+      }
+    },
     "Name on the hat": {
       "localizations": {
         "it": {
@@ -21181,6 +21709,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "سمِّ هذه النسخة"
+          }
+        }
+      }
+    },
+    "Nature": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Natura"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الطبيعة"
           }
         }
       }
@@ -21841,6 +22385,22 @@
         }
       }
     },
+    "No eyes yet: add them": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ancora niente occhi: aggiungili"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "لا عيون بعد: أضفها"
+          }
+        }
+      }
+    },
     "No guide": {
       "localizations": {
         "it": {
@@ -21901,6 +22461,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "لا حركة بعد"
+          }
+        }
+      }
+    },
+    "No mouth yet: add one": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ancora niente bocca: aggiungine una"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "لا فم بعد: أضف واحداً"
           }
         }
       }
@@ -25021,6 +25597,22 @@
         }
       }
     },
+    "Pick the character first": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Prima scegli il personaggio"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "اختر الشخصية أولاً"
+          }
+        }
+      }
+    },
     "Pick the edges first (Edge, then tap or loop them)": {
       "localizations": {
         "it": {
@@ -25113,6 +25705,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "اختر ما يتحرك ثم ارسم أين يذهب"
+          }
+        }
+      }
+    },
+    "Pick the thing to make a character first": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Prima scegli la cosa da rendere un personaggio"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "اختر أولاً الشيء الذي تريد جعله شخصية"
           }
         }
       }
@@ -25329,6 +25937,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "تثبيت في المشروع"
+          }
+        }
+      }
+    },
+    "Pine": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pino"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "صنوبر"
           }
         }
       }
@@ -26017,6 +26641,22 @@
         }
       }
     },
+    "Potted plant": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pianta in vaso"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "نبتة في أصيص"
+          }
+        }
+      }
+    },
     "Pour": {
       "localizations": {
         "it": {
@@ -26377,6 +27017,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "الخصائص"
+          }
+        }
+      }
+    },
+    "Props": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Oggetti"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "أغراض"
           }
         }
       }
@@ -28993,6 +29649,22 @@
         }
       }
     },
+    "Rug": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tappeto"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "سجادة"
+          }
+        }
+      }
+    },
     "Run": {
       "localizations": {
         "it": {
@@ -29533,6 +30205,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "المقياس (1 م مشيًا = %@ م)"
+          }
+        }
+      }
+    },
+    "Scale people": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Persone in scala"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "أشخاص للمقياس"
           }
         }
       }
@@ -31185,6 +31873,22 @@
         }
       }
     },
+    "Shelf": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Scaffale"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "رف"
+          }
+        }
+      }
+    },
     "Shell": {
       "localizations": {
         "it": {
@@ -32509,6 +33213,22 @@
         }
       }
     },
+    "Sofa": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Divano"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "أريكة"
+          }
+        }
+      }
+    },
     "Soft": {
       "localizations": {
         "it": {
@@ -33725,6 +34445,22 @@
         }
       }
     },
+    "Stool": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sgabello"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "مقعد صغير"
+          }
+        }
+      }
+    },
     "Stop": {
       "localizations": {
         "it": {
@@ -33881,6 +34617,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "تنعيم المسار"
+          }
+        }
+      }
+    },
+    "Street lamp": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lampione"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "عمود إنارة"
           }
         }
       }
@@ -34493,6 +35245,22 @@
         }
       }
     },
+    "Table": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tavolo"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "طاولة"
+          }
+        }
+      }
+    },
     "Tags, comma separated": {
       "localizations": {
         "it": {
@@ -34681,6 +35449,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "المس نقطة على كل مفصل (كتف، مرفق، معصم)، أو ضع دبابيس حيث يثبت شيء ليّن وينثني. اسحبها لتضعه في وضعية."
+          }
+        }
+      }
+    },
+    "Tap a dot where two pieces hinge": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tocca un punto dove due pezzi si articolano"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "اضغط نقطة حيث تنثني قطعتان"
           }
         }
       }
@@ -39125,6 +39909,22 @@
         }
       }
     },
+    "Tree": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Albero"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "شجرة"
+          }
+        }
+      }
+    },
     "Triangle": {
       "localizations": {
         "it": {
@@ -41173,6 +41973,22 @@
         }
       }
     },
+    "While the Pencil hovers, its point sits where a line begun there would land. It should stay under the tip.": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mentre la Pencil è sospesa, il suo punto sta dove atterrerebbe una linea iniziata lì. Deve restare sotto la punta."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "أثناء تحويم القلم، تظهر نقطته حيث سينزل خط يبدأ من هناك. يجب أن تبقى تحت الطرف."
+          }
+        }
+      }
+    },
     "Whip pan": {
       "localizations": {
         "it": {
@@ -41409,6 +42225,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "جدار بنافذة"
+          }
+        }
+      }
+    },
+    "Wing": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ala"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "جناح"
           }
         }
       }

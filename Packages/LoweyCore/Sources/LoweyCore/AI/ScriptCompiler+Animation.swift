@@ -186,7 +186,7 @@ extension ScriptState {
     }
 
     mutating func effect(_ action: JSONValue) throws {
-        guard let kind = string(action, "kind").flatMap(ScreenEffect.Kind.init(rawValue:)) else {
+        guard let kind = string(action, "kind").flatMap(ScreenEffect.Kind.init(named:)) else {
             throw fail("unknown effect (\(ScreenEffect.Kind.allCases.map(\.rawValue).joined(separator: ", ")))")
         }
         var copy = timeline

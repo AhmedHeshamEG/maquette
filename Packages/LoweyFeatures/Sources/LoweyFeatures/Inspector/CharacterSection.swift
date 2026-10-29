@@ -12,6 +12,9 @@ struct CharacterSection: View {
 
     var body: some View {
         if editor.makerCharacter != nil {
+            // Its own eyes, mouth and brows, pointed at on the model (Q2).
+            HmmPillButton("Name its parts", systemName: RigSettings.Mode.parts.systemImage) { editor.startNamingParts() }
+                .accessibilityIdentifier("character-name-parts")
             parts
             if let part = editor.selectedPart?.part { styles(part) }
             VStack(alignment: .leading, spacing: 0) {

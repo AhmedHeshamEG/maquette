@@ -1206,7 +1206,7 @@
             }
           },
           "then": {
-            "description": "A humanoid puppet from a recipe; or, with \"op\", K1's character maker: \"new\" from a start (person, fourLegs, wings, blob, nothing), \"add\" a part to a character or any thing (paired parts mirrored unless symmetric is false), \"style\" (another of the part's set), \"remove\", \"assign\" (a thing becomes a part, or the drawing of a face state), \"state\" (bend a face state: open, wide, round, smile, lift, tilt, close; or reset), \"proportion\" (by a factor or to metres), \"say\" (lip sync a typed line), \"rig\". Changes to parts rig it again in the same step.",
+            "description": "A humanoid puppet from a recipe; or, with \"op\", K1's character maker: \"new\" from a start (person, fourLegs, wings, blob, nothing), \"adopt\" (the target itself becomes the character, whole, keeping its own rig), \"region\" (an area of a piece, \"min\" to \"max\" in its own space, named as its eye, mouth or brow: it blinks and talks with its own geometry), \"add\" a part to a character or any thing (paired parts mirrored unless symmetric is false), \"style\" (another of the part's set), \"remove\", \"assign\" (a thing becomes a part, or the drawing of a face state), \"state\" (bend a face state: open, wide, round, smile, lift, tilt, close; or reset), \"proportion\" (by a factor or to metres), \"say\" (lip sync a typed line), \"rig\". Changes to parts rig it again in the same step.",
             "properties": {
               "name": {
                 "type": "string"
@@ -1223,6 +1223,8 @@
               "op": {
                 "enum": [
                   "new",
+                  "adopt",
+                  "region",
                   "add",
                   "style",
                   "remove",
@@ -1331,6 +1333,12 @@
               },
               "language": {
                 "type": "string"
+              },
+              "min": {
+                "$ref": "#/$defs/point"
+              },
+              "max": {
+                "$ref": "#/$defs/point"
               }
             }
           }
@@ -1694,7 +1702,7 @@
             }
           },
           "then": {
-            "description": "A screen effect; impact, focusLines and kirbyDots aim at a thing (target) or a point (center, 0…1 from the top left).",
+            "description": "A screen effect; impact, focusLines and comicDots aim at a thing (target) or a point (center, 0…1 from the top left).",
             "properties": {
               "kind": {
                 "enum": [
@@ -1705,7 +1713,7 @@
                   "glitch",
                   "impact",
                   "focusLines",
-                  "kirbyDots"
+                  "comicDots"
                 ]
               },
               "at": {

@@ -135,13 +135,19 @@ extension StageGestures {
     /// UI tests only (the Pencil-accuracy test): where the touch began and where its first point landed, on screen.
     private func noteLanding(_ recognizer: StrokeGestureRecognizer, editor: EditorModel, stage: StageView) {
         guard let touch = recognizer.samples.first?.location else { return }
-        guard let first = strokePoints.first, let normal = strokeNormals.first else {
+        guard let first = strokePoints.first else {
             editor.trail("unlanded=\(Int(touch.x.rounded())),\(Int(touch.y.rounded())),\(recognizer.samples.count)")
             return
         }
-        guard let landed = stage.screenPoint(of: first - normal * (editor.tool == .draw ? 0 : 0.002)) else { return }
-        editor.trail("land=\(Int(touch.x.rounded())),\(Int(touch.y.rounded()))>\(Int(landed.x.rounded())),\(Int(landed.y.rounded()))"
-            + (strokeOnSurface ? ",surface" : ",sheet"))
+        // Points are lifted back along their ray, so the stored point itself must sit under the touch.
+        guard let landed = stage.screenPoint(of: first) else { return }
+        // The angle between the view ray and the surface's normal, so the test knows it drew at 0°, 45° and 70°.
+        var angle = 0.0
+        if let ray = stage.worldRay(at: touch), let normal = strokeNormals.first {
+            angle = acos(min(abs(normal.dot(ray.direction)), 1)) * 180 / .pi
+        }
+        let numbers = [touch.x, touch.y, landed.x, landed.y, angle].map { String(format: "%.1f", Double($0)) }
+        editor.trail("land=\(numbers[0]),\(numbers[1])>\(numbers[2]),\(numbers[3])" + (strokeOnSurface ? ",surface" : ",sheet") + ",\(numbers[4])")
     }
 
     /// A touch that barely moved and lifted quickly.
@@ -222,6 +228,17 @@ extension StageGestures {
         strokeOnSurface = false
     }
 
+    /// Diagnostics ▸ Apple Pencil (Q2): where a stroke begun at this point would land, back on screen. Under the tip
+    /// when the ray and the drawn picture agree.
+    func landingOnScreen(at point: CGPoint, editor: EditorModel, stage: StageView) -> CGPoint? {
+        guard let ray = stage.worldRay(at: point) else { return nil }
+        if let surface = surfaceUnder(point, editor: editor, stage: stage) {
+            return stage.screenPoint(of: surface.hit.lifted(by: 0.002, along: ray))
+        }
+        guard let sheet = editor.currentSheet, let hit = editor.land(ray, on: sheet, objectMesh: editor.sheetObjectMesh(sheet)) else { return nil }
+        return stage.screenPoint(of: hit.lifted(by: 0.002, along: ray))
+    }
+
     /// The surface under a point a line or a solid can land on: a thing's (not an ink drawing's: lines drawn over lines
     /// go on the sheet), while drawing lines or solids.
     private func surfaceUnder(_ point: CGPoint, editor: EditorModel, stage: StageView) -> (id: ObjectID, hit: SurfaceHit, mesh: MeshData)? {
@@ -240,7 +257,7 @@ extension StageGestures {
                   let hit = editor.land(ray, on: sheet, objectMesh: strokeTargetMesh) ?? carriedOn(ray) else { continue }
             // Tubes sit on the surface instead of half buried in it.
             let lift = editor.tool == .draw && editor.draw.style == .tube ? editor.draw.width * 0.5 : 0.002
-            strokePoints.append(hit.point + hit.normal * lift)
+            strokePoints.append(hit.lifted(by: lift, along: ray))
             strokePressures.append(sample.pressure)
             strokeNormals.append(hit.normal)
             strokeAltitudes.append(sample.altitude)

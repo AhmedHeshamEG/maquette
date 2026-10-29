@@ -61,18 +61,19 @@ verbs = {
     "blob": ("A Blob character (a likeness or a recipe).", {"name": s, "likeness": s, "at": point, "facing": n, "label": s,
                                                            "recipe": {"type": "object"}}, []),
     "character": ("A humanoid puppet from a recipe; or, with \"op\", K1's character maker: \"new\" from a start (person, fourLegs, "
-                  "wings, blob, nothing), \"add\" a part to a character or any thing (paired parts mirrored unless symmetric is false), "
+                  "wings, blob, nothing), \"adopt\" (the target itself becomes the character, whole, keeping its own rig), \"region\" (an area of a piece, \"min\" to \"max\" in its own space, named as its eye, mouth or brow: "
+                  "it blinks and talks with its own geometry), \"add\" a part to a character or any thing (paired parts mirrored unless symmetric is false), "
                   "\"style\" (another of the part's set), \"remove\", \"assign\" (a thing becomes a part, or the drawing of a face "
                   "state), \"state\" (bend a face state: open, wide, round, smile, lift, tilt, close; or reset), \"proportion\" (by a "
                   "factor or to metres), \"say\" (lip sync a typed line), \"rig\". Changes to parts rig it again in the same step.",
                   {"name": s, "at": point, "facing": n, "recipe": {"type": "object"},
-                   "op": {"enum": ["new", "add", "style", "remove", "assign", "state", "proportion", "say", "rig"]},
+                   "op": {"enum": ["new", "adopt", "region", "add", "style", "remove", "assign", "state", "proportion", "say", "rig"]},
                    "start": {"enum": ["person", "fourLegs", "wings", "blob", "nothing"]}, "target": tgt, "character": tgt,
                    "part": {"enum": ["head", "eye", "brow", "mouth", "nose", "ear", "hair", "body", "arm", "leg", "tail", "wing", "extra"]},
                    "style": s, "symmetric": b, "side": {"enum": ["left", "right", "middle"]}, "state": s,
                    "bend": {"type": "object", "properties": {k: n for k in ["open", "wide", "round", "smile", "lift", "tilt", "close"]}},
                    "reset": b, "measure": {"enum": ["height", "head", "body", "waist", "arms", "legs"]}, "by": n, "to": n,
-                   "line": s, "language": s}, []),
+                   "line": s, "language": s, "min": point, "max": point}, []),
     "particles": ("An emitter.", {"preset": s, "name": s, "at": point, "amount": n, "time": time}, ["preset"]),
     "light": ("A light: a bulb (point), a spot, a sun, or a soft panel (a rectangle, \"size\" in metres) aimed at a thing.",
               {"type": {"enum": ["point", "bulb", "spot", "sun", "panel"]}, "name": s, "at": point, "color": color, "intensity": n,
@@ -116,8 +117,8 @@ verbs = {
                                                  "follow": tgt, "color": color}, ["shape"]),
     "flipbook": ("Drawn FX from the library.", {"fx": {"enum": fx}, "anchor": {"anyOf": [tgt, v3]}, "at": time, "until": time,
                                                "color": color, "frames": n, "name": s}, ["fx"]),
-    "effect": ("A screen effect; impact, focusLines and kirbyDots aim at a thing (target) or a point (center, 0…1 from the top left).",
-               {"kind": {"enum": ["flash", "shake", "speedLines", "zoomBlur", "glitch", "impact", "focusLines", "kirbyDots"]}, "at": time,
+    "effect": ("A screen effect; impact, focusLines and comicDots aim at a thing (target) or a point (center, 0…1 from the top left).",
+               {"kind": {"enum": ["flash", "shake", "speedLines", "zoomBlur", "glitch", "impact", "focusLines", "comicDots"]}, "at": time,
                 "duration": n, "strength": n, "color": color, "target": tgt, "center": {"type": "array", "items": n}}, ["kind"]),
     "marker": ("A timeline marker.", {"name": s, "at": time}, ["at"]),
     "captions": ("Captions on/off and style.", {"enabled": b, "style": s, "position": s}, []),

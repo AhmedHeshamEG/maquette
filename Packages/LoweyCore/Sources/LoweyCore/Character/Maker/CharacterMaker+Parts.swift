@@ -89,6 +89,26 @@ public extension CharacterMaker {
         return (group.id, commands, after)
     }
 
+    /// The style of a body that is the thing itself (Make it a character, Q2): the model is the character, not a part
+    /// of a new group around it.
+    static let ownBodyStyle = "own"
+
+    /// Make it a character (Q2 step 2): the thing itself becomes the character, whole, where it stands. Its rig is its
+    /// own (guessed from its shape, the wrong dots dragged), so the maker never rebuilds it; parts added later ride its
+    /// joints. Nil when it's already a character or part of one, or isn't something a character can be.
+    static func adopt(_ target: ObjectID, in scene: Scene) -> EditCommand? {
+        guard let thing = scene.objects[target], character(of: target, in: scene) == nil else { return nil }
+        switch thing.kind {
+        case .primitive, .mesh, .group, .asset, .drawing: break
+        default: return nil
+        }
+        let properties = [PropertyChange(object: target, key: .characterStart, value: .enumeration(CharacterStart.nothing.rawValue)),
+                          PropertyChange(object: target, key: .mouth, value: .enumeration(Viseme.X.rawValue)),
+                          PropertyChange(object: target, key: .mouthShape, value: .enumeration(MouthShape.neutral.rawValue)),
+                          PropertyChange(object: target, key: .autoBlink, value: .bool(true))]
+        return .batch("Make \(thing.name) a character", [.setProperties(properties), .setPart(target, CharacterPart(job: .body, style: ownBodyStyle))])
+    }
+
     /// Lifts everything but the new legs so the feet reach the ground.
     internal static func raising(_ anatomy: CharacterAnatomy, by rise: Double, except job: CharacterPart.Job) -> EditCommand {
         // Only the character's own children move; what hangs from them follows.

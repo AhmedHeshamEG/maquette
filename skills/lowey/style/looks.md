@@ -32,8 +32,8 @@ The ground's colour follows the choice; change it after with the World if the pa
 
 ## Drawn effects
 
-`{"do":"effect","kind":"impact|focusLines|kirbyDots","at":{"word":"Boom"},"target":"Hero"}`: an impact frame (two tones that
-flip each drawing, a burst from the hit), focus lines closing in on the thing, Kirby dots crackling round it. They follow
+`{"do":"effect","kind":"impact|focusLines|comicDots","at":{"word":"Boom"},"target":"Hero"}`: an impact frame (two tones that
+flip each drawing, a burst from the hit), focus lines closing in on the thing, Comic dots crackling round it. They follow
 the target as it moves (or `"center":[0.5,0.4]` from the top left). One per beat, at most: they're punctuation.
 
 ## A drawing from Procreate or Photoshop

@@ -71,14 +71,16 @@ public enum LoweySchema {
     ///     `setMotionDesign` and `setLinks` commands.
     /// 23: Maquette 0.24's Looks and library: Looks' `paint` and `pixel`, shading's `shadowTint` and `reflection`, the
     ///     Finish's `misregistration`, `boil`, `benDay` and three print textures, screen effects' `impact`, `focusLines` and
-    ///     `kirbyDots` with a `center` or `target`, the ground's `surface`, the library's `styles`, `effects`, `parts` and
+    ///     `comicDots` with a `center` or `target`, the ground's `surface`, the library's `styles`, `effects`, `parts` and
     ///     `origins`.
     /// 24: Maquette 0.26's review notes: scenes' `notes` (a pin on a spot, its thread, resolved or not) and the
     ///     `setNotes` command.
     /// 25: Maquette 0.28's web layer: cards' and overlays' `web` (a page, a three.js scene or a Lottie file on the
     ///     timeline's clock).
     /// 26: Maquette 0.29's clones as a file placed them: the `placed` clone layout.
-    public static let currentVersion = 26
+    /// 27: Maquette 0.30's own parts: parts' `regions` (an area of a model made a character, named as its eye, mouth or
+    ///     brow).
+    public static let currentVersion = 27
 
     public static let migrations: [Migration] = [
         Migration(kind: .scene, from: 0, transform: liftSceneV0),
@@ -180,7 +182,11 @@ public enum LoweySchema {
         // 25 → 26 adds a clone layout; nothing older changes shape.
         Migration(kind: .scene, from: 25) { $0 },
         Migration(kind: .project, from: 25) { $0 },
-        Migration(kind: .library, from: 25) { $0 }
+        Migration(kind: .library, from: 25) { $0 },
+        // 26 → 27 only adds parts' optional regions.
+        Migration(kind: .scene, from: 26) { $0 },
+        Migration(kind: .project, from: 26) { $0 },
+        Migration(kind: .library, from: 26) { $0 }
     ] + unchangedSince(.brushes) + unchangedSince(.materials)
 
     /// A file kind whose payload hasn't changed shape at any version: every step keeps it as it is (D-339; the
