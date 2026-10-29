@@ -19,6 +19,9 @@ continues from 2.0 and numbers its phases again from 0.1 (each phase bumps the m
 - **Cloth, jelly and a made mouth's shapes show on the stage**, not only in exports.
 - **A new project opens on a place, not a sheet of lines**: seen from a few steps back with the horizon in view,
   and the empty stage says once where things come from (Model, Draw, the Library).
+- **The house kit**: Library ▸ Things opens on Maquette's own things, 32 of them in seven groups (home, building,
+  nature, city, props, game blocks, scale people), soft and chunky so they sit together in every Look. Each lands as
+  a group of ordinary shapes you can take apart, recolour and paint. The free CC0 packs are under More sets.
 
 ## [0.29] — Maquette — Import and export, closed; the held parts (phase X1)
 

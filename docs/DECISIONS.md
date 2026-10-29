@@ -3881,3 +3881,12 @@ back, a 45° lens), so the horizon sits in the top of the picture and the world'
 (`StarterTemplateTests` checks both). Only the blank template changed; a new scene and the other set-ups keep their
 views. The empty stage shows one quiet card naming where things come from; it goes as soon as anything is on the
 stage or a tool is in the hand, and Settings' instructions switch hides it, as every hint.
+
+**D-618 — The house kit's first slice.** M14's starting library, folded into Q2 (CONTEXT §10.9). The house kit is
+code (`HouseKit`): 32 things in seven categories, each a group of bevelled primitives built from a size, so the parts
+that read as material (a leg, a board, a wall's frame) keep their thickness while counts (shelves, steps, slats,
+cushions) follow the size. They land as plain groups, not linked prefabs: taken apart, recoloured and painted like
+anything made by hand. Things opens on them; the CC0 Kit folds under More sets and search still finds it. Their
+pictures are rendered once on the iPad and kept with the library's, named for the kit's version, so a changed kit
+renders new ones. **Still to come in M14:** handles on the stage that rebuild a thing at a new size (the builders
+already take one), pictures baked in CI and shipped, the bridge's verb for them, and starter projects per set-up.

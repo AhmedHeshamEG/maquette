@@ -27,6 +27,21 @@ final class SmokeTests: XCTestCase {
         element.tap()
     }
 
+    private func element(_ identifier: String) -> XCUIElement {
+        app.descendants(matching: .any)[identifier].firstMatch
+    }
+
+    private var trail: String { element("debug-trail").label }
+
+    private func waitForTrail(_ text: String, timeout: TimeInterval) -> Bool {
+        let deadline = Date().addingTimeInterval(timeout)
+        while Date() < deadline {
+            if trail.contains(text) { return true }
+            _ = XCTWaiter.wait(for: [XCTestExpectation(description: "trail")], timeout: 0.2)
+        }
+        return false
+    }
+
     /// The + on Home goes straight to a blank project in the dark studio, named by itself ("Untitled").
     private func newProject() {
         tap("new-project")
@@ -45,14 +60,32 @@ final class SmokeTests: XCTestCase {
         tap("Diagnostics")
     }
 
+    /// Q2: Things opens on the house kit; a tap places the thing, whole and selected. The CC0 packs wait behind More sets.
+    func testThingsOpensOnTheHouseKit() {
+        launch()
+        newProject()
+        tap("Library")
+        tap("library-things")
+        XCTAssertTrue(element("house-kit-categories").waitForExistence(timeout: 5), "the house kit leads")
+        XCTAssertFalse(element("kit-sets").exists, "the free packs are folded away")
+        tap("house-kit-table")
+        XCTAssertTrue(waitForTrail("placed=table", timeout: 10), "the table is placed: \(trail)")
+        XCTAssertTrue(waitForTrail("sel=[Table", timeout: 10), "and selected: \(trail)")
+        shot("The house kit")
+        tap("more-sets")
+        XCTAssertTrue(element("kit-sets").waitForExistence(timeout: 5), "More sets opens the free packs")
+    }
+
     func testCreateBuildUndoAndReopen() {
         launch()
         shot("Home")
         newProject()
         shot("Empty stage")
+        XCTAssertTrue(element("empty-stage-hint").waitForExistence(timeout: 5), "a new project says where things come from")
         tap("Model")
         tap("add-cube")
         XCTAssertTrue(app.otherElements["inspector"].waitForExistence(timeout: 5), "the inspector floats in beside the new cube")
+        XCTAssertFalse(element("empty-stage-hint").exists, "the card goes once something is on the stage")
         shot("A cube")
         tap("Model")
         tap("add-sphere")

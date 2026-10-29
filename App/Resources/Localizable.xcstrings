@@ -3673,6 +3673,22 @@
         }
       }
     },
+    "Ball": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Palla"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "كرة"
+          }
+        }
+      }
+    },
     "Ball joint": {
       "localizations": {
         "it": {
@@ -3717,6 +3733,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "الأشرطة تظليل مسطّح؛ والناعم ضوء كما في الصورة. صبغة الظل تضع لونًا واحدًا فوق كل ظل."
+          }
+        }
+      }
+    },
+    "Barrel": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Botte"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "برميل"
           }
         }
       }
@@ -3801,6 +3833,22 @@
         }
       }
     },
+    "Bed": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Letto"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "سرير"
+          }
+        }
+      }
+    },
     "Before going back %lld steps": {
       "localizations": {
         "it": {
@@ -3845,6 +3893,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "قبل: %lld"
+          }
+        }
+      }
+    },
+    "Bench": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Panchina"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "مقعد"
           }
         }
       }
@@ -4309,6 +4373,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "العظام"
+          }
+        }
+      }
+    },
+    "Books": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Libri"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "كتب"
           }
         }
       }
@@ -4969,6 +5049,22 @@
         }
       }
     },
+    "Bush": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cespuglio"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "شجيرة"
+          }
+        }
+      }
+    },
     "Buttons": {
       "localizations": {
         "it": {
@@ -5193,6 +5289,22 @@
         }
       }
     },
+    "Car": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Auto"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "سيارة"
+          }
+        }
+      }
+    },
     "Card": {
       "localizations": {
         "it": {
@@ -5333,6 +5445,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "سلسلة"
+          }
+        }
+      }
+    },
+    "Chair": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sedia"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "كرسي"
           }
         }
       }
@@ -5749,6 +5877,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "دائرة من 8"
+          }
+        }
+      }
+    },
+    "City": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Città"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "المدينة"
           }
         }
       }
@@ -6325,6 +6469,22 @@
         }
       }
     },
+    "Coin": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Moneta"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "عملة"
+          }
+        }
+      }
+    },
     "Collage": {
       "localizations": {
         "it": {
@@ -6753,6 +6913,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "الزوايا"
+          }
+        }
+      }
+    },
+    "Cottage": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Casetta"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "كوخ"
           }
         }
       }
@@ -7761,6 +7937,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "رافعة"
+          }
+        }
+      }
+    },
+    "Crate": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cassa"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "صندوق"
           }
         }
       }
@@ -12169,6 +12361,22 @@
         }
       }
     },
+    "Fewer sets": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Meno set"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "مجموعات أقل"
+          }
+        }
+      }
+    },
     "Files": {
       "localizations": {
         "paint-it": {
@@ -12865,6 +13073,22 @@
         }
       }
     },
+    "Floor lamp": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lampada da terra"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "مصباح أرضي"
+          }
+        }
+      }
+    },
     "Flow": {
       "localizations": {
         "it": {
@@ -12877,6 +13101,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "التدفق"
+          }
+        }
+      }
+    },
+    "Flower": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fiore"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "زهرة"
           }
         }
       }
@@ -14153,6 +14393,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "لعبة"
+          }
+        }
+      }
+    },
+    "Game blocks": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Blocchi di gioco"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "مكعبات الألعاب"
           }
         }
       }
@@ -20473,6 +20729,22 @@
         }
       }
     },
+    "More sets": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Altri set"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "مجموعات أخرى"
+          }
+        }
+      }
+    },
     "More setups": {
       "localizations": {
         "it": {
@@ -21249,6 +21521,22 @@
         }
       }
     },
+    "Mug": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tazza"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "كوب"
+          }
+        }
+      }
+    },
     "Multiply": {
       "localizations": {
         "it": {
@@ -21421,6 +21709,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "سمِّ هذه النسخة"
+          }
+        }
+      }
+    },
+    "Nature": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Natura"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الطبيعة"
           }
         }
       }
@@ -25637,6 +25941,22 @@
         }
       }
     },
+    "Pine": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pino"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "صنوبر"
+          }
+        }
+      }
+    },
     "Pinned to the project": {
       "localizations": {
         "it": {
@@ -26321,6 +26641,22 @@
         }
       }
     },
+    "Potted plant": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pianta in vaso"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "نبتة في أصيص"
+          }
+        }
+      }
+    },
     "Pour": {
       "localizations": {
         "it": {
@@ -26681,6 +27017,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "الخصائص"
+          }
+        }
+      }
+    },
+    "Props": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Oggetti"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "أغراض"
           }
         }
       }
@@ -29297,6 +29649,22 @@
         }
       }
     },
+    "Rug": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tappeto"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "سجادة"
+          }
+        }
+      }
+    },
     "Run": {
       "localizations": {
         "it": {
@@ -29837,6 +30205,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "المقياس (1 م مشيًا = %@ م)"
+          }
+        }
+      }
+    },
+    "Scale people": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Persone in scala"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "أشخاص للمقياس"
           }
         }
       }
@@ -31489,6 +31873,22 @@
         }
       }
     },
+    "Shelf": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Scaffale"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "رف"
+          }
+        }
+      }
+    },
     "Shell": {
       "localizations": {
         "it": {
@@ -32813,6 +33213,22 @@
         }
       }
     },
+    "Sofa": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Divano"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "أريكة"
+          }
+        }
+      }
+    },
     "Soft": {
       "localizations": {
         "it": {
@@ -34029,6 +34445,22 @@
         }
       }
     },
+    "Stool": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sgabello"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "مقعد صغير"
+          }
+        }
+      }
+    },
     "Stop": {
       "localizations": {
         "it": {
@@ -34185,6 +34617,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "تنعيم المسار"
+          }
+        }
+      }
+    },
+    "Street lamp": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lampione"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "عمود إنارة"
           }
         }
       }
@@ -34793,6 +35241,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "التناظر: الأعلى والأسفل"
+          }
+        }
+      }
+    },
+    "Table": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tavolo"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "طاولة"
           }
         }
       }
@@ -39441,6 +39905,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "خلفية شفافة"
+          }
+        }
+      }
+    },
+    "Tree": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Albero"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "شجرة"
           }
         }
       }

@@ -50,7 +50,8 @@ struct LibraryBrowser: View {
                 MotionBrowser(editor: editor, query: query)
             } else if page == .things, query.isEmpty, !isSwapping {
                 GroundsRow(editor: editor)
-                KitBrowser(editor: editor, selectedSet: $kitSet, expanded: $expanded)
+                HouseKitBrowser(editor: editor)
+                MoreSets(editor: editor, selectedSet: $kitSet, expanded: $expanded)
             } else if page == .characters, results.isEmpty {
                 if query.isEmpty {
                     CharacterRow(editor: editor)

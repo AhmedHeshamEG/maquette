@@ -116,6 +116,7 @@ extension EditorModel {
 
     /// A library tile dropped on the stage.
     func placeLibraryItem(id: String, at point: CGPoint) {
+        if let thing = HouseKit.item(libraryID: id) { return placeHouseKit(thing, at: point) }
         guard let item = LibrarySearch.items(in: library.manifest, filter: .all).first(where: { $0.id == id }) else { return }
         let purpose = libraryPurpose
         libraryPurpose = .place
