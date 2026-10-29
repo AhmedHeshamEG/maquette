@@ -468,7 +468,7 @@ jobs:
               -test-timeouts-enabled YES -default-test-execution-time-allowance 300 -retry-tests-on-failure -test-iterations 3 \
               -skipPackagePluginValidation -IDEBuildingContinueBuildingAfterErrors=YES \
               SWIFT_TREAT_WARNINGS_AS_ERRORS=YES \
-              | tee "$RUNNER_TEMP/engine.log" | grep -E "error:|warning:|Test Case .* failed|Executed|\*\* " || true
+              | tee "$RUNNER_TEMP/engine.log" | grep -E "error:|warning:|Test Case .* failed|Executed|TIER-B|\*\* " || true
             grep -q "\*\* TEST SUCCEEDED \*\*" "$RUNNER_TEMP/engine.log" && exit 0
             echo "::warning::Engine tests failed on attempt $attempt"
           done

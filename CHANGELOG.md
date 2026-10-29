@@ -12,7 +12,7 @@ three.js both ways, and the app narrowed to what 1.0 is (CONTEXT §D.21–D.29):
   FaceTime; web pages and Lottie files added by hand; the iPhone companion (so the store build is iPad only). Each
   ships in 1.0 if it passes on the iPad before launch, else in a free update.
 - **Study is no longer a set-up**: a project made for it opens as Blank.
-- **Tier B on CI**: fifty things on an older iPad's preview hold 60 frames a second, or CI fails.
+- **Tier B on CI**: fifty things on an older iPad's preview hold 60 frames a second (the slowest 5% 30), or CI fails.
 
 - **Export ▸ 3D ▸ three.js**: a folder for the web in one zip. The scene as a GLB and as three.js's own JSON, a player
   that plays it in any browser with its camera cuts, its timeline and its Look (toon bands, ink lines, halftone, pixel
