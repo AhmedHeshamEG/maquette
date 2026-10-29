@@ -19357,6 +19357,22 @@
         }
       }
     },
+    "Mark where a line lands": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Segna dove atterra una linea"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "علّم مكان نزول الخط"
+          }
+        }
+      }
+    },
     "Marker": {
       "localizations": {
         "it": {
@@ -41169,6 +41185,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "من أين يبدأ"
+          }
+        }
+      }
+    },
+    "While the Pencil hovers, its point sits where a line begun there would land. It should stay under the tip.": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mentre la Pencil è sospesa, il suo punto sta dove atterrerebbe una linea iniziata lì. Deve restare sotto la punta."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "أثناء تحويم القلم، تظهر نقطته حيث سينزل خط يبدأ من هناك. يجب أن تبقى تحت الطرف."
           }
         }
       }

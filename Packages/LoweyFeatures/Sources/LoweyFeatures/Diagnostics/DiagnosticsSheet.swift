@@ -10,6 +10,7 @@ struct DiagnosticsSheet: View {
     let app: AppModel
     let editor: EditorModel?
     @AppStorage(AppSettings.showsPerformanceHUD) private var showsHUD = false
+    @AppStorage(AppSettings.pencilLandingDot) private var landingDot = false
     @AppStorage(HmmChromeRestraint.storageKey) private var restrainedChrome = true
     @State private var sharing: [URL] = []
     @State private var runningBenchmark = false
@@ -82,6 +83,9 @@ struct DiagnosticsSheet: View {
                 }
             }
             HmmSectionHeader("Apple Pencil")
+            Toggle("Mark where a line lands", isOn: $landingDot).font(.hmm(.headline, weight: .semibold))
+                .accessibilityIdentifier("pencil-landing-dot")
+            Hint("While the Pencil hovers, its point sits where a line begun there would land. It should stay under the tip.")
             if let latency = editor?.stage?.strokeLatency.summary {
                 Text("Touch to screen: \(latency)").font(.hmm(.footnote)).foregroundStyle(theme.text2).textSelection(.enabled)
             } else {
