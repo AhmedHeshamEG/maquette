@@ -133,6 +133,11 @@ struct EditorScreen: View {
             StageOverlayView(editor: editor)
                 .ignoresSafeArea(edges: [.top, .horizontal])
                 .environment(\.layoutDirection, .leftToRight)
+            if editor.stageIsEmpty {
+                EmptyStageHint()
+                    .allowsHitTesting(false)
+                    .transition(.opacity)
+            }
             // A picture being placed to project: in the stage's own points, like the stage.
             if editor.tool == .paint, editor.colourPaint.picture != nil {
                 PaintPictureOverlay(editor: editor)

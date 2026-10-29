@@ -2669,6 +2669,22 @@
         }
       }
     },
+    "An empty stage": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Una scena vuota"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "مسرح فارغ"
+          }
+        }
+      }
+    },
     "An empty stage, ready for anything.": {
       "localizations": {
         "it": {
@@ -20213,6 +20229,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "النمذجة"
+          }
+        }
+      }
+    },
+    "Model adds a shape, Draw sketches with the Pencil, the Library has ready-made things.": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Modella aggiunge una forma, Disegna schizza con la Pencil, la Libreria ha cose già pronte."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "النمذجة تضيف شكلًا، والرسم يرسم بالقلم، والمكتبة فيها أشياء جاهزة."
           }
         }
       }

@@ -70,10 +70,14 @@ public struct StarterTemplate: Hashable, Sendable, Identifiable {
     /// Study was removed in 0.29 (CONTEXT §D.24): its template stays so old projects read, and they open as Blank.
     public static let setUps: [Kind] = [.blank, .room, .print, .game, .animation]
 
-    /// The + on Home: an empty project in the dark studio.
+    /// The + on Home: an empty project in the dark studio, seen from a person's height a few steps back, so the
+    /// horizon sits in the top of the screen and the ground reads as a place, not a sheet of lines (Q2, the first open).
     public static let blank = StarterTemplate(
-        kind: .blank, lookPresetID: LookPreset.ink.id, mood: .darkStudio, viewpoint: .default, workspace: ProjectWorkspace(template: .blank)
+        kind: .blank, lookPresetID: LookPreset.ink.id, mood: .darkStudio, viewpoint: firstOpen, workspace: ProjectWorkspace(template: .blank)
     )
+
+    /// Where a blank project's camera starts.
+    public static let firstOpen = Viewpoint(target: Vec3(0, 0.6, 0), yaw: 35, pitch: 16, distance: 8, fieldOfView: 45)
 
     /// Small parts on a fine grid, seen up close in Clay so the form reads.
     public static let print = StarterTemplate(

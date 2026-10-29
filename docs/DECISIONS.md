@@ -3874,3 +3874,10 @@ and a model that brings its own skeleton, don't bend their regions.
 and jelly from a physics run (P1) and a made mouth's bent states (K1) only showed in exports. It passes them now, and
 named regions travel the same way. They bend the model's own corners before its rig and its paint, so a skinned,
 painted model talks in its own colours.
+
+**D-617 — The first open.** CI's screenshots of a new project showed the whole iPad filled with the grid seen from
+above at 28°: no horizon, nothing to say where to start. A blank project now starts lower and closer (16° down, 8 m
+back, a 45° lens), so the horizon sits in the top of the picture and the world's middle just under the centre
+(`StarterTemplateTests` checks both). Only the blank template changed; a new scene and the other set-ups keep their
+views. The empty stage shows one quiet card naming where things come from; it goes as soon as anything is on the
+stage or a tool is in the hand, and Settings' instructions switch hides it, as every hint.
