@@ -7,6 +7,7 @@ a path, and a test fails when one doesn't.*
 
 | Menu | Command | Bridge path |
 |---|---|---|
+| Character | Make It a Character | `{"do": "character", "op": "adopt"}` |
 | Character | Mirror Parts | `{"do": "character", "op": "add"}` |
 | Character | New Character… | `{"do": "character", "op": "new"}` |
 | Character | New Four-Legged | `{"do": "character", "op": "new"}` |

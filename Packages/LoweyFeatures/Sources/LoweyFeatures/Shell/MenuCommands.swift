@@ -114,6 +114,9 @@ public struct LoweyMenuCommands: Commands {
                 editor?.openPanel = .library
             }
             .hmmKeyboardShortcut(KeyCommands.characterNewCharacter, in: keyboard)
+            Button("Make It a Character") { editor.map { editor in editor.singleSelection.map { editor.makeCharacter(from: $0.id) } } }
+                .disabled(editor?.singleSelection.map { editor?.canMakeCharacter($0) ?? false } != true)
+                .hmmKeyboardShortcut(KeyCommands.characterMakeItACharacter, in: keyboard)
             Button("New Person") { editor?.newCharacter(.person) }.hmmKeyboardShortcut(KeyCommands.characterNewPerson, in: keyboard)
             Button("New Four-Legged") { editor?.newCharacter(.fourLegs) }.hmmKeyboardShortcut(KeyCommands.characterNewFourLegged, in: keyboard)
             Button("New Creature from Nothing") { editor?.newCharacter(.nothing) }

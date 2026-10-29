@@ -42,6 +42,9 @@ When none of the cast fits (a creature, a mascot, a thing that comes alive), mak
 
 Starts: `person` (plays every humanoid clip), `fourLegs`, `wings`, `blob`, `nothing` (add parts one by one).
 
+- **The person's own model as the character** (Maquette 0.30): `{"do":"character","op":"adopt","target":"My Robot"}`. The
+  thing itself becomes the character, whole, where it stands; it keeps its own rig (rig it with a person's dots in the
+  app), and parts added later ride its joints. Prefer this to `new` whenever the person made the model themselves.
 - Add parts to a character, or to **any thing** (it becomes the body): `{"do":"character","op":"add","target":"Teapot","part":"arm"}`.
   Parts: head, eye, brow, mouth, nose, ear, hair, body, arm, leg, tail, wing, extra. Paired parts (eyes, brows, ears,
   arms, legs, wings) come as a mirrored pair unless `"symmetric":false`; adding again adds another (a third eye, a second

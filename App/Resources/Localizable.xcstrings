@@ -129,6 +129,22 @@
         }
       }
     },
+    "%@ is a character. Its parts are in its panel": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ è un personaggio. Le sue parti sono nel suo pannello"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ أصبح شخصية. أجزاؤه في لوحته"
+          }
+        }
+      }
+    },
     "%@ is a fill: give it a mask and paint the mask": {
       "localizations": {
         "it": {
@@ -9305,6 +9321,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "اسحب نقاط القفص لتعيد تشكيل الشيء بنعومة"
+          }
+        }
+      }
+    },
+    "Drag the dots that are wrong, then Rig": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Trascina i punti sbagliati, poi Rig"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "اسحب النقاط الخاطئة، ثم اضغط Rig"
           }
         }
       }
@@ -19101,6 +19133,38 @@
         }
       }
     },
+    "Make It a Character": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rendilo un personaggio"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "اجعله شخصية"
+          }
+        }
+      }
+    },
+    "Make it a character": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rendilo un personaggio"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "اجعله شخصية"
+          }
+        }
+      }
+    },
     "Make it move": {
       "localizations": {
         "it": {
@@ -25129,6 +25193,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "اختر ما يتحرك ثم ارسم أين يذهب"
+          }
+        }
+      }
+    },
+    "Pick the thing to make a character first": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Prima scegli la cosa da rendere un personaggio"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "اختر أولاً الشيء الذي تريد جعله شخصية"
           }
         }
       }
@@ -34697,6 +34777,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "المس نقطة على كل مفصل (كتف، مرفق، معصم)، أو ضع دبابيس حيث يثبت شيء ليّن وينثني. اسحبها لتضعه في وضعية."
+          }
+        }
+      }
+    },
+    "Tap a dot where two pieces hinge": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tocca un punto dove due pezzi si articolano"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "اضغط نقطة حيث تنثني قطعتان"
           }
         }
       }

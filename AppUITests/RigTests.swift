@@ -135,4 +135,26 @@ final class RigTests: XCTestCase {
         add(report)
         XCTAssertLessThan(elapsed, 45)
     }
+
+    /// Q2: a model of its own becomes the character in place (no new character beside it), its dots guessed from its shape.
+    func testHisOwnModelBecomesTheCharacterInPlace() {
+        newProject()
+        tap("Library")
+        let search = element("library-search")
+        XCTAssertTrue(search.waitForExistence(timeout: 5))
+        search.tap()
+        search.typeText("astronaut")
+        XCTAssertTrue(tap("library-item-Astronaut a", timeout: 10), "a model standing in for his")
+        XCTAssertTrue(waitForTrail("sel=[Astronaut", timeout: 15), "the model is placed: \(trail)")
+        tap("Rig")
+        XCTAssertTrue(tap("rig-make-character"), "Rig offers to make the selected model a character")
+        XCTAssertTrue(waitForTrail("adopted=Astronaut", timeout: 5), "the model itself became the character: \(trail)")
+        let wrist = app.descendants(matching: .any).matching(NSPredicate(format: "label == %@", "a wrist")).firstMatch
+        XCTAssertTrue(wrist.waitForExistence(timeout: 10), "its dots are guessed on its front view")
+        _ = XCTWaiter.wait(for: [XCTestExpectation(description: "the guess lands")], timeout: 1.5)
+        shot("His model made a character, its dots guessed")
+        tap("rig-person-done")
+        XCTAssertTrue(waitForTrail("as a person"), "the rig was stored on the model itself: \(trail)")
+        XCTAssertFalse(trail.contains("cmd=New "), "no new character was made: \(trail)")
+    }
 }

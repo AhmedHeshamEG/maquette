@@ -2,12 +2,13 @@ import Foundation
 
 // MARK: - Characters (K1)
 
-/// `{"do": "character", "op": …}`: make a character from a start, add, restyle and remove parts (on a character or any
+/// `{"do": "character", "op": …}`: make a character from a start or from a thing as it is (`adopt`, Q2), add, restyle and remove parts (on a character or any
 /// thing), make a thing a part or the drawing of a face state, change a face state, change a proportion, make it say a
 /// typed line, rig it again. Every change to the parts rigs the character again in the same undo step.
 extension ScriptState {
     static let characterOps: [String: @Sendable (inout ScriptState, JSONValue) throws -> Void] = [
         "new": { try $0.characterNew($1) },
+        "adopt": { try $0.characterAdopt($1) },
         "add": { try $0.characterAdd($1) },
         "style": { try $0.characterStyle($1) },
         "remove": { try $0.characterRemove($1) },
@@ -148,7 +149,18 @@ extension ScriptState {
 
     mutating func characterRig(_ action: JSONValue) throws {
         let root = try target(action["target"])
-        guard let rig = CharacterAutoRig.command(root, in: scene, shapeBounds: characterBounds) else { throw fail("“target” must be a made character") }
+        guard scene.objects[root]?[.characterStart] != nil else { throw fail("“target” must be a made character") }
+        // A thing made a character keeps its own rig: nothing to do when its parts already ride it.
+        guard let rig = CharacterAutoRig.command(root, in: scene, shapeBounds: characterBounds) else { return }
         try run(rig, label: "Rigged “\(scene.objects[root]?.name ?? "")”")
+    }
+
+    /// The thing itself becomes a character, whole, where it stands (its rig is its own: `rig` with a person's dots).
+    mutating func characterAdopt(_ action: JSONValue) throws {
+        let root = try target(action["target"])
+        guard let adopt = CharacterMaker.adopt(root, in: scene) else {
+            throw fail("“target” must be a shape, a model, a group or a drawing that isn't a character yet")
+        }
+        try run(adopt, label: "“\(scene.objects[root]?.name ?? "")” is a character")
     }
 }

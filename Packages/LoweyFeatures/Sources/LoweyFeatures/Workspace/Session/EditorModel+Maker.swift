@@ -26,8 +26,47 @@ extension EditorModel {
         return Bounds(points: parts.flatMap { $0.mesh.positions.map { Vec3($0) } })
     }
 
-    /// A new character from a start, where new things land, selected with its panel open.
+    /// Whether a thing can become a character as it is (Q2): not one already, nor a part of one.
+    func canMakeCharacter(_ object: SceneObject) -> Bool {
+        CharacterMaker.adopt(object.id, in: baseScene) != nil
+    }
+
+    /// Make it a character (Q2 step 2): the thing itself becomes the character, then its rig is guessed from its shape
+    /// (a person's dots unless the start says four legs or wings; it keeps a rig it already has) and the wrong dots are
+    /// dragged. Its eyes, mouth and brows come from its own parts or are added from its panel.
+    func makeCharacter(from id: ObjectID, as start: CharacterStart = .person) {
+        guard let object = baseScene.objects[id], let adopt = CharacterMaker.adopt(id, in: baseScene) else {
+            app.show("Pick the thing to make a character first")
+            return
+        }
+        guard perform(adopt) else { return }
+        select(id)
+        HmmHaptics.play(.commit)
+        if AppIdentity.isUITesting { trail("adopted=\(object.name)") }
+        guard object.rig == nil, rigBlocker(object) == nil else {
+            app.show("\(object.name) is a character. Its parts are in its panel")
+            return
+        }
+        switch start {
+        case .fourLegs: startBody(.fourLegs, on: id)
+        case .wings: startBody(.wings, on: id)
+        case _ where object.kind == .group:
+            // Pieces ride their joints: a dot where two of them hinge (U4).
+            startMarking(id)
+            app.show("Tap a dot where two pieces hinge")
+            return
+        default: startPersonRig(id)
+        }
+        app.show("Drag the dots that are wrong, then Rig")
+    }
+
+    /// A new character from a start, where new things land, selected with its panel open. With a thing selected that
+    /// isn't a character yet, the thing becomes the character instead (Q2: "I'm trying to rig the actual one").
     func newCharacter(_ start: CharacterStart) {
+        if let thing = singleSelection, canMakeCharacter(thing) {
+            makeCharacter(from: thing.id, as: start)
+            return
+        }
         var ids = IDFactory.random
         let name = ObjectFactory.uniqueName(start == .nothing ? "Creature" : start.title, in: baseScene)
         let fragment = CharacterMaker.start(start, name: name, at: dropPoint(), ids: &ids)

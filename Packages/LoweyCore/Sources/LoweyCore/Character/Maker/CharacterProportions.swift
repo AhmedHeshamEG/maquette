@@ -121,7 +121,8 @@ public enum CharacterProportions {
 
     /// The body grows taller from where it stands; what sits on it rises with the height it sits at.
     static func bodyHeight(_ anatomy: CharacterAnatomy, factor: Double, scene: Scene) -> [PropertyChange] {
-        guard let body = anatomy.body, let bounds = body.rootBounds else { return [] }
+        // A model made a character is its own body: it changes by hand, not by the maker's handles.
+        guard let body = anatomy.body, body.id != anatomy.root, let bounds = body.rootBounds else { return [] }
         let grow = bounds.size.y * (factor - 1)
         var changes = scaled(body.id, by: Vec3(1, factor, 1), in: scene)
         changes += carried(anatomy, scene: scene, except: [.body, .leg]) { top in
@@ -133,7 +134,8 @@ public enum CharacterProportions {
 
     /// The body narrows or widens; arms, legs and wings move in or out with its sides.
     static func waist(_ anatomy: CharacterAnatomy, factor: Double, scene: Scene) -> [PropertyChange] {
-        guard let body = anatomy.body, let bounds = body.rootBounds else { return [] }
+        // A model made a character is its own body: it changes by hand, not by the maker's handles.
+        guard let body = anatomy.body, body.id != anatomy.root, let bounds = body.rootBounds else { return [] }
         var changes = scaled(body.id, by: Vec3(factor, 1, factor), in: scene)
         changes += carried(anatomy, scene: scene, except: [.body, .head, .hair]) { top in
             Vec3((top.x - bounds.center.x) * (factor - 1), 0, 0)

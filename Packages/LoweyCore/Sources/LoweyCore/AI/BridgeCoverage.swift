@@ -58,6 +58,7 @@ public enum BridgeCoverage {
     ]
 
     private static let characterCommands: [String: Path] = [
+        "character.makeItACharacter": .verb("character", op: "adopt"),
         "character.newCharacter": .verb("character", op: "new"), "character.newPerson": .verb("character", op: "new"),
         "character.newFourLegged": .verb("character", op: "new"), "character.newCreatureFromNothing": .verb("character", op: "new"),
         "character.mirrorParts": .verb("character", op: "add"), "character.rigItAgain": .verb("character", op: "rig"),

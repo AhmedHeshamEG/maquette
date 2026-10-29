@@ -58,6 +58,7 @@ enum KeyCommands {
                                                        menu: "Physics", HmmKeyCombo("k", shift: true))
     static let physicsShowSpeedAndForces = HmmKeyCommand("physics.showSpeedAndForces", "Show Speed and Forces", menu: "Physics", nil)
     static let characterNewCharacter = HmmKeyCommand("character.newCharacter", "New Character…", menu: "Character", HmmKeyCombo("c", shift: true))
+    static let characterMakeItACharacter = HmmKeyCommand("character.makeItACharacter", "Make It a Character", menu: "Character", nil)
     static let characterNewPerson = HmmKeyCommand("character.newPerson", "New Person", menu: "Character", HmmKeyCombo("p", option: true))
     static let characterNewFourLegged = HmmKeyCommand("character.newFourLegged", "New Four-Legged", menu: "Character", nil)
     static let characterNewCreatureFromNothing = HmmKeyCommand("character.newCreatureFromNothing", "New Creature from Nothing",
@@ -179,6 +180,7 @@ enum KeyCommands {
         physicsKeepTheRunAsKeys,
         physicsShowSpeedAndForces,
         characterNewCharacter,
+        characterMakeItACharacter,
         characterNewPerson,
         characterNewFourLegged,
         characterNewCreatureFromNothing,

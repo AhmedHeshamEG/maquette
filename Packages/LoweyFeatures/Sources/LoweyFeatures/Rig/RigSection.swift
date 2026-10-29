@@ -24,6 +24,10 @@ struct RigSection: View {
                 } else {
                     rigged(object)
                 }
+                if editor.canMakeCharacter(object) {
+                    HmmPillButton("Make it a character", systemName: "face.smiling") { editor.makeCharacter(from: object.id) }
+                        .accessibilityIdentifier("rig-make-character")
+                }
             }
         }
     }
