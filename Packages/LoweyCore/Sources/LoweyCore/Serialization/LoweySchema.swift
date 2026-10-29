@@ -77,7 +77,8 @@ public enum LoweySchema {
     ///     `setNotes` command.
     /// 25: Maquette 0.28's web layer: cards' and overlays' `web` (a page, a three.js scene or a Lottie file on the
     ///     timeline's clock).
-    public static let currentVersion = 25
+    /// 26: Maquette 0.29's clones as a file placed them: the `placed` clone layout.
+    public static let currentVersion = 26
 
     public static let migrations: [Migration] = [
         Migration(kind: .scene, from: 0, transform: liftSceneV0),
@@ -175,7 +176,11 @@ public enum LoweySchema {
         // 24 → 25 adds optional web pieces on cards and overlays; nothing older changes shape.
         Migration(kind: .scene, from: 24) { $0 },
         Migration(kind: .project, from: 24) { $0 },
-        Migration(kind: .library, from: 24) { $0 }
+        Migration(kind: .library, from: 24) { $0 },
+        // 25 → 26 adds a clone layout; nothing older changes shape.
+        Migration(kind: .scene, from: 25) { $0 },
+        Migration(kind: .project, from: 25) { $0 },
+        Migration(kind: .library, from: 25) { $0 }
     ] + unchangedSince(.brushes) + unchangedSince(.materials)
 
     /// A file kind whose payload hasn't changed shape at any version: every step keeps it as it is (D-339; the

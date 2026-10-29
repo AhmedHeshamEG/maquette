@@ -66,7 +66,9 @@ public enum ProjectHistory {
         // 23 → 24 only adds the optional notes field and the `setNotes` command.
         23: { $0 },
         // 24 → 25 only adds the optional web pieces (edited with `setKind`).
-        24: { $0 }
+        24: { $0 },
+        // 25 → 26 only adds a clone layout (`placed`, inside `setMotionDesign` and `insert`).
+        25: { $0 }
     ]
     /// The first schema journals were written with (Maquette 0.1).
     public static let firstJournalSchema = 4

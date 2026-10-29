@@ -1487,8 +1487,15 @@
                   "grid",
                   "circle",
                   "line",
-                  "path"
+                  "path",
+                  "placed"
                 ]
+              },
+              "places": {
+                "type": "array",
+                "items": {
+                  "type": "object"
+                }
               },
               "count": {
                 "type": "number"

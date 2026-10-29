@@ -59,7 +59,9 @@ extension ScriptState {
     }
 
     /// `{"op": "clone", "target": "Logo", "layout": "grid", "columns": 5, "rows": 5, "spacing": [1.4, 1.4, 1.4]}`;
-    /// circle: `count`, `radius`, `facesOut`; line: `count`, `step`; path: `count`, `path`, `along`. `"off": true` removes.
+    /// circle: `count`, `radius`, `facesOut`; line: `count`, `step`; path: `count`, `path`, `along`; placed: `places`, a list
+    /// of `{"at": [x, y, z], "turn": [degrees], "size": [x, y, z]}` against the thing's own (the first is the thing).
+    /// `"off": true` removes.
     private mutating func designClone(_ action: JSONValue) throws {
         let id = try target(action["target"])
         var design = scene.objects[id]?.motionDesign ?? MotionDesign()
@@ -87,8 +89,15 @@ extension ScriptState {
             return .line(count: count, step: vec3(action["step"]) ?? Vec3(1.2, 0, 0))
         case "path", "along a path":
             return try .path(count: count, path: target(action["path"]), along: bool(action, "along") ?? true)
+        case "placed", "as placed":
+            if let list = action["places"]?.arrayValue, !list.isEmpty {
+                return .placed(list.map { Transform(position: vec3($0["at"]) ?? .zero, rotation: Quat(eulerDegrees: vec3($0["turn"]) ?? .zero),
+                                                    scale: vec3($0["size"]) ?? Vec3(1, 1, 1)) })
+            }
+            if case .placed = current { return current }
+            throw fail("a placed layout needs “places”: a list of {at, turn, size}")
         case let other:
-            throw fail("layout “\(other)” is one of grid, circle, line, path")
+            throw fail("layout “\(other)” is one of grid, circle, line, path, placed")
         }
     }
 

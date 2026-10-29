@@ -44,7 +44,9 @@ struct ModelAddPage: View {
                     TileButton(title: "Drawing (PSD, Procreate)", systemName: "square.3.layers.3d", identifier: "add-drawing") {
                         importingDrawing = true
                     }
-                    TileButton(title: "Web page or Lottie", systemName: "globe", identifier: "add-web") { importingWeb = true }
+                    if Held.isOn(.webPieces) {
+                        TileButton(title: "Web page or Lottie", systemName: "globe", identifier: "add-web") { importingWeb = true }
+                    }
                 }
             }
             PanelSection("Effects") {

@@ -162,6 +162,12 @@ final class ExportTests: XCTestCase {
         XCTAssertEqual(usdz.prefix(2), Data("PK".utf8), "a zip package")
         let obj = ModelExport.files(.obj, ids: nil, scene: cave, look: look, preset: .ink, catalog: .empty, name: "cave")
         XCTAssertEqual(obj.map(\.name), ["cave.obj", "cave.mtl"])
+        // The web folder carries the kit's own three.js, so it plays without the network (X1).
+        let web = try XCTUnwrap(ModelExport.files(.web, ids: nil, scene: cave, look: look, preset: .ink, catalog: .empty, name: "cave").first)
+        XCTAssertEqual(web.name, "cave for the web.zip")
+        for path in ["cave for the web/scene.glb", "cave for the web/AGENTS.md", "cave for the web/lib/three/three.module.js"] {
+            XCTAssertNotNil(web.data.range(of: Data(path.utf8)), path)
+        }
     }
 }
 

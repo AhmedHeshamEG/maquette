@@ -3,6 +3,35 @@
 All notable changes. 1.x grew in four phases (v0.1 → v1.4); 2.0 is the remaster, released as betas first. Maquette
 continues from 2.0 and numbers its phases again from 0.1 (each phase bumps the minor version until 1.0).
 
+## [0.29] — Maquette — Import and export, closed; the held parts (phase X1)
+
+three.js both ways, and the app narrowed to what 1.0 is (CONTEXT §D.21–D.29): no new features until launch.
+
+- **Held in the App Store build** (the sideloaded build keeps everything, for testing): IFC, plans and underlays;
+  technical sheets; ISO screws and threads (the jar, bolt and nut); papercraft; the room scan; the Board; reviews over
+  FaceTime; web pages and Lottie files added by hand; the iPhone companion (so the store build is iPad only). Each
+  ships in 1.0 if it passes on the iPad before launch, else in a free update.
+- **Study is no longer a set-up**: a project made for it opens as Blank.
+- **Tier B on CI**: fifty things on an older iPad's preview hold 60 frames a second (the slowest 5% 30), or CI fails.
+
+- **Export ▸ 3D ▸ three.js**: a folder for the web in one zip. The scene as a GLB and as three.js's own JSON, a player
+  that plays it in any browser with its camera cuts, its timeline and its Look (toon bands, ink lines, halftone, pixel
+  art), a React Three Fiber component with every name typed, `AGENTS.md` for an agent picking it up, and three.js
+  itself inside, so it needs no network. The bridge's export ask takes `web`.
+- **glTF carries more**: keyed colours, see-through, roughness, metal and glow, keyed lights and lenses travel as
+  `KHR_animation_pointer` and come back as keys; a glow brighter than white keeps its strength; see-through things are
+  see-through in every file; Clean product's lacquer is a clearcoat; keys glTF has no place for (face states) ride in
+  the file for Maquette to read back.
+- **three.js scenes come in**: Library ▸ Import takes a three.js scene file (`scene.toJSON()`) into the scene as
+  editable things, its lights and cameras as Maquette's, its clips as keys; a line says what couldn't come.
+- **three.js projects come in**: a page, a folder with one or a zip (Library ▸ Import, a drop, or Open in Maquette from
+  Files) plays offline, and its scene comes in as editable things with ten seconds of its motion as keys; a surface
+  drawn by its own shader (a water shader) keeps playing on a card in its place; a page with no three.js scene plays
+  over the frame. Pictures, skins and instanced meshes in a three.js scene file or a glTF come in as paint, rigs and
+  clones.
+- **`docs/INTEROP.md`**: every feature against every format, both ways, checked by CI against the tests that prove it.
+  What no test proves yet says "after 1.0".
+
 ## [0.28] — Maquette — AR, the web layer and the bridge (phase M12)
 
 The last things that were held come out, and an assistant can now do whatever a person can.

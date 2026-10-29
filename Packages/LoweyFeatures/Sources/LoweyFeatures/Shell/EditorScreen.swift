@@ -102,7 +102,12 @@ struct EditorScreen: View {
             for drawing in drawings {
                 app.landDrawing(drawing)
             }
-            let models = urls.filter { !drawings.contains($0) }
+            // three.js work comes into the scene (X1).
+            let web = urls.filter { !drawings.contains($0) && (EditorModel.isThreeSceneFile($0) || EditorModel.isWebProject($0)) }
+            for url in web {
+                app.landWeb(url)
+            }
+            let models = urls.filter { !drawings.contains($0) && !web.contains($0) }
             if !models.isEmpty { app.landModels(models, at: location) }
             return true
         }
@@ -170,7 +175,7 @@ struct EditorScreen: View {
                 // The Reference window and pictures pinned from the board float under the chrome: a panel always opens
                 // over them.
                 if !editor.references.isEmpty {
-                    ReferenceCards(editor: editor, boardEnabled: boardEnabled)
+                    ReferenceCards(editor: editor, boardEnabled: boardEnabled && Held.isOn(.board))
                         .opacity(editor.chromeFaded ? 0 : 1)
                 }
                 if editor.referenceOpen {

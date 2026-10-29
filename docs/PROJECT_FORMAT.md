@@ -5,7 +5,7 @@ surface of that package: power users, scripts and MCP clients may **read** any o
 (the laptop bridge), so undo and the history journal stay true; a file changed behind the app's back is overwritten at
 the next checkpoint.
 
-Format version: package **2**, document schema **25** (`LoweySchema.currentVersion`), journal **1**.
+Format version: package **2**, document schema **26** (`LoweySchema.currentVersion`), journal **1**.
 
 ```
 My film.maquette/                 (3D-lowey's .lowey packages open too, and are upgraded in place)
@@ -613,7 +613,9 @@ schema 21.
   - `clones`: `{"layout": {"grid": {"columns": 5, "rows": 5, "layers": 1, "spacing": [1.4, 1.4, 1.4]}}, "effects": […],
     "seed": 1}`. Layouts: `grid` (columns along the thing's x, rows along its z, layers up its y, centred on it), `circle`
     (`count`, `radius`, `facesOut`), `line` (`count`, `step`, in the thing's own directions), `path` (`count`, `path`: the
-    id of a drawn line, `along`). An effect: `{"id": "…", "kind": "random" | "delay" | "push", "move": [x, y, z] (m),
+    id of a drawn line, `along`), and since schema 26 `placed` (`{"placed": {"_0": [transform, …]}}`: each copy's
+    place, turn and size against the thing's own, the first the thing itself; a three.js `InstancedMesh` comes in this
+    way and the inspector can't make one). An effect: `{"id": "…", "kind": "random" | "delay" | "push", "move": [x, y, z] (m),
     "turn": [x, y, z] (degrees), "grow": 0.2 (a fraction), "delay": 0.1 (s), "field": …}`; a field is `{"everywhere": {}}`,
     `{"sphere": {"centre": [x, y, z], "radius": 2}}` or `{"wave": {"speed": 3, "width": 1.5, "every": 2}}` (`every` 0:
     once). The copies are never stored: they're made in the shown scene with ids `<thing>~clone<n>` and `cloneOf`, at most
@@ -718,6 +720,11 @@ timeline's clock:
 Its frames step 60 a second from `start`; before it a card shows frame 0 and an overlay isn't drawn. It is edited with
 `setKind` (no new command). Schema 25 only added the key; files from schema 24 open unchanged, and Maquette 0.27 refuses
 schema 25.
+
+## Clones as placed (schema 26)
+
+Schema 26 adds one clone layout, `placed` (Motion design, above), so a file's instances stay one thing with its copies.
+Nothing older changes shape: files from schema 25 open unchanged, and Maquette 0.28 refuses schema 26.
 
 ## workspace.json
 

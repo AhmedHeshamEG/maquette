@@ -115,6 +115,10 @@ final class TextureExportTests: XCTestCase {
             ("normal", XCTUnwrap((material["normalTexture"] as? [String: Any])?["index"] as? Int))
         ]
         XCTAssertEqual(pbr["roughnessFactor"] as? Double, 1, "the texture holds the roughness")
+        // three.js's own format keeps the pictures unflipped, so its normal map leans green the other way, as GLTFLoader does.
+        let three = try XCTUnwrap(JSONSerialization.jsonObject(with: ThreeObjectJSON.data(fromGLB: glb)) as? [String: Any])
+        let threeMaterial = try XCTUnwrap((three["materials"] as? [[String: Any]])?.first { $0["normalMap"] != nil })
+        XCTAssertEqual(GLTFReader.numbers(threeMaterial["normalScale"]), [1, -1])
         let attributes = try XCTUnwrap(((json["meshes"] as? [[String: Any]])?.first?["primitives"] as? [[String: Any]])?.first?["attributes"]
             as? [String: Int])
         XCTAssertNotNil(attributes["TANGENT"], "a normal map needs tangents")
@@ -134,6 +138,92 @@ final class TextureExportTests: XCTestCase {
             try FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
             try glb.write(to: folder.appendingPathComponent("textured.glb"))
         }
+    }
+
+    /// X1: the crate's glTF made editable again keeps its look: its pictures become a first layer, "Model", with the
+    /// colour, roughness, metal and glow it left with, laid on the editable copy's own unwrap.
+    func testAGLTFsPicturesComeBackAsPaint() throws {
+        let (scene, look, files) = try crate()
+        let glb = GLTFScene.glb(nil, in: scene, look: look, painted: painted(files, look: look))
+        let (json, binary) = try glbJSON(glb)
+        let material = try XCTUnwrap((json["materials"] as? [[String: Any]])?.first)
+        let index = try XCTUnwrap(((material["pbrMetallicRoughness"] as? [String: Any])?["baseColorTexture"] as? [String: Any])?["index"] as? Int)
+        let exported = try image(index, json: json, binary: binary)
+        var ids = IDFactory.sequential("t")
+        let result = try GLTFSceneReader.read(glb, ids: &ids)
+        let (id, pictures) = try XCTUnwrap(result.pictures.first)
+        let made = result.paints(in: result.fragment, size: 256)
+        XCTAssertEqual(made.commands.count, 1)
+        guard case let .setPaint(target, paint?) = made.commands.first else { return XCTFail("no paint") }
+        XCTAssertEqual(target, id)
+        XCTAssertEqual(paint.layers.map(\.name), ["Model", "Layer 1"])
+        let model = paint.layers[0]
+        XCTAssertEqual(Set(model.paintedMaps), [.color, .roughness, .metal, .glow])
+        // Each of the model's triangles: its colour in the exported picture, and on the new surface at the same point.
+        let unwrapData = try XCTUnwrap(made.files[paint.surface.unwrap])
+        let surface = try PaintUnwrap(data: unwrapData).surfaceMesh
+        let grid = TriangleGrid(surface, cell: 0.05)
+        var tiles: [String: RGBAImage] = [:]
+        func paintedColor(_ uv: SIMD2<Float>) throws -> RGBA? {
+            let x = min(Int(uv.x * 256), 255), y = min(Int(uv.y * 256), 255)
+            guard let name = model[.color, PaintTileIndex(column: x / 256, row: y / 256)] else { return nil }
+            if tiles[name] == nil { tiles[name] = try PNGCodec.decode(XCTUnwrap(made.files[name])) }
+            return tiles[name]?.pixel(x % 256, y % 256)
+        }
+        let source = pictures.source
+        var close = 0, total = 0
+        for face in 0 ..< source.triangleCount {
+            let corners = (0 ..< 3).map { Int(source.indices[face * 3 + $0]) }
+            let point = corners.map { source.positions[$0] }.reduce(SIMD3<Float>.zero, +) / 3
+            let uv = corners.map { source.uvs[$0] }.reduce(SIMD2<Float>.zero, +) / 3
+            let expected = exported.sample(u: Double(uv.x), v: Double(uv.y))
+            guard let hit = grid.closest(to: point, within: 0.05, hint: nil) else { continue }
+            let at = (0 ..< 3).map { surface.uvs[Int(surface.indices[hit.triangle * 3 + $0])] }
+            let newUV = at[0] * hit.weights.x + at[1] * hit.weights.y + at[2] * hit.weights.z
+            guard let found = try paintedColor(newUV) else { continue }
+            total += 1
+            if max(abs(found.r - expected.r), abs(found.g - expected.g), abs(found.b - expected.b)) < 0.1 { close += 1 }
+        }
+        XCTAssertGreaterThan(total, source.triangleCount / 2)
+        XCTAssertGreaterThanOrEqual(Double(close) / Double(max(total, 1)), 0.9, "\(close) of \(total) points kept their colour")
+        try assertNormalsCameAcross(material: material, json: json, binary: binary, paint: paint, files: made.files, source: source, surface: surface)
+    }
+
+    /// The normal map: the same bumps in the new surface's frames (each texel back in the object's space agrees).
+    private func assertNormalsCameAcross(material: [String: Any], json: [String: Any], binary: Data, paint: ObjectPaint, files: [String: Data],
+                                         source: MeshData, surface: MeshData) throws {
+        let grid = TriangleGrid(surface, cell: 0.05)
+        let normalIndex = try XCTUnwrap((material["normalTexture"] as? [String: Any])?["index"] as? Int)
+        let exportedNormals = try image(normalIndex, json: json, binary: binary)
+        let normals = try PNGCodec.decode(XCTUnwrap(paint.normalMap.flatMap { files[$0] }))
+        let sourceFrames = NormalBake.triangleFrames(source), frames = NormalBake.triangleFrames(surface)
+        func world(_ texel: RGBA, frame: (SIMD3<Float>, SIMD3<Float>), normal: SIMD3<Float>) -> SIMD3<Float> {
+            let t = SIMD3<Float>(Float(texel.r), Float(texel.g), Float(texel.b)) * 2 - 1
+            let (tangent, bitangent) = NormalBake.orthonormal(frame, normal: normal)
+            return normalize3(tangent * t.x + bitangent * t.y + normal * t.z, fallback: normal)
+        }
+        var agree = 0, compared = 0
+        for face in 0 ..< source.triangleCount {
+            let corners = (0 ..< 3).map { source.positions[Int(source.indices[face * 3 + $0])] }
+            let point = corners.reduce(SIMD3<Float>.zero, +) / 3
+            let facing = normalize3(cross3(corners[1] - corners[0], corners[2] - corners[0]), fallback: SIMD3<Float>(0, 1, 0))
+            let uv = (0 ..< 3).map { source.uvs[Int(source.indices[face * 3 + $0])] }.reduce(SIMD2<Float>.zero, +) / 3
+            guard let hit = grid.closest(to: point, within: 0.05, hint: nil) else { continue }
+            let at = (0 ..< 3).map { surface.uvs[Int(surface.indices[hit.triangle * 3 + $0])] }
+            let newUV = at[0] * hit.weights.x + at[1] * hit.weights.y + at[2] * hit.weights.z
+            let before = world(exportedNormals.sample(u: Double(uv.x), v: Double(uv.y)), frame: sourceFrames[face], normal: facing)
+            let after = world(normals.sample(u: Double(newUV.x), v: Double(newUV.y)), frame: frames[hit.triangle], normal: facing)
+            compared += 1
+            if dot3(before, after) > 0.96 { agree += 1 }
+        }
+        XCTAssertGreaterThanOrEqual(Double(agree) / Double(max(compared, 1)), 0.9, "\(agree) of \(compared) normals agree")
+    }
+
+    func testATextureTransformMovesTheUVs() {
+        let moved = GLTFSceneReader.Builder.transformed(SIMD2<Float>(1, 0), by: ["offset": [0.5, 0.25], "scale": [2.0, 3.0], "rotation": Double.pi / 2])
+        // Scaled to (2, 0), turned a quarter (u' = cos·u + sin·v, v' = -sin·u + cos·v) to (0, -2), then offset.
+        XCTAssertEqual(moved.x, 0.5, accuracy: 1e-5)
+        XCTAssertEqual(moved.y, -1.75, accuracy: 1e-5)
     }
 
     /// Exact to a step of rounding; `RECORD_GOLDEN=1` writes the golden instead (reviewed, then committed).

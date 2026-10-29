@@ -9,8 +9,9 @@ import LoweyCore
 /// (`workspace.json`, how the project is seen); the same picture can be stood in the scene as a plane (an object).
 extension EditorModel {
     /// Settings ▸ Board. Off: no board in Actions, no Sketch template, pinned cards put away (nothing is deleted).
+    /// A build that holds the Board (§D.25) has it off whatever the setting says.
     static var boardEnabled: Bool {
-        UserDefaults.standard.object(forKey: AppSettings.boardEnabled) as? Bool ?? true
+        Held.isOn(.board) && (UserDefaults.standard.object(forKey: AppSettings.boardEnabled) as? Bool ?? true)
     }
 
     /// The board's model, made the first time the board is asked for (a project that never opens it carries none).

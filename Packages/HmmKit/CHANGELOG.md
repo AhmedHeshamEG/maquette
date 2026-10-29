@@ -3,6 +3,15 @@
 All notable changes to hmm-kit. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the
 project uses [Semantic Versioning](https://semver.org/).
 
+## [0.18.0] - 2026-10-27
+
+Built with Maquette 0.29.
+
+### Added
+- **HmmWeb**: `HmmWebPlayer(piece:scripts:)` adds scripts to the page after the clock and before its own code, and
+  `evaluate(_:atFrame:)` returns what a piece of JavaScript reads once the page shows a frame (a recorder taking a
+  three.js scene and its motion out of a page).
+
 ## [0.17.0] - 2026-10-25
 
 Built with Maquette 0.28.

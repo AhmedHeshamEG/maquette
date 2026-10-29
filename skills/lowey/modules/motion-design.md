@@ -38,8 +38,10 @@ is one wave). `order`: forward, backward, middle, random. `"preset":"none"` stop
 ```
 
 - Layouts: `grid` (columns across x, rows deep along z, layers up), `circle` (`count`, `radius`, `facesOut`), `line`
-  (`count`, `step`), `path` (`count`, `path` a drawn line, `along`). The thing itself is the first copy; the copies
-  aren't things in the outliner and pick as the thing. At most 1000.
+  (`count`, `step`), `path` (`count`, `path` a drawn line, `along`), `placed` (`places`: a list of
+  `{"at":[x,y,z],"turn":[degrees],"size":[x,y,z]}` against the thing's own; the first is the thing). A three.js
+  `InstancedMesh` comes in as `placed` clones. The thing itself is the first copy; the copies aren't things in the
+  outliner and pick as the thing. At most 1000.
 - Effects: `random` (each copy shifted, turned, sized by its own amount up to `move`, `turn`, `grow`), `delay` (each copy
   plays the thing's own motion `delay` seconds after the one before: give the thing a bounce or a spin first),
   `push` (moved and grown as much as the field reaches it). Fields: `everywhere`, `sphere` (`centre`, `radius`),

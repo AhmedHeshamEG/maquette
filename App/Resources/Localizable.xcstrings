@@ -3289,6 +3289,22 @@
         }
       }
     },
+    "As placed": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Come posizionate"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "كما وُضعت"
+          }
+        }
+      }
+    },
     "As the iPad's Pencil setting says": {
       "localizations": {
         "it": {
@@ -4533,6 +4549,38 @@
           "stringUnit": {
             "state": "translated",
             "value": "شعيرات"
+          }
+        }
+      }
+    },
+    "Brought in %lld things from three.js": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Importati %lld oggetti da three.js"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تم جلب %lld عنصرًا من three.js"
+          }
+        }
+      }
+    },
+    "Brought in %lld things from three.js. %@": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Importati %lld oggetti da three.js. %@"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تم جلب %lld عنصرًا من three.js. %@"
           }
         }
       }
@@ -6917,6 +6965,22 @@
         }
       }
     },
+    "Couldn't open %@: %@": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Impossibile aprire %@: %@"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تعذّر فتح %@: %@"
+          }
+        }
+      }
+    },
     "Couldn't open that scene: %@": {
       "localizations": {
         "it": {
@@ -7289,6 +7353,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "تعذّر حفظ النواظم: %@"
+          }
+        }
+      }
+    },
+    "Couldn't save the page's copies: %@": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Impossibile salvare le copie della pagina: %@"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تعذّر حفظ نسخ الصفحة: %@"
           }
         }
       }
@@ -10137,6 +10217,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "الديناميكيات"
+          }
+        }
+      }
+    },
+    "Each copy stands where the file put it. Choose a layout to arrange them again.": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ogni copia sta dove l'ha messa il file. Scegli una disposizione per ordinarle di nuovo."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "كل نسخة في المكان الذي وضعها فيه الملف. اختر ترتيبًا لترتيبها من جديد."
           }
         }
       }
@@ -21841,6 +21937,22 @@
         }
       }
     },
+    "No three.js scene in it: it plays over the frame as a web piece": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nessuna scena three.js: viene riprodotta sopra l'inquadratura come contenuto web"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "لا يحتوي على مشهد three.js: سيُعرض فوق الإطار كقطعة ويب"
+          }
+        }
+      }
+    },
     "No versions yet": {
       "localizations": {
         "it": {
@@ -25709,6 +25821,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "رأس التشغيل"
+          }
+        }
+      }
+    },
+    "Playing %@ to bring it in…": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Riproduzione di %@ per importarlo…"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "جارٍ تشغيل %@ لاستيراده…"
           }
         }
       }
@@ -40817,6 +40945,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "صفحة ويب أو Lottie"
+          }
+        }
+      }
+    },
+    "Web pages and Lottie files aren't in this version yet": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le pagine web e i file Lottie non sono ancora in questa versione"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "صفحات الويب وملفات Lottie ليست في هذا الإصدار بعد"
           }
         }
       }

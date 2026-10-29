@@ -84,7 +84,10 @@ Each CI run uploads them as the `app-store-screenshots-<shard>` artifacts (the s
 ## The App Store build
 
 The `AppStore` configuration in `project.yml` differs from the sideloaded one in its Info.plist values. Its held
-list (`MAQUETTE_HELD`) gets no new names and is emptied in M12, so the store build holds nothing. The assistant
+list (`MAQUETTE_HELD`, CONTEXT §D.25, since 0.29) hides the building files, technical sheets, ISO threads, papercraft,
+the room scan, the Board, FaceTime reviews, web pieces and the iPhone companion; while the companion is held the store
+build is iPad only (`TARGETED_DEVICE_FAMILY` 2). A name leaves the list when its part passes on the device before L1;
+`Tools/check_held.py` keeps the list and `Held.swift` in step. The launch never waits for a held part. The assistant
 bridge ships in 1.0, off by default (M16); switching it off is one line in the release workflow if App Review objects.
 
 ## TestFlight

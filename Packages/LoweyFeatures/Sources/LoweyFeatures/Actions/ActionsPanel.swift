@@ -42,7 +42,7 @@ struct ActionsPanel: View {
                                 editor.clearResolvedNotes()
                             }
                         }
-                        if app.review.call.isOn, !editor.together.reviewing {
+                        if Held.isOn(.faceTimeReview), app.review.call.isOn, !editor.together.reviewing {
                             TileButton(title: "Review over FaceTime", systemName: "shareplay", identifier: "start-review") {
                                 editor.openPanel = nil
                                 app.startReview()
@@ -53,12 +53,14 @@ struct ActionsPanel: View {
                             TileButton(title: "View in AR", systemName: "arkit", identifier: "open-ar") { editor.openAR() }
                         }
                         TileButton(title: "Share for AR", systemName: "cube.transparent", identifier: "share-ar") { editor.shareForAR() }
-                        TileButton(title: "Your iPhone", systemName: "iphone", identifier: "open-phone") { open(.phone) }
+                        if Held.isOn(.companion) {
+                            TileButton(title: "Your iPhone", systemName: "iphone", identifier: "open-phone") { open(.phone) }
+                        }
                     }
                 }
                 PanelSection("Project") {
                     TileGrid {
-                        if boardEnabled {
+                        if boardEnabled, Held.isOn(.board) {
                             TileButton(title: "Board", systemName: "scribble.variable", identifier: "open-board") { editor.openBoard() }
                         }
                         // Q1: the window over the stage (Canvas, Image, Face); its picture comes in from the window itself.

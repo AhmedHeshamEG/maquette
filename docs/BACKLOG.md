@@ -14,8 +14,24 @@ phase plan (Q1, M12, X1, M14, the test weeks, M16, then 1.0) lives in studio-h's
 - [x] The floating Reference window rebuilt to Procreate's standard: a close button, modes, moving and resizing
       (Q1, 0.27).
 - [x] Placing the sheet on a face: a preview on the lit face, fitted and lined up to it, snaps (Q1, 0.27).
-- [x] The App Store build holds nothing: `MAQUETTE_HELD` is empty, checked on CI (M12, D-558).
-- [ ] Import from anything, export to anything, every feature carried, three.js first (X1, `docs/INTEROP.md`).
+- [x] ~~The App Store build holds nothing (M12, D-558).~~ Reversed in 0.29: nine parts are held (D-597).
+- [ ] Each held part passes on the device in T1 or stays held for a free update (§D.25): the building files,
+      technical sheets, ISO threads, papercraft, the room scan, the Board, FaceTime reviews, web pieces, the iPhone
+      companion. Releasing one = deleting its name from `project.yml` (the companion also puts `TARGETED_DEVICE_FAMILY`
+      back to "1,2") and its *(held: 1.0)* marks from LAYOUT.md.
+- [x] X1 closed (0.29, D-596): three.js both ways, the matrix with no `todo` left.
+
+## Interop after 1.0 (X1's rest, D-596)
+
+- [ ] glTF out: `KHR_texture_transform`, `KHR_materials_variants`, `EXT_meshopt_compression` (a vendored decoder).
+- [ ] The three.js folder: the Rapier physics switch, sound through Web Audio.
+- [ ] USD in; FBX in (binary and ASCII 7.x); PLY both ways; Collada in; BVH both ways; VRM both ways; Alembic out
+      (`SPIKE` an Ogawa writer); STEP/IGES in (`SPIKE` OCCT); the Blender add-on ("Send to Maquette").
+- [ ] Five round-trip fixtures through every format on CI, with the outside validators (X1 step 5).
+- [ ] The bridge's `import` and `export` verbs and the `lowey` skill's interop module, with evals (X1 step 7).
+- [ ] Every **after 1.0** cell of `docs/INTEROP.md` proved or said impossible. Some already work untested (glTF's clips
+      and text out): a proof each is the cheapest first step.
+- [x] Export opening on what it's for moved to U9 (its menus are rebuilt around CONTEXT §D.24).
 - [ ] First launch asks "What do you want to make?" and opens the matching set-up (M16).
 - [ ] The store screenshots show a film scene, a house, a printable part and a game level (M16,
       `AppUITests/ScreenshotTests.swift`).

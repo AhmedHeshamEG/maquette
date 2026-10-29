@@ -27,6 +27,12 @@ extension EditorModel {
             let destination = assetsFolder.appendingPathComponent(file)
             try FileManager.default.copyItem(at: source, to: destination)
             if let piece = Self.webPiece(file, at: destination, start: start ?? time) {
+                // Web pieces by hand are held in the store build (§D.25); a three.js project still comes in (X1).
+                guard Held.isOn(.webPieces) else {
+                    try? FileManager.default.removeItem(at: destination)
+                    app.show("Web pages and Lottie files aren't in this version yet", kind: .error)
+                    return nil
+                }
                 return addWebPiece(piece, as: placement)
             }
             if UTType(filenameExtension: destination.pathExtension)?.conforms(to: .movie) ?? false {

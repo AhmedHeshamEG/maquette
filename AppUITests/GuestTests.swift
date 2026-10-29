@@ -1,8 +1,8 @@
 import XCTest
 
 /// G1's acceptance on the iPad simulator: each guest in USERS.md finishes their job without leaving the app, timed
-/// from the first tap. Sara draws a room and sends it as IFC; Giulia prints a jar with a screw-on lid as 3MF; Omar
-/// explodes an assembly and makes its technical drawing; Dev blocks out a level and takes it to Godot.
+/// from the first tap. Sara draws a room and sends it as IFC; Giulia prints a jar with a screw-on lid as 3MF; Dev
+/// blocks out a level and takes it to Godot. (Omar's Study left with the set-up in 0.29, CONTEXT §D.24.)
 @MainActor
 final class GuestTests: XCTestCase {
     private var app: XCUIApplication!
@@ -107,26 +107,6 @@ final class GuestTests: XCTestCase {
         shot("Giulia's jar and lid")
         export(kind: "model", format: "threeMF", preset: "threeMFPrint", file: ".3mf")
         XCTAssertLessThan(Date().timeIntervalSince(clock), 180, "Giulia's threaded lid to 3MF")
-    }
-
-    func testOmarsAssemblyExplodesIntoATechnicalDrawingInUnderThreeMinutes() {
-        let clock = Date()
-        start("print")
-        add("print-jar")
-        XCTAssertTrue(waitForTrail("cmd=Jar & lid"))
-        // The two parts as one assembly.
-        app.typeKey("a", modifierFlags: .command)
-        app.typeKey("g", modifierFlags: .command)
-        XCTAssertTrue(waitForTrail("cmd=Group"), "an assembly of two parts")
-        XCTAssertTrue(tap("scene-name"))
-        XCTAssertTrue(tap("setup-study"))
-        XCTAssertTrue(tap("Model"))
-        XCTAssertTrue(tap("model-shape"))
-        XCTAssertTrue(tap("study-explode"))
-        XCTAssertTrue(waitForTrail("cmd=Explode"), "exploded in one tap")
-        shot("Omar's exploded view")
-        export(kind: "paper", format: "technical", preset: "technicalA4", file: "technical drawing.pdf")
-        XCTAssertLessThan(Date().timeIntervalSince(clock), 180, "Omar's exploded technical PDF")
     }
 
     func testDevsLevelGoesToGodotInUnderThreeMinutes() {

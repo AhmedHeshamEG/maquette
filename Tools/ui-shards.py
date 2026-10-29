@@ -30,7 +30,6 @@ TIMES = {
     "DrawTests/testAThreeFrameFlipbookDrawnWithFlicks": 51,
     "GuestTests/testDevsLevelGoesToGodotInUnderThreeMinutes": 78,
     "GuestTests/testGiuliasThreadedLidGoesToTheSlicerAs3MFInUnderThreeMinutes": 74,
-    "GuestTests/testOmarsAssemblyExplodesIntoATechnicalDrawingInUnderThreeMinutes": 80,
     "GuestTests/testSarasRoomBecomesAPlanAndAnIFCInUnderThreeMinutes": 89,
     "LayoutTests/testAllSevenShapesAreVisible": 33,
     "LayoutTests/testHomeControlsAreReachable": 25,

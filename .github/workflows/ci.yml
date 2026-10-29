@@ -17,6 +17,8 @@ on:
   push:
     branches: [main]
   pull_request:
+    # ready_for_review: a draft's run skips the App Store walk and most UI tests, so marking it ready runs everything.
+    types: [opened, synchronize, reopened, ready_for_review]
   workflow_dispatch:
 
 concurrency:
@@ -56,6 +58,7 @@ jobs:
               - 'Packages/Jolt/**'
               - 'Tools/godot/**'
               - 'Tools/check_look_render.py'
+              - 'Tools/check_threejs.mjs'
               - '.swiftlint.yml'
               - '.swiftformat'
               - '.github/workflows/ci.yml'
@@ -115,6 +118,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: The held list agrees with Held.swift (CONTEXT §D.25)
+        run: python3 Tools/check_held.py
       - name: SwiftFormat
         run: |
           curl -sSL -o swiftformat.zip https://github.com/nicklockwood/SwiftFormat/releases/download/0.63.0/swiftformat_linux.zip
@@ -274,6 +279,55 @@ jobs:
             look-diff.png
           retention-days: 7
 
+  threejs:
+    name: SPIKE (X1) the web folder in three.js 0.170 (node and Chromium)
+    needs: core-tests
+    runs-on: ubuntu-latest
+    # Node and a Chromium that draws WebGL with SwiftShader.
+    container: mcr.microsoft.com/playwright:v1.48.2-noble
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: acceptance
+          path: acceptance
+      - name: three.js, Playwright and the glTF Validator, pinned
+        run: |
+          mkdir -p /tmp/threecheck && cd /tmp/threecheck
+          npm init -y > /dev/null
+          npm install --silent three@0.170.0 playwright@1.48.2 gltf-validator@2.0.0-dev.3.10
+          cp "$GITHUB_WORKSPACE/Tools/check_threejs.mjs" "$GITHUB_WORKSPACE/Tools/validate_gltf.mjs" .
+      - name: GLTFLoader and ObjectLoader read the folder alike, and as Maquette wrote it
+        run: |
+          set -o pipefail
+          cd /tmp/threecheck
+          node check_threejs.mjs structure "$GITHUB_WORKSPACE/acceptance/threejs/night-room" | tee -a "$GITHUB_STEP_SUMMARY"
+      - name: Chromium plays the folder and draws what Maquette sees
+        run: |
+          set -o pipefail
+          cd /tmp/threecheck
+          HOME=/root node check_threejs.mjs render "$GITHUB_WORKSPACE/acceptance/threejs/night-room" | tee -a "$GITHUB_STEP_SUMMARY"
+      - name: A three.js project plays as in the sandbox and the recorder says what Maquette's tests read
+        run: |
+          set -o pipefail
+          cd /tmp/threecheck
+          cp "$GITHUB_WORKSPACE/Tools/record_threejs.mjs" .
+          fixture="$GITHUB_WORKSPACE/Packages/LoweyCore/Tests/LoweyCoreTests/Fixtures/three-island"
+          HOME=/root node record_threejs.mjs "$GITHUB_WORKSPACE/acceptance/threejs/recorder" "$fixture" /tmp/island.json "$fixture/recording.json" | tee -a "$GITHUB_STEP_SUMMARY"
+      - name: The web GLB passes the Khronos glTF Validator
+        run: |
+          cd /tmp/threecheck
+          node validate_gltf.mjs "$GITHUB_WORKSPACE/acceptance/threejs/night-room/scene.glb"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: threejs-render
+          path: acceptance/threejs/night-room/rendered.png
+          retention-days: 7
+
   interop:
     name: Print files (slicer check) + Blender package + painted glTF (Blender ${{ matrix.blender }})
     needs: core-tests
@@ -414,7 +468,7 @@ jobs:
               -test-timeouts-enabled YES -default-test-execution-time-allowance 300 -retry-tests-on-failure -test-iterations 3 \
               -skipPackagePluginValidation -IDEBuildingContinueBuildingAfterErrors=YES \
               SWIFT_TREAT_WARNINGS_AS_ERRORS=YES \
-              | tee "$RUNNER_TEMP/engine.log" | grep -E "error:|warning:|Test Case .* failed|Executed|\*\* " || true
+              | tee "$RUNNER_TEMP/engine.log" | grep -E "error:|warning:|Test Case .* failed|Executed|TIER-B|\*\* " || true
             grep -q "\*\* TEST SUCCEEDED \*\*" "$RUNNER_TEMP/engine.log" && exit 0
             echo "::warning::Engine tests failed on attempt $attempt"
           done
@@ -682,9 +736,9 @@ jobs:
   appstore:
     name: App Store build (held features held back)
     needs: [changes, lint]
-    # Off until the launch phase: nothing has been held since 0.28, so this walk repeated the app job on a Mac of
-    # its own. Turned back on for the App Store build.
-    if: false
+    # On again since 0.29: the store build holds things (CONTEXT §D.25), and this walk proves they're hidden and the rest
+    # is there. Ready PRs and main only; a draft skips it.
+    if: needs.changes.outputs.features == 'true' && github.event.pull_request.draft != true
     runs-on: xcode-27
     timeout-minutes: 120
     steps:
@@ -707,8 +761,8 @@ jobs:
         run: |
           xcrun simctl boot "${{ steps.sim.outputs.udid }}" || true
           xcrun simctl bootstatus "${{ steps.sim.outputs.udid }}" -b
-      # Since 0.28 the App Store configuration holds nothing (CONTEXT §D.3): the layout walk asserts no row of
-      # docs/LAYOUT.md is held and every row is there.
+      # The App Store configuration holds what project.yml lists (CONTEXT §D.25): the layout walk asserts every row of
+      # docs/LAYOUT.md marked held is absent and every other row is there.
       - name: Walk the layout in the App Store configuration
         run: |
           set -o pipefail
@@ -719,7 +773,8 @@ jobs:
               -skipPackagePluginValidation -collect-test-diagnostics never -test-timeouts-enabled YES \
               -default-test-execution-time-allowance 600 -retry-tests-on-failure -test-iterations 3 \
               -only-testing:LoweyUITests/LayoutTests/testHomeControlsAreReachable \
-              -only-testing:LoweyUITests/LayoutTests/testPanelAndChromeControlsAreReachable               -only-testing:LoweyUITests/LayoutTests/testMakingControlsAreReachable \
+              -only-testing:LoweyUITests/LayoutTests/testPanelAndChromeControlsAreReachable \
+              -only-testing:LoweyUITests/LayoutTests/testMakingControlsAreReachable \
               -only-testing:LoweyUITests/LayoutTests/testModelControlsAreReachable \
               -only-testing:LoweyUITests/LayoutTests/testMoreModelControlsAreReachable \
               -only-testing:LoweyUITests/LayoutTests/testSelectionControlsAreReachable \
@@ -729,13 +784,16 @@ jobs:
             echo "::warning::The App Store walk failed on attempt $attempt"
           done
           exit 1
-      - name: The App Store build holds nothing (its Info.plist's HmmHeld is empty)
+      - name: The App Store build holds the list and is iPad only; Debug holds nothing
         run: |
-          PLIST=$(find DerivedData/Build/Products -path "*AppStore-iphonesimulator/*.app/Info.plist" -maxdepth 4 | head -1)
+          PLIST=$(find DerivedData/Build/Products/AppStore-iphonesimulator -maxdepth 2 -path "*.app/Info.plist" -not -path "*Runner.app/*" | head -1)
           test -n "$PLIST" || { echo "::error::No App Store build found"; exit 1; }
           HELD=$(/usr/libexec/PlistBuddy -c "Print :HmmHeld" "$PLIST" 2>/dev/null || true)
-          test -z "$HELD" || { echo "::error::The App Store build holds: $HELD"; exit 1; }
-          echo "The App Store build ($PLIST) holds nothing."
+          WANT=$(python3 Tools/check_held.py)
+          test "$HELD" = "$WANT" || { echo "::error::The App Store build holds '$HELD', not '$WANT'"; exit 1; }
+          FAMILY=$(/usr/libexec/PlistBuddy -c "Print :UIDeviceFamily" "$PLIST" | tr -d '[:space:]')
+          echo "$FAMILY" | grep -q "^Array{2}$" || { echo "::error::The App Store build's devices are $FAMILY, not the iPad alone"; exit 1; }
+          echo "The App Store build ($PLIST) holds: $HELD"
       - uses: actions/upload-artifact@v4
         if: failure()
         with:
@@ -745,7 +803,7 @@ jobs:
 
   result:
     name: CI result
-    needs: [changes, lint, core-tests, interop, godot, look-shader, tools, engine, features, app, ui, appstore]
+    needs: [changes, lint, core-tests, interop, threejs, godot, look-shader, tools, engine, features, app, ui, appstore]
     if: always()
     runs-on: ubuntu-latest
     steps:

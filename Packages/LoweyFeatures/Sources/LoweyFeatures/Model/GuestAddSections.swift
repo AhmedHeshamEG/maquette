@@ -13,7 +13,7 @@ struct GuestAddSections: View {
     var body: some View {
         switch editor.projectSetUp {
         case .room: room
-        case .print: print
+        case .print where Held.isOn(.threads): print
         case .game: game
         default: EmptyView()
         }
@@ -38,24 +38,22 @@ struct GuestAddSections: View {
             }
             PanelSection("Plans and the site") {
                 TileGrid {
-                    TileButton(title: "Plans", systemName: "square.split.2x2", identifier: "room-plans") { editor.sheet = .plans }
+                    if Held.isOn(.buildingFiles) {
+                        TileButton(title: "Plans", systemName: "square.split.2x2", identifier: "room-plans") { editor.sheet = .plans }
+                    }
                     TileButton(title: "Walk through", systemName: "figure.walk", identifier: "room-walk") {
                         editor.openPanel = nil
                         editor.startWalking()
                     }
-                    TileButton(title: "Underlay", systemName: "doc.viewfinder", identifier: "room-underlay") { importingUnderlay = true }
-                    TileButton(title: "Match a photo", systemName: "photo.badge.checkmark", identifier: "room-photo") { editor.sheet = .matchPhoto }
-                    if RoomScanSheet.isSupported {
-                        TileButton(title: "Scan a room", systemName: "camera.metering.matrix", identifier: "room-scan") { editor.sheet = .roomScan }
-                    } else {
-                        // No LiDAR here: the iPhone scans (U8).
-                        TileButton(title: "Scan with your iPhone", systemName: "iphone", identifier: "room-scan-phone") {
-                            editor.ask(.roomScan)
-                            editor.sheet = .phone
-                        }
+                    if Held.isOn(.buildingFiles) {
+                        TileButton(title: "Underlay", systemName: "doc.viewfinder", identifier: "room-underlay") { importingUnderlay = true }
                     }
+                    TileButton(title: "Match a photo", systemName: "photo.badge.checkmark", identifier: "room-photo") { editor.sheet = .matchPhoto }
+                    roomScan
                 }
-                Hint("An underlay is a PDF, DXF or picture of a plan: lay it flat, set it to scale with two taps, trace it.")
+                if Held.isOn(.buildingFiles) {
+                    Hint("An underlay is a PDF, DXF or picture of a plan: lay it flat, set it to scale with two taps, trace it.")
+                }
             }
         }
         .fileImporter(isPresented: $importingUnderlay,
@@ -63,6 +61,21 @@ struct GuestAddSections: View {
             if case let .success(url) = result {
                 editor.openPanel = nil
                 editor.importUnderlay(url)
+            }
+        }
+    }
+
+    /// RoomPlan's scan, here or from the iPhone; neither while it's held (§D.25).
+    @ViewBuilder private var roomScan: some View {
+        if Held.isOn(.roomScan) {
+            if RoomScanSheet.isSupported {
+                TileButton(title: "Scan a room", systemName: "camera.metering.matrix", identifier: "room-scan") { editor.sheet = .roomScan }
+            } else if Held.isOn(.companion) {
+                // No LiDAR here: the iPhone scans (U8).
+                TileButton(title: "Scan with your iPhone", systemName: "iphone", identifier: "room-scan-phone") {
+                    editor.ask(.roomScan)
+                    editor.sheet = .phone
+                }
             }
         }
     }

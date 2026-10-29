@@ -3569,3 +3569,218 @@ shows the last frame it has while the next one draws (as a video); four pieces s
 
 **D-574 — Permissions.** The AR view uses the camera, whose Info.plist line now names it; nothing leaves the iPad. Web
 pieces need none (no network).
+
+
+## Maquette 0.29 — X1, import and export everything (in progress)
+
+**D-575 — Keyed numbers point at their place.** A key on a material's colour, see-through, roughness, metal or glow, a
+light's colour, strength, reach or cone, or a camera's lens leaves glTF as a `KHR_animation_pointer` channel at that
+number, sampled like node keys (linear and held keys as they are, eased ones every frame). The extension is used, never
+required, so a reader that doesn't know it skips those channels and plays the rest. Colour and see-through share one
+channel (the base colour's alpha). Maquette reads the channels back as keys on the objects using that material, light or
+camera. *Rejected:* baking them into extra nodes or morph targets (three.js, Blender and engines would each need their
+own trick).
+
+**D-576 — What glTF can't hold rides in its extras.** Keys with no place in glTF (face states, a reveal, a stepping)
+are written as Maquette's own tracks in the file's `extras.maquette.tracks`, their targets the nodes'
+`extras.maquette.id`, and come back as they were. The matrix calls these cells `extras`. *Rejected:* dropping them
+silently (law 5: nothing is ever lost, and a round trip through Maquette is the common case).
+
+**D-577 — Glow, see-through and lacquer reach every file.** A glow brighter than white keeps its strength with
+`KHR_materials_emissive_strength` (it was clamped to white); an object's see-through is the material's alpha in every
+format (it was left out); the Look's lacquer (Clean product's reflection) is every surface's clearcoat.
+
+**D-578 — For the web is a folder, not a file.** Export ▸ 3D ▸ three.js writes one zip: `scene.glb`, the same scene as
+three.js's own JSON, a player (`index.html` + `main.js`: the camera cuts, the timeline on an `AnimationMixer`, the
+sun, sky and ground, the Look), `maquette/pointer.js`, a React Three Fiber component, `AGENTS.md` and three r170 from
+the kit's own copy, so it plays with no network. *Rejected:* a single GLB (it can't carry the Look, the cuts or the
+notes an agent needs), loading three from a CDN (nothing leaves the device, and folders must open offline).
+
+**D-579 — Names three.js keeps.** `GLTFLoader` strips spaces and `[ ] . : /` and numbers duplicates in an order that
+depends on its async loading. The web GLB is written with names already clean and unique (nodes and meshes together),
+so `getObjectByName`, `scene.json`, the component and `AGENTS.md` agree; the Maquette name stays in
+`extras.maquette.name`. Other glTF exports keep names as they are.
+
+**D-580 — The Look in three.js is its numbers.** `maquette/look.js` rebuilds it: toon Looks as `MeshToonMaterial` with a
+gradient from the Look's bands, threshold and softness; lines with `OutlineEffect` at the Look's width (pixels at
+1080p); halftone and pixel art as passes; Clay and Clean product keep three's standard materials. The paint Looks and
+paper use their nearest real-time pass (toon bands and lines), and the matrix says so. Toon materials keep a
+`roughness` and `metalness` so keyed tracks still land.
+
+**D-581 — SPIKE (step 0) passed with a render check, not only structure.** In node, three.js 0.170 reads the folder's
+GLB (with `pointer.js`) and `scene.json`; their names, places, clips, tracks and values at a moment must agree with each
+other and with what Maquette wrote. Then Chromium (Playwright, SwiftShader) plays `index.html?t=0.5&transparent`, and
+its picture must cover Maquette's own silhouette of that moment: Core projects the scene through its camera and keyed
+lens and rasterises a mask (`ThreeSilhouette`), so the golden is Maquette's, not three's. Locally: structure agrees,
+overlap 94.1% (the ink lines are the rest). The job is `threejs` in CI. *Rejected:* headless-gl (three dropped WebGL 1
+in r163), comparing to a Metal golden (two renderers never match pixel for pixel; the silhouette is what must).
+
+**D-582 — The matrix is checked against proofs.** `docs/INTEROP.md` has a section a format, a row a feature, a word a
+direction (`carried`, `baked`, `extras`, `impossible`, `not offered`, `todo`). `InteropMatrixTests` fails when a
+`carried`, `baked` or `extras` cell has no proof in `InteropProofs` with the same word, when a proof's test doesn't
+exist, or when a proof no longer matches its cell. Unlisted rows take the section's "Not listed" line. The phase ends
+when no `todo` is left (333 at this point). *Rejected:* one wide table (24 rows × 20 formats × 2 directions doesn't
+read).
+
+**D-583 — three.js's JSON comes into the scene, not the library.** Library ▸ Import takes a `scene.toJSON()` file and
+brings it into the open scene as one step (as a glTF made editable): `BufferGeometry` as its triangles, three.js's
+boxes exactly, spheres, cylinders and cones as Maquette's own shapes at their sizes, planes as a quad standing in XY;
+standard and physical materials as colour, roughness, metal, glow and see-through; cameras and lights as ours (a light
+with no target aims at the origin, as three.js's does); an `InstancedMesh` as a thing a copy (the matrix says `baked`
+until copies become clones); clips' tracks as keys, by name or uuid. A file Maquette wrote gets its own names back from
+`userData.maquette.name`. What can't come in (ambient and hemisphere light, points and lines, custom shaders' code,
+pictures on surfaces for now, other parametric shapes) is said after, in the same toast line; nothing is asked first.
+*Rejected:* a library asset (a three.js scene is a scene, with cameras and clips, not a model to place).
+
+
+**D-584 — A glTF's pictures come in as paint.** Making a glTF model editable keeps the pictures its materials show:
+each part is laid flat as any shape is (its own uvs describe the old triangles, not the editable copy's), every pixel
+finds its point on the model's own surface, and the colour, metallic-roughness and emissive pictures there, times the
+material's factors, become a first layer, "Model", with its colour, roughness, metal and glow maps; an empty layer sits
+above. `KHR_texture_transform` moves the uvs first. It happens in the background and lands as one step with the parts.
+A normal map is left for now (a tangent-space picture doesn't survive a new unwrap as it is); the matrix says so.
+*Rejected:* keeping the file's uvs on the editable mesh (modelling rebuilds faces and their uvs with them), a picture
+as a material (paint is where a picture can be painted on, smudged and exported again).
+
+**D-585 — An instanced mesh comes in as clones, as placed (schema 26).** A three.js `InstancedMesh` is one thing with
+clones, not a thing a copy: the clones gain a layout, `placed`, holding each copy's place, turn and size against the
+first's, so the forest stays one tree to model, paint or swap, and every clone effect still acts on it. The inspector
+shows "As placed" only while it's the layout a file gave (choosing another arranges them again; it can't be made by
+hand), and the bridge's `clone` takes `places`. Schema 26 only adds the case. Over 1000 instances, the first 1000 come
+in (the clones' limit) and the line says so. *Rejected:* a thing a copy (D-583's first answer: a thousand trees to
+edit one by one), a new object kind for instances (clones already are Maquette's instances).
+
+**D-586 — Clones leave glTF as GPU instances.** A thing with clones leaves as its node with `EXT_mesh_gpu_instancing`:
+each copy where it stands at the first frame (layout and effects applied), in the node's own space, so three.js makes
+an `InstancedMesh` and Blender, Godot and Unity their own instances; the recipe (layout, effects, seed) rides in the
+node's extras and comes back as itself. Another tool's instances come in as placed clones (D-585); when its first
+instance isn't the node itself (a ring's first copy is on the ring), the mesh comes in as a child standing at it. The
+extension is used, not required, so a reader without it shows the thing once. *Rejected:* a node a copy (a thousand
+nodes for a forest, and nothing to come back as clones), baking the effects' motion into instance keys (glTF has no
+place for keyed instances).
+
+**D-587 — A skin comes in as a rig.** Making a skinned glTF editable gives a rigged thing, not a frozen pose: its
+skeleton is the skin's joints in the bind pose (from the inverse bind matrices, parents first, names made unique), the
+thing stands where the bind pose's space is, the file's weights are carried onto the surface the app draws by the
+closest point (cut finer at the bones first, as drawing a rig does, since faces made whole again are too big to bend),
+and each joint's turns become `bone.` keys. The joint nodes aren't things. A joint's moves and sizes are left out:
+Maquette's bones keep their length, and only a turn is a pose. *Rejected:* computing new weights by bone heat (the
+artist's weights are the work), keeping the file's own vertices (modelling rebuilds them).
+
+**D-588 — three.js's pictures come in too.** A three.js scene file's `map`, `roughnessMap` / `metalnessMap` and
+`emissiveMap` come in as paint the way a glTF's do (D-584), when the file carries the image (as `toJSON` does, a data
+URL) on a buffer geometry's own uvs. The uvs move as three.js moves them (repeat and rotation about the centre, then
+the offset) and flip for a picture uploaded upside down (`flipY`, three.js's default). three.js's own shapes (a box, a
+sphere) have uvs Maquette doesn't make the same way, so their pictures are said in the line instead.
+
+**D-589 — three.js skins come in as glTF's do.** A `SkinnedMesh` in a three.js scene file is rigged the same way (one
+`SkinImport` for both readers): its skeleton's bones in the bind pose (each bone's inverse seen from the mesh through
+its bind matrix), the geometry's `skinIndex` and `skinWeight` carried onto the surface, the bones' `quaternion` tracks
+as `bone.` keys, and the bones aren't things. A bone's other tracks are left out, as glTF's are (D-587).
+
+**D-590 — A glTF's normal map comes in too (amends D-584).** Each texel of the new surface finds its point on the
+model's own surface, reads the normal there in the model's tangent frame (glTF's: x along u, y up the picture), turns it
+into the object's space and writes it in the new unwrap's frame, so the same bumps catch the same light; it becomes the
+paint's normals (as "Normals from" does). A three.js file's `normalMap` isn't read yet (its tangent convention depends on
+`normalScale`'s sign); the line says so.
+
+**D-591 — A three.js project comes in by playing it.** Library ▸ Import, a drop or Files takes a page, a folder with
+one or a zip: it's copied into `assets/`, plays offscreen in the web sandbox (no network, three.js from a CDN served from
+the kit's copy) on the piece's clock, and a recorder added before the page's own code finds its scene through the hook
+three.js calls for its devtools (`__THREE_DEVTOOLS__`: every `Scene` and `WebGLRenderer` announces itself, and each
+render says which scene and camera it draws). The scene it draws with the most in it is written with three.js's own
+`toJSON` at frame 0 and comes in as a scene file does (D-583 … D-589), the camera it draws with included; then 10 s of
+its motion is sampled 30 times a second (place, turn, size, visibility, material colours, glow and opacity, lights, the
+lens) and kept as keys only where the motion bends (a steady spin is a few dozen keys, a still thing none). It waits for
+the scene to stop growing first (models loaded on real time, four seconds at most). Nothing is asked; the length and
+the moment are the bridge's to change (step 7). Morph weights and instances that move on their own come in as they
+stood, said in the line. *Rejected:* patching the page's `three` (it may be bundled into its own code), asking for a
+length first (import never asks, step 6), keeping every sample (600 keys a channel nobody can edit).
+
+**D-592 — A shader surface keeps playing on a card in its place.** A mesh drawn by a `ShaderMaterial` can't become
+ours: its place stays as a group, and a card under it, lying across its box's two longest sides and facing along the
+thinnest (a sea plane lies flat), plays a copy of the page (`maquette-solo-n.html` beside it) that hides everything else
+and draws it straight on with an orthographic view the size of its box, so its colours move as before. The line says
+"Sea shader: kept as a web object, plays as before". The surface is found by its child-index path, which is the same on
+every run of the same page. *Rejected:* baking the shader to a texture (it moves), rendering it in its own uv space (a
+vertex shader's waves would be lost along with the camera it expects).
+
+**D-593 — A page with no three.js scene plays over the frame.** An HTML composition (HyperFrames and the like) brought
+in the same way has no scene to take apart: it comes in as a web piece over the frame on the timeline's clock (M12),
+and the line says so.
+
+**D-594 — hmm-kit 0.18.0: the web player takes scripts and answers.** `HmmWebPlayer(piece:scripts:)` adds scripts after
+the clock and before the page's own code, and `evaluate(_:atFrame:)` returns what a piece of JavaScript reads at a
+frame. That's all the recorder needs from the kit; the recorder itself is Core's (`ThreeRecorder`), so its JavaScript is
+checked in Chromium on CI (`Tools/record_threejs.mjs` plays the acceptance's island and compares with the fixture
+Core's tests read) as well as in the app's own WebKit (`ThreeProjectFlowTests`).
+
+**D-595 — three.js normal maps, and the way green leans (amends D-590).** A three.js file's `normalMap` comes in as a
+glTF's does. three.js reads green along +v, which is up the picture only when the picture was flipped (`flipY`, its
+default); unflipped (as `GLTFLoader` leaves glTF's, with `normalScale.y` negative) it means the other way, so the reader
+turns `normalScale` to glTF's way up and the transfer leans red and green by it (glTF's `normalTexture.scale` too).
+The same rule fixed our own `scene.json`: its pictures go out unflipped, and its normal maps now carry
+`normalScale: [s, -s]`, so three.js lights their bumps the right way up. A surface with no normals of its own (three.js
+geometry often has none) leans from each face's instead of coming in flat.
+
+## X1 closed and the held parts (2026-10-28, CONTEXT §D.21–D.29)
+
+**D-596 — X1 closes where it stands.** The 2026-10-28 converge stopped new features until launch (§D.21), so X1 ends
+with what sessions 1–3 built: three.js out (the folder, `scene.json`, `Scene.jsx`, `AGENTS.md`, keyed numbers as
+`KHR_animation_pointer`), three.js in (JSON, projects, pages, zips, the island), glTF's pictures, instances and skins
+both ways. Every matrix cell no test proves says **after 1.0** instead of `todo` (110 cells), and `InteropMatrixTests`
+fails on a `todo`. What waits: `KHR_texture_transform` out, `KHR_materials_variants`, `EXT_meshopt_compression`, the
+Rapier switch, Web Audio, step 4's formats (USD in, FBX in, PLY, Collada, BVH, VRM, Alembic, STEP, the Blender add-on),
+step 5's five round-trip fixtures, step 7's `import`/`export` verbs and the skill's interop module. Step 6 (Export opens
+on what it's for) moves to U9, whose menus are rebuilt around §D.24's places. *Rejected:* finishing the 327 cells
+before launch ("full support for everything" has no end, the converge's read); deleting the unproven cells (the
+matrix keeps saying what isn't proved).
+
+**D-597 — Nine held parts, reversing D-558.** `MaquetteHeld` names `buildingFiles`, `technicalSheets`, `threads`,
+`papercraft`, `roomScan`, `board`, `faceTimeReview`, `webPieces`, `companion`; `project.yml` lists them for the
+AppStore configuration only, so Debug and the sideloaded Release build show everything for T1. Each leaves the list
+when it passes on the device (its test task, its checks, no P0 bug); the launch never waits for one (§D.25).
+`Tools/check_held.py` (in the lint job) keeps `project.yml` and `Held.swift` in step; the App Store job checks the
+built Info.plist holds exactly that list and walks LAYOUT.md, held rows absent, the rest there. The job is on again
+for ready PRs and main (it was `if: false` since PR #53). *Rejected:* compile-time flags (packages don't see the app's
+conditions, D-228); deleting the code.
+
+**D-598 — "IFC" holds the building's files, not its tools.** `buildingFiles` hides IFC out, Plans and elevations (the
+sheet, its menu command, PDF, DXF and SVG out) and underlays; walls, doors, roofs, walking through and matching a photo
+stay, since building a place is one of §D.24's things anyone can do. *Rejected:* holding the whole Room kit (the
+converge kept "build a place").
+
+**D-599 — Threads hold the Print pieces.** The jar and lid, the bolt and the nut are all ISO threads, so with
+`threads` held Model ▸ Add shows no Print section, and Model ▸ Edit ▸ 3D print hides the hole and screw pickers: a
+hole is a plain clearance one. Best way up, split, hollow, words, fit, size, the slicer and the object scan stay.
+
+**D-600 — Web pieces by hand are held; three.js work still comes in.** `webPieces` hides Model ▸ Add ▸ Web page or
+Lottie, and a page or Lottie file reaching `importMedia` (the bridge's media route) says "Web pages and Lottie files
+aren't in this version yet". A three.js file or project (Library, a drop, Files) still comes in as X1 made it, and the
+shader surface or page it brings keeps playing: it's the import's result, not a piece added by hand. *Rejected:*
+holding the three.js import too (it's the point of X1, §D.11).
+
+**D-601 — With the companion held the store build is iPad only.** An iPhone install would open on a screen that's held,
+which App Review refuses, so the AppStore configuration sets `TARGETED_DEVICE_FAMILY` 2 next to the list (CI checks
+`UIDeviceFamily`). On the iPad: Actions' and the Scene menu's Your iPhone, the face capture's My iPhone, and the
+iPhone's room and object scans are hidden, and the link never starts listening. Releasing the companion means both
+lines.
+
+**D-602 — Reviews over FaceTime held both ways.** With `faceTimeReview` held the iPad neither offers Review over
+FaceTime nor joins one another iPad starts. Notes on spots stay (they need no call).
+
+**D-603 — The bridge still reaches held parts.** Only entry points ask (HmmHeld's rule): Core's verbs (`guest`,
+`board`, `app` with `panel: phone`) still work, so an agent can build what a person can't open yet. The assistant is
+off by default, and no Learn lesson names a held part (checked when the list was made). *Rejected:* refusing held verbs in Core (Core
+doesn't know the build; every coverage test would need a held variant).
+
+**D-604 — Study is removed, not held (§D.24).** `StarterTemplate.setUps` drops `.study`: Home's quiet row, Set up for and
+Settings ▸ New projects no longer offer it, and a project made for Study opens as Blank. The template stays so old
+projects read; the exploded view and the forces arrows have no button (the `kit.explode` command stays for the bridge;
+its menu section goes). Omar's UI test went with it. Engineer was never built, so nothing else goes.
+
+**D-605 — Tier B on CI: fifty things at 60 fps.** `TierBenchmarkTests` draws fifty bevelled shapes in Ink at an 11-inch
+iPad's size times Tier B's top render scale (2006 × 1394), 150 frames, the first 30 as warm-up, each built, drawn and
+waited for before the next, and fails if the median passes 16.7 ms (60 fps) or p95 passes 33.3 ms (30 fps). Not
+overlapping CPU and GPU makes it stricter than the stage. A p95 gate at 16.7 ms passed once and failed the next run at
+16.7–24.8 ms: CI's runners are shared, and a neighbour moves the slow frames, not the typical one. Diagnostics ▸ Run as Tier B (U1) is the device side (§D.27).

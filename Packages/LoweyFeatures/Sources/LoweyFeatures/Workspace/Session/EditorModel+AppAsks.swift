@@ -119,7 +119,7 @@ extension EditorModel {
     private func exportFor(_ name: String) {
         let short: [String: ExportPreset] = ["film": .hd1080, "vertical": .vertical, "still": .stillHD, "gif": .gifLoop, "glb": .gltfApps,
                                              "usdz": .usdzQuickLook, "obj": .objMaterials, "stl": .stlPrint, "3mf": .threeMFPrint,
-                                             "blender": .blenderComputer, "fbx": .fbxUnity]
+                                             "blender": .blenderComputer, "fbx": .fbxUnity, "web": .threeFolder, "threejs": .threeFolder]
         guard let preset = short[name] ?? ExportPreset(rawValue: name) else {
             app.show("No export called “\(name)”", kind: .error)
             return

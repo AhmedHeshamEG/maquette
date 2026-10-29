@@ -74,12 +74,16 @@ struct StageSettingsSection: View {
             }
             Toggle("The view cube", isOn: $showsViewCube)
                 .accessibilityIdentifier("settings-view-cube")
-            Toggle("The Board", isOn: $boardEnabled)
-                .accessibilityIdentifier("settings-board")
+            if Held.isOn(.board) {
+                Toggle("The Board", isOn: $boardEnabled)
+                    .accessibilityIdentifier("settings-board")
+            }
         } header: {
             Text("Stage")
         } footer: {
-            Text("The Board is a sheet for planning in every project. Off: it leaves Actions and pinned pictures are put away. Nothing is deleted.")
+            if Held.isOn(.board) {
+                Text("The Board is a sheet for planning in every project. Off: it leaves Actions and pinned pictures are put away. Nothing is deleted.")
+            }
         }
     }
 }

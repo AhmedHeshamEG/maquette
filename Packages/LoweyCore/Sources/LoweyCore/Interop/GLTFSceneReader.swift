@@ -2,7 +2,8 @@ import Foundation
 
 /// Reads a glTF scene back into objects you can edit: a group or a modelled mesh per node (keeping the hierarchy and
 /// each node's own transform), materials as colours, roughness, metal and glow, cameras, lights, and node animation as
-/// timeline keys. Skins are left to the library (a rigged model is placed as a model, not taken apart).
+/// timeline keys. A piece's pictures are kept with its own uvs (`pictures`), for `PaintImport` to lay on it as paint.
+/// A skinned mesh comes in rigged, its joints' turns as `bone.` keys; the skin files it needs are in `files`.
 public enum GLTFSceneReader {
     public enum Failure: Error, Equatable, CustomStringConvertible {
         case empty
@@ -24,6 +25,11 @@ public enum GLTFSceneReader {
         public var fragment: SceneFragment
         public var tracks: [Track]
         public var duration: Double
+        /// The objects whose material shows pictures, and the file's pictures (by image index).
+        public var pictures: [ObjectID: GLTFPictures] = [:]
+        public var textures: [ImportedTexture] = []
+        /// Files the rigged things need (their `.skin` weights), by name.
+        public var files: [String: Data] = [:]
     }
 
     public static func read(_ data: Data, baseURL: URL? = nil, ids: inout IDFactory) throws -> Result {
@@ -41,7 +47,13 @@ public enum GLTFSceneReader {
         }
         guard !roots.isEmpty else { throw Failure.empty }
         let (tracks, duration) = try builder.tracks(ids: &ids)
-        return Result(fragment: SceneFragment(objects: builder.objects, roots: roots), tracks: tracks, duration: duration)
+        var result = Result(fragment: SceneFragment(objects: builder.objects, roots: roots), tracks: tracks, duration: duration)
+        result.files = builder.files
+        if !builder.pictures.isEmpty {
+            result.pictures = builder.pictures
+            result.textures = try GLTFMeshReader.textures(file, baseURL: baseURL)
+        }
+        return result
     }
 
     static func countTriangles(_ file: GLTFReader.File) throws -> Int {
@@ -64,30 +76,51 @@ public enum GLTFSceneReader {
         let file: GLTFReader.File
         var objects: [SceneObject] = []
         var objectOf: [Int: ObjectID] = [:]
+        /// Where keyed numbers land (`KHR_animation_pointer`): each material's, camera's and light's objects, and the
+        /// ids a Maquette file wrote (its kept keys name them).
+        var objectsOfMaterial: [Int: [ObjectID]] = [:]
+        var objectsOfCamera: [Int: [ObjectID]] = [:]
+        var objectsOfLight: [Int: [ObjectID]] = [:]
+        var objectOfWrittenID: [String: ObjectID] = [:]
+        var pictures: [ObjectID: GLTFPictures] = [:]
+        /// Skins: the joint nodes (rigs, not things), where the nodes are, and which rigged things each joint turns.
+        let jointNodes: Set<Int>
+        let parentOf: [Int: Int]
+        let globals: [Int: Transform]
+        var boneTargets: [Int: [(object: ObjectID, joint: String)]] = [:]
+        var files: [String: Data] = [:]
 
         init(file: GLTFReader.File) {
             self.file = file
+            jointNodes = Self.jointNodes(file)
+            parentOf = Self.parents(file)
+            globals = GLTFMeshReader.globalTransforms(file)
         }
 
         mutating func object(for index: Int, parent: ObjectID?, ids: inout IDFactory) throws -> ObjectID? {
             let nodes = file.array("nodes")
-            guard index < nodes.count, objectOf[index] == nil else { return nil }
+            guard index < nodes.count, objectOf[index] == nil, !jointNodes.contains(index) else { return nil }
             let node = nodes[index]
             let id: ObjectID = ids.next()
             objectOf[index] = id
             let name = GLTFReader.nodeName(node, index: index)
             var object = SceneObject(id: id, name: name, kind: .group, parent: parent, transform: GLTFReader.localTransform(node))
+            if let written = ((node["extras"] as? [String: Any])?["maquette"] as? [String: Any])?["id"] as? String {
+                objectOfWrittenID[written] = id
+            }
             let slot = objects.count
             objects.append(object)
             var children: [ObjectID] = []
             if let camera = node["camera"] as? Int {
                 object.kind = .camera
+                objectsOfCamera[camera, default: []].append(id)
                 let cameras = file.array("cameras")
                 if camera < cameras.count, let yfov = (cameras[camera]["perspective"] as? [String: Any])?["yfov"] as? Double {
                     object[.fieldOfView] = .float(yfov * 180 / .pi)
                 }
             } else if let light = lightIndex(node) {
                 applyLight(light, to: &object)
+                objectsOfLight[light, default: []].append(id)
                 // Ours: a soft panel written as a spot keeps its size in the node's extras.
                 if let panel = GLTFReader.numbers(((node["extras"] as? [String: Any])?["maquette"] as? [String: Any])?["panel"]), panel.count == 2 {
                     object.kind = .light(.area)
@@ -96,20 +129,7 @@ public enum GLTFSceneReader {
                     object[.spotAngle] = nil
                 }
             } else if let mesh = node["mesh"] as? Int {
-                let pieces = try meshPieces(mesh)
-                if pieces.count == 1, let piece = pieces.first {
-                    object.kind = .mesh(piece.mesh)
-                    apply(piece.material, to: &object)
-                } else {
-                    // Several materials: one modelled child per material under this node.
-                    for piece in pieces {
-                        let child: ObjectID = ids.next()
-                        var part = SceneObject(id: child, name: piece.name, kind: .mesh(piece.mesh), parent: id)
-                        apply(piece.material, to: &part)
-                        objects.append(part)
-                        children.append(child)
-                    }
-                }
+                children += try dressMesh(&object, mesh: mesh, node: node, index: index, ids: &ids)
             }
             for child in node["children"] as? [Int] ?? [] {
                 if let childID = try self.object(for: child, parent: id, ids: &ids) { children.append(childID) }
@@ -117,6 +137,38 @@ public enum GLTFSceneReader {
             object.children = children
             objects[slot] = object
             return id
+        }
+
+        /// A mesh node's surface: rigged when it has a skin, cloned when it has instances. Extra pieces (one a material)
+        /// are children; their ids come back.
+        mutating func dressMesh(_ object: inout SceneObject, mesh: Int, node: [String: Any], index: Int, ids: inout IDFactory) throws -> [ObjectID] {
+            if let skinIndex = node["skin"] as? Int, let skin = try skinRig(skinIndex) {
+                return try dressSkinned(&object, mesh: mesh, skin: skin, index: index, ids: &ids)
+            }
+            var children: [ObjectID] = []
+            let pieces = try meshPieces(mesh)
+            let cloned = try clones(of: node)
+            if pieces.count == 1, let piece = pieces.first, cloned.map({ $0.first.isApproximately(.identity) }) ?? true {
+                object.motionDesign = cloned.map { MotionDesign(clones: $0.clones) }
+                object.kind = .mesh(piece.mesh)
+                apply(piece.material, to: &object)
+                pictures[object.id] = piece.pictures
+                objectsOfMaterial[piece.index, default: []].append(object.id)
+            } else {
+                // Several materials, or instances whose first isn't the node: one modelled child per material,
+                // each cloned where the instances stand.
+                for piece in pieces {
+                    let child: ObjectID = ids.next()
+                    var part = SceneObject(id: child, name: piece.name, kind: .mesh(piece.mesh), parent: object.id, transform: cloned?.first ?? .identity)
+                    part.motionDesign = cloned.map { MotionDesign(clones: $0.clones) }
+                    apply(piece.material, to: &part)
+                    pictures[child] = piece.pictures
+                    objectsOfMaterial[piece.index, default: []].append(child)
+                    objects.append(part)
+                    children.append(child)
+                }
+            }
+            return children
         }
 
         func lightIndex(_ node: [String: Any]) -> Int? {
@@ -140,6 +192,9 @@ public enum GLTFSceneReader {
             var name: String
             var mesh: EditableMesh
             var material: Material?
+            var index: Int
+            var pictures: GLTFPictures?
+            var part: ImportedPart
         }
 
         /// A glTF material's numbers as written (linear), before anything rounds them.
@@ -163,7 +218,7 @@ public enum GLTFSceneReader {
         }
 
         /// Each triangle primitive of a mesh, its triangles rebuilt into whole faces.
-        func meshPieces(_ index: Int) throws -> [Piece] {
+        func meshPieces(_ index: Int, skinned: Bool = false) throws -> [Piece] {
             let meshes = file.array("meshes")
             guard index < meshes.count else { return [] }
             let name = meshes[index]["name"] as? String ?? "Mesh \(index)"
@@ -173,10 +228,11 @@ public enum GLTFSceneReader {
                       let positions = attributes["POSITION"] as? Int else { continue }
                 let part = try GLTFMeshReader.primitivePart(file, attributes: attributes, positions: positions, indices: primitive["indices"] as? Int,
                                                             name: number == 0 ? name : "\(name) \(number + 1)",
-                                                            material: primitive["material"] as? Int ?? -1, skinned: false)
+                                                            material: primitive["material"] as? Int ?? -1, skinned: skinned)
                 let mesh = MeshBuilder.mesh(from: part.mesh)
                 guard !mesh.isEmpty else { continue }
-                pieces.append(Piece(name: part.name, mesh: mesh, material: material(part.material)))
+                pieces.append(Piece(name: part.name, mesh: mesh, material: material(part.material), index: part.material,
+                                    pictures: pictures(of: part.material, source: part.mesh), part: part))
             }
             return pieces
         }
@@ -203,6 +259,16 @@ public enum GLTFSceneReader {
             for animation in file.array("animations") {
                 let samplers = animation["samplers"] as? [[String: Any]] ?? []
                 for channel in animation["channels"] as? [[String: Any]] ?? [] {
+                    if let pointed = try pointerTracks(channel, samplers: samplers, ids: &ids) {
+                        result += pointed.tracks
+                        duration = max(duration, pointed.end)
+                        continue
+                    }
+                    if let turned = try boneTracks(channel, samplers: samplers, ids: &ids) {
+                        result += turned.tracks
+                        duration = max(duration, turned.end)
+                        continue
+                    }
                     guard let target = channel["target"] as? [String: Any], let node = target["node"] as? Int, let id = objectOf[node],
                           let samplerIndex = channel["sampler"] as? Int, samplerIndex < samplers.count,
                           let property = Self.property(target["path"] as? String) else { continue }
@@ -227,7 +293,8 @@ public enum GLTFSceneReader {
                     result.append(Track(id: ids.next(), target: id, property: property, keyframes: keys))
                 }
             }
-            return (result, duration)
+            let kept = keptTracks(ids: &ids)
+            return (result + kept, max(duration, kept.compactMap { $0.keyframes.last?.time }.max() ?? 0))
         }
 
         static func property(_ path: String?) -> PropertyKey? {

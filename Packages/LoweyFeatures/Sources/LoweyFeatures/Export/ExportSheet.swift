@@ -91,7 +91,9 @@ struct ExportSheet: View {
             case .fbx: editor.canExportFBX
             case .maps: editor.hasPaintedThings
             case .captions: !editor.timeline.transcripts.isEmpty
-            case .ifc, .drawings: editor.hasBuilding
+            case .ifc, .drawings: Held.isOn(.buildingFiles) && editor.hasBuilding
+            case .technical: Held.isOn(.technicalSheets)
+            case .papercraft: Held.isOn(.papercraft)
             default: true
             }
         }

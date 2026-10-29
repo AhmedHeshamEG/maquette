@@ -151,6 +151,40 @@ Engine's `ModelExport` hands Core as `GLTFScene.LocalPart`s. 3MF reading uses Co
 M3 block's STL and 3MF with trimesh and renders a frame of a Blender package in Blender 4.2 and 5.2 (the `interop`
 job, from files LoweyCore's tests write to `ACCEPTANCE_DIR`).
 
+**X1 (in progress; the table is `docs/INTEROP.md`, checked by `InteropMatrixTests` against `InteropProofs`).**
+
+```mermaid
+flowchart LR
+    Scene[Scene] --> GW[GLTFSceneWriter<br/>+Pointer: KHR_animation_pointer<br/>+Materials: glow strength, clearcoat]
+    GW --> GLB[.glb]
+    GLB --> TN[ThreeNames.prepared<br/>names as three.js keeps them]
+    TN --> TJ[ThreeObjectJSON<br/>scene.json] & TP[ThreeProject<br/>player · look.js · pointer.js<br/>Scene.jsx · AGENTS.md]
+    Kit[HmmWeb lib/three r170] --> TP
+    TP --> Zip[&lt;name&gt; for the web.zip]
+    GLB --> GR[GLTFSceneReader<br/>+Pointer: keys back, extras' tracks back]
+    Page[a three.js page · folder · zip] --> Player[HmmWebPlayer<br/>+ ThreeRecorder.hook]
+    Player -->|toJSON + sampled tracks| TR[ThreeRecording<br/>stand-in cards]
+    TR --> OR[ThreeObjectReader]
+```
+
+- **Core `Interop/`**: `GLTFSceneWriter+Pointer` (keyed material, light and lens numbers as pointer channels; keys glTF
+  can't hold kept in `extras.maquette.tracks`), `GLTFSceneWriter+Materials` (lights, glow strength, fur),
+  `GLTFSceneReader+Pointer` (both back as keys). `Interop/Three/`: `ThreeNames` (clean, unique names; the GLB's chunks),
+  `ThreeObjectJSON` (+`Meshes`, +`Clips`: three.js's scene format from the GLB), `ThreeProject` (the folder, `scene.js`),
+  `ThreeProject+Docs` (`ThreeContents`, `ThreeComponent`), `ThreeAgents`, `ThreeProjectScripts` (+`Modules`, +`Look`:
+  the JavaScript, as strings), `ThreeObjectReader` (+`Geometry`, +`Clips`: three.js's JSON in as a
+  `GLTFSceneReader.Result`, so `ModelingOperations.importScene` brings it in; Features' `EditorModel+Interop`),
+  `ThreeRecorder` (the JavaScript that finds a running page's scene through `__THREE_DEVTOOLS__`, writes it with
+  `toJSON` and samples its motion; `solo` shows one shader surface straight on) and `ThreeRecording` (its output as a
+  reader result plus a card under each shader surface's group; Features' `EditorModel+ThreeProject` plays the page with
+  `HmmWebPlayer(piece:scripts:)` and `evaluate`, writes the `maquette-solo-n.html` copies, D-591 … D-594).
+- **Engine**: `ModelExportFormat.web` and `ModelExport+Web` (reads three.js from `HmmWebPage.libraryFolder`).
+- **CI**: the `threejs` job (Playwright's image) runs `Tools/check_threejs.mjs`: `structure` (three.js 0.170 in node
+  reads both scene files; they agree with each other and with `expected.json`) and `render` (Chromium plays the folder;
+  its picture must cover `expected-mask.pgm`, Maquette's own silhouette of the moment from `ThreeSilhouette`), then the
+  Khronos validator on the web GLB; and `Tools/record_threejs.mjs` plays the acceptance island in Chromium with the
+  sandbox's clock and the recorder (both written by `ThreeRecordingTests`), compared with the recording Core reads.
+
 ## Brushes (0.5)
 
 ```mermaid
@@ -909,10 +943,11 @@ flowchart LR
     Renderer --> Compose[one pass: camera YCbCr under the frame]
 ```
 
-- **Kit `HmmWeb`** (0.17.0): `HmmWebClock` (the script before the page's own: time stands still until stepped),
+- **Kit `HmmWeb`** (0.18.0): `HmmWebClock` (the script before the page's own: time stands still until stepped),
   `HmmWebPage` (policy, viewport, CDN → carried libraries, import map, the Lottie host), `HmmWebSchemeHandler`
   (`hmm-web://piece/…` and `…/lib/…`, nothing outside), `HmmWebPlayer` (one offscreen `WKWebView`, non-persistent, a rule
-  list blocking http(s) and sockets; forward steps, back reloads), `HmmWebFrames` (a player a piece, four live; `frame`
+  list blocking http(s) and sockets; forward steps, back reloads; scripts added before the page's and `evaluate` at a
+  frame, for the three.js recorder), `HmmWebFrames` (a player a piece, four live; `frame`
   waits, `frameNow` never does). three.js 0.170 and lottie-web 5.12 under `Sources/HmmWeb/Web/lib/`.
 - **Core**: `Text/WebPiece` (`WebPiece`, `WebFrameKey`, `Scene.webPiece`); `CardRecipe.web`, `OverlayRecipe.web`;
   `AI/ScriptCompiler+Web` (`web`: add, edit, list), `+App` (`AppAsk`, the `app` verb, riding in `ScriptResult.app`),
@@ -988,10 +1023,12 @@ pinned spot and its chip are `Shell/FloatingInspector`; panels moved by hand are
 `hmmPanelBounds` (set by `StageChrome`). The undo line and the guide line are hmm-kit's presenters on `EditorScreen`
 (`EditorModel.undoLine`, `guideLine`); `Hint` obeys hmm-kit's instructions switch; `shown(_:)` hides what can't act.
 
-**Held features** (CONTEXT §5, D-228): `Workspace/Support/Held.swift` lists `MaquetteHeld`; `Held.isOn(_:)` reads
-hmm-kit's `HmmHeld` from the Info.plist key `HmmHeld`, filled from `project.yml`'s `MAQUETTE_HELD` (set only in the
-AppStore configuration). Only entry points ask. The `appstore` CI job builds that configuration and walks LAYOUT.md,
-asserting rows marked *(held: 1.x)* are absent.
+**Held features** (CONTEXT §5, §D.25, D-228, D-597): `Workspace/Support/Held.swift` lists `MaquetteHeld` (nine names
+since 0.29); `Held.isOn(_:)` reads hmm-kit's `HmmHeld` from the Info.plist key `HmmHeld`, filled from `project.yml`'s
+`MAQUETTE_HELD` (set only in the AppStore configuration, which is also iPad only while the companion is held).
+`Tools/check_held.py` keeps the two in step. Only entry points ask (tiles, menu commands, the export sheet's formats,
+the link and review listeners); Core's verbs never do. The `appstore` CI job (ready PRs and main) builds that
+configuration, checks its Info.plist and walks LAYOUT.md, asserting rows marked *(held: 1.0)* are absent.
 
 **The editor's colours** (grid strengths, axes, selection outline) are Core's `StageColors`, which the renderer reads
 and `StageColorsTests` checks against the dark studio's ground. `RootView` shows Home (`TheaterView`) and presents the open project

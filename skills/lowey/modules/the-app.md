@@ -17,7 +17,7 @@ nothing to undo).
 | `frameSelection` | a name (optional) | the view frames it |
 | `show` | ghosts, forces, overhangs, dopeSheet (+ `"on"`) | a view aid |
 | `select` | a name, a list of names, all, similar, none | the selection |
-| `export` | film, vertical, still, gif, glb, usdz, obj, stl, 3mf, blender, fbx, or any export preset id | an export into the project's renders; fetch it from `/v1/renders` |
+| `export` | film, vertical, still, gif, glb, web (a three.js folder), usdz, obj, stl, 3mf, blender, fbx, or any export preset id | an export into the project's renders; fetch it from `/v1/renders` |
 | `ar` | true / false | the AR view on the iPad (the scene in the room, in its own Look) |
 | `monitor` | | a Monitor window |
 

@@ -27,7 +27,9 @@ final class LibraryModel {
     @ObservationIgnored private let logger = Logger(subsystem: AppIdentity.subsystem, category: "library")
 
     static let importTypes: [UTType] = {
-        var types: [UTType] = [.usdz, .usd, .folder]
+        // JSON: a three.js scene (`scene.toJSON()`); a zip, a page or a folder with one: a three.js project. Both come
+        // into the scene (X1).
+        var types: [UTType] = [.usdz, .usd, .folder, .json, .zip, .html]
         for ext in ["glb", "gltf", "obj", "usdc", "usda", "stl", "3mf"] {
             if let type = UTType(filenameExtension: ext) { types.append(type) }
         }

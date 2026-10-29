@@ -13,7 +13,7 @@ extension EditorModel {
 
     /// Starts listening for the iPhone (the first time asks for the local network).
     func startCompanionLink() {
-        guard together.host == nil else { return }
+        guard Held.isOn(.companion), together.host == nil else { return }
         let host = HmmLinkHost(type: Self.companionService, name: UIDevice.current.name)
         host.onState = { [weak self] state in self?.phoneLinkChanged(state) }
         host.onFrame = { [weak self] data in self?.companionFrame(data) }

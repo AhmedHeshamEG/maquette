@@ -9,9 +9,9 @@ options:
   developmentLanguage: en
   groupSortPosition: top
 
-# AppStore is Release with the held features held back (CONTEXT §5): it would list them in MAQUETTE_HELD, which reaches
-# the Info.plist as `HmmHeld`. Since 0.28 nothing is held (CONTEXT §D.3): the list is empty in every configuration, and CI
-# fails the App Store build if it isn't.
+# AppStore is Release with the held features held back (CONTEXT §5, §D.25): it lists them in MAQUETTE_HELD, which reaches
+# the Info.plist as `HmmHeld`. Debug and Release (the sideloaded build) hold nothing. CI checks the App Store build holds
+# exactly the list below and that the layout walk finds none of the held rows.
 configs:
   Debug: debug
   Release: release
@@ -33,6 +33,11 @@ settings:
     CODE_SIGN_STYLE: Automatic
     DEVELOPMENT_TEAM: ""
     MAQUETTE_HELD: ""
+  configs:
+    # CONTEXT §D.25: the App Store build hides these until each passes on the device (Workspace/Support/Held.swift).
+    # Deleting a name ships it. While the companion is held the store build is iPad only (the Lowey target's settings).
+    AppStore:
+      MAQUETTE_HELD: "buildingFiles technicalSheets threads papercraft roomScan board faceTimeReview webPieces companion"
 
 packages:
   LoweyFeatures:
@@ -203,6 +208,12 @@ targets:
               - studio.h.maquette.import.procreate-brushset
               - studio.h.maquette.import.procreate-brush
               - studio.h.maquette.import.photoshop-brushes
+          - CFBundleTypeName: Web project
+            CFBundleTypeRole: Viewer
+            LSHandlerRank: Alternate
+            LSItemContentTypes:
+              - public.zip-archive
+              - public.html
           - CFBundleTypeName: Layered drawing
             CFBundleTypeRole: Viewer
             LSHandlerRank: Alternate
@@ -219,6 +230,11 @@ targets:
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
         MTL_ENABLE_DEBUG_INFO: NO
+      configs:
+        # While the companion is held the store build is iPad only; with it, delete this. It sits on the target because
+        # XcodeGen's iOS preset sets the device family here, over the project's settings.
+        AppStore:
+          TARGETED_DEVICE_FAMILY: "2"
 
   # The export Live Activity (Lock Screen and Dynamic Island).
   LoweyWidgets:

@@ -195,6 +195,7 @@ extension EditorModel {
         do {
             if asset.format == .glb || asset.format == .gltf {
                 let result = try GLTFSceneReader.read(Data(contentsOf: url), baseURL: url.deletingLastPathComponent(), ids: &ids)
+                guard result.pictures.isEmpty, result.files.isEmpty else { return makeFiledEditable(id, result: result) }
                 (parts, tracks) = (result.fragment, result.tracks)
             } else if let model = library.models.model(asset, catalog: library.catalog) {
                 parts = try ModelingOperations.editableParts(of: model, ids: &ids)
@@ -209,5 +210,31 @@ extension EditorModel {
             return
         }
         HmmHaptics.play(.commit)
+    }
+
+    /// A model whose materials show pictures or whose surface has a skin: its parts keep the pictures as paint (each
+    /// laid flat in the background) and the skin as their rig, and everything arrives as one step once it's ready.
+    private func makeFiledEditable(_ id: ObjectID, result: GLTFSceneReader.Result) {
+        guard !colourPaint.preparing.contains(id) else { return }
+        colourPaint.preparing.insert(id)
+        let folder = assetsFolder
+        Task {
+            let made = await Task.detached(priority: .userInitiated) {
+                result.paints(in: result.fragment, decode: { AssetPaint.decode($0.data) }, encode: PaintPixels.png)
+            }.value
+            colourPaint.preparing.remove(id)
+            do {
+                try await Self.write(made.files.merging(result.files) { first, _ in first }, to: folder)
+            } catch {
+                app.show("Couldn't save the painting's files: \(error.localizedDescription)", kind: .error)
+                return
+            }
+            guard let command = ModelingOperations.replace(id, withParts: result.fragment, tracks: result.tracks, in: baseScene),
+                  case let .batch(name, commands) = command, perform(.batch(name, commands + made.commands)) else {
+                app.show("That model can't be taken apart yet: it's still loading")
+                return
+            }
+            HmmHaptics.play(.commit)
+        }
     }
 }
