@@ -10,6 +10,13 @@ continues from 2.0 and numbers its phases again from 0.1 (each phase bumps the m
   under the hovering tip would land.
 - **Drawing lines no longer pops the drawing's panel up beside them**, where it took the next stroke.
 - **Comic Dots** is the new name of Look ▸ Finish's Kirby Dots; old projects and scripts open with them.
+- **Make it a character**: your own model becomes the character, where it stands, instead of a new one beside it. Its
+  dots are guessed from its shape; drag the wrong ones and Rig. Every Character entry does this when something is
+  selected.
+- **Name its parts**: tap a piece, or circle an area of a one-piece model with the Pencil, and call it its eye, mouth
+  or brow. Its own eye blinks, its own mouth makes the 14 mouth shapes and says a line, bent from its own geometry.
+- **A level view adds new shapes on the ground**, not in mid-air.
+- **Cloth, jelly and a made mouth's shapes show on the stage**, not only in exports.
 
 ## [0.29] — Maquette — Import and export, closed; the held parts (phase X1)
 

@@ -3836,3 +3836,41 @@ rebinding of the old shortcut is the one thing that resets. History (DECISIONS, 
 | App Review 4.1 and 5.2 | no copied app, no third-party IP in the store build's content | the showcases use our own shapes (§D) |
 | Privacy manifest | UserDefaults and file timestamps declared; no tracking; no other required-reason API used | checked by search |
 | Export compliance | `ITSAppUsesNonExemptEncryption` false (only Apple's own) | unchanged |
+
+**D-611 — The name waits until the end.** Hesham, 2026-10-29: "the fact of the name we leave it to the end". D-608's
+finding and its three alternatives stand; the choice, the lawyer's opinion and any renaming move to the launch phase
+(L1), before the developer account and the store listing. Everything until then keeps "Maquette".
+
+**D-612 — A level view adds things on the ground.** With the view level (or looking up) the middle of the stage never
+meets the ground, so a new shape fell back to the view's target and stood with its base at eye height, in mid-air. It
+now lands on the ground under the target. This was also why the under-the-tip test read 76.7° at 0°: its cube floated
+with its underside at the camera's height.
+
+**D-613 — Make it a character: the model itself is the character.** Every Character entry, with a thing selected that
+isn't a character yet, turns that thing into the character instead of making a new one (his note: "I'm trying to rig
+the actual one"); Rig, the hold menu's More and Character ▸ Make It a Character say it outright. The thing isn't
+wrapped in a new group (K1's way for a part added to a thing): it gets the character's properties itself and its own
+job, the body, so it stays where it was, whole, and everything that points at it still does. Then its rig is guessed
+from its shape (a person's dots; four legs or wings when the start says so; a group takes U4's dots by hand) and the
+wrong dots are dragged. The maker never rebuilds an adopted character's rig: parts added later only ride its joints,
+and the body's proportion handles leave it alone (it changes by hand). The bridge's `character` gains `adopt`.
+*Rejected:* wrapping it like K1 (a second rig on the group would fight the model's own skinned one).
+
+**D-614 — Its own parts: a tap names a piece, a circle names an area.** Rig ▸ Name its parts (also at the top of the
+character's panel): the parts it has wear small labels on the stage; a tap on a separate piece names it (any job: it
+then rides its joint), a circle with the Pencil names an area of a one-piece model as its eye, mouth or brow. Its side
+is where it sits. With no eyes or no mouth, the bar offers ours ("No mouth yet: add one"), and only then.
+
+**D-615 — A named area is a box, not a vertex group.** The plan said vertex groups. A region is instead a box in the
+model's own space around the surface that was circled (the area in its inner 55%, then a fade to its edge), kept in
+the part as `regions` (schema 27). Vertex numbers change whenever the model is remeshed, sculpted, cut finer for its
+rig or brought in again; a box doesn't, and needs no cut either, so the model stays whole and paintable. Face states
+bend what's inside the box with the same `FaceBend` a made part uses: his mouth makes the 14 mouth shapes, his eye
+closes as far as it blinks (by side), his brows take their four states. A model made a character blinks by itself.
+Placed models (his sculpt, brought in) bend them on their parts, rigged, painted or plain. *Limits:* a bevelled shape,
+and a model that brings its own skeleton, don't bend their regions.
+
+**D-616 — The stage shows bent surfaces.** The stage never passed the frame's bent surfaces to the renderer, so cloth
+and jelly from a physics run (P1) and a made mouth's bent states (K1) only showed in exports. It passes them now, and
+named regions travel the same way. They bend the model's own corners before its rig and its paint, so a skinned,
+painted model talks in its own colours.
