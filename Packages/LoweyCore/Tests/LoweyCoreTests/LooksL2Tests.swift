@@ -64,23 +64,32 @@ final class LooksL2Tests: XCTestCase {
 
     func testDrawnEffectsAimAndFollow() {
         let lines = ScreenEffect(id: "f", kind: .focusLines, start: 1, center: Vec2(0.3, 0.6))
-        let dots = ScreenEffect(id: "k", kind: .kirbyDots, start: 1, target: "hero")
+        let dots = ScreenEffect(id: "k", kind: .comicDots, start: 1, target: "hero")
         let atStart = ScreenEffects.state(at: 1, effects: [lines, dots], fps: 24)
         XCTAssertEqual(atStart.focusLines, 0, "focus lines close in")
         let middle = ScreenEffects.state(at: 1.6, effects: [lines, dots], fps: 24) { $0 == "hero" ? Vec2(0.8, 0.2) : nil }
         XCTAssertEqual(middle.focusLines, 1, accuracy: 1e-9)
         XCTAssertEqual(middle.focusCenter, Vec2(0.3, 0.6))
-        XCTAssertEqual(middle.kirbyCenter, Vec2(0.8, 0.2), "Kirby dots follow the thing")
-        XCTAssertEqual(middle.kirbySpread, 0.4, accuracy: 1e-9)
+        XCTAssertEqual(middle.comicCenter, Vec2(0.8, 0.2), "Comic dots follow the thing")
+        XCTAssertEqual(middle.comicSpread, 0.4, accuracy: 1e-9)
         XCTAssertFalse(middle.isEmpty)
         let lost = ScreenEffects.state(at: 1.6, effects: [dots], fps: 24)
-        XCTAssertEqual(lost.kirbyCenter, Vec2(0.5, 0.5), "a thing that can't be found leaves them in the middle")
+        XCTAssertEqual(lost.comicCenter, Vec2(0.5, 0.5), "a thing that can't be found leaves them in the middle")
         let impact = ScreenEffects.state(at: 2, effects: [ScreenEffect(id: "i", kind: .impact, start: 2)], fps: 24)
         XCTAssertEqual(impact.impact, 1, "an impact frame is there at once")
         XCTAssertEqual(ScreenEffects.state(at: 2, effects: [], fps: 24).drawnSeed, ScreenEffects.state(at: 2.04, effects: [], fps: 24).drawnSeed,
                        "drawn on twos: two frames share a drawing")
-        XCTAssertTrue(ScreenEffect.Kind.kirbyDots.aims)
+        XCTAssertTrue(ScreenEffect.Kind.comicDots.aims)
         XCTAssertFalse(ScreenEffect.Kind.flash.aims)
+    }
+
+    /// Q2's legal pass: a project saved before 0.30 calls Comic dots by their old name, and still opens with them.
+    func testComicDotsReadTheirOldName() throws {
+        let saved = try String(decoding: JSONEncoder().encode(ScreenEffect(id: "k", kind: .comicDots, start: 1)), as: UTF8.self)
+        XCTAssertTrue(saved.contains("comicDots"))
+        XCTAssertFalse(saved.contains("kirby"))
+        let old = Data(saved.replacingOccurrences(of: "comicDots", with: "kirbyDots").utf8)
+        XCTAssertEqual(try JSONDecoder().decode(ScreenEffect.self, from: old).kind, .comicDots)
     }
 
     func testGroundsAreMadeOfSomething() throws {

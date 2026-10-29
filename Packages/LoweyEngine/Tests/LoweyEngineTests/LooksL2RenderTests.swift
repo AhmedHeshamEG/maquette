@@ -101,7 +101,7 @@ final class LooksL2RenderTests: XCTestCase {
         let sphere = try XCTUnwrap(document.scene.objects.values.first { $0.name == "Sphere" }?.id)
         let effects = [ScreenEffect(id: "i", kind: .impact, start: 0.4, center: Vec2(0.5, 0.5)),
                        ScreenEffect(id: "f", kind: .focusLines, start: 0.2, duration: 1, target: sphere),
-                       ScreenEffect(id: "k", kind: .kirbyDots, start: 0.2, duration: 1, target: sphere)]
+                       ScreenEffect(id: "k", kind: .comicDots, start: 0.2, duration: 1, target: sphere)]
         for effect in effects {
             var drawn = document
             drawn.scene.timeline.effects = [effect]

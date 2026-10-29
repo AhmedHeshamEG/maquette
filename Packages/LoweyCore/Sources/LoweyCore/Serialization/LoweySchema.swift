@@ -71,7 +71,7 @@ public enum LoweySchema {
     ///     `setMotionDesign` and `setLinks` commands.
     /// 23: Maquette 0.24's Looks and library: Looks' `paint` and `pixel`, shading's `shadowTint` and `reflection`, the
     ///     Finish's `misregistration`, `boil`, `benDay` and three print textures, screen effects' `impact`, `focusLines` and
-    ///     `kirbyDots` with a `center` or `target`, the ground's `surface`, the library's `styles`, `effects`, `parts` and
+    ///     `comicDots` with a `center` or `target`, the ground's `surface`, the library's `styles`, `effects`, `parts` and
     ///     `origins`.
     /// 24: Maquette 0.26's review notes: scenes' `notes` (a pin on a spot, its thread, resolved or not) and the
     ///     `setNotes` command.

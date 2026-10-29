@@ -49,7 +49,7 @@ enum KeyCommands {
     static let lookPreviousLook = HmmKeyCommand("look.previousLook", "Previous Look", menu: "Look", HmmKeyCombo("k", shift: true, option: true))
     static let lookImpactFrame = HmmKeyCommand("look.impactFrame", "Impact Frame", menu: "Look", HmmKeyCombo("i", control: true))
     static let lookFocusLines = HmmKeyCommand("look.focusLines", "Focus Lines", menu: "Look", HmmKeyCombo("u", control: true))
-    static let lookKirbyDots = HmmKeyCommand("look.kirbyDots", "Kirby Dots", menu: "Look", HmmKeyCombo("k", control: true))
+    static let lookComicDots = HmmKeyCommand("look.comicDots", "Comic Dots", menu: "Look", HmmKeyCombo("k", control: true))
     static let physicsMakeReal = HmmKeyCommand("physics.makeReal", "Make Real", menu: "Physics", HmmKeyCombo("j", shift: true))
     static let physicsNotReal = HmmKeyCommand("physics.notReal", "Not Real", menu: "Physics", HmmKeyCombo("j", option: true))
     static let physicsSettle = HmmKeyCommand("physics.settle", "Settle", menu: "Physics", HmmKeyCombo("j"))
@@ -171,7 +171,7 @@ enum KeyCommands {
         lookPreviousLook,
         lookImpactFrame,
         lookFocusLines,
-        lookKirbyDots,
+        lookComicDots,
         physicsMakeReal,
         physicsNotReal,
         physicsSettle,

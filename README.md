@@ -25,7 +25,7 @@ room and object scans for iPads without LiDAR.
 
 **0.24** (phase L2): **Looks & the library**. Seven new Looks (Painterly, Watercolour, Gouache, Paperman, Anime cel,
 Clean product, Pixel), a Finish for any Look (Ben-Day dots, line boil, misregistration, newsprint, riso, canvas, and the
-drawn set: impact frames, focus lines, Kirby dots that follow a thing), Studios for Looks, effects and parts, packs shared
+drawn set: impact frames, focus lines, Comic dots that follow a thing), Studios for Looks, effects and parts, packs shared
 with an author and a licence in words, layered PSD and Procreate drawings stood up as dioramas, eight grounds, and stacks
 on Home that are real folders.
 

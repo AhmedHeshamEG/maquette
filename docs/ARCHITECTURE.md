@@ -779,7 +779,7 @@ flowchart LR
     Paint -- yes --> Tensor[paintTensor<br/>structure tensor] --> Filter[paintFilter<br/>8-sector anisotropic Kuwahara<br/>wet edges · granulation · paper]
     Paint -- no --> Post
     Filter --> Post[Post: pixel blocks · Ben-Day · print textures · misregistration]
-    Post --> Comp[Composite: impact · focus lines · Kirby dots]
+    Post --> Comp[Composite: impact · focus lines · Comic dots]
     File[.psd · .psb · .procreate] --> LI[LayeredImage<br/>PSDReader · ProcreateReader] --> DI[DioramaImport<br/>AlphaOutline → sheets]
     Pack[.maquettepack] --> Kind{pack.json?}
     Kind -- yes --> LP[LibraryPack.read → adopt into Yours]
@@ -791,7 +791,7 @@ flowchart LR
   `HmmLicencePicker`; HmmDesign's `HmmStudio` and `HmmStudioPage` (the Studio grammar).
 - **Core**: `Look/LookPreset` (`PaintStyle`, `PixelStyle`, `ShadingParams.shadowTint`, `.reflection`), `Look/BuiltInLooks`
   (twelve), `Look/GroundSurface` and `Ground.surface`; `VFX/Post` (`PostSettings.misregistration`, `.boil`, `.benDay`,
-  three textures; `ScreenEffect` impact, focusLines, kirbyDots with `center` and `target`; `ScreenEffects.state` takes
+  three textures; `ScreenEffect` impact, focusLines, comicDots with `center` and `target`; `ScreenEffects.state` takes
   where the target is); `Import/Layered/` (`LayeredImage`, `PSDReader`, `PSDRecord`, `ProcreateReader`,
   `TileCompression`: Apple's LZ4 framing and LZO1X, `AlphaOutline`, `DioramaImport`); `Library/LibraryPack`,
   `LibraryPack+Adopt`, `LibraryYours` (`LibraryManifest.styles`, `.effects`, `.parts`, `.origins`);

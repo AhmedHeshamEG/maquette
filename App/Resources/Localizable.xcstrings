@@ -6389,6 +6389,38 @@
         }
       }
     },
+    "Comic Dots": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Puntini da fumetto"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "نقاط الكوميكس"
+          }
+        }
+      }
+    },
+    "Comic dots": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Puntini da fumetto"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "نقاط الكوميكس"
+          }
+        }
+      }
+    },
     "Compose": {
       "localizations": {
         "it": {
@@ -17301,38 +17333,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "النوع"
-          }
-        }
-      }
-    },
-    "Kirby Dots": {
-      "localizations": {
-        "it": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Punti Kirby"
-          }
-        },
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "نقاط كيربي"
-          }
-        }
-      }
-    },
-    "Kirby dots": {
-      "localizations": {
-        "it": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Punti Kirby"
-          }
-        },
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "نقاط كيربي"
           }
         }
       }

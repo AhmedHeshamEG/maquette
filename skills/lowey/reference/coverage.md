@@ -33,7 +33,7 @@ a path, and a test fails when one doesn't.*
 | Kit | Walk Through | `{"do": "app", "op": "present", "value": "walk"}` |
 | Look | Focus Lines | `{"do": "effect"}` |
 | Look | Impact Frame | `{"do": "effect"}` |
-| Look | Kirby Dots | `{"do": "effect"}` |
+| Look | Comic Dots | `{"do": "effect"}` |
 | Look | Next Look | `{"do": "look"}` |
 | Look | Previous Look | `{"do": "look"}` |
 | Perform | Mouth from the Microphone | `{"do": "lipSync"}` |

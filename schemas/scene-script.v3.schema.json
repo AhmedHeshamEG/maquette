@@ -1694,7 +1694,7 @@
             }
           },
           "then": {
-            "description": "A screen effect; impact, focusLines and kirbyDots aim at a thing (target) or a point (center, 0…1 from the top left).",
+            "description": "A screen effect; impact, focusLines and comicDots aim at a thing (target) or a point (center, 0…1 from the top left).",
             "properties": {
               "kind": {
                 "enum": [
@@ -1705,7 +1705,7 @@
                   "glitch",
                   "impact",
                   "focusLines",
-                  "kirbyDots"
+                  "comicDots"
                 ]
               },
               "at": {

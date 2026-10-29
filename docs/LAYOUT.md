@@ -133,7 +133,7 @@ Three short pages; the page is remembered.
 | World: the real sun (a place, a date, a time; a shadow study across the timeline; which way north is), in Fine tune the world | Look ▸ World ▸ Fine tune the world ▸ Real sun |
 | Finish: clean, cinematic, dreamy, retro, ink outlines, collage, old film; grain, bloom | `Look › look-finish › Cinematic` |
 | Finish: Motion (smooth, on twos, on threes) for the whole scene | `Look › look-finish › finish-motion` |
-| Finish: screen effects at the playhead (flash, shake…; impact frame, focus lines, Kirby dots aimed at the selection) | `Look › look-finish › finish-screen-effects` |
+| Finish: screen effects at the playhead (flash, shake…; impact frame, focus lines, Comic dots aimed at the selection) | `Look › look-finish › finish-screen-effects` |
 | Finish: textures (paper, collage, old film, newsprint, risograph, canvas) | `Look › look-finish › finish-texture` |
 | Finish: Print on any Look: Ben-Day dots, line boil, focus by misregistration (L2) | `Look › look-finish › finish-misregistration` |
 

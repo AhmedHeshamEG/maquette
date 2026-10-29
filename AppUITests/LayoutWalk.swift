@@ -116,7 +116,7 @@ private let layoutWalkRows: [LayoutWalk.Row] = [
                    control: "Finish: Motion (smooth, on twos, on threes) for the whole scene",
                    steps: ["Look", "look-finish", "finish-motion"], held: ""),
     LayoutWalk.Row(home: "Look", precondition: "",
-                   control: "Finish: screen effects at the playhead (flash, shake…; impact frame, focus lines, Kirby dots aimed at the selection)",
+                   control: "Finish: screen effects at the playhead (flash, shake…; impact frame, focus lines, Comic dots aimed at the selection)",
                    steps: ["Look", "look-finish", "finish-screen-effects"], held: ""),
     LayoutWalk.Row(home: "Look", precondition: "",
                    control: "Finish: textures (paper, collage, old film, newsprint, risograph, canvas)",

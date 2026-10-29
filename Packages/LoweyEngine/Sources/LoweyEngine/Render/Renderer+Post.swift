@@ -148,10 +148,10 @@ extension LoweyRenderer {
         if request.input.document.lookPreset.pixel != nil { uniforms.margin.x = 1 }
         uniforms.shake = SIMD4<Float>(Float(screen.shake.x), Float(screen.shake.y), Float(screen.shake.z), Float(screen.zoomBlur))
         uniforms.effects = SIMD4<Float>(Float(screen.glitch), Float(screen.speedLines), Float(screen.flash), Float(screen.glitchSeed % 9973))
-        uniforms.drawn = SIMD4<Float>(Float(screen.impact), Float(screen.focusLines), Float(screen.kirbyDots), Float(screen.drawnSeed % 9973))
-        uniforms.drawnPlace = SIMD4<Float>(Float(screen.focusCenter.x), Float(screen.focusCenter.y), Float(screen.kirbyCenter.x),
-                                           Float(screen.kirbyCenter.y))
-        uniforms.drawnSpread.x = Float(screen.kirbySpread)
+        uniforms.drawn = SIMD4<Float>(Float(screen.impact), Float(screen.focusLines), Float(screen.comicDots), Float(screen.drawnSeed % 9973))
+        uniforms.drawnPlace = SIMD4<Float>(Float(screen.focusCenter.x), Float(screen.focusCenter.y), Float(screen.comicCenter.x),
+                                           Float(screen.comicCenter.y))
+        uniforms.drawnSpread.x = Float(screen.comicSpread)
         uniforms.flashColor = SIMD4<Float>(screen.flashColor.linear, Float(screen.lineSeed % 9973))
         if let guides = request.guides {
             uniforms.guides = SIMD4<Float>(1, Float(guides.aspect ?? 0), guides.thirds ? 1 : 0, guides.safeAreas ? 1 : 0)

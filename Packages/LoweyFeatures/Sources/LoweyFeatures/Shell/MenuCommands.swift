@@ -97,7 +97,7 @@ public struct LoweyMenuCommands: Commands {
             Divider()
             Button("Impact Frame") { stageEditor?.addScreenEffect(.impact) }.hmmKeyboardShortcut(KeyCommands.lookImpactFrame, in: keyboard)
             Button("Focus Lines") { stageEditor?.addScreenEffect(.focusLines) }.hmmKeyboardShortcut(KeyCommands.lookFocusLines, in: keyboard)
-            Button("Kirby Dots") { stageEditor?.addScreenEffect(.kirbyDots) }.hmmKeyboardShortcut(KeyCommands.lookKirbyDots, in: keyboard)
+            Button("Comic Dots") { stageEditor?.addScreenEffect(.comicDots) }.hmmKeyboardShortcut(KeyCommands.lookComicDots, in: keyboard)
         }
         CommandMenu("Physics") {
             Button("Make Real") { stageEditor?.makeReal() }.hmmKeyboardShortcut(KeyCommands.physicsMakeReal, in: keyboard)
