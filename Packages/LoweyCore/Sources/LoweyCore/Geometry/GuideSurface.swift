@@ -137,6 +137,14 @@ public struct SurfaceHit: Hashable, Sendable {
         self.normal = normal
         self.distance = distance
     }
+
+    /// The hit lifted off its surface back along the ray that found it, so it stays under the same spot on screen
+    /// (Q2: lifting along the normal moved a line sideways whenever the surface was seen at an angle). The clearance
+    /// is kept along the normal, up to four times the lift at grazing angles.
+    public func lifted(by clearance: Double, along ray: Ray) -> Vec3 {
+        let facing = max(abs(normal.dot(ray.direction)), 0.25)
+        return point - ray.direction * (clearance / facing)
+    }
 }
 
 /// Quick views and locked drawing planes.

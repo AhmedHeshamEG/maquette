@@ -15,7 +15,7 @@ extension StageGestures {
         for sample in predicted {
             guard let ray = stage.worldRay(at: sample.location), let sheet = strokeSheet,
                   let hit = editor?.land(ray, on: sheet, objectMesh: strokeTargetMesh) ?? carriedOn(ray) else { continue }
-            samples.append(BrushInput(point: hit.point + hit.normal * 0.002, pressure: sample.pressure, altitude: sample.altitude, time: sample.time))
+            samples.append(BrushInput(point: hit.lifted(by: 0.002, along: ray), pressure: sample.pressure, altitude: sample.altitude, time: sample.time))
         }
         return samples
     }
