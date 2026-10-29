@@ -136,7 +136,8 @@ final class RigTests: XCTestCase {
         XCTAssertLessThan(elapsed, 45)
     }
 
-    /// Q2: a model of its own becomes the character in place (no new character beside it), its dots guessed from its shape.
+    /// Q2: a model of its own becomes the character in place (no new character beside it), its dots guessed from its shape;
+    /// then an area of it is named as its mouth.
     func testHisOwnModelBecomesTheCharacterInPlace() {
         newProject()
         tap("Library")
@@ -156,5 +157,16 @@ final class RigTests: XCTestCase {
         tap("rig-person-done")
         XCTAssertTrue(waitForTrail("as a person"), "the rig was stored on the model itself: \(trail)")
         XCTAssertFalse(trail.contains("cmd=New "), "no new character was made: \(trail)")
+
+        // Its own parts: an area circled with the Pencil (here a line across its middle) named as its mouth.
+        tap("Rig")
+        XCTAssertTrue(tap("rig-name-parts"), "Rig offers to name a character's parts")
+        XCTAssertTrue(waitForTrail("naming=Astronaut", timeout: 5), "naming its parts: \(trail)")
+        point(0.46, 0.5).press(forDuration: 0.05, thenDragTo: point(0.54, 0.52))
+        XCTAssertTrue(tap("name-part-mouth"), "the area waits for its name")
+        XCTAssertTrue(waitForTrail("named=mouth", timeout: 5), "the area is its mouth: \(trail)")
+        XCTAssertTrue(element("part-label-mouth").waitForExistence(timeout: 5), "its mouth wears a label")
+        XCTAssertFalse(element("add-missing-mouth").exists, "it has a mouth now, so none is offered")
+        shot("Its own mouth, named")
     }
 }

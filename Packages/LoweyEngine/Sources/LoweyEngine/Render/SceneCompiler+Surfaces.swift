@@ -60,12 +60,15 @@ extension SceneCompiler {
 
     /// A surface as drawn, or its paint mesh with the paint's composite when it's painted. Paint is found on the
     /// unmoved mesh (so an animated bend doesn't send it looking again every frame) and drawn over the moved corners.
-    func addSurface(_ meshes: SurfaceMeshes, object: SceneObject, state: Inherited, world: simd_float4x4, base: ObjectUniforms, casts: Bool,
-                    input: RenderInput, scene: inout RenderScene) {
+    func addSurface(_ surface: SurfaceMeshes, object: SceneObject, state: Inherited, world: simd_float4x4, base: ObjectUniforms, casts: Bool,
+                    input: RenderInput, scene: inout RenderScene, regions: Bool = true) {
+        // Its own eyes, mouth and brows (Q2): bent on its own corners before its rig and its paint.
+        let bentRegions = regions && !state.ghost ? regionSurface(surface, object: object, input: input) : nil
+        let meshes = bentRegions ?? surface
         let mesh = meshes.shown
         let weightView = state.ghost ? nil : weightUniforms(base, object: object, input: input)
         if weightView == nil, let found = painted(object, source: meshes.base, state: state, input: input) {
-            let painted = meshes.isMoved ? movedPaint(found, over: meshes, object: object) ?? found : found
+            let painted = meshes.isMoved ? movedPaint(found, over: meshes, object: object, regions: bentRegions?.shown) ?? found : found
             addPainted(painted, object: object, world: world, base: base, casts: casts, input: input, scene: &scene)
         } else if !state.ghost, let rig = rigWeights(object, input: input, vertexCount: mesh.data.positions.count)?.rig,
                   let skinned = riggedMesh(object, source: mesh, key: paints.fingerprint(of: mesh), input: input) {
@@ -78,10 +81,13 @@ extension SceneCompiler {
     }
 
     /// A painted surface's paint mesh rebuilt over the moved corners (same unwrap, same composite).
-    func movedPaint(_ painted: PaintedSurface, over surface: SurfaceMeshes, object: SceneObject) -> PaintedSurface? {
-        guard let shape = ShapeStack.key(of: object) else { return nil }
+    func movedPaint(_ painted: PaintedSurface, over surface: SurfaceMeshes, object: SceneObject, regions: GPUMesh? = nil) -> PaintedSurface? {
+        let shape = ShapeStack.key(of: object)
+        guard shape != nil || regions != nil else { return nil }
         var hasher = Hasher()
         hasher.combine(shape)
+        // Bent regions: the bent corners themselves are what the paint goes over.
+        if let regions { hasher.combine(ObjectIdentifier(regions)) }
         let key = "\(painted.key) moved \(hasher.finalize())"
         let device = device
         let dabs = object.shadowDabs
@@ -136,8 +142,9 @@ extension SceneCompiler {
             }) else { return }
             let signs = SIMD3<Float>(scale.x < 0 ? -1 : 1, scale.y < 0 ? -1 : 1, scale.z < 0 ? -1 : 1)
             let unscale = simd_float4x4(diagonal: SIMD4<Float>(signs / simd_max(size, SIMD3<Float>(repeating: 1e-4)), 1))
+            // Built at its size: regions (in the object's own space) don't line up with these corners.
             addSurface(mesh, object: object, state: state, world: state.world.matrix * unscale, base: base, casts: casts, input: input,
-                       scene: &scene)
+                       scene: &scene, regions: false)
             return
         }
         let levels = ShapeStack.subdivision(of: object)

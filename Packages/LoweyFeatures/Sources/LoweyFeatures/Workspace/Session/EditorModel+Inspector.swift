@@ -35,6 +35,9 @@ extension EditorModel {
         guard rigging.guessing == nil else { return nil }
         if rigging.person != nil { return "Drag a dot that's wrong, then Rig" }
         if rigging.mode == .weights { return "Paint where the chosen bone should pull" }
+        if rigging.mode == .parts {
+            return rigging.naming == nil ? "Tap a piece, or circle its eye or mouth with the Pencil" : "What is it?"
+        }
         guard let object = rigTarget else { return "Choose what to rig" }
         if shownMarks(of: object).isEmpty {
             return rigging.markKind == .pin ? "Drag along it with the Pencil, from where it holds to its end" : "Tap a dot on each joint with the Pencil"

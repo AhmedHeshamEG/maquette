@@ -32,6 +32,8 @@ final class SceneCompiler {
     var letterSets: [TextRecipe: [TextLetter]] = [:]
     /// Morphs' corner matches, worked out once per pair of shapes.
     var morphPairs: [MorphKey: MorphPair] = [:]
+    /// Models made characters with their named regions bent (Q2), by what they depend on (`regionKey`).
+    var regionMeshes: [Int: GPUMesh] = [:]
 
     init(device: MTLDevice, meshes: MeshCache, textures: TextureStore, models: ModelLibrary, stamper: BrushStamper, paints: PaintTextures) {
         self.device = device

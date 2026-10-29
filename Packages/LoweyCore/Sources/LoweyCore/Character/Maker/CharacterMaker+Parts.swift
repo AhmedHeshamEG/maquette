@@ -104,7 +104,8 @@ public extension CharacterMaker {
         }
         let properties = [PropertyChange(object: target, key: .characterStart, value: .enumeration(CharacterStart.nothing.rawValue)),
                           PropertyChange(object: target, key: .mouth, value: .enumeration(Viseme.X.rawValue)),
-                          PropertyChange(object: target, key: .mouthShape, value: .enumeration(MouthShape.neutral.rawValue))]
+                          PropertyChange(object: target, key: .mouthShape, value: .enumeration(MouthShape.neutral.rawValue)),
+                          PropertyChange(object: target, key: .autoBlink, value: .bool(true))]
         return .batch("Make \(thing.name) a character", [.setProperties(properties), .setPart(target, CharacterPart(job: .body, style: ownBodyStyle))])
     }
 

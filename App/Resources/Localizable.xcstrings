@@ -3193,6 +3193,22 @@
         }
       }
     },
+    "Arm": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Braccio"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ذراع"
+          }
+        }
+      }
+    },
     "Arms": {
       "localizations": {
         "it": {
@@ -4601,6 +4617,22 @@
         }
       }
     },
+    "Brow": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sopracciglio"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "حاجب"
+          }
+        }
+      }
+    },
     "Brows": {
       "localizations": {
         "it": {
@@ -5653,6 +5685,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "دائرة"
+          }
+        }
+      }
+    },
+    "Circle its eye or its mouth with the Pencil": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cerchia il suo occhio o la sua bocca con la Pencil"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ارسم دائرة حول عينه أو فمه بالقلم"
           }
         }
       }
@@ -10317,6 +10365,22 @@
         }
       }
     },
+    "Ear": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Orecchio"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "أذن"
+          }
+        }
+      }
+    },
     "Ears": {
       "localizations": {
         "it": {
@@ -11517,6 +11581,22 @@
         }
       }
     },
+    "Extra": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Extra"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "إضافي"
+          }
+        }
+      }
+    },
     "Extra smoothing": {
       "localizations": {
         "it": {
@@ -11593,6 +11673,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "بثق"
+          }
+        }
+      }
+    },
+    "Eye": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Occhio"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "عين"
           }
         }
       }
@@ -17853,6 +17949,22 @@
         }
       }
     },
+    "Leg": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gamba"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ساق"
+          }
+        }
+      }
+    },
     "Legs": {
       "localizations": {
         "it": {
@@ -21233,6 +21345,22 @@
         }
       }
     },
+    "Name its parts": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dai un nome alle sue parti"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "سمِّ أجزاءه"
+          }
+        }
+      }
+    },
     "Name on the hat": {
       "localizations": {
         "it": {
@@ -21921,6 +22049,22 @@
         }
       }
     },
+    "No eyes yet: add them": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ancora niente occhi: aggiungili"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "لا عيون بعد: أضفها"
+          }
+        }
+      }
+    },
     "No guide": {
       "localizations": {
         "it": {
@@ -21981,6 +22125,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "لا حركة بعد"
+          }
+        }
+      }
+    },
+    "No mouth yet: add one": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ancora niente bocca: aggiungine una"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "لا فم بعد: أضف واحداً"
           }
         }
       }
@@ -25097,6 +25257,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "اختر عدة مفاتيح"
+          }
+        }
+      }
+    },
+    "Pick the character first": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Prima scegli il personaggio"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "اختر الشخصية أولاً"
           }
         }
       }
@@ -41537,6 +41713,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "جدار بنافذة"
+          }
+        }
+      }
+    },
+    "Wing": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ala"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "جناح"
           }
         }
       }

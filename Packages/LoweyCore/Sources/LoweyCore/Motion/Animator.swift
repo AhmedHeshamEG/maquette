@@ -82,6 +82,7 @@ public enum Animator {
         StickToCamera.apply(to: &scene, camera: camera, animated: &animated)
         var shapes = physics.map { PhysicsPlayback.apply($0, to: &scene, at: time, animated: &animated) } ?? .none
         shapes.meshes.merge(faces) { run, _ in run }
+        shapes.regions = FaceRegions.bends(in: scene)
         RealSunPlayback.apply(to: &scene, project: document.project, time: time)
         var result = AnimatedScene(time: time, scene: scene, animated: animated, camera: camera, poses: state.poses)
         result.simulated = shapes

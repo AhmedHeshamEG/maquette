@@ -49,6 +49,8 @@ extension EditorModel {
         input.smears = smears()
         input.paintFile = paintFiles
         input.weightView = weightView
+        // Bent surfaces at this moment: a run's cloth and jelly, made characters' face states and named regions.
+        input.simulated = displayed.simulated
         var request = FrameRequest(input: input, camera: stage.camera, frameIndex: timeline.frame(for: time))
         if let director {
             request.lens = displayed.scene.objects[director.id].map(CameraLens.init)

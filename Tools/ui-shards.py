@@ -47,7 +47,7 @@ TIMES = {
     "ReferenceTests/testASheetLaidOnACubeFitsTheFace": 59,
     "ReferenceTests/testTheReferenceWindowMovesSizesSwitchesAndComesBack": 85,
     "RigTests/testAPersonIsRiggedAndPosedInUnderThirtySeconds": 48,
-    "RigTests/testHisOwnModelBecomesTheCharacterInPlace": 45,
+    "RigTests/testHisOwnModelBecomesTheCharacterInPlace": 70,
     "RigTests/testATailIsPinnedAndPosedInUnderTenSeconds": 48,
     "ScreenshotTests/testIPadScreenshots": 63,
     "SmokeTests/testACharacterTheTimelineAndDiagnostics": 74,

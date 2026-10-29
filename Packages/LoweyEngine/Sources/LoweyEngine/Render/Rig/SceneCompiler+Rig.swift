@@ -96,8 +96,11 @@ extension SceneCompiler {
         for (index, part) in model.parts.enumerated() {
             let range = start ..< start + part.mesh.positions.count
             start = range.upperBound
-            guard let source = meshes.mesh(.asset(id, part: index), make: { GPUMesh(device: device, mesh: part.mesh, label: part.name) }),
-                  let mesh = riggedMesh(object, source: source, key: "\(id.raw) \(index)", slice: range, input: input) else { continue }
+            guard let plain = meshes.mesh(.asset(id, part: index), make: { GPUMesh(device: device, mesh: part.mesh, label: part.name) }) else { continue }
+            // Its own eyes and mouth (Q2) bend the part's corners before the rig moves them.
+            let face = regionMesh(plain, object: object, input: input)
+            guard let mesh = riggedMesh(object, source: face?.mesh ?? plain, key: "\(id.raw) \(index)" + (face.map { " face \($0.key)" } ?? ""),
+                                        slice: range, input: input) else { continue }
             var uniforms = base
             var texture: MTLTexture?
             let material = model.materials.indices.contains(part.material) ? model.materials[part.material] : ImportedMaterial()

@@ -148,6 +148,11 @@ struct EditorScreen: View {
                 RigMarksOverlay(editor: editor)
                     .ignoresSafeArea(edges: [.top, .horizontal])
                     .environment(\.layoutDirection, .leftToRight)
+            } else if editor.tool == .rig, editor.rigging.mode == .parts {
+                PartLabelsOverlay(editor: editor)
+                    .ignoresSafeArea(edges: [.top, .horizontal])
+                    .environment(\.layoutDirection, .leftToRight)
+                    .allowsHitTesting(false)
             }
             // The cage's points and the bend's handle (U6), in the stage's own points.
             if editor.tool == .model, editor.modeling.verb == .cage || editor.modeling.verb == .bend {

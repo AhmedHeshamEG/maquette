@@ -28,6 +28,10 @@ struct RigSection: View {
                     HmmPillButton("Make it a character", systemName: "face.smiling") { editor.makeCharacter(from: object.id) }
                         .accessibilityIdentifier("rig-make-character")
                 }
+                if object[.characterStart] != nil {
+                    HmmPillButton("Name its parts", systemName: RigSettings.Mode.parts.systemImage) { editor.startNamingParts() }
+                        .accessibilityIdentifier("rig-name-parts")
+                }
             }
         }
     }
@@ -96,6 +100,8 @@ struct RigOptionsBar: View {
                     editor.cancelPersonRig()
                     editor.tool = .select
                 }
+            } else if editor.rigging.mode == .parts {
+                PartNamingBar(editor: editor)
             } else if editor.rigging.mode == .weights, let rig = editor.rigTarget?.rig {
                 jointMenu(rig)
                 ChoiceChip(title: "Erase", systemName: "eraser", isOn: editor.rigging.erase) { editor.rigging.erase.toggle() }

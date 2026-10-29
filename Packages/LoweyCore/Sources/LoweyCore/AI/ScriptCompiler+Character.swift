@@ -9,6 +9,7 @@ extension ScriptState {
     static let characterOps: [String: @Sendable (inout ScriptState, JSONValue) throws -> Void] = [
         "new": { try $0.characterNew($1) },
         "adopt": { try $0.characterAdopt($1) },
+        "region": { try $0.characterRegion($1) },
         "add": { try $0.characterAdd($1) },
         "style": { try $0.characterStyle($1) },
         "remove": { try $0.characterRemove($1) },
@@ -153,6 +154,19 @@ extension ScriptState {
         // A thing made a character keeps its own rig: nothing to do when its parts already ride it.
         guard let rig = CharacterAutoRig.command(root, in: scene, shapeBounds: characterBounds) else { return }
         try run(rig, label: "Rigged “\(scene.objects[root]?.name ?? "")”")
+    }
+
+    /// An area of a character's piece named as its eye, mouth or brow (Q2): a box in the piece's own space.
+    mutating func characterRegion(_ action: JSONValue) throws {
+        let piece = try target(action["target"])
+        let job = try partJob(action)
+        guard CharacterRegion.jobs.contains(job) else { throw fail("a region is an eye, a mouth or a brow") }
+        let side = string(action, "side").flatMap(CharacterPart.Side.init(rawValue:)) ?? .middle
+        guard let low = try point(action["min"]),
+              let high = try point(action["max"]) else { throw fail("region needs “min” and “max” (the piece's own space)") }
+        let region = CharacterRegion(job: job, side: side, bounds: Bounds(min: low, max: high))
+        guard let command = CharacterMaker.nameRegion(region, on: piece, in: scene) else { throw fail("“target” must be a piece of a character") }
+        try run(command, label: "Named its \(job.title.lowercased())")
     }
 
     /// The thing itself becomes a character, whole, where it stands (its rig is its own: `rig` with a person's dots).

@@ -90,8 +90,11 @@ extension SceneCompiler {
                 GPUMesh(device: device, mesh: ShapeStack.moved(source.data, for: object), label: "\(object.name) shaped")
             }
         } ?? source
-        let surface = SurfaceMeshes(base: source, shown: shown)
-        let painted = surface.isMoved ? movedPaint(found, over: surface, object: object) ?? found : found
+        // Its own eyes and mouth (Q2) bend the corners the paint goes over.
+        let unbent = SurfaceMeshes(base: source, shown: shown)
+        let face = regionSurface(unbent, object: object, input: input)
+        let surface = face ?? unbent
+        let painted = surface.isMoved ? movedPaint(found, over: surface, object: object, regions: face?.shown) ?? found : found
         var uniforms = base
         if object.color == nil, state.tint == nil { uniforms.baseColor = SIMD4<Float>(1, 1, 1, base.baseColor.w) }
         addPainted(painted, object: object, world: state.world.matrix, base: uniforms, casts: casts, input: input, scene: &scene)

@@ -4,8 +4,8 @@ import UIKit
 
 /// The Pencil on Rig: a tap places a pin or a dot (or picks the mark new ones hang from); a stroke along a part lays a
 /// chain of them, shown inside the object as it's drawn; with the weight brush, it paints the chosen bone's weight.
-/// Each becomes one undo step when the Pencil lifts. Marks themselves are dragged and held over the stage
-/// (`RigMarksOverlay`).
+/// Naming its parts (Q2), a tap names a piece and a circle names an area. Each becomes one undo step when the Pencil
+/// lifts. Marks themselves are dragged and held over the stage (`RigMarksOverlay`).
 extension StageGestures {
     func rigStroke(_ recognizer: StrokeGestureRecognizer, editor: EditorModel, stage: StageView) {
         let samples = recognizer.samples
@@ -49,10 +49,13 @@ extension StageGestures {
         flipSamples += samples.map { BrushInput(point: Vec2(Double($0.location.x), Double($0.location.y)), pressure: $0.pressure,
                                                 altitude: $0.altitude, time: $0.time) }
         let marking = editor.rigging.mode == .marks
-        guard !marking || rigTravel > Self.tapReach else { return }
+        let lines = editor.rigging.mode != .weights
+        guard !lines || rigTravel > Self.tapReach else { return }
         let path = rigPath(editor)
         let brush = rigBrush(editor)
-        let color = marking ? RGBA(1, 0.722, 0.278) : (editor.rigging.erase ? RGBA(0.35, 0.45, 1) : RGBA(1, 0.3, 0.2))
+        var color = RGBA(1, 0.722, 0.278)
+        if editor.rigging.mode == .parts { color = RGBA(0.3, 0.8, 1) }
+        if editor.rigging.mode == .weights { color = editor.rigging.erase ? RGBA(0.35, 0.45, 1) : RGBA(1, 0.3, 0.2) }
         stage.showLiveStroke(LiveBrushStroke(stamps: .screen(BrushStroker.dabs(path, brush: brush, seed: 1)), brush: brush, color: color))
         // The chain as it'll land, every few samples (each time, every sample looks through the object again).
         if marking, flipSamples.count >= 4, flipSamples.count % 3 == 0 || samples.count > 2 {
@@ -61,7 +64,7 @@ extension StageGestures {
     }
 
     private func rigBrush(_ editor: EditorModel) -> Brush {
-        editor.rigging.mode == .marks ? BuiltInBrushes.technicalPen : BuiltInBrushes.airbrush
+        editor.rigging.mode == .weights ? BuiltInBrushes.airbrush : BuiltInBrushes.technicalPen
     }
 
     private func rigPath(_ editor: EditorModel) -> BrushPath<Vec2> {
@@ -85,6 +88,10 @@ extension StageGestures {
             editor.tapMark(at: CGPoint(x: first.point.x, y: first.point.y))
         case .marks:
             editor.drawChain(along: flipSamples.map { CGPoint(x: $0.point.x, y: $0.point.y) })
+        case .parts where travel <= Self.tapReach:
+            editor.partsTap(at: CGPoint(x: first.point.x, y: first.point.y))
+        case .parts:
+            editor.circlePart(along: flipSamples.map { CGPoint(x: $0.point.x, y: $0.point.y) })
         case .weights:
             // The brush engine spaces the dabs; each carries its pressure as its opacity.
             let dabs = BrushStroker.dabs(rigPath(editor), brush: rigBrush(editor), seed: 1)
