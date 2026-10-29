@@ -58,16 +58,23 @@ final class DrawTests: XCTestCase {
         point(0.35, 0.75).press(forDuration: 0.01, thenDragTo: point(0.5, 0.75), withVelocity: XCUIGestureVelocity(2500), thenHoldForDuration: 0)
     }
 
-    /// Every "land=" entry of the debug trail: where a touch began and where its stroke's first point landed.
-    private func landings() -> [(touch: CGPoint, landed: CGPoint, surface: Bool)] {
+    /// Every "land=" entry of the debug trail: where a touch began, where its stroke's first point landed, whether on a
+    /// surface, and the angle between the view and that surface.
+    private func landings() -> [(touch: CGPoint, landed: CGPoint, surface: Bool, angle: Double)] {
         element("debug-trail").label.components(separatedBy: " | ").compactMap { entry in
             guard entry.hasPrefix("land=") else { return nil }
             let parts = entry.dropFirst(5).split(separator: ",")
-            guard parts.count == 4, let x = Double(parts[0]) else { return nil }
+            guard parts.count == 5, let x = Double(parts[0]), let angle = Double(parts[4]) else { return nil }
             let middle = parts[1].split(separator: ">")
             guard middle.count == 2, let y = Double(middle[0]), let landedX = Double(middle[1]), let landedY = Double(parts[2]) else { return nil }
-            return (CGPoint(x: x, y: y), CGPoint(x: landedX, y: landedY), parts[3] == "surface")
+            return (CGPoint(x: x, y: y), CGPoint(x: landedX, y: landedY), parts[3] == "surface", angle)
         }
+    }
+
+    /// A short stroke that starts at a point of the stage.
+    private func strokeFrom(_ x: Double, _ y: Double) {
+        settle()
+        point(x, y).press(forDuration: 0.05, thenDragTo: point(x + 0.02, y + 0.01))
     }
 
     func testAThreeFrameFlipbookDrawnWithFlicks() {
@@ -146,5 +153,51 @@ final class DrawTests: XCTestCase {
         point(0.45, 0.24).tap()
         XCTAssertTrue(element("stroke-chip").waitForExistence(timeout: 5), "the stroke under the tap was picked")
         shot("A picked stroke")
+    }
+
+    /// Q2's under-the-tip test: from straight on, at 45° and at 70° to a cube's faces, and on the sheet near all four
+    /// edges of the stage, a line's first point lands within a point of the touch. The view is set exactly by
+    /// `-ui-testing-view` (yaw, pitch, distance), looking at the cube's middle from 4 m.
+    func testALineLandsUnderTheTipAtEveryAngleAndNearEveryEdge() {
+        // (pitch, the strokes on the cube: where on the stage, the angle expected there)
+        let views: [(pitch: Int, strokes: [(x: Double, y: Double, angle: Double)])] = [
+            (0, [(0.5, 0.5, 0)]),
+            (45, [(0.5, 0.40, 45), (0.5, 0.60, 45)]),
+            (20, [(0.5, 0.37, 70), (0.5, 0.55, 20)])
+        ]
+        for view in views {
+            app.terminate()
+            app.launchArguments = ["-ui-testing", "-ui-testing-view", "0,\(view.pitch),4"]
+            app.launch()
+            newProject()
+            tap("Model")
+            tap("model-add")
+            tap("add-cube")
+            XCTAssertTrue(element("inspector").waitForExistence(timeout: 5))
+            tap("fold-inspector")
+            tap("Draw")
+            for stroke in view.strokes {
+                strokeFrom(stroke.x, stroke.y)
+            }
+            if view.pitch == 0 {
+                // In the air, near the four edges (clear of the corners' buttons, the sidebar's rail and the bar).
+                for (x, y) in [(0.12, 0.5), (0.9, 0.5), (0.3, 0.14), (0.3, 0.82)] {
+                    strokeFrom(x, y)
+                }
+            }
+            let landed = landings()
+            let expected = view.strokes.count + (view.pitch == 0 ? 4 : 0)
+            XCTAssertEqual(landed.count, expected, "pitch \(view.pitch): every stroke landed: \(element("debug-trail").label)")
+            for landing in landed {
+                let off = hypot(landing.touch.x - landing.landed.x, landing.touch.y - landing.landed.y)
+                XCTAssertLessThan(off, 1, "pitch \(view.pitch): under the tip (\(landing.touch) → \(landing.landed), \(landing.angle)°)")
+            }
+            let onCube = landed.filter(\.surface)
+            XCTAssertEqual(onCube.count, view.strokes.count, "pitch \(view.pitch): the strokes begun on the cube lie on it")
+            for (landing, stroke) in zip(onCube, view.strokes) {
+                XCTAssertEqual(landing.angle, stroke.angle, accuracy: 6, "pitch \(view.pitch): drawn at about \(stroke.angle)°")
+            }
+            shot("Under the tip at pitch \(view.pitch)")
+        }
     }
 }

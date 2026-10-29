@@ -27,6 +27,7 @@ TIMES = {
     "ChromeFitTests/testTheStageStaysTheStageWithASelectionAndTheTimeline": 28,
     "DrawTests/testALineOfAnExactLengthTypedOnTheNumberPad": 41,
     "DrawTests/testAStrokeStartsUnderTheTouchInTheAirAndOnASurface": 34,
+    "DrawTests/testALineLandsUnderTheTipAtEveryAngleAndNearEveryEdge": 110,
     "DrawTests/testAThreeFrameFlipbookDrawnWithFlicks": 51,
     "GuestTests/testDevsLevelGoesToGodotInUnderThreeMinutes": 78,
     "GuestTests/testGiuliasThreadedLidGoesToTheSlicerAs3MFInUnderThreeMinutes": 74,

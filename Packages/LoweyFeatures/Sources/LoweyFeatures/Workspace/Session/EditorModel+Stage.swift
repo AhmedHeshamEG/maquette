@@ -13,9 +13,13 @@ extension EditorModel {
     /// Called by the stage host once the Metal view exists.
     func attach(_ stage: StageView) {
         self.stage = stage
-        stage.setViewpoint(baseScene.viewpoint, notify: false)
+        var viewpoint = baseScene.viewpoint
+        if AppIdentity.isUITesting, let view = AppIdentity.uiTestingView {
+            (viewpoint.yaw, viewpoint.pitch, viewpoint.distance) = view
+        }
+        stage.setViewpoint(viewpoint, notify: false)
         projection = baseScene.viewpoint.projection
-        viewYaw = baseScene.viewpoint.yaw
+        viewYaw = viewpoint.yaw
         stage.showsGrid = showsGrid
         stage.gizmoMode = gizmoMode
         stage.dynamicScale.enabled = !UserDefaults.standard.bool(forKey: AppSettings.fullResolutionStage)

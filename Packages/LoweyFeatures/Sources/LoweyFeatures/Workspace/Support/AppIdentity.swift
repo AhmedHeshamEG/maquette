@@ -34,4 +34,12 @@ public enum AppIdentity {
         guard let index = arguments.firstIndex(of: "-ui-testing-folder"), arguments.indices.contains(index + 1) else { return nil }
         return arguments[index + 1]
     }()
+
+    /// A UI test that needs the view at exact angles (Q2's under-the-tip test): `-ui-testing-view yaw,pitch,distance`.
+    public static let uiTestingView: (yaw: Double, pitch: Double, distance: Double)? = {
+        let arguments = ProcessInfo.processInfo.arguments
+        guard let index = arguments.firstIndex(of: "-ui-testing-view"), arguments.indices.contains(index + 1) else { return nil }
+        let numbers = arguments[index + 1].split(separator: ",").compactMap { Double($0) }
+        return numbers.count == 3 ? (numbers[0], numbers[1], numbers[2]) : nil
+    }()
 }
