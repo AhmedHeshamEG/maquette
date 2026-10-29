@@ -88,7 +88,7 @@ struct StageChrome: View {
     /// The object panel floats while something is selected (a chip while something bigger is open). While sketching it
     /// steps aside: the numbers on the stage are what you're working with then (D-124).
     private var showsInspector: Bool {
-        !editor.selection.isEmpty && !editor.isSketching
+        !editor.selection.isEmpty && !editor.isSketching && !editor.drawingIntoSelection
     }
 
     // MARK: Clusters

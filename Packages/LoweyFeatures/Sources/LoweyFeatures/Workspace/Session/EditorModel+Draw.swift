@@ -16,6 +16,10 @@ extension EditorModel {
     /// The Pencil's stroke becomes a line: ink, or a paint brush that started in the air.
     var drawsLines: Bool { tool == .ink || tool == .paint }
 
+    /// Lines going into the selected drawing (Q2): its object panel stays away, so nothing pops up beside a stroke
+    /// where the next one starts (it took that stroke's touch).
+    var drawingIntoSelection: Bool { drawsLines && activeInk != nil }
+
     /// The top-right Draw: picks up the brush and verb last used, or puts Draw down.
     func toggleDraw() {
         openPanel = nil
