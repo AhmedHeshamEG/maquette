@@ -56,6 +56,20 @@ final class RenderTests: XCTestCase {
         XCTAssertGreaterThan(result.differentFraction, 0.02, "Ink draws lines, Clay doesn't")
     }
 
+    func testFramesRenderedTogetherEachKeepTheirOwnPicture() async throws {
+        let frames = try FrameRenderer(device: device, models: models)
+        let requests = [LookPreset.ink.id, LookPreset.clay.id].map { look in
+            let builder = ShotBuilder(document: TestScenes.lookCheck(look: look, mood: .day), catalog: .empty, models: models)
+            return builder.request(at: 0, framing: .landscape, size: CGSize(width: Self.size.width, height: Self.size.height), frameIndex: 0)
+        }
+        let first = Task { try await frames.image(requests[0], width: Self.size.width, height: Self.size.height) }
+        let second = Task { try await frames.image(requests[1], width: Self.size.width, height: Self.size.height) }
+        let together = try await [first.value, second.value]
+        let alone = try await frames.image(requests[0], width: Self.size.width, height: Self.size.height)
+        XCTAssertLessThan(GoldenImage().compare(together[0], alone).differentFraction, 0.001, "the first is still itself")
+        XCTAssertGreaterThan(GoldenImage().compare(together[0], together[1]).differentFraction, 0.02, "two pictures, not one twice")
+    }
+
     // MARK: Picking
 
     func testPickingFindsTheObjectUnderAPixel() async throws {

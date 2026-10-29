@@ -22,6 +22,8 @@ continues from 2.0 and numbers its phases again from 0.1 (each phase bumps the m
 - **The house kit**: Library ▸ Things opens on Maquette's own things, 32 of them in seven groups (home, building,
   nature, city, props, game blocks, scale people), soft and chunky so they sit together in every Look. Each lands as
   a group of ordinary shapes you can take apart, recolour and paint. The free CC0 packs are under More sets.
+- **Library pictures drawn at the same moment each show their own thing**; before, tiles appearing together could
+  all show whichever was drawn last.
 
 ## [0.29] — Maquette — Import and export, closed; the held parts (phase X1)
 

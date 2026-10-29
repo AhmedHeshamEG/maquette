@@ -12,6 +12,8 @@ public final class FrameRenderer {
     public let renderer: LoweyRenderer
     private var textureCache: CVMetalTextureCache?
     private var output: MTLTexture?
+    /// The shared output is being drawn into and not read back yet.
+    private var outputInUse = false
 
     /// `quality` is `.full` for everything that leaves the app; the tier tests render a lighter preview with it.
     public init(device: RenderDevice, models: ModelLibrary = .shared, quality: PreviewQuality = .full) throws {
@@ -44,7 +46,14 @@ public final class FrameRenderer {
 
     /// BGRA bytes of a frame, top row first.
     public func bytes(_ request: FrameRequest, width: Int, height: Int) async throws -> [UInt8] {
-        let texture = try outputTexture(width: width, height: height)
+        // A frame asked for while another is still in flight (the Library's tiles coming on screen together) gets a
+        // texture of its own: sharing one, each was read back after the next had drawn over it.
+        let shared = !outputInUse
+        let texture = shared ? try outputTexture(width: width, height: height)
+            : try device.makeTexture(RenderDevice.outputFormat, width: width, height: height,
+                                     usage: [.shaderWrite, .shaderRead, .renderTarget], storage: .shared, label: "offscreen output")
+        if shared { outputInUse = true }
+        defer { if shared { outputInUse = false } }
         _ = try await run(request, into: texture)
         var bytes = [UInt8](repeating: 0, count: width * height * 4)
         texture.getBytes(&bytes, bytesPerRow: width * 4, from: MTLRegionMake2D(0, 0, width, height), mipmapLevel: 0)
