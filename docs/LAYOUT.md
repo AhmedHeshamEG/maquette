@@ -142,7 +142,8 @@ Three short pages; the page is remembered.
 | Control | Walk |
 |---|---|
 | Search everything (the Kit, your models, builds, worlds, scripts) | `Library › library-search` |
-| Things: the Kit by set | `Library › library-things › kit-sets` |
+| Things: the house kit by category (home, building, nature, city, props, game blocks, scale people) | `Library › library-things › house-kit-categories` |
+| Things ▸ More sets: the free CC0 packs by set | `Library › library-things › more-sets › kit-sets` |
 | Things: Grounds (plain, desert, grass, snow, rock, sand, pavement, water's edge, room floor) (L2) | `Library › library-things › ground-snow` |
 | Characters ▸ New: a person, four legs, wings, a blob, a mannequin (G1) or nothing; it lands with its panel open, rigged | `Library › library-characters › new-character-person` |
 | | `Library › library-characters › new-character-mannequin` |
