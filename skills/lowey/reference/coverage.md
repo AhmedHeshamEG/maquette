@@ -31,9 +31,9 @@ a path, and a test fails when one doesn't.*
 | Kit | Show Overhangs | `{"do": "app", "op": "show", "value": "overhangs"}` |
 | Kit | Split for Printing | `{"do": "guest", "op": "split"}` |
 | Kit | Walk Through | `{"do": "app", "op": "present", "value": "walk"}` |
+| Look | Comic Dots | `{"do": "effect"}` |
 | Look | Focus Lines | `{"do": "effect"}` |
 | Look | Impact Frame | `{"do": "effect"}` |
-| Look | Comic Dots | `{"do": "effect"}` |
 | Look | Next Look | `{"do": "look"}` |
 | Look | Previous Look | `{"do": "look"}` |
 | Perform | Mouth from the Microphone | `{"do": "lipSync"}` |

@@ -269,7 +269,8 @@ extension EditorModel {
             return snapping.grid ? Snapping.snapToGrid(hit.point, size: snapping.gridSize) : hit.point
         }
         let target = stage.viewpoint.target
-        let ground = stage.groundPoint(at: point) ?? baseScene.viewpoint.target
+        // A level or upward view never meets the ground: drop onto the ground under what the view looks at, not in mid-air.
+        let ground = stage.groundPoint(at: point) ?? Vec3(target.x, 0, target.z)
         let clamped = ground.distance(to: target) > 60 ? Vec3(target.x, 0, target.z) : ground
         return snapping.grid ? Snapping.snapToGrid(clamped, size: snapping.gridSize) : clamped
     }
