@@ -266,6 +266,10 @@ extension EditorModel {
     /// Where new things appear: the surface in the middle of the view (or under a point), else the ground.
     func dropPoint(at screenPoint: CGPoint? = nil) -> Vec3 {
         guard let stage else { return .zero }
+        // A UI test that sets the view exactly also wants new things exactly under what it looks at.
+        if screenPoint == nil, AppIdentity.isUITesting, AppIdentity.uiTestingView != nil {
+            return Vec3(stage.viewpoint.target.x, 0, stage.viewpoint.target.z)
+        }
         let point = screenPoint ?? CGPoint(x: stage.bounds.midX, y: stage.bounds.midY)
         if let (_, hit) = stage.pickObject(at: point), hit.normal.y > 0.6 {
             return snapping.grid ? Snapping.snapToGrid(hit.point, size: snapping.gridSize) : hit.point
