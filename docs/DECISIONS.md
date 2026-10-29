@@ -3784,3 +3784,55 @@ iPad's size times Tier B's top render scale (2006 × 1394), 150 frames, the firs
 waited for before the next, and fails if the median passes 16.7 ms (60 fps) or p95 passes 33.3 ms (30 fps). Not
 overlapping CPU and GPU makes it stricter than the stage. A p95 gate at 16.7 ms passed once and failed the next run at
 16.7–24.8 ms: CI's runners are shared, and a neighbour moves the slow frames, not the typical one. Diagnostics ▸ Run as Tier B (U1) is the device side (§D.27).
+
+## Q2 · Draw, characters & the legal pass (2026-10-29)
+
+**D-606 — A line is lifted toward the eye, along its ray.** Every point used to be lifted 2 mm along the surface's
+normal (half the width for a tube), which slid the line sideways on screen whenever the surface was seen at an angle:
+his "it gets shifted off to one side". Now the hit moves back along the ray that found it, so it stays under the same
+screen point; the clearance along the normal is kept, up to four times the lift at grazing angles
+(`SurfaceHit.lifted(by:along:)`, both the solid strokes and ink). The other suspects were ruled out by reading: the
+stage draws the whole view with the same camera the ray comes from (no letterboxed viewport for the frame's shape;
+render scale changes pixels, not the aspect), and the sheet, the carried-on plane and smoothing take the ray's own
+hit. `DrawTests` checks the first point within 1 pt at 0°, 45° and 70° to a cube's faces and near the four edges, the
+view set exactly by `-ui-testing-view yaw,pitch,distance`; Diagnostics ▸ Apple Pencil ▸ Mark where a line lands puts
+the hover mark where a line begun there would land, for the device check. *Rejected:* keeping the normal lift and
+shifting the screen point back (the 3D line would still sit off the tip in other views).
+
+**D-607 — No object panel beside a drawing while lines go into it.** After a line the new drawing is selected, so the
+next lines join it, and its chip floated in beside it: exactly where the next stroke often starts, and it took that
+touch (with UIKit animations off it showed at once, which is why `DrawTests`' second stroke never landed, PR #53). While
+Draw lines go into the selected drawing the panel stays away; it's back with any other tool or selection. UI tests run
+with animations off again (screenshots keep them). *Rejected:* deselecting after each line (the lines would stop
+joining one drawing).
+
+**D-608 — The name "Maquette" has a live conflict.** US registration (serial 90069063, registered 2022-11-15) by
+Graceful Decay, LLC, the studio of the 2021 game, in class 9 for downloadable game software, the class an App Store
+app falls in; identical word, related goods. Microsoft Maquette (a VR mock-up tool, 2019) stopped in January 2022,
+with no registration found. Per §D.19 the name is reopened with Hesham, with three alternatives screened in the US
+register's public mirror and the App Store: **Modello** (the Italian and English art word for a preparatory model; no
+live class 9 or 42 mark seen; in Italy it's also an everyday word, as in a tax form), **Bozzetto** (the sculptor's
+quick model; only a chemicals group's mark; but it's the surname of a famous living Italian animator), **Plinth** (what
+a sculpture stands on; a live architecture-services mark, class 42). EUIPO and WIPO weren't reachable from the
+session. Keeping "Maquette" would need a trademark lawyer's opinion first; any new name should get one hour of a
+lawyer's clearance search before it's used publicly. Code names (the bundle, `Maquette` folders) don't change until
+he picks. *Rejected:* deciding the name alone (it's his product's name; §D.19 says it's reopened).
+
+**D-609 — Kirby Dots are Comic Dots.** Everywhere a person, an agent or a file reads it: the menu and its shortcut
+(`look.comicDots`), the effect's kind (`comicDots`), the Scene Script schema, the skill, the docs. A project or script
+saying `kirbyDots` still opens and compiles as Comic dots (`ScreenEffect.Kind(named:)`), so nothing is lost; a
+rebinding of the old shortcut is the one thing that resets. History (DECISIONS, CHANGELOG) keeps the old words.
+
+**D-610 — The legal pass.**
+
+| Area | Finding | Done |
+|---|---|---|
+| The app's name | live US class 9 conflict | D-608, with Hesham |
+| Third-party marks in our words | only "Kirby" named a feature | D-609; the rest name a format or a target ("imports Procreate brushes", "for Unity", "YouTube, Shorts") or credit an author (Kenney, Quaternius), which is fair use |
+| Shipped models | 355: 329 Kenney, 26 Quaternius, all CC0, each with its author, source and licence in its `asset.json` | every source is in `LICENSES.md` |
+| Shipped fonts, sounds, pictures, HDRIs | none: system fonts, sounds are the person's, HDRIs and pictures are imported | — |
+| Code | every dependency permissive, listed with its licence | unchanged |
+| Standards | ISO hole and thread sizes used as numbers, no text copied | held anyway (D-599) |
+| App Review 4.1 and 5.2 | no copied app, no third-party IP in the store build's content | the showcases use our own shapes (§D) |
+| Privacy manifest | UserDefaults and file timestamps declared; no tracking; no other required-reason API used | checked by search |
+| Export compliance | `ITSAppUsesNonExemptEncryption` false (only Apple's own) | unchanged |

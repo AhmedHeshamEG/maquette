@@ -3,6 +3,14 @@
 All notable changes. 1.x grew in four phases (v0.1 → v1.4); 2.0 is the remaster, released as betas first. Maquette
 continues from 2.0 and numbers its phases again from 0.1 (each phase bumps the minor version until 1.0).
 
+## [0.30] — Maquette — Draw, characters and the legal pass (phase Q2, in progress)
+
+- **A line lands exactly under the Pencil**, on a surface seen at any angle and on the sheet: it was lifted along the
+  surface and slid sideways on screen. Diagnostics ▸ Apple Pencil ▸ Mark where a line lands shows where a line begun
+  under the hovering tip would land.
+- **Drawing lines no longer pops the drawing's panel up beside them**, where it took the next stroke.
+- **Comic Dots** is the new name of Look ▸ Finish's Kirby Dots; old projects and scripts open with them.
+
 ## [0.29] — Maquette — Import and export, closed; the held parts (phase X1)
 
 three.js both ways, and the app narrowed to what 1.0 is (CONTEXT §D.21–D.29): no new features until launch.
