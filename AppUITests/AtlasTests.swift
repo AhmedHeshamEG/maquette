@@ -226,7 +226,7 @@ final class AtlasTests: XCTestCase {
         area = "5 Selection"
         fresh(.cube)
         shot("Object panel")
-        for index in 1 ... 2 {
+        for index in 1 ... 6 {
             element("inspector").swipeUp()
             settle(1)
             shot("Object panel, further \(index)")
