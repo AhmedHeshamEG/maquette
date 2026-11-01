@@ -184,19 +184,20 @@ Three short pages; the page is remembered.
 
 | Control | Walk |
 |---|---|
+| Add, in groups (U9): Shapes (open first) · Lights · Words & pictures · Effects; in a Room, Print or Game project its Kit comes first | `Model › model-add › add-group-effects` |
 | Add: shapes (cube, sphere, cylinder, cone, plane, torus, ramp; bevelled), in the colour in the hand | `Model › model-add › add-cube` |
 | | `Model › model-add › add-ramp` |
-| Add: bulb, spot, soft panel, sun | `Model › model-add › add-spot` |
-| | `Model › model-add › add-panel` |
+| Add: bulb, spot, soft panel, sun | `Model › model-add › add-group-lights › add-spot` |
+| | `Model › model-add › add-group-lights › add-panel` |
 | A light: colour, strength, reach, a spot's cone, a soft panel's size; Setups (three-point, golden hour, moonlight, neon; more one step deeper) (F1) | in the panel of a light |
-| Add: 3D text | `Model › model-add › add-text3d` |
-| Add: a photo or video (a card in the world) | `Model › model-add › add-media` |
-| Add: a logo (an SVG: one solid a colour, the upper colours standing proud) | `Model › model-add › add-logo` |
-| Add: a drawing (PSD, PSB, Procreate): a painted sheet a layer, stacked in depth, ready to pin and rig (L2) | `Model › model-add › add-drawing` |
-| Add: a web page, a folder with one or a Lottie file, on a screen in the scene or over the frame (M12) *(held: 1.0)* | `Model › model-add › add-web` |
-| Add: effects (fire, sparks, smoke…) | `Model › model-add › add-fx-fire` |
-| Add: forces (fan, pull, whirl) and fluids (pour water, splash, billowing smoke, flames) | `Model › model-add › add-force-fan` |
-| | `Model › model-add › add-fluid-pour` |
+| Add: 3D text | `Model › model-add › add-group-words › add-text3d` |
+| Add: a photo or video (a card in the world) | `Model › model-add › add-group-words › add-media` |
+| Add: a logo (an SVG: one solid a colour, the upper colours standing proud) | `Model › model-add › add-group-words › add-logo` |
+| Add: a drawing (PSD, PSB, Procreate): a painted sheet a layer, stacked in depth, ready to pin and rig (L2) | `Model › model-add › add-group-words › add-drawing` |
+| Add: a web page, a folder with one or a Lottie file, on a screen in the scene or over the frame (M12) *(held: 1.0)* | `Model › model-add › add-group-words › add-web` |
+| Add: effects (fire, sparks, smoke…) | `Model › model-add › add-group-effects › add-fx-fire` |
+| Add: forces (fan, pull, whirl) and fluids (pour water, splash, billowing smoke, flames) | `Model › model-add › add-group-effects › add-force-fan` |
+| | `Model › model-add › add-group-effects › add-fluid-pour` |
 | Add: Building: walls, floor, door, window, stairs; roof, column, beam, railing, person, room name, terrain (G1) | `scene-name › setup-room › Model › model-add › build-roof` |
 | Add: Plans and the site: walk through, match a photo (G1) | `scene-name › setup-room › Model › model-add › room-walk` |
 | Add: plans with areas, an underlay set to scale (G1) *(held: 1.0)* | `scene-name › setup-room › Model › model-add › room-plans` |

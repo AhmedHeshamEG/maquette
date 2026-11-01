@@ -18685,6 +18685,22 @@
         }
       }
     },
+    "Lights": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Luci"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الأضواء"
+          }
+        }
+      }
+    },
     "Lights the selection as the shot camera sees it; the last setup's lights are replaced.": {
       "localizations": {
         "it": {
