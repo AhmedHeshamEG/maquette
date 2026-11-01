@@ -40,8 +40,17 @@ public struct SceneGraphReport: Codable, Hashable, Sendable {
             let world = scene.worldTransform(of: object.id)
             let box = boxes[object.id]
             return Thing(name: object.name, kind: kindName(object.kind), parent: object.parent.flatMap { scene.objects[$0]?.name },
-                         position: [world.position.x, world.position.y, world.position.z].map(round), rotation: { let e = world.rotation.eulerDegrees; return [e.x, e.y, e.z].map(round) }(),
-                         size: box.map { [$0.size.x, $0.size.y, $0.size.z].map(round) }, min: box.map { [$0.min.x, $0.min.y, $0.min.z].map(round) }, max: box.map { [$0.max.x, $0.max.y, $0.max.z].map(round) },
+                         position: [world.position.x, world.position.y, world.position.z].map(round), rotation: { let e = world.rotation.eulerDegrees; return [
+                             e.x,
+                             e.y,
+                             e.z
+                         ].map(round) }(),
+                         size: box.map { [$0.size.x, $0.size.y, $0.size.z].map(round) }, min: box.map { [$0.min.x, $0.min.y, $0.min.z].map(round) },
+                         max: box.map { [
+                             $0.max.x,
+                             $0.max.y,
+                             $0.max.z
+                         ].map(round) },
                          sitsOn: box.flatMap { support(of: object.id, box: $0, boxes: boxes, scene: scene) },
                          shown: ShotObserver.isShown(object.id, in: scene))
         }
@@ -63,9 +72,10 @@ public struct SceneGraphReport: Codable, Hashable, Sendable {
     static func support(of id: ObjectID, box: Bounds, boxes: [ObjectID: Bounds], scene: Scene) -> String? {
         var best: (height: Double, name: String)?
         for (other, below) in boxes where other != id && !scene.isAncestor(other, of: id) && !scene.isAncestor(id, of: other) {
-            guard below.max.x > box.min.x, below.min.x < box.max.x, below.max.z > box.min.z, below.min.z < box.max.z,
-                  abs(below.max.y - box.min.y) < 0.02, below.max.y > (best?.height ?? -.infinity),
-                  let name = scene.objects[other]?.name else { continue }
+            let overlaps = below.max.x > box.min.x && below.min.x < box.max.x && below.max.z > box.min.z && below.min.z < box.max.z
+            let touching = abs(below.max.y - box.min.y) < 0.02
+            let higher = below.max.y > (best?.height ?? -.infinity)
+            guard overlaps, touching, higher, let name = scene.objects[other]?.name else { continue }
             best = (below.max.y, name)
         }
         if let best { return best.name }

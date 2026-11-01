@@ -34,13 +34,19 @@ public enum ShotRubric {
 
     static func evaluate(objects: [ObservedObject], frame: FrameRead, scaleIssues: [String], cameraInside: String? = nil) -> [RubricCheck] {
         let subject = frame.subject.flatMap { name in objects.first { $0.name == name } }
-        return [camera(inside: cameraInside, subject: subject, objects: objects, frame: frame), read(frame), focus(subject, objects: objects), framing(subject, frame: frame), ground(objects),
-                RubricCheck.check("Scale", scaleIssues.isEmpty,
-                                  scaleIssues.isEmpty ? "Sizes match the Kit's real sizes" : scaleIssues.joined(separator: "; "),
-                                  fix: "scaleTo the real size (the Kit knows it), or swap for a model made at that size"),
-                light(frame, subjectCoverage: subject?.coverage),
-                RubricCheck.check("Clutter", frame.clutter <= maximumClutter, "\(frame.clutter) significant things in frame",
-                                  fix: "Remove or push back what doesn't serve the beat; let empty space frame the subject")]
+        return [
+            camera(inside: cameraInside, subject: subject, objects: objects, frame: frame),
+            read(frame),
+            focus(subject, objects: objects),
+            framing(subject, frame: frame),
+            ground(objects),
+            RubricCheck.check("Scale", scaleIssues.isEmpty,
+                              scaleIssues.isEmpty ? "Sizes match the Kit's real sizes" : scaleIssues.joined(separator: "; "),
+                              fix: "scaleTo the real size (the Kit knows it), or swap for a model made at that size"),
+            light(frame, subjectCoverage: subject?.coverage),
+            RubricCheck.check("Clutter", frame.clutter <= maximumClutter, "\(frame.clutter) significant things in frame",
+                              fix: "Remove or push back what doesn't serve the beat; let empty space frame the subject")
+        ]
     }
 
     /// Can the lens see anything at all: not inside a solid, not an empty frame, the subject not hidden behind something.

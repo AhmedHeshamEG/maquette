@@ -81,7 +81,7 @@ extension ScriptState {
         var spans: [(Double, Double)] = []
         for pair in action["during"]?.arrayValue ?? [] {
             guard let ends = pair.arrayValue, ends.count == 2 else { throw fail("“during” is a list of [from, to]") }
-            spans.append(try (time(ends[0]), time(ends[1])))
+            try spans.append((time(ends[0]), time(ends[1])))
         }
         let cuts = timeline.cuts.sorted { $0.time < $1.time }
         for shot in action["shots"]?.arrayValue ?? [] {

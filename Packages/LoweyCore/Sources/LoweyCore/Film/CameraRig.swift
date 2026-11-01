@@ -158,7 +158,8 @@ public enum CameraRig: String, Codable, Sendable, CaseIterable, Identifiable {
 
     private static func each(in state: inout Animator.Posed, _ placed: (SceneObject, Transform, Animator.Posed) -> Transform) {
         for id in state.scene.objects.keys.sorted() {
-            guard let camera = state.scene.objects[id], camera.kind == .camera, camera[.rig] != nil || camera[.rigShake] != nil || camera[.rigDrift] != nil else { continue }
+            guard let camera = state.scene.objects[id], camera.kind == .camera,
+                  camera[.rig] != nil || camera[.rigShake] != nil || camera[.rigDrift] != nil else { continue }
             let world = state.scene.worldTransform(of: id)
             let pose = placed(camera, world, state)
             var object = camera

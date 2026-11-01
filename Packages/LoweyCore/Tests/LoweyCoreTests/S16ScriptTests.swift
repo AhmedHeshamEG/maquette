@@ -7,7 +7,7 @@ final class S16ScriptTests: XCTestCase {
         let script = try LoweyJSON.decode(SceneScript.self, from: Data("{\"title\": \"S16\", \"actions\": [\(actions)]}".utf8))
         let result = try ScriptCompiler.compile(script, document: document, context: ScriptContext(now: 0, ids: .sequential("s")))
         let command = try XCTUnwrap(result.command)
-        return (try assertReverts(command, on: document), result)
+        return try (assertReverts(command, on: document), result)
     }
 
     private func error(_ actions: String) -> String {
