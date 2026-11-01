@@ -82,6 +82,8 @@ verbs = {
     "camera": ("A camera; \"watch\" keeps it turned to a thing (or a mark) and sharp on it; \"drift\" (0–1) a slow sway.",
                {"name": s, "from": point, "lookAt": point, "focalLength": n, "fov": n, "aperture": n, "active": b, "watch": tgt,
                 "drift": n}, []),
+    "show": ("Shown only in these stretches ([[from, to], …], times or words) or while the edit is on these cameras; hidden the rest.",
+             {"target": tgt, "during": {"type": "array", "items": {"type": "array"}}, "shots": {"type": "array", "items": tgt}}, ["target"]),
     "mark": ("A named spot that draws nothing (\"at\", or \"on\" a thing to ride with it), for cameras to watch, frame and focus on.",
              {"name": s, "at": point, "on": tgt, "radius": n}, ["name"]),
     "frameShot": ("The camera solver: shot type and composition on a subject (a new camera when \"camera\" doesn't exist).",

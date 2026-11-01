@@ -102,6 +102,7 @@ public enum ScriptReference {
     {"do":"physics","op":"sun","place":"Rome","date":"2026-06-21","hour":15,"north":0,"study":[7,19]}   {"op":"sun","latitude":45.1,"longitude":7.7,"utcOffset":2}   {"op":"sun","off":true}
 
     Shoot and light
+    {"do":"show","target":"Phone","during":[[0,12],[{"word":"later"},52]],"shots":["Close on the phone"]}   (hidden the rest; replaces its visibility keys)
     {"do":"mark","name":"Plate","at":[0,0.8,0],"radius":0.05}   (or "on":"Plate 3": rides with it) a named spot that draws nothing
     {"do":"camera","name":"Macro","from":[0.3,1,0.6],"watch":"Plate","focalLength":85,"aperture":2,"drift":0.4}
       watch: turns to the thing or mark and keeps it sharp as it moves (key the MARK's position, never the camera's angles)

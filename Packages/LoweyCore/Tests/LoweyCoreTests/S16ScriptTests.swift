@@ -178,4 +178,24 @@ final class S16ScriptTests: XCTestCase {
         XCTAssertEqual(plate.motionDesign?.clones?.count, 3600)
         XCTAssertEqual(plate.motionDesign?.clones?.effects.first?.kind, .random)
     }
+
+    /// Item 21: shown only in its stretches or its shots.
+    func testShownOnlyDuringItsShots() throws {
+        var document = makeDocument()
+        document.scene.timeline.duration = 20
+        let (shown, _) = try compile("""
+        {"do": "camera", "name": "Wide", "from": [0, 1, 5]},
+        {"do": "camera", "name": "Close", "from": [0, 1, 1]},
+        {"do": "cut", "camera": "Wide", "at": 0}, {"do": "cut", "camera": "Close", "at": 5}, {"do": "cut", "camera": "Wide", "at": 9},
+        {"do": "add", "shape": "cube", "name": "Phone"},
+        {"do": "show", "target": "Phone", "shots": ["Close"], "during": [[15, 16]]}
+        """, document: document)
+        let phone = try XCTUnwrap(shown.scene.objects.values.first { $0.name == "Phone" }?.id)
+        func visible(_ time: Double) -> Bool { Animator.evaluate(shown, at: time).scene.objects[phone]?[.visible] != .bool(false) }
+        XCTAssertFalse(visible(2))
+        XCTAssertTrue(visible(6))
+        XCTAssertFalse(visible(10))
+        XCTAssertTrue(visible(15.5))
+        XCTAssertFalse(visible(17))
+    }
 }

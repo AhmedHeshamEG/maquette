@@ -813,6 +813,7 @@
             "scaleTo",
             "scatter",
             "set",
+            "show",
             "sketch",
             "text",
             "transcript",
@@ -3791,6 +3792,38 @@
             "required": [
               "target",
               "property"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "do": {
+                "const": "show"
+              }
+            }
+          },
+          "then": {
+            "description": "Shown only in these stretches ([[from, to], …], times or words) or while the edit is on these cameras; hidden the rest.",
+            "properties": {
+              "target": {
+                "$ref": "#/$defs/target"
+              },
+              "during": {
+                "type": "array",
+                "items": {
+                  "type": "array"
+                }
+              },
+              "shots": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/$defs/target"
+                }
+              }
+            },
+            "required": [
+              "target"
             ]
           }
         },

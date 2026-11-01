@@ -74,6 +74,40 @@ extension ScriptState {
         try run(.setTracks(edits), label: "\(values.count) key\(values.count == 1 ? "" : "s") on \(property) × \(ids.count)")
     }
 
+    /// `{"do": "show", "target": "Phone", "during": [[0, 12], [40, 52.5]]}` or `"shots": ["Close on the phone"]`: shown
+    /// only in those stretches (or while the edit is on those cameras), hidden the rest of the film (S16 item 21).
+    mutating func show(_ action: JSONValue) throws {
+        let ids = try targets(action["target"])
+        var spans: [(Double, Double)] = []
+        for pair in action["during"]?.arrayValue ?? [] {
+            guard let ends = pair.arrayValue, ends.count == 2 else { throw fail("“during” is a list of [from, to]") }
+            spans.append(try (time(ends[0]), time(ends[1])))
+        }
+        let cuts = timeline.cuts.sorted { $0.time < $1.time }
+        for shot in action["shots"]?.arrayValue ?? [] {
+            let camera = try target(shot)
+            for (index, cut) in cuts.enumerated() where cut.camera == camera {
+                spans.append((cut.time, index + 1 < cuts.count ? cuts[index + 1].time : max(timeline.duration, cut.time)))
+            }
+        }
+        guard !spans.isEmpty else { throw fail("show needs “during” ([[from, to], …]) or “shots” (camera names the edit cuts to)") }
+        spans.sort { $0.0 < $1.0 }
+        var values: [(Double, PropertyValue, Easing)] = [(0, .bool(false), .step)]
+        for (from, to) in spans where to > from {
+            values.removeAll { abs($0.0 - from) < 1e-9 }
+            values.append((from, .bool(true), .step))
+            values.append((to, .bool(false), .step))
+        }
+        var edits: [TrackEdit] = []
+        for id in ids {
+            // The visibility track is replaced whole: these stretches are the answer.
+            var track = timeline.track(for: id, .visible) ?? Track(id: context.ids.next(), target: id, property: .visible)
+            track.setKeys(values.map { Keyframe(time: $0.0, value: $0.1, easing: $0.2) })
+            edits.append(TrackEdit(track))
+        }
+        try run(.setTracks(edits), label: "Shown in \(spans.count) stretch\(spans.count == 1 ? "" : "es")")
+    }
+
     mutating func keys(_ action: JSONValue) throws {
         guard let keyName = string(action, "property") else { throw fail("keys need “property”") }
         let (property, convert) = try scriptProperty(keyName)

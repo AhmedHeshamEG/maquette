@@ -34,6 +34,7 @@ extension ScriptState {
         "light": { try $0.light($1) },
         "camera": { try $0.camera($1) },
         "mark": { try $0.mark($1) },
+        "show": { try $0.show($1) },
         "set": { try $0.set($1) },
         "transform": { try $0.transform($1) },
         "key": { try $0.keys($1) },
