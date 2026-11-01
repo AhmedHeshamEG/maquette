@@ -313,9 +313,9 @@ Animate calls the timeline and its bar, under the stage (A1): six verbs. With no
 | Its size in the project's units, and what the Model tool picked | `[cube] selection-size` |
 | Colour (the scene's palette) | `[cube] section-Colour` |
 | What kind of thing it is: a light's, a text's, an overlay's, an effect's own controls | in the panel for those things |
-| Make it move, one strip: loops (spin, float, bounce, wiggle, swing, follow a path), then once-moves; speed, keyframes | `[cube] motion-bounce` |
-| Make it move: Link (moved by another thing: tap it next) | `[cube] motion-link` |
-| | `[cube] preset-popIn` |
+| Make it move, one strip: loops (spin, float, bounce, wiggle, swing, follow a path), then once-moves; speed, keyframes | `[cube] object-move › motion-bounce` |
+| Make it move: Link (moved by another thing: tap it next) | `[cube] object-move › motion-link` |
+| | `[cube] object-move › preset-popIn` |
 | The four tabs (U9): Move (open first) · Look · Shape · Real; the tab chosen is remembered | `[cube] object-move` |
 | Shape: Scatter copies on the ground | `[cube] object-shape › tool-scatter` |
 | Shape: Mirror and symmetry | `[cube] object-shape › mirror` |
@@ -324,13 +324,13 @@ Animate calls the timeline and its bar, under the stage (A1): six verbs. With no
 | Look: glow, smoothing, bevel; its own Look, line weight, rim light, accent, gloss | `[cube] object-look` |
 | Shape: typed sides, Smooth, the smooth angle, triangles, clean up, holes, linked copies, the pivot | `[cube] object-shape` |
 | Real: a material in words, how it moves, its weight; joints; Settle, Does it stand?, Keep it; exact numbers deeper | `[cube] object-real` |
-| More ways to move: once-moves' length, behaviours, animated on (ones…fours), physics, joints, paths, onion skin | `[cube] more-motion` |
-| Links: link it to another thing (a gear, moving with it, growing as it rises) or to the music's loudness, bass or beat | `[cube] more-motion › link-thing` |
+| More ways to move: once-moves' length, behaviours, animated on (ones…fours), physics, joints, paths, onion skin | `[cube] object-move › more-motion` |
+| Links: link it to another thing (a gear, moving with it, growing as it rises) or to the music's loudness, bass or beat | `[cube] object-move › more-motion › link-thing` |
 | Clones: the layout and its numbers, effects (random, delay, push) through fields (everywhere, near a point, a ripple), effect strength, Remove | in the panel of a cloned thing |
 | Morph: what it becomes, Remove the morph | in the panel of a morphing thing |
 | 3D text: its font (the style's, or one brought in), letters that animate (fly in, bounce in, cascade, pop, spin in, type on, wave), their order and timing | in the panel of 3D text |
-| Numbers: position, rotation, size | `[cube] transform-toggle` |
-| About this object | `[cube] inspector-more` |
+| Numbers: position, rotation, size | `[cube] object-move › transform-toggle` |
+| About this object | `[cube] object-move › inspector-more` |
 | Duplicate, hide | `[cube] Duplicate` |
 | The object's one menu (the same as touching and holding it) | `[cube] more-actions` |
 | Delete | `[cube] Delete` |

@@ -357,10 +357,9 @@ static inline float2x4 lw_shadeReal(SurfaceInput s, constant FrameUniforms &fram
     return float2x4(float4(color, alpha), float4(level, 0, 0, 0));
 }
 
-/// The whole recipe. Returns colour and the banded light level.
-static inline float2x4 lw_shadeSurface(SurfaceInput s, constant FrameUniforms &frame, constant LookUniforms &look,
+/// The stylised recipe (every Look but Real). Returns colour and the banded light level.
+static inline float2x4 lw_shadeStylised(SurfaceInput s, constant FrameUniforms &frame, constant LookUniforms &look,
                                 constant LightData *lights) {
-    if (look.model.x > 1.5) { return lw_shadeReal(s, frame, look, lights); }
     float3 sun = frame.sunDirection.xyz;
     float3 ambient = lw_ambient(s.normal, frame, look);
     float contact = mix(1.0, s.ao, look.rim.w);
@@ -515,20 +514,20 @@ static inline SurfaceInput lw_surfaceInput(SurfaceVaryings in, constant ObjectUn
     return s;
 }
 
-fragment ShadeOut lw_shade(SurfaceVaryings in [[stage_in]], bool frontFacing [[front_facing]],
-                           constant ObjectUniforms *objects [[buffer(LW_OBJECTS)]],
-                           constant FrameUniforms &frame [[buffer(LW_FRAME)]],
-                           constant LookUniforms *looks [[buffer(LW_LOOKS)]],
-                           constant LightData *lights [[buffer(LW_LIGHTS)]],
-                           texture2d<float> albedo [[texture(0)]],
-                           texture2d<float> ao [[texture(1)]],
-                           depth2d_array<float> shadowMap [[texture(2)]],
-                           texture2d<float> roughness [[texture(3)]],
-                           texture2d<float> metal [[texture(4)]],
-                           texture2d<float> glow [[texture(5)]],
-                           texture2d<float> bumps [[texture(6)]],
-                           texture2d<float> normals [[texture(7)]],
-                           depth2d_array<float> spotShadowMap [[texture(10)]]) {
+/// The whole recipe, the Look chosen per pixel: for fur and hair cards, which are small on screen.
+static inline float2x4 lw_shadeSurface(SurfaceInput s, constant FrameUniforms &frame, constant LookUniforms &look,
+                                       constant LightData *lights) {
+    if (look.model.x > 1.5) { return lw_shadeReal(s, frame, look, lights); }
+    return lw_shadeStylised(s, frame, look, lights);
+}
+
+/// A thing's surface, in a stylised Look or in Real (chosen per draw: one program carrying both is slower for all).
+template <bool REAL>
+static inline ShadeOut lw_shadeObject(SurfaceVaryings in, bool frontFacing, constant ObjectUniforms *objects,
+                                     constant FrameUniforms &frame, constant LookUniforms *looks, constant LightData *lights,
+                                     texture2d<float> albedo, texture2d<float> ao, depth2d_array<float> shadowMap,
+                                     texture2d<float> roughness, texture2d<float> metal, texture2d<float> glow,
+                                     texture2d<float> bumps, texture2d<float> normals, depth2d_array<float> spotShadowMap) {
     constant ObjectUniforms &object = objects[in.objectIndex];
     constant LookUniforms &look = looks[object.ids.y];
     ShadeOut out;
@@ -552,10 +551,44 @@ fragment ShadeOut lw_shade(SurfaceVaryings in [[stage_in]], bool frontFacing [[f
     if ((object.ids.z & LW_FLAG_MAPS) != 0u) {
         lw_applyMaps(s, in, object.ids.z, roughness, metal, glow, bumps, normals);
     }
-    float2x4 shaded = lw_shadeSurface(s, frame, look, lights);
+    float2x4 shaded = REAL ? lw_shadeReal(s, frame, look, lights) : lw_shadeStylised(s, frame, look, lights);
     out.color = shaded[0];
     out.light = shaded[1].x;
     return out;
+}
+
+fragment ShadeOut lw_shade(SurfaceVaryings in [[stage_in]], bool frontFacing [[front_facing]],
+                           constant ObjectUniforms *objects [[buffer(LW_OBJECTS)]],
+                           constant FrameUniforms &frame [[buffer(LW_FRAME)]],
+                           constant LookUniforms *looks [[buffer(LW_LOOKS)]],
+                           constant LightData *lights [[buffer(LW_LIGHTS)]],
+                           texture2d<float> albedo [[texture(0)]],
+                           texture2d<float> ao [[texture(1)]],
+                           depth2d_array<float> shadowMap [[texture(2)]],
+                           texture2d<float> roughness [[texture(3)]],
+                           texture2d<float> metal [[texture(4)]],
+                           texture2d<float> glow [[texture(5)]],
+                           texture2d<float> bumps [[texture(6)]],
+                           texture2d<float> normals [[texture(7)]],
+                           depth2d_array<float> spotShadowMap [[texture(10)]]) {
+    return lw_shadeObject<false>(in, frontFacing, objects, frame, looks, lights, albedo, ao, shadowMap, roughness, metal, glow, bumps, normals, spotShadowMap);
+}
+
+fragment ShadeOut lw_shadeObjectReal(SurfaceVaryings in [[stage_in]], bool frontFacing [[front_facing]],
+                                     constant ObjectUniforms *objects [[buffer(LW_OBJECTS)]],
+                                     constant FrameUniforms &frame [[buffer(LW_FRAME)]],
+                                     constant LookUniforms *looks [[buffer(LW_LOOKS)]],
+                                     constant LightData *lights [[buffer(LW_LIGHTS)]],
+                                     texture2d<float> albedo [[texture(0)]],
+                                     texture2d<float> ao [[texture(1)]],
+                                     depth2d_array<float> shadowMap [[texture(2)]],
+                                     texture2d<float> roughness [[texture(3)]],
+                                     texture2d<float> metal [[texture(4)]],
+                                     texture2d<float> glow [[texture(5)]],
+                                     texture2d<float> bumps [[texture(6)]],
+                                     texture2d<float> normals [[texture(7)]],
+                                     depth2d_array<float> spotShadowMap [[texture(10)]]) {
+    return lw_shadeObject<true>(in, frontFacing, objects, frame, looks, lights, albedo, ao, shadowMap, roughness, metal, glow, bumps, normals, spotShadowMap);
 }
 
 // ---------------------------------------------------------------------------------------------------------------
@@ -654,14 +687,10 @@ static inline float3 lw_skyColor(float3 direction, constant FrameUniforms &frame
     return color;
 }
 
-fragment ShadeOut lw_shadeGround(SurfaceVaryings in [[stage_in]],
-                                 constant FrameUniforms &frame [[buffer(LW_FRAME)]],
-                                 constant LookUniforms *looks [[buffer(LW_LOOKS)]],
-                                 constant LightData *lights [[buffer(LW_LIGHTS)]],
-                                 constant float4 &groundColor [[buffer(LW_OBJECTS)]],
-                                 texture2d<float> ao [[texture(1)]],
-                                 depth2d_array<float> shadowMap [[texture(2)]],
-                                 depth2d_array<float> spotShadowMap [[texture(10)]]) {
+template <bool REAL>
+static inline ShadeOut lw_shadeGroundSurface(SurfaceVaryings in, constant FrameUniforms &frame, constant LookUniforms *looks,
+                                     constant LightData *lights, constant float4 &groundColor, texture2d<float> ao,
+                                     depth2d_array<float> shadowMap, depth2d_array<float> spotShadowMap) {
     constant LookUniforms &look = looks[0];
     float2 p = in.worldPosition.xz;
     float grain = lw_noise(p * 0.16) * 0.65 + lw_noise(p * 0.53 + 17.0) * 0.35;
@@ -688,7 +717,7 @@ fragment ShadeOut lw_shadeGround(SurfaceVaryings in [[stage_in]],
     s.transmission = 0.0;
     s.ior = 1.5;
     s.spotShadow = lw_spotShadows(frame, lights, spotShadowMap, in.worldPosition, s.normal);
-    float2x4 shaded = lw_shadeSurface(s, frame, look, lights);
+    float2x4 shaded = REAL ? lw_shadeReal(s, frame, look, lights) : lw_shadeStylised(s, frame, look, lights);
     float radius = max(frame.groundBounce.w, 1.0);
     float edge = smoothstep(radius * 0.45, radius * 0.97, length(p));
     float3 sky = lw_skyColor(normalize(in.worldPosition - frame.cameraPosition.xyz), frame);
@@ -696,6 +725,28 @@ fragment ShadeOut lw_shadeGround(SurfaceVaryings in [[stage_in]],
     out.color = float4(mix(shaded[0].rgb, sky, edge), 1.0 - edge * frame.skyBottom.w);
     out.light = shaded[1].x;
     return out;
+}
+
+fragment ShadeOut lw_shadeGround(SurfaceVaryings in [[stage_in]],
+                                 constant FrameUniforms &frame [[buffer(LW_FRAME)]],
+                                 constant LookUniforms *looks [[buffer(LW_LOOKS)]],
+                                 constant LightData *lights [[buffer(LW_LIGHTS)]],
+                                 constant float4 &groundColor [[buffer(LW_OBJECTS)]],
+                                 texture2d<float> ao [[texture(1)]],
+                                 depth2d_array<float> shadowMap [[texture(2)]],
+                                 depth2d_array<float> spotShadowMap [[texture(10)]]) {
+    return lw_shadeGroundSurface<false>(in, frame, looks, lights, groundColor, ao, shadowMap, spotShadowMap);
+}
+
+fragment ShadeOut lw_shadeGroundReal(SurfaceVaryings in [[stage_in]],
+                                 constant FrameUniforms &frame [[buffer(LW_FRAME)]],
+                                 constant LookUniforms *looks [[buffer(LW_LOOKS)]],
+                                 constant LightData *lights [[buffer(LW_LIGHTS)]],
+                                 constant float4 &groundColor [[buffer(LW_OBJECTS)]],
+                                 texture2d<float> ao [[texture(1)]],
+                                 depth2d_array<float> shadowMap [[texture(2)]],
+                                 depth2d_array<float> spotShadowMap [[texture(10)]]) {
+    return lw_shadeGroundSurface<true>(in, frame, looks, lights, groundColor, ao, shadowMap, spotShadowMap);
 }
 
 // ---------------------------------------------------------------------------------------------------------------

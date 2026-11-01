@@ -126,6 +126,12 @@ struct Pipelines {
     let shadeStaticBlended: MTLRenderPipelineState
     let shadeSkinnedBlended: MTLRenderPipelineState
     let shadeGround: MTLRenderPipelineState
+    /// The Real Look's programs: the same draws, physically based (kept apart so the stylised ones stay light).
+    let realStatic: MTLRenderPipelineState
+    let realSkinned: MTLRenderPipelineState
+    let realStaticBlended: MTLRenderPipelineState
+    let realSkinnedBlended: MTLRenderPipelineState
+    let realGround: MTLRenderPipelineState
     let hullStatic: MTLRenderPipelineState
     let hullSkinned: MTLRenderPipelineState
     /// Fur shells (static and skinned) and hair cards (U7).
@@ -174,6 +180,11 @@ struct Pipelines {
         shadeStaticBlended = try builder.shading(vertex: "lw_vertexStatic", fragment: "lw_shade", skinned: false, blended: true)
         shadeSkinnedBlended = try builder.shading(vertex: "lw_vertexSkinned", fragment: "lw_shade", skinned: true, blended: true)
         shadeGround = try builder.shading(vertex: "lw_vertexGround", fragment: "lw_shadeGround", skinned: false, blended: false)
+        realStatic = try builder.shading(vertex: "lw_vertexStatic", fragment: "lw_shadeObjectReal", skinned: false, blended: false)
+        realSkinned = try builder.shading(vertex: "lw_vertexSkinned", fragment: "lw_shadeObjectReal", skinned: true, blended: false)
+        realStaticBlended = try builder.shading(vertex: "lw_vertexStatic", fragment: "lw_shadeObjectReal", skinned: false, blended: true)
+        realSkinnedBlended = try builder.shading(vertex: "lw_vertexSkinned", fragment: "lw_shadeObjectReal", skinned: true, blended: true)
+        realGround = try builder.shading(vertex: "lw_vertexGround", fragment: "lw_shadeGroundReal", skinned: false, blended: false)
         hullStatic = try builder.shading(vertex: "lw_vertexHull", fragment: "lw_shadeHull", skinned: false, blended: false)
         hullSkinned = try builder.shading(vertex: "lw_vertexHullSkinned", fragment: "lw_shadeHull", skinned: true, blended: false)
         furStatic = try builder.shading(vertex: "lw_vertexFur", fragment: "lw_shadeFur", skinned: false, blended: false)

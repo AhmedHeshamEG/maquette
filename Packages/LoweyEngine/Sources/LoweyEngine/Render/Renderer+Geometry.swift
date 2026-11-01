@@ -16,7 +16,7 @@ extension LoweyRenderer {
             if let last = runs.last, last.start + last.count == index {
                 let previous = ordered[last.start]
                 if previous.mesh === item.mesh, previous.texture === item.texture, !item.mesh.isSkinned, !item.blended, previous.maps == nil,
-                   item.maps == nil {
+                   item.maps == nil, previous.uniforms.ids.y == item.uniforms.ids.y {
                     runs[runs.count - 1].count += 1
                     continue
                 }
@@ -84,6 +84,23 @@ extension LoweyRenderer {
             upscaler.encode(from: targets.color, to: upscaled, commandBuffer: commandBuffer, pipelines: device.pipelines)
         }
         encodePost(shot, request: request, gpu: gpu, targets: targets, commandBuffer: commandBuffer)
+    }
+
+    /// The program that shades this draw: its Look's (Real's own, or the stylised one), skinned or not, blended or not.
+    func shadingPipeline(_ item: DrawItem, looks: [LookUniforms]) -> MTLRenderPipelineState {
+        let index = Int(item.uniforms.ids.y)
+        let real = looks.indices.contains(index) && LookResolver.isReal(looks[index])
+        let pipelines = device.pipelines
+        switch (real, item.mesh.isSkinned, item.blended) {
+        case (false, false, false): return pipelines.shadeStatic
+        case (false, true, false): return pipelines.shadeSkinned
+        case (false, false, true): return pipelines.shadeStaticBlended
+        case (false, true, true): return pipelines.shadeSkinnedBlended
+        case (true, false, false): return pipelines.realStatic
+        case (true, true, false): return pipelines.realSkinned
+        case (true, false, true): return pipelines.realStaticBlended
+        case (true, true, true): return pipelines.realSkinnedBlended
+        }
     }
 
     /// Character outlines: each part pushed out along its normals, back faces only, in the line colour.
@@ -272,7 +289,8 @@ extension LoweyRenderer {
         var draws = 1
         if let ground {
             var groundColor = ground
-            encoder.setRenderPipelineState(device.pipelines.shadeGround)
+            let real = gpu.looks.first.map(LookResolver.isReal) ?? false
+            encoder.setRenderPipelineState(real ? device.pipelines.realGround : device.pipelines.shadeGround)
             encoder.setFragmentBytes(&groundColor, length: MemoryLayout<SIMD4<Float>>.stride, index: BufferIndex.objects)
             encoder.setVertexBuffer(groundMesh.vertices, offset: 0, index: BufferIndex.vertices)
             encoder.drawIndexedPrimitives(type: .triangle, indexCount: groundMesh.indexCount, indexType: .uint32,
@@ -281,13 +299,8 @@ extension LoweyRenderer {
         }
         for run in Self.runs(ordered, where: { !$0.brushDrawn && !$0.furCards }) {
             let item = ordered[run.start]
-            let skinned = item.mesh.isSkinned
-            if item.blended {
-                encoder.setDepthStencilState(device.pipelines.depthRead)
-                encoder.setRenderPipelineState(skinned ? device.pipelines.shadeSkinnedBlended : device.pipelines.shadeStaticBlended)
-            } else {
-                encoder.setRenderPipelineState(skinned ? device.pipelines.shadeSkinned : device.pipelines.shadeStatic)
-            }
+            encoder.setRenderPipelineState(shadingPipeline(item, looks: gpu.looks))
+            if item.blended { encoder.setDepthStencilState(device.pipelines.depthRead) }
             encoder.setFragmentTexture(item.texture ?? editorMeshes.white, index: 0)
             bindMaps(item.maps, encoder: encoder)
             draw(item.mesh, run: run, encoder: encoder, objects: gpu.objects)

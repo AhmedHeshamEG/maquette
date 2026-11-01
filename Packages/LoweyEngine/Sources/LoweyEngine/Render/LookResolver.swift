@@ -104,6 +104,11 @@ enum LookResolver {
     }
 
     /// Whether any Look in the frame lays paint over the picture (the paint pass runs only then).
+    /// Whether these uniforms are the Real Look's (shading model 2).
+    static func isReal(_ look: LookUniforms) -> Bool {
+        look.model.x > 1.5
+    }
+
     static func paints(_ looks: [LookUniforms]) -> Bool {
         looks.contains { $0.paint.x > 0 || $0.paint.z > 0 || $0.paint.w > 0 || $0.paper.x > 0 }
     }
