@@ -33,6 +33,8 @@ public enum ScriptReference {
     {"do":"blob","likeness":"hesham|newton|einstein|turing|curie|darwin|tesla|lovelace|edison|sherlock|wizard","name":"Me","at":[0,0,0]}
     {"do":"blob","name":"Ada","facing":20,"label":"ADA","recipe":{"hat":"beret","hair":"bob","accessories":["glasses"],"prop":"gear"}}
     {"do":"particles","preset":"fire|sparks|smoke|dust|magic|rain|snow|confetti|embers|explosion","at":"Lamp","amount":1}
+    Many copies in one step (up to 4,096, drawn as one): {"do":"design","op":"clone","target":"Plate","layout":"grid","columns":60,"rows":60,"spacing":0.14}
+      then {"do":"design","op":"effect","target":"Plate","kind":"random","turn":[0,180,0],"grow":0.1} for each copy a little different
     {"do":"group","target":["A","B"],"name":"Set"}  {"do":"rename","target":"Cube","name":"Box"}  {"do":"remove","target":"Box"}
     {"do":"transform","target":"Paper","position":[0,1,0],"rotation":[0,45,0],"scale":2}   (edge cases only)
     Build a thing from parts inside a group: {"do":"add","shape":"group","name":"Comparator","at":[1,0,0]}, then each part

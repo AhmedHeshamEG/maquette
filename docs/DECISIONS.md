@@ -3896,3 +3896,14 @@ already take one), pictures baked in CI and shipped, the bridge's verb for them,
 **D-619 — No card on the empty stage.** Hesham, in U9's converge: the "An empty stage" card from D-617 is a pop-up he
 doesn't want ("really dumb"). It is gone; the first open keeps its lower, closer view, and where things come from is
 the tutorial's job (M16). Rejected: showing it once per device (still a card over the stage on the very first look).
+
+**D-620 — The S16 report: the script reaches what the app does.** The first finished three.js film rebuilt through
+the bridge (S16, 157 s, 38 shots) found that most of its gap was the script, not the app: properties written by
+another name were kept and ignored (a lens keyed as `focalLength`, `metalness`), so a script's property is now
+resolved through a short alias table and an unknown one is refused. Fixed with it: `anchor` (a thing's `at` is its
+bottom; `center` puts its middle there), a relation honoured for shapes on add, a placed thing keeping its tilt, a
+search that finds the closest thing for a description, hidden things not measured as motion, a rubric that fails a
+camera inside a solid or an empty frame, a spot's softness (penumbra) and cone, `unlit` for a picture's own colours,
+a placed model taking a material whole, marks (named spots) and a camera that watches one, a slow camera drift sized
+to the focus distance, and `scene_graph` to read the scene back. The clone cap rises from 1,000 to 4,096: copies of
+one thing are one instanced draw. Rejected: keeping unknown properties for later (the bug class itself).

@@ -48,8 +48,9 @@ public struct ObjectClones: Codable, Hashable, Sendable {
         self.seed = seed
     }
 
-    /// At most this many copies (a 10 × 10 × 10 grid): every iPad keeps it smooth.
-    public static let maximumCount = 1000
+    /// At most this many copies (a 64 × 64 grid; D-620): copies of one thing are drawn in one instanced call, so a field
+    /// of plates stays smooth, and the lighter tier draws them as it draws everything.
+    public static let maximumCount = 4096
 
     public var count: Int { min(layout.count, Self.maximumCount) }
 

@@ -166,4 +166,16 @@ final class S16ScriptTests: XCTestCase {
         XCTAssertEqual(ball.position[0], 2, accuracy: 1e-6)
         XCTAssertEqual(SceneGraphReport.read(document, at: 0, names: ["cup"]).things.count, 1)
     }
+
+    /// Item 20: a 60 × 60 field of plates in one step, each one a little different.
+    func testAFieldOfThousandsInOneStep() throws {
+        let (document, result) = try compile("""
+        {"do": "add", "shape": "cylinder", "name": "Plate", "size": [0.1, 0.01, 0.1]},
+        {"do": "design", "op": "clone", "target": "Plate", "layout": "grid", "columns": 60, "rows": 60, "spacing": 0.14},
+        {"do": "design", "op": "effect", "target": "Plate", "kind": "random", "turn": [0, 180, 0], "grow": 0.1}
+        """)
+        let plate = try XCTUnwrap(document.scene.objects[XCTUnwrap(result.created["Plate"])])
+        XCTAssertEqual(plate.motionDesign?.clones?.count, 3600)
+        XCTAssertEqual(plate.motionDesign?.clones?.effects.first?.kind, .random)
+    }
 }
