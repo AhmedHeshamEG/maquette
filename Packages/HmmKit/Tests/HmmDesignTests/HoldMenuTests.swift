@@ -25,6 +25,14 @@ final class HoldMenuTests: XCTestCase {
         XCTAssertEqual(HmmHoldMenu().sections.last?.first?.isEnabled, false)
     }
 
+    func testAMenuCanKeepRenameOneStepDeeper() {
+        var menu = HmmHoldMenu(duplicate: {}, rename: {}, copy: {}, paste: {}, extras: [HmmHoldMenu.Item("Hide"), HmmHoldMenu.Item("More")],
+                               delete: {})
+        menu.showsRename = false
+        XCTAssertEqual(menu.sections.first?.map(\.title), ["Duplicate", "Copy", "Paste"])
+        XCTAssertEqual(menu.sections.flatMap(\.self).count, 6, "six rows under the finger")
+    }
+
     func testExtrasSitBetweenAndStopAtThree() {
         let extras = ["Hide", "Lock", "Group", "Ungroup"].map { HmmHoldMenu.Item($0) }
         let menu = HmmHoldMenu(extras: extras)
