@@ -86,10 +86,39 @@ public struct ShotObserver {
             readPixels(pixels, raster: pixelRaster(pixels, like: raster, units: measured, scene: animated.scene), units: measured, subject: subjectID,
                        objects: &objects, frame: &frame)
         }
-        let checks = ShotRubric.evaluate(objects: objects, frame: frame, scaleIssues: scaleIssues(measured, scene: animated.scene))
+        // A solid the camera stands inside (S16: the first frame_shot put it behind the back wall, frame empty, and passed).
+        let inside = measured.first { item in
+            item.world.contains(camera.position, tolerance: -0.005) && Self.encloses(item.triangles, camera.position)
+        }?.object.name
+        let checks = ShotRubric.evaluate(objects: objects, frame: frame, scaleIssues: scaleIssues(measured, scene: animated.scene), cameraInside: inside)
         let cameraName = animated.camera.flatMap { animated.scene.objects[$0]?.name } ?? "the editor view"
         return ShotReport(scene: document.scene.name, time: time, camera: cameraName, aspect: aspect, objects: objects, frame: frame,
                           checks: checks, summary: Self.summary(objects: objects, frame: frame, checks: checks, camera: cameraName))
+    }
+
+    /// Whether a closed mesh (world-space triangles, three corners each) holds the point: a ray from it crosses the
+    /// surface an odd number of times. A room's air between its walls crosses each wall twice, so it's outside.
+    static func encloses(_ triangles: [Vec3], _ point: Vec3) -> Bool {
+        let direction = Vec3(0.5773, 0.5774, 0.5773) // not along an axis, so it doesn't run down an edge of a box
+        var crossings = 0
+        var index = 0
+        while index + 2 < triangles.count {
+            let a = triangles[index], b = triangles[index + 1], c = triangles[index + 2]
+            index += 3
+            let edge1 = b - a, edge2 = c - a
+            let h = direction.cross(edge2)
+            let det = edge1.dot(h)
+            guard abs(det) > 1e-12 else { continue }
+            let f = 1 / det
+            let s = point - a
+            let u = f * s.dot(h)
+            guard u >= 0, u <= 1 else { continue }
+            let q = s.cross(edge1)
+            let v = f * direction.dot(q)
+            guard v >= 0, u + v <= 1 else { continue }
+            if f * edge2.dot(q) > 1e-9 { crossings += 1 }
+        }
+        return crossings % 2 == 1
     }
 
     /// A prop standing on a set piece (a log on the grass, a rock on the cave floor): its bottom within a few centimetres

@@ -272,6 +272,19 @@ final class PerceptionTests: XCTestCase {
         XCTAssertTrue(json.contains("\"summary\""))
     }
 
+    /// S16: the camera inside the back wall, frame empty, used to pass the rubric.
+    func testACameraInsideAWallFails() throws {
+        var wall = cube("wall", at: Vec3(0, 0, 6), size: 1)
+        wall.transform.scale = Vec3(8, 4, 0.4)
+        let inside = ShotObserver(document: document([cube("box", at: .zero), wall], camera: Vec3(0, 1, 6))).observe(at: 0)
+        let check = try XCTUnwrap(inside.checks.first { $0.name == "Camera" })
+        XCTAssertEqual(check.result, .fail)
+        XCTAssertTrue(check.detail.contains("inside “Wall”"), check.detail)
+        let clear = ShotObserver(document: document([cube("box", at: .zero)], camera: Vec3(0, 1, 6))).observe(at: 0)
+        XCTAssertEqual(clear.checks.first { $0.name == "Camera" }?.result, .pass)
+        XCTAssertFalse(ShotObserver.encloses([], .zero))
+    }
+
     // MARK: Contact sheet
 
     private func movingDocument(easing: Easing, words: Bool) -> Document {
