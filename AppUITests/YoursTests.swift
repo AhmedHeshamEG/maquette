@@ -123,6 +123,7 @@ final class YoursTests: XCTestCase {
         XCTAssertTrue(tap("add-cube"))
         // Present: nothing but the stage, a tap brings Done back.
         XCTAssertTrue(tap("Actions"))
+        XCTAssertTrue(tap("actions-share"))
         XCTAssertTrue(tap("present"))
         XCTAssertTrue(element("present").waitForExistence(timeout: 8))
         XCTAssertFalse(element("Actions").exists, "the chrome is gone while presenting")
@@ -133,6 +134,7 @@ final class YoursTests: XCTestCase {
         XCTAssertTrue(element("Actions").waitForExistence(timeout: 8), "the chrome is back")
         // A note on the cube, then an answer in its thread.
         XCTAssertTrue(tap("Actions"))
+        XCTAssertTrue(tap("actions-notes"))
         XCTAssertTrue(tap("add-note"))
         stage.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).tap()
         let text = element("note-text")

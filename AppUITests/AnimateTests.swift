@@ -73,6 +73,7 @@ final class AnimateTests: XCTestCase {
 
         // Export: the kind, the format, the presets.
         XCTAssertTrue(tap("Actions"))
+        XCTAssertTrue(tap("actions-share"))
         XCTAssertTrue(tap("open-export"))
         XCTAssertTrue(tap("export-kind-video"))
         XCTAssertTrue(tap("export-format-mp4"))

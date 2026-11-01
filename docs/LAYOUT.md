@@ -38,7 +38,7 @@ end says what came from where.
    a finger or the hovering Pencil comes near.
 3. **Time lives in the timeline**, and the timeline comes when called: the corner control (⏱) or Animate. Performing
    live, overlays on the video, sound and words are there.
-4. **Actions holds making and sharing**: export, the project file, the Monitor, the Board, the Reference window, History, Learn, Settings.
+4. **Actions holds making and sharing**, in six: Share, Windows, Notes, History, Learn, Settings (U9).
 5. **The object panel belongs to the selection.** It floats beside it and never covers it, can be moved by hand and
    stays where it was left, and folds to a chip (its name and Move · Turn · Size) while anything bigger is open.
 6. **One big thing open at a time.** Opening a panel folds the whole timeline to its transport and the object panel to
@@ -90,25 +90,30 @@ when they disagree. In the App Store configuration the walk asserts a held row's
 
 ### Actions
 
+Six (U9): **Share** (export, the project file, share for AR, present) · **Windows** (Reference, Monitor, Rotoscope, the AR
+view, the Board, your iPhone) · **Notes** · History · Learn · Settings. The first three open their page in the panel;
+a back arrow returns.
+
 | Control | Walk |
 |---|---|
-| Export: Video · Picture · 3D · Paper, then the format, then its presets; Final and the options beside them | `Actions › open-export` |
+| Share, Windows, Notes: their pages | `Actions › actions-windows` |
+| Export: Video · Picture · 3D · Paper, then the format, then its presets; Final and the options beside them | `Actions › actions-share › open-export` |
 | Export (F1): Video ▸ Animatic, Spatial video (where the iPad encodes it), 360° video, HEVC ▸ HDR; Picture ▸ Spatial photo, 360° panorama, PNG ▸ Wide colour; Paper ▸ Storyboard | in the Export sheet |
 | Export (D1): loops seamlessly, or what jumps when it loops and Close the loop | in the Export sheet, beside a video or GIF preset |
 | Export (G1): Picture ▸ Layered PSD, Ink as SVG; 3D ▸ IFC (when there's a building; *held*), Game level for Godot, Unity, Unreal (one texture for everything); Paper ▸ Plans & elevations (PDF, DXF, SVG; when there's a building), Technical drawing, Papercraft (and a laser net) (the IFC, the plans, the technical drawing and papercraft are held, rule 9) | in the Export sheet |
-| Share the project file | `Actions › Project file` |
-| Monitor window (Stage Manager, external display) | `Actions › open-monitor` |
-| Present: the stage fills the screen (a TV by AirPlay or a cable); a tap brings back its few controls (U8) | `Actions › present` |
-| Notes: the review pins on their spots; tap one for its thread (reply, Resolve, Delete) (U8) | `Actions › open-notes` |
-| Add a note: then tap the spot; the words, signed with your name (U8) | `Actions › add-note` |
-| Clear resolved notes (U8) | Actions, while the notes show and one is resolved |
-| Review over FaceTime: the project goes to the people on the call; everyone turns the same view and leaves notes (U8) *(held: 1.0)* | Actions, during a FaceTime call |
-| Your iPhone: use it as your face, a camera, the remote, an AR view, a room or object scanner (U8) *(held: 1.0)* | `Actions › open-phone` |
-| Share for AR: the scene as a USDZ any iPhone or iPad opens in AR Quick Look (M12) | `Actions › share-ar` |
-| View in AR: the scene on your floor or table, in its own Look; table or life size, play, share (M12; an iPad with a rear camera) | Actions, on an iPad that can |
-| The Board: plan before building (below) *(held: 1.0)* | `Actions › open-board` |
-| The Reference window (Q1): the whole scene from its own camera, a picture (Import, Paste, Clear; one finger pans it, two zoom it) or the front camera; drag its bar, size it by its corner or a pinch on the bar, ✕ closes it; Pick takes a colour from it; a two-finger tap hides it a moment | Actions ▸ Reference, or ⌘⌥R |
-| Rotoscope: a video behind the stage, its frame the one under the playhead (opacity, over the scene, start at the playhead); never exported (F1) | Actions ▸ Rotoscope, once a video is picked from Photos |
+| Share the project file | `Actions › actions-share › Project file` |
+| Monitor window (Stage Manager, external display) | `Actions › actions-windows › open-monitor` |
+| Present: the stage fills the screen (a TV by AirPlay or a cable); a tap brings back its few controls (U8) | `Actions › actions-share › present` |
+| Notes: the review pins on their spots; tap one for its thread (reply, Resolve, Delete) (U8) | `Actions › actions-notes › open-notes` |
+| Add a note: then tap the spot; the words, signed with your name (U8) | `Actions › actions-notes › add-note` |
+| Clear resolved notes (U8) | Actions ▸ Notes, while the notes show and one is resolved |
+| Review over FaceTime: the project goes to the people on the call; everyone turns the same view and leaves notes (U8) *(held: 1.0)* | Actions ▸ Notes, during a FaceTime call |
+| Your iPhone: use it as your face, a camera, the remote, an AR view, a room or object scanner (U8) *(held: 1.0)* | `Actions › actions-windows › open-phone` |
+| Share for AR: the scene as a USDZ any iPhone or iPad opens in AR Quick Look (M12) | `Actions › actions-share › share-ar` |
+| View in AR: the scene on your floor or table, in its own Look; table or life size, play, share (M12; an iPad with a rear camera) | Actions ▸ Windows, on an iPad that can |
+| The Board: plan before building (below) *(held: 1.0)* | `Actions › actions-windows › open-board` |
+| The Reference window (Q1): the whole scene from its own camera, a picture (Import, Paste, Clear; one finger pans it, two zoom it) or the front camera; drag its bar, size it by its corner or a pinch on the bar, ✕ closes it; Pick takes a colour from it; a two-finger tap hides it a moment | Actions ▸ Windows ▸ Reference, or ⌘⌥R |
+| Rotoscope: a video behind the stage, its frame the one under the playhead (opacity, over the scene, start at the playhead); never exported (F1) | Actions ▸ Windows ▸ Rotoscope, once a video is picked from Photos |
 | History scrubber, versions; over it, the selected thing's modelling steps to change (H1) | `Actions › open-history` |
 | Learn: the tour, every gesture, the instructions switch | `Actions › open-learn` |
 | Settings | `Actions › Settings` |

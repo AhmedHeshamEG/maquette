@@ -114,6 +114,7 @@ final class SmokeTests: XCTestCase {
         shot("Director view")
         tap("camera-button")
         tap("Actions")
+        tap("actions-share")
         tap("open-export")
         tap("export-kind-video")
         tap("export-format-mp4")

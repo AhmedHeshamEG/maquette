@@ -68,6 +68,7 @@ final class GuestTests: XCTestCase {
 
     private func export(kind: String, format: String, preset: String, file: String) {
         XCTAssertTrue(tap("Actions"))
+        XCTAssertTrue(tap("actions-share"))
         XCTAssertTrue(tap("open-export"))
         XCTAssertTrue(tap("export-kind-\(kind)"))
         XCTAssertTrue(tap("export-format-\(format)"), format)

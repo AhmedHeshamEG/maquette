@@ -32177,6 +32177,22 @@
         }
       }
     },
+    "Show notes": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mostra le note"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "إظهار الملاحظات"
+          }
+        }
+      }
+    },
     "Show Overhangs": {
       "localizations": {
         "it": {
@@ -42273,6 +42289,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "جدار بنافذة"
+          }
+        }
+      }
+    },
+    "Windows": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Finestre"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "النوافذ"
           }
         }
       }
