@@ -35,6 +35,8 @@ public enum ScriptReference {
     {"do":"particles","preset":"fire|sparks|smoke|dust|magic|rain|snow|confetti|embers|explosion","at":"Lamp","amount":1}
     {"do":"group","target":["A","B"],"name":"Set"}  {"do":"rename","target":"Cube","name":"Box"}  {"do":"remove","target":"Box"}
     {"do":"transform","target":"Paper","position":[0,1,0],"rotation":[0,45,0],"scale":2}   (edge cases only)
+    Build a thing from parts inside a group: {"do":"add","shape":"group","name":"Comparator","at":[1,0,0]}, then each part
+    with "parent":"Comparator" (its "at" is then in the group's own space), then transform the group: the parts follow.
 
     Model (U6; faces by the way they face, edges by the axis they run along; one step each)
     {"do":"model","target":"Box","op":"pull","face":"top","distance":0.2}   {"do":"model","target":"Box","op":"loopCut","along":"x","cuts":2}

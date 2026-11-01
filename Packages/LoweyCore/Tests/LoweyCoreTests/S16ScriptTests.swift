@@ -134,4 +134,17 @@ final class S16ScriptTests: XCTestCase {
         XCTAssertLessThan((later - still).length, 0.05, "slowly")
         XCTAssertNotNil(result.created["Close"], "a mark can be framed")
     }
+
+    /// Item 18: build a thing inside a group, then turn the group: its parts turn with it.
+    func testTurningAGroupTurnsItsParts() throws {
+        let (document, result) = try compile("""
+        {"do": "add", "shape": "group", "name": "Comparator", "at": [1, 0, 0]},
+        {"do": "add", "shape": "cube", "name": "Arm", "parent": "Comparator", "at": [0.5, 0.1, 0], "size": [0.2, 0.2, 0.2]},
+        {"do": "transform", "target": "Comparator", "rotation": [0, 90, 0]}
+        """)
+        let arm = try XCTUnwrap(result.created["Arm"])
+        let world = document.scene.worldTransform(of: arm).position
+        XCTAssertEqual(world.x, 1, accuracy: 1e-6, "the arm swung round the group's middle")
+        XCTAssertEqual(abs(world.z), 0.5, accuracy: 1e-6)
+    }
 }
