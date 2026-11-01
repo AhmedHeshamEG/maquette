@@ -13789,6 +13789,22 @@
         }
       }
     },
+    "Format: %@": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Formato: %@"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الصيغة: %@"
+          }
+        }
+      }
+    },
     "Forward 10 seconds": {
       "localizations": {
         "it": {

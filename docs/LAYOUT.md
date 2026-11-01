@@ -97,7 +97,7 @@ a back arrow returns.
 | Control | Walk |
 |---|---|
 | Share, Windows, Notes: their pages | `Actions › actions-windows` |
-| Export: Video · Picture · 3D · Paper, then the format, then its presets; Final and the options beside them | `Actions › actions-share › open-export` |
+| Export opens on what it's for (U9): a video, a picture, take it to a game, print it, for the web, a 3D file; the format picked for it, the others one tap deeper (Format: …); then its presets; Final and the options beside them | `Actions › actions-share › open-export` |
 | Export (F1): Video ▸ Animatic, Spatial video (where the iPad encodes it), 360° video, HEVC ▸ HDR; Picture ▸ Spatial photo, 360° panorama, PNG ▸ Wide colour; Paper ▸ Storyboard | in the Export sheet |
 | Export (D1): loops seamlessly, or what jumps when it loops and Close the loop | in the Export sheet, beside a video or GIF preset |
 | Export (G1): Picture ▸ Layered PSD, Ink as SVG; 3D ▸ IFC (when there's a building; *held*), Game level for Godot, Unity, Unreal (one texture for everything); Paper ▸ Plans & elevations (PDF, DXF, SVG; when there's a building), Technical drawing, Papercraft (and a laser net) (the IFC, the plans, the technical drawing and papercraft are held, rule 9) | in the Export sheet |

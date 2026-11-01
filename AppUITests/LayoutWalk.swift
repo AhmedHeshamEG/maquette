@@ -53,7 +53,7 @@ private let layoutWalkRows: [LayoutWalk.Row] = [
                    control: "Share, Windows, Notes: their pages",
                    steps: ["Actions", "actions-windows"], held: ""),
     LayoutWalk.Row(home: "Actions", precondition: "",
-                   control: "Export: Video · Picture · 3D · Paper, then the format, then its presets; Final and the options beside them",
+                   control: "Export opens on what it's for (U9): a video, a picture, take it to a game, print it, for the web, a 3D file; the format picked for it, the others one tap deeper (Format: …); then its presets; Final and the options beside them",
                    steps: ["Actions", "actions-share", "open-export"], held: ""),
     LayoutWalk.Row(home: "Actions", precondition: "",
                    control: "Share the project file",
