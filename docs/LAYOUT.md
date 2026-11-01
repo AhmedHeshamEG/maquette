@@ -422,8 +422,9 @@ grammar: the board itself top left, the making tools top right, the sidebar, the
 
 Touch and hold any thing and the same menu opens in the same order (CONTEXT §4.1): **Duplicate · Rename · Copy ·
 Paste**, then one to three extras that fit the thing, then **Delete** in red. The first four and Delete are always in
-the same places; a row a thing can't do is dimmed. An object's menu holds everything it can do: Hide, Lock, and More
-(Group or Ungroup, Array, Clone, Morph into, To the ground, Settle, Swap for a model, Save to Library, Unpack); on the stage, with other
+the same places; a row a thing can't do is dimmed. An object's menu is six rows (U9): Duplicate · Copy · Paste · Hide ·
+More · Delete, and More holds everything else it can do (Rename, Lock, Group or Ungroup, Array, Clone, Morph into, To the
+ground, Settle, Swap for a model, Save to Library, Unpack); on the stage, with other
 things selected, **Add to the selection** comes first. A finger held still on an object opens it; a finger that moves
 is a drag. The same object has the same menu on the stage, in the outliner, on its timeline row and behind its panel's
 ⋯ button. Also on: keys, clips, flipbook drawings and tracks, cuts, screen effects, paint layers, brushes, Looks,

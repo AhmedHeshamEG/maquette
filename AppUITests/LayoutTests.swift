@@ -97,7 +97,7 @@ final class LayoutTests: XCTestCase {
     }
 
     /// Touch and hold opens the same menu on every kind of thing: Duplicate, Rename, Copy, Paste first, Delete last
-    /// (CONTEXT §4.1). Walks an object on the stage, a Look and a project's card; keys, clips, drawings: `HoldMenuFlowTests`.
+    /// (CONTEXT §4.1); an object's keeps Rename in More so it stays at six rows (U9). Walks an object on the stage, a Look and a project's card; keys, clips, drawings: `HoldMenuFlowTests`.
     func testTheHoldMenuStartsTheSameOnEveryKindOfThing() {
         let expected = ["Duplicate", "Rename", "Copy", "Paste", "Delete"]
         newProject("Holding")
@@ -108,7 +108,7 @@ final class LayoutTests: XCTestCase {
 
         let stage = app.otherElements["stage"]
         stage.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).press(forDuration: 1.2)
-        XCTAssertEqual(openMenuRows(), expected, "an object on the stage")
+        XCTAssertEqual(openMenuRows(), expected.filter { $0 != "Rename" }, "an object on the stage (Rename is in More, U9)")
         shot("Hold menu on the stage")
         closeMenu()
 
