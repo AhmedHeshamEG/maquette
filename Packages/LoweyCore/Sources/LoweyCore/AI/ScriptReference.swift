@@ -17,6 +17,9 @@ public enum ScriptReference {
       Prefer spoken words: shots stay synced if the voiceover moves.
     - Colours: "palette:N" (the project palette — prefer it) or "#RRGGBB".
     - Overlay "at" is frame space: [x, y] from -1 to 1 (0,0 = centre, y up).
+    - A thing's "at" is its BOTTOM middle (it stands there); "anchor":"center" puts its middle there instead. A given
+      height is kept exactly; at y = 0 it lands on the ground. "relation" works on add for shapes and Kit models alike.
+    - The front (the audience side) is +z; x runs to the right as the default camera sees it.
 
     Build (Kit first: find_assets, then add by id; real sizes come with it)
     {"do":"add","asset":"kit.office-desk","name":"Desk","at":[0,0,0]}                 (an id, or words to search the Kit and library)
@@ -118,6 +121,9 @@ public enum ScriptReference {
     {"do":"motion","op":"pickUp","target":"Cup","by":"Ada","joint":"rightHand","at":2}   (a hand-off when someone holds it)   {"op":"putDown","target":"Cup","at":5}   {"op":"letGo","target":"Cup"}
     {"do":"motion","op":"evenSpeed","target":"Car"}   {"op":"timing","target":"Car","duration":3}   {"op":"front","target":"Car","quarterTurns":1}
     {"do":"set","target":"Paper","property":"color|opacity|emissiveIntensity|stepping|accent|airborne|smear","value":"#F2E8D5","at":2}
+      Properties (set and keys): position rotation scale visible opacity color emissive emissiveIntensity (glow) roughness
+      metallic (metalness) · lights: lightColor lightIntensity lightRange (range) spotAngle (cone) · cameras: fieldOfView
+      (fov; focalLength/lens/mm in millimetres convert) focusDistance (focus) aperture. An unknown name is refused.
     Easings: linear, easeIn, easeOut, easeInOut, backOut, bounce, elastic, step.
 
     Story
@@ -125,7 +131,7 @@ public enum ScriptReference {
     {"do":"flipbook","fx":"speedLines|impactBurst|sweatDrop|sparkle|smear","anchor":"Robot","at":{"word":"boom"},"until":3.2,"color":"#FFFFFF"}
     {"do":"effect","kind":"flash|shake|speedLines|zoomBlur|glitch|impact|focusLines|comicDots","at":{"word":"Nobody"},"duration":0.4,"strength":1}
     {"do":"effect","kind":"focusLines","at":2,"target":"Hero"}   (impact, focusLines and comicDots aim at a thing, or "center":[0.5,0.4] from the top left)
-    {"do":"transcript","text":"Two plus two equals four.","from":0.2,"to":3.6}   (or "words":[{"w":"Two","t":0.2,"e":0.4}]: known timings)
+    {"do":"transcript","text":"Two plus two equals four.","from":0.2,"to":3.6}   (or "words":[{"w":"Two","t":0.2,"e":0.4}]: known timings)   (needs the voiceover clip first: `hmm-bridge audio vo.m4a --role voiceover`)
     {"do":"marker","name":"enigma","at":{"word":"Enigma"}}   {"do":"captions","style":"punchy|subtitle|pill|outline","position":"bottom"}
     {"do":"length","seconds":12,"fps":30}
 

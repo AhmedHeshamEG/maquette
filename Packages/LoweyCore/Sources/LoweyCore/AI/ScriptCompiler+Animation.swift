@@ -225,7 +225,7 @@ extension ScriptState {
     mutating func transcript(_ action: JSONValue) throws {
         let clipID = string(action, "clip")
         guard let clip = timeline.audio.first(where: { clipID == nil ? $0.role == .voiceover : $0.id == clipID }) else {
-            throw fail("transcript needs a voiceover clip on the timeline (add the audio first)")
+            throw fail("transcript needs a voiceover clip on the timeline first: `hmm-bridge audio vo.m4a` (role voiceover) or add_media, then send the words")
         }
         // Timeline seconds → the audio file's own time.
         let fileTime = { (time: Double) in time - clip.start + clip.offset }
