@@ -44,6 +44,8 @@ class FakeBridge(BaseHTTPRequestHandler):
             return self.reply(200, {"app": "3D-lowey", "bridge": 2, "project": "Enigma", "scene": "Desk", "shot": "Shot", "autoApply": False})
         if path == "/v2/project":
             return self.reply(200, {"summary": "“Enigma”, scene “Desk”", "shots": [{"camera": "Shot", "at": [0]}], "cast": ["Hesham"]})
+        if path == "/v2/scene":
+            return self.reply(200, {"space": "metres; y is up", "time": 0, "things": [{"name": "Desk", "sitsOn": "ground"}]})
         if path == "/v2/transcript":
             return self.reply(200, {"language": "en-US", "words": [{"i": 0, "w": "Enigma", "t": 1.2, "e": 1.8}]})
         if path == "/v2/actions":
@@ -137,7 +139,7 @@ def _sent():
 
 
 def test_the_sixteen_tools_go_through_the_bridge(bridge_host, monkeypatch, tmp_path):
-    """MCP v2: exactly 16 tools, and each one reaches the right endpoint with the right Scene Script v3."""
+    """MCP v2: exactly 17 tools (S16 added scene_graph), and each one reaches the right endpoint with the right Scene Script v3."""
     monkeypatch.setenv("LOWEY_HOST", bridge_host)
     monkeypatch.setenv("LOWEY_TOKEN", TOKEN)
     import asyncio
@@ -147,7 +149,10 @@ def test_the_sixteen_tools_go_through_the_bridge(bridge_host, monkeypatch, tmp_p
     importlib.reload(mcp_server)
     names = sorted(tool.name for tool in asyncio.run(mcp_server.mcp.list_tools()))
     assert names == sorted(["status", "read_project", "find_assets", "build", "frame_shot", "light", "set_look", "animate", "camera_move",
-                            "add_overlay", "flipbook", "add_media", "render_manim", "observe", "contact_sheet", "commit"])
+                            "add_overlay", "flipbook", "add_media", "render_manim", "observe", "contact_sheet", "commit", "scene_graph"])
+    graph = json.loads(mcp_server.scene_graph(time=2, names=["Desk", "Lamp"]))
+    assert graph["things"][0]["sitsOn"] == "ground"
+    assert RECEIVED[-1][0] == "/v2/scene" and "names=Desk%2CLamp" in RECEIVED[-1][1] and "time=2" in RECEIVED[-1][1]
 
     # 1–3: reading
     assert '"bridge":2' in mcp_server.status() and RECEIVED[-1][0] == "/v2/status"

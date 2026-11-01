@@ -147,4 +147,23 @@ final class S16ScriptTests: XCTestCase {
         XCTAssertEqual(world.x, 1, accuracy: 1e-6, "the arm swung round the group's middle")
         XCTAssertEqual(abs(world.z), 0.5, accuracy: 1e-6)
     }
+
+    /// Item 19: the scene read back by name: world place, size, parent, what it stands on.
+    func testTheSceneGraphReadsBack() throws {
+        let (document, _) = try compile("""
+        {"do": "add", "shape": "cube", "name": "Desk", "at": [0, 0, 0], "size": [1.6, 0.75, 0.8]},
+        {"do": "add", "shape": "cylinder", "name": "Cup", "size": [0.08, 0.1, 0.08], "relation": "on", "reference": "Desk"},
+        {"do": "add", "shape": "group", "name": "Rig", "at": [2, 1, 0]},
+        {"do": "add", "shape": "sphere", "name": "Ball", "parent": "Rig", "at": [0, 0, 0], "size": [0.2, 0.2, 0.2]}
+        """)
+        let report = SceneGraphReport.read(document, at: 0)
+        XCTAssertTrue(report.space.contains("y is up"))
+        let cup = try XCTUnwrap(report.things.first { $0.name == "Cup" })
+        XCTAssertEqual(cup.sitsOn, "Desk")
+        XCTAssertEqual(report.things.first { $0.name == "Desk" }?.sitsOn, "ground")
+        let ball = try XCTUnwrap(report.things.first { $0.name == "Ball" })
+        XCTAssertEqual(ball.parent, "Rig")
+        XCTAssertEqual(ball.position[0], 2, accuracy: 1e-6)
+        XCTAssertEqual(SceneGraphReport.read(document, at: 0, names: ["cup"]).things.count, 1)
+    }
 }

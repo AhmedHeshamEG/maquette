@@ -116,6 +116,18 @@ def read_project(transcript: bool = False) -> str:
 
 
 @tool()
+def scene_graph(time: float | None = None, names: list[str] | None = None) -> str:
+    """The scene read back, since you can't see it: every thing by name with its world position (a shape's or model's
+    bottom middle), turn in degrees, box size and corners in metres, its parent group, what it stands on ("ground", a
+    thing's name, or nothing when it's in the air) and whether it shows, at `time` (default: the playhead). The space is
+    fixed in the reply: y up, the audience at +z. `names` limits it to those things. Read it before placing by numbers."""
+    try:
+        return _compact(bridge().scene_graph(time=time, names=names))
+    except BridgeError as error:
+        return f"Error: {error}"
+
+
+@tool()
 def find_assets(query: str = "", set: str | None = None, limit: int = 8, thumbnails: int = 4) -> list[Any] | str:  # noqa: A002
     """Kit and library models by words ("desk lamp", "rock", "robot"), Kit first, optionally in one Set ("Room & Desk",
     "Nature", "Office & Computers", "Lab & Science", "Space", "City & Street", "Kitchen & Food", "Props & Signs",

@@ -1,6 +1,6 @@
 # Tools (generated)
 
-Generated from the `lowey` MCP server by `Tools/gen-skill-tools.py` — don't edit by hand. 16 tools; everything that changes the scene goes through `build` (Scene Script v3, one Proposal, one undo step).
+Generated from the `lowey` MCP server by `Tools/gen-skill-tools.py` — don't edit by hand. 17 tools; everything that changes the scene goes through `build` (Scene Script v3, one Proposal, one undo step).
 
 ## `status`
 
@@ -13,6 +13,15 @@ The project at a glance (a summary line first): scenes, shots (cameras, when the
 | Parameter | Type | Default |
 |---|---|---|
 | `transcript` | boolean | `false` |
+
+## `scene_graph`
+
+The scene read back, since you can't see it: every thing by name with its world position (a shape's or model's bottom middle), turn in degrees, box size and corners in metres, its parent group, what it stands on ("ground", a thing's name, or nothing when it's in the air) and whether it shows, at `time` (default: the playhead). The space is fixed in the reply: y up, the audience at +z. `names` limits it to those things. Read it before placing by numbers.
+
+| Parameter | Type | Default |
+|---|---|---|
+| `time` | number or null | `null` |
+| `names` | list[string] or null | `null` |
 
 ## `find_assets`
 
@@ -132,7 +141,7 @@ Drawn FX that sell a moment: speedLines, impactBurst, sweatDrop, sparkle, smear 
 
 ## `add_media`
 
-A picture or video file from this laptop into the open shot: a thin card standing in the 3D world, or overlay=True to lay it flat over the frame. Videos play from `at` seconds (default: the playhead). environment=True takes a Radiance .hdr panorama (an HDRI) as the world's sky and light: its sun and sky colours light the scene; turn it with build's {"do": "film", "op": "environment", "turn": 40}. font=True brings an OTF/TTF font into the project for 3D text (build's {"do": "text", "font": "fonts/…"}); logo=True stands an SVG logo up as solids, one a colour; drawing=True stands a layered PSD, PSB or Procreate drawing up as a diorama, one painted sheet a layer. reference=True shows a picture in the Reference window over the stage (not in the shot): build's {"do": "reference"} switches it to the whole scene (mode canvas), the picture or the front camera, or closes it.
+A picture or video file from this laptop into the open shot: a thin card standing in the 3D world, or overlay=True to lay it flat over the frame. Videos play from `at` seconds (default: the playhead). environment=True takes a Radiance .hdr panorama (an HDRI) as the world's sky and light: its sun and sky colours light the scene; turn it with build's {"do": "film", "op": "environment", "turn": 40}. font=True brings an OTF/TTF font into the project for 3D text (build's {"do": "text", "font": "fonts/…"}); logo=True stands an SVG logo up as solids, one a colour; drawing=True stands a layered PSD, PSB or Procreate drawing up as a diorama, one painted sheet a layer. reference=True shows a picture in the Reference window over the stage (not in the shot): build's {"do": "reference"} switches it to the whole scene (mode canvas), the picture or the front camera, or closes it. A card is lit by the scene like any surface; for a picture's true colours (a chart, a screen) send {"do": "set", "target": <card>, "property": "unlit", "value": true}.
 
 | Parameter | Type | Default |
 |---|---|---|

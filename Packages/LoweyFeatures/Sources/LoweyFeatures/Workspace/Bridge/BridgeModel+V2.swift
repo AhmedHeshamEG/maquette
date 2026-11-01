@@ -13,6 +13,7 @@ extension BridgeModel {
             v2("GET", "/v2/status") { model, _ in model.v2Status() },
             v2("GET", "/v2/project") { model, _ in model.withOpenEditor { model.readProject($0) } },
             v2("GET", "/v2/transcript") { model, _ in model.withOpenEditor { .json(TranscriptSummary($0.timeline)) } },
+            v2("GET", "/v2/scene") { model, request in model.withOpenEditor { model.sceneGraph($0, request) } },
             v2("GET", "/v2/actions") { _, _ in .data(Data(ScriptReference.text.utf8), type: "text/markdown; charset=utf-8") },
             v2("GET", "/v2/assets") { model, request in model.findAssets(request) },
             v2("GET", "/v2/thumbnail") { model, request in await model.assetThumbnail(request) },
@@ -59,6 +60,13 @@ extension BridgeModel {
             (line.name, nil, nil, nil)
         }
         return .json(ProjectReading(editor.document, scenes: scenes, library: app.library.manifest))
+    }
+
+    /// Every thing by name: where it is in the world, its size, its parent, what it stands on (S16 item 19).
+    private func sceneGraph(_ editor: EditorModel, _ request: HTTPRequest) -> HTTPResponse {
+        let time = request.query["time"].flatMap(Double.init) ?? editor.time
+        let names = request.query["names"].map { $0.split(separator: ",").map { $0.trimmingCharacters(in: .whitespaces) } }
+        return .json(SceneGraphReport.read(editor.document, library: app.library.manifest, at: time, names: names))
     }
 
     private func findAssets(_ request: HTTPRequest) -> HTTPResponse {

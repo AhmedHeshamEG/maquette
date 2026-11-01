@@ -214,6 +214,14 @@ class Bridge:
     def transcript(self) -> dict:
         return self.get("/v2/transcript")
 
+    def scene_graph(self, time: float | None = None, names: list[str] | None = None) -> dict:
+        query: dict = {}
+        if time is not None:
+            query["time"] = time
+        if names:
+            query["names"] = ",".join(names)
+        return self.get("/v2/scene", **query)
+
     def actions(self) -> str:
         return self.get("/v2/actions")
 
