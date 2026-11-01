@@ -267,6 +267,19 @@ def add_media(path: str, at: float | None = None, overlay: bool = False, environ
 
 
 @tool()
+def import_scene(path: str) -> str:
+    """Bring a finished scene from another tool into the open shot AS BUILT, instead of rebuilding it from shapes: a
+    three.js scene file (scene.toJSON(), meshes, materials, lights, cameras and its animation clips as keys), a three.js
+    project (a folder, zip or page: played offline and its scene and 10 s of motion recorded), or a model file (glTF, GLB,
+    USDZ, OBJ, STL, 3MF: into the library and stood at the world's middle). For a long film, export scene.toJSON() with
+    the camera's samples as an AnimationClip rather than the project. Read scene_graph afterwards for what came in."""
+    try:
+        return _compact(bridge().import_scene(pathlib.Path(path).expanduser()))
+    except (BridgeError, OSError) as error:
+        return f"Error: {error}"
+
+
+@tool()
 def render_manim(code: str, scene: str, at: float | None = None, quality: str = "high", transparent: bool = True) -> str:
     """Render Manim on this laptop and lay it over the shot from `at` seconds (graphs, equations, diagrams). `code` is the
     Python source (or a path to a .py file); `scene` the Scene class. Transparent by default, floating over the 3D world."""

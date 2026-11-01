@@ -5,6 +5,7 @@
   hmm-bridge mcp [--http]                  run the MCP server for Claude Code / Claude Desktop (stdio by default)
   hmm-bridge status                        what's open on the iPad
   hmm-bridge push model.glb tree.usdz      send files to the iPad's library
+  hmm-bridge import plate-room.json        a three.js scene (or project folder, zip, .glb) into the open scene, as built
   hmm-bridge audio voiceover.m4a           add a voiceover to the open scene (--role music|sfx)
   hmm-bridge pull [--all] [name]           download renders (videos, frames, .srt) into ./renders
   hmm-bridge watch ./exports               push every new model that appears in a folder
@@ -104,6 +105,8 @@ def main(argv: list[str] | None = None) -> int:
     sub.add_parser("status")
     push = sub.add_parser("push")
     push.add_argument("files", nargs="+", type=pathlib.Path)
+    scene = sub.add_parser("import", help="a three.js scene JSON, a three.js project (folder, zip, page) or a model into the open scene, as built")
+    scene.add_argument("file", type=pathlib.Path)
     audio = sub.add_parser("audio")
     audio.add_argument("file", type=pathlib.Path)
     audio.add_argument("--role", default="voiceover", choices=["voiceover", "sfx", "music"])
@@ -174,6 +177,8 @@ def main(argv: list[str] | None = None) -> int:
         elif options.command == "push":
             for path in options.files:
                 print(f"{path.name}: {bridge.import_file(path)}")
+        elif options.command == "import":
+            print(json.dumps(bridge.import_scene(options.file), ensure_ascii=False))
         elif options.command == "audio":
             print(bridge.import_audio(options.file, role=options.role))
         elif options.command == "pull":

@@ -271,6 +271,23 @@ class Bridge:
         return json.loads(data)
 
 
+    def import_scene(self, path: pathlib.Path) -> dict:
+        """A finished scene into the open one, as built: three.js scene JSON, a three.js project (zip or page), or a model."""
+        if path.is_dir():
+            import io
+            import zipfile
+            buffer = io.BytesIO()
+            with zipfile.ZipFile(buffer, "w", zipfile.ZIP_DEFLATED) as archive:
+                for file in sorted(path.rglob("*")):
+                    if file.is_file() and "node_modules" not in file.parts:
+                        archive.write(file, file.relative_to(path).as_posix())
+            body, name = buffer.getvalue(), path.name + ".zip"
+        else:
+            body, name = path.read_bytes(), path.name
+        data, _ = self.request("POST", "/v2/import", body=body, query={"name": name}, content_type="application/octet-stream")
+        return json.loads(data)
+
+
 def describe_build(reply: dict) -> str:
     """A build reply in a few lines: applied or not, the diff, what the observe says (keeps tool results small)."""
     message = reply.get("message", "")

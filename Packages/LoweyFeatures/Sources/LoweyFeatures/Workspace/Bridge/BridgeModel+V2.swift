@@ -21,6 +21,7 @@ extension BridgeModel {
             v2("POST", "/v2/observe") { model, request in await model.observeRoute(request) },
             v2("POST", "/v2/contact_sheet") { model, request in await model.contactSheetRoute(request) },
             v2("POST", "/v2/commit") { model, request in await model.commit(request) },
+            v2("POST", "/v2/import") { model, request in await model.importScene(request) },
             v2("POST", "/v2/media") { model, request in
                 request.query["as"] == "reference" ? model.referencePicture(request.body) : await model.v2Media(request)
             },
@@ -60,6 +61,44 @@ extension BridgeModel {
             (line.name, nil, nil, nil)
         }
         return .json(ProjectReading(editor.document, scenes: scenes, library: app.library.manifest))
+    }
+
+    /// A finished scene from another tool into the open scene, as built (S16 item 23): a three.js scene file
+    /// (`scene.toJSON()`, with its animation clips as keys), a three.js project (a zip or a page: played and recorded),
+    /// or a model (glTF, GLB, USDZ, OBJ, STL, 3MF: into the library and stood at the world's middle, where the file put it).
+    private func importScene(_ request: HTTPRequest) async -> HTTPResponse {
+        guard let editor = app.editor else { return .error(409, "Open a project on the iPad first") }
+        guard let name = request.query["name"], Self.isSafeName(name), !request.body.isEmpty else {
+            return .error(400, "POST the file as the body with ?name=scene.json (or .zip, .html, .glb, .gltf, .usdz, .obj, .stl, .3mf)")
+        }
+        let folder = FileManager.default.temporaryDirectory.appendingPathComponent("bridge-import-\(UUID().uuidString)")
+        defer { try? FileManager.default.removeItem(at: folder) }
+        let url = folder.appendingPathComponent(name)
+        do {
+            try FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
+            try request.body.write(to: url)
+        } catch {
+            return .error(500, error.localizedDescription)
+        }
+        let before = Set(editor.baseScene.objects.keys)
+        if EditorModel.isThreeSceneFile(url) {
+            guard editor.bringInThreeJSON(url) else { return .error(422, "That three.js file couldn't come in") }
+        } else if EditorModel.isWebProject(url) {
+            await editor.bringInThreeProject(at: url)
+        } else if AssetFormat(fileExtension: url.pathExtension) != nil {
+            let assets = await app.library.importAssets([url])
+            guard !assets.isEmpty else { return .error(422, "\(AppIdentity.displayName) couldn't read \(name)") }
+            editor.refreshOperationsLibrary()
+            for asset in assets {
+                let object = SceneObject(id: .make(), name: asset.name, kind: .asset(asset.id))
+                guard editor.perform(editor.operations.add(object)) else { return .error(422, "Couldn't place \(asset.name)") }
+            }
+        } else {
+            return .error(415, "\(name) isn't a three.js scene, a web project or a model file")
+        }
+        notify("scene")
+        let added = editor.baseScene.objects.values.filter { !before.contains($0.id) }.map(\.name).sorted()
+        return .json(["imported": name, "things": "\(added.count)", "names": added.prefix(60).joined(separator: ", ")])
     }
 
     /// Every thing by name: where it is in the world, its size, its parent, what it stands on (S16 item 19).

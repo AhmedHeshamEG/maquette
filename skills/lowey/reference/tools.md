@@ -1,6 +1,6 @@
 # Tools (generated)
 
-Generated from the `lowey` MCP server by `Tools/gen-skill-tools.py` — don't edit by hand. 17 tools; everything that changes the scene goes through `build` (Scene Script v3, one Proposal, one undo step).
+Generated from the `lowey` MCP server by `Tools/gen-skill-tools.py` — don't edit by hand. 18 tools; everything that changes the scene goes through `build` (Scene Script v3, one Proposal, one undo step).
 
 ## `status`
 
@@ -153,6 +153,14 @@ A picture or video file from this laptop into the open shot: a thin card standin
 | `logo` | boolean | `false` |
 | `drawing` | boolean | `false` |
 | `reference` | boolean | `false` |
+
+## `import_scene`
+
+Bring a finished scene from another tool into the open shot AS BUILT, instead of rebuilding it from shapes: a three.js scene file (scene.toJSON(), meshes, materials, lights, cameras and its animation clips as keys), a three.js project (a folder, zip or page: played offline and its scene and 10 s of motion recorded), or a model file (glTF, GLB, USDZ, OBJ, STL, 3MF: into the library and stood at the world's middle). For a long film, export scene.toJSON() with the camera's samples as an AnimationClip rather than the project. Read scene_graph afterwards for what came in.
+
+| Parameter | Type | Default |
+|---|---|---|
+| `path` | string | required |
 
 ## `render_manim`
 
