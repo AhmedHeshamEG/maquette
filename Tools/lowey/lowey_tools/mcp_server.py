@@ -116,6 +116,18 @@ def read_project(transcript: bool = False) -> str:
 
 
 @tool()
+def scene_graph(time: float | None = None, names: list[str] | None = None) -> str:
+    """The scene read back, since you can't see it: every thing by name with its world position (a shape's or model's
+    bottom middle), turn in degrees, box size and corners in metres, its parent group, what it stands on ("ground", a
+    thing's name, or nothing when it's in the air) and whether it shows, at `time` (default: the playhead). The space is
+    fixed in the reply: y up, the audience at +z. `names` limits it to those things. Read it before placing by numbers."""
+    try:
+        return _compact(bridge().scene_graph(time=time, names=names))
+    except BridgeError as error:
+        return f"Error: {error}"
+
+
+@tool()
 def find_assets(query: str = "", set: str | None = None, limit: int = 8, thumbnails: int = 4) -> list[Any] | str:  # noqa: A002
     """Kit and library models by words ("desk lamp", "rock", "robot"), Kit first, optionally in one Set ("Room & Desk",
     "Nature", "Office & Computers", "Lab & Science", "Space", "City & Street", "Kitchen & Food", "Props & Signs",
@@ -243,11 +255,26 @@ def add_media(path: str, at: float | None = None, overlay: bool = False, environ
     text (build's {"do": "text", "font": "fonts/…"}); logo=True stands an SVG logo up as solids, one a colour; drawing=True
     stands a layered PSD, PSB or Procreate drawing up as a diorama, one painted sheet a layer. reference=True shows a
     picture in the Reference window over the stage (not in the shot): build's {"do": "reference"} switches it to the
-    whole scene (mode canvas), the picture or the front camera, or closes it."""
+    whole scene (mode canvas), the picture or the front camera, or closes it. A card is lit by the scene like any
+    surface; for a picture's true colours (a chart, a screen) send {"do": "set", "target": <card>, "property": "unlit",
+    "value": true}."""
     placement = ("reference" if reference else "font" if font else "logo" if logo else "drawing" if drawing else "environment" if environment
                  else "overlay" if overlay else "card")
     try:
         return _compact(bridge().add_media(pathlib.Path(path).expanduser(), at=at, placement=placement))
+    except (BridgeError, OSError) as error:
+        return f"Error: {error}"
+
+
+@tool()
+def import_scene(path: str) -> str:
+    """Bring a finished scene from another tool into the open shot AS BUILT, instead of rebuilding it from shapes: a
+    three.js scene file (scene.toJSON(), meshes, materials, lights, cameras and its animation clips as keys), a three.js
+    project (a folder, zip or page: played offline and its scene and 10 s of motion recorded), or a model file (glTF, GLB,
+    USDZ, OBJ, STL, 3MF: into the library and stood at the world's middle). For a long film, export scene.toJSON() with
+    the camera's samples as an AnimationClip rather than the project. Read scene_graph afterwards for what came in."""
+    try:
+        return _compact(bridge().import_scene(pathlib.Path(path).expanduser()))
     except (BridgeError, OSError) as error:
         return f"Error: {error}"
 

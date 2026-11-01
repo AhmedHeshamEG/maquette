@@ -110,6 +110,8 @@ public final class LoweyRenderer: SceneRendering {
     let upscaler: Upscaler
     private(set) var targets: FrameTargets?
     let shadowMap: MTLTexture
+    /// Spot lights' shadows, a slice each (SpotShadows.swift).
+    let spotShadowMap: MTLTexture
     /// The preview quality this renderer was made for (`.full` everywhere but the stage).
     public let quality: PreviewQuality
     var shadowMapSize: Int { quality.shadowMapSize }
@@ -142,6 +144,9 @@ public final class LoweyRenderer: SceneRendering {
         upscaler = Upscaler(device: device)
         shadowMap = try device.makeTexture(RenderDevice.depthFormat, width: quality.shadowMapSize, height: quality.shadowMapSize,
                                            usage: [.renderTarget, .shaderRead], label: "sun shadows", arrayLength: 2)
+        spotShadowMap = try device.makeTexture(RenderDevice.depthFormat, width: quality.shadowMapSize / 2, height: quality.shadowMapSize / 2,
+                                               usage: [.renderTarget, .shaderRead], label: "spot shadows",
+                                               arrayLength: SceneCompiler.spotShadowSlots)
         guard let ground = GPUMesh(device: device.device, mesh: EditorMeshes.disc(segments: 128), label: "ground") else {
             throw RenderError.texture
         }

@@ -53,6 +53,9 @@ public struct HmmHoldMenu {
     public var paste: (@MainActor () -> Void)?
     public var extras: [Item]
     public var delete: (@MainActor () -> Void)?
+    /// Whether Rename has its row among the first four. A menu that keeps Rename one step deeper (Maquette's objects,
+    /// whose name is a tap in their panel) leaves it out, so the menu stays at six rows.
+    public var showsRename = true
 
     public init(duplicate: (@MainActor () -> Void)? = nil, rename: (@MainActor () -> Void)? = nil, copy: (@MainActor () -> Void)? = nil,
                 paste: (@MainActor () -> Void)? = nil, extras: [Item] = [], delete: (@MainActor () -> Void)? = nil) {
@@ -68,10 +71,10 @@ public struct HmmHoldMenu {
     public var sections: [[Item]] {
         let standard = [
             Item(Self.standardTitles[0], "plus.square.on.square", duplicate),
-            Item(Self.standardTitles[1], "pencil", rename),
+            showsRename ? Item(Self.standardTitles[1], "pencil", rename) : nil,
             Item(Self.standardTitles[2], "doc.on.doc", copy),
             Item(Self.standardTitles[3], "doc.on.clipboard", paste)
-        ]
+        ].compactMap(\.self)
         let last = [Item(Self.deleteTitle, "trash", delete, isDestructive: true)]
         return [standard, Array(extras.prefix(Self.maximumExtras)), last].filter { !$0.isEmpty }
     }

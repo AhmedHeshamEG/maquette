@@ -17,6 +17,9 @@ public enum ScriptReference {
       Prefer spoken words: shots stay synced if the voiceover moves.
     - Colours: "palette:N" (the project palette — prefer it) or "#RRGGBB".
     - Overlay "at" is frame space: [x, y] from -1 to 1 (0,0 = centre, y up).
+    - A thing's "at" is its BOTTOM middle (it stands there); "anchor":"center" puts its middle there instead. A given
+      height is kept exactly; at y = 0 it lands on the ground. "relation" works on add for shapes and Kit models alike.
+    - The front (the audience side) is +z; x runs to the right as the default camera sees it.
 
     Build (Kit first: find_assets, then add by id; real sizes come with it)
     {"do":"add","asset":"kit.office-desk","name":"Desk","at":[0,0,0]}                 (an id, or words to search the Kit and library)
@@ -30,8 +33,12 @@ public enum ScriptReference {
     {"do":"blob","likeness":"hesham|newton|einstein|turing|curie|darwin|tesla|lovelace|edison|sherlock|wizard","name":"Me","at":[0,0,0]}
     {"do":"blob","name":"Ada","facing":20,"label":"ADA","recipe":{"hat":"beret","hair":"bob","accessories":["glasses"],"prop":"gear"}}
     {"do":"particles","preset":"fire|sparks|smoke|dust|magic|rain|snow|confetti|embers|explosion","at":"Lamp","amount":1}
+    Many copies in one step (up to 4,096, drawn as one): {"do":"design","op":"clone","target":"Plate","layout":"grid","columns":60,"rows":60,"spacing":0.14}
+      then {"do":"design","op":"effect","target":"Plate","kind":"random","turn":[0,180,0],"grow":0.1} for each copy a little different
     {"do":"group","target":["A","B"],"name":"Set"}  {"do":"rename","target":"Cube","name":"Box"}  {"do":"remove","target":"Box"}
     {"do":"transform","target":"Paper","position":[0,1,0],"rotation":[0,45,0],"scale":2}   (edge cases only)
+    Build a thing from parts inside a group: {"do":"add","shape":"group","name":"Comparator","at":[1,0,0]}, then each part
+    with "parent":"Comparator" (its "at" is then in the group's own space), then transform the group: the parts follow.
 
     Model (U6; faces by the way they face, edges by the axis they run along; one step each)
     {"do":"model","target":"Box","op":"pull","face":"top","distance":0.2}   {"do":"model","target":"Box","op":"loopCut","along":"x","cuts":2}
@@ -68,6 +75,7 @@ public enum ScriptReference {
 
     Film (F1; "camera" defaults to the shot camera)
     {"do":"light","type":"panel|bulb|spot|sun","name":"Window","at":[2,2,2],"size":[1.2,0.8],"aim":"Hero"}   (panel = a soft panel)
+    {"do":"light","type":"spot","name":"Desk lamp","at":[0.4,1.1,0],"aim":"Plate","color":"#FFB070","intensity":3,"range":4,"cone":50,"penumbra":0.6,"shadows":true}
     {"do":"lighting","recipe":"three-point|golden-hour|moonlit|neon|key-warm-world-cool|noir-single-source|golden-rim|monitor-glow|studio-soft","subject":"Hero"}
     {"do":"film","op":"lens","camera":"Shot","mm":35,"sensor":"fullFrame|super35|apsC|microFourThirds|super16|phone|largeFormat|imax","aperture":2.8}
     {"do":"film","op":"frame","shape":"16:9|2.39:1|9:16|4:5|1:1"}   (the Director view, Frame shot and every export)
@@ -94,12 +102,22 @@ public enum ScriptReference {
     {"do":"physics","op":"sun","place":"Rome","date":"2026-06-21","hour":15,"north":0,"study":[7,19]}   {"op":"sun","latitude":45.1,"longitude":7.7,"utcOffset":2}   {"op":"sun","off":true}
 
     Shoot and light
+    {"do":"show","target":"Phone","during":[[0,12],[{"word":"later"},52]],"shots":["Close on the phone"]}   (hidden the rest; replaces its visibility keys)
+    {"do":"mark","name":"Plate","at":[0,0.8,0],"radius":0.05}   (or "on":"Plate 3": rides with it) a named spot that draws nothing
+    {"do":"camera","name":"Macro","from":[0.3,1,0.6],"watch":"Plate","focalLength":85,"aperture":2,"drift":0.4}
+      watch: turns to the thing or mark and keeps it sharp as it moves (key the MARK's position, never the camera's angles)
+      drift 0–1: a slow sway sized to the focus distance, so no frame is dead still (also "drift" on film op rig, keyable)
     {"do":"frameShot","subject":"Hesham","shotType":"extremeWide|wide|full|medium|closeUp|extremeCloseUp|overTheShoulder|twoShot|insert",
      "composition":"center|leftThird|rightThird|lowAngle|highAngle","lens":85,"other":"Ada","side":"left|right","camera":"Shot 2","at":{"word":"Nobody"}}
     {"do":"cameraMove","camera":"Shot 2","move":"pushIn|pullOut|punchIn|snapZoom|orbit|dolly|truck|crane|whipPan|shake|reveal","subject":"Paper","at":{"word":"message"},"duration":2,"strength":1}
     {"do":"cut","camera":"Room cam","at":{"word":"people"},"transition":"cut|fade|dipToBlack|wipe|zoomThrough","duration":0.6}
     {"do":"lighting","recipe":"key-warm-world-cool|noir-single-source|golden-rim|monitor-glow|moonlit|studio-soft","subject":"Hesham","intensity":1,"warmth":0.3}
-    {"do":"look","look":"ink|comic|sketch|painterly|watercolour|gouache|paperman|animeCel|clay|cleanProduct|lowPoly|pixel","mood":"day|goldenHour|dusk|night|space|studio|darkStudio","perObject":{"Robot":"sketch"},"fog":40,"sceneOnly":true}
+    {"do":"look","look":"ink|comic|sketch|painterly|watercolour|gouache|paperman|animeCel|clay|cleanProduct|real|lowPoly|pixel","mood":"day|goldenHour|dusk|night|space|studio|darkStudio","perObject":{"Robot":"sketch"},"fog":40,"sceneOnly":true}
+    Real (a camera's picture: physically based, inverse-square light, filmic): {"do":"look","look":"real","mood":"darkStudio",
+     "post":{"exposure":-0.3,"bloom":0.2,"halation":0.3,"vignette":0.3,"grain":0.15,"fringing":0.1,"toneCurve":"filmic"}}
+      Low-key: a dark mood, then light the subject with practicals (spots with a cone and softness, glowing panels).
+      Surfaces: set roughness, metallic, clearcoat, clearcoatRoughness, transmission (glass, 0–1) and ior (1.5 glass) per thing;
+      glow (emissiveIntensity) is real light past white in Real: only what glows blooms.
     {"do":"look","ground":"desert|grass|snow|rock|sand|pavement|waterEdge|roomFloor|plain","finish":{"misregistration":true,"boil":0.4,"benDay":0.6,"texture":"none|paper|collage|film|newsprint|riso|canvas","textureStrength":0.7}}
 
     Animate (say the intent; the app picks the animation)
@@ -118,6 +136,10 @@ public enum ScriptReference {
     {"do":"motion","op":"pickUp","target":"Cup","by":"Ada","joint":"rightHand","at":2}   (a hand-off when someone holds it)   {"op":"putDown","target":"Cup","at":5}   {"op":"letGo","target":"Cup"}
     {"do":"motion","op":"evenSpeed","target":"Car"}   {"op":"timing","target":"Car","duration":3}   {"op":"front","target":"Car","quarterTurns":1}
     {"do":"set","target":"Paper","property":"color|opacity|emissiveIntensity|stepping|accent|airborne|smear","value":"#F2E8D5","at":2}
+      Properties (set and keys): position rotation scale visible opacity color emissive emissiveIntensity (glow) roughness
+      metallic (metalness) clearcoat clearcoatRoughness transmission ior · lights: lightColor lightIntensity lightRange (range) spotAngle (cone) · cameras: fieldOfView
+      (fov; focalLength/lens/mm in millimetres convert) focusDistance (focus) aperture · unlit (true: a picture or screen
+      shows its own colours, untouched by lights and the Look). An unknown name is refused.
     Easings: linear, easeIn, easeOut, easeInOut, backOut, bounce, elastic, step.
 
     Story
@@ -125,7 +147,7 @@ public enum ScriptReference {
     {"do":"flipbook","fx":"speedLines|impactBurst|sweatDrop|sparkle|smear","anchor":"Robot","at":{"word":"boom"},"until":3.2,"color":"#FFFFFF"}
     {"do":"effect","kind":"flash|shake|speedLines|zoomBlur|glitch|impact|focusLines|comicDots","at":{"word":"Nobody"},"duration":0.4,"strength":1}
     {"do":"effect","kind":"focusLines","at":2,"target":"Hero"}   (impact, focusLines and comicDots aim at a thing, or "center":[0.5,0.4] from the top left)
-    {"do":"transcript","text":"Two plus two equals four.","from":0.2,"to":3.6}   (or "words":[{"w":"Two","t":0.2,"e":0.4}]: known timings)
+    {"do":"transcript","text":"Two plus two equals four.","from":0.2,"to":3.6}   (or "words":[{"w":"Two","t":0.2,"e":0.4}]: known timings)   (needs the voiceover clip first: `hmm-bridge audio vo.m4a --role voiceover`)
     {"do":"marker","name":"enigma","at":{"word":"Enigma"}}   {"do":"captions","style":"punchy|subtitle|pill|outline","position":"bottom"}
     {"do":"length","seconds":12,"fps":30}
 

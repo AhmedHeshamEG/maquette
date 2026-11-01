@@ -214,6 +214,14 @@ class Bridge:
     def transcript(self) -> dict:
         return self.get("/v2/transcript")
 
+    def scene_graph(self, time: float | None = None, names: list[str] | None = None) -> dict:
+        query: dict = {}
+        if time is not None:
+            query["time"] = time
+        if names:
+            query["names"] = ",".join(names)
+        return self.get("/v2/scene", **query)
+
     def actions(self) -> str:
         return self.get("/v2/actions")
 
@@ -260,6 +268,23 @@ class Bridge:
         placement "card": a thin card standing in the 3D world; "overlay": flat over the frame (transparent graphics)."""
         query: dict[str, Any] = {"name": path.name, "as": placement, "at": at}
         data, _ = self.request("POST", "/v2/media", body=path.read_bytes(), query=query, content_type="application/octet-stream")
+        return json.loads(data)
+
+
+    def import_scene(self, path: pathlib.Path) -> dict:
+        """A finished scene into the open one, as built: three.js scene JSON, a three.js project (zip or page), or a model."""
+        if path.is_dir():
+            import io
+            import zipfile
+            buffer = io.BytesIO()
+            with zipfile.ZipFile(buffer, "w", zipfile.ZIP_DEFLATED) as archive:
+                for file in sorted(path.rglob("*")):
+                    if file.is_file() and "node_modules" not in file.parts:
+                        archive.write(file, file.relative_to(path).as_posix())
+            body, name = buffer.getvalue(), path.name + ".zip"
+        else:
+            body, name = path.read_bytes(), path.name
+        data, _ = self.request("POST", "/v2/import", body=body, query={"name": name}, content_type="application/octet-stream")
         return json.loads(data)
 
 

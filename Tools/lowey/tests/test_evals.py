@@ -77,5 +77,5 @@ def test_silent_voiceover_and_skill_files():
 
 def test_tools_for_the_model_are_the_sixteen_plus_reading():
     names = [tool["name"] for tool in run_evals.tool_definitions()]
-    assert len(names) == 17 and names[-1] == "read_skill_file"
+    assert len(names) == 19 and names[-1] == "read_skill_file"
     assert all(tool["input_schema"].get("type") == "object" for tool in run_evals.tool_definitions())

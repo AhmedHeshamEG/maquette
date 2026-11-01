@@ -2,7 +2,7 @@
 
 A note is a pin stuck on a spot of the scene: on a thing it rides with the thing when it moves; at a point it stays
 there. Notes live in the project file, signed by whoever wrote them, and are answered in place on the iPad (Actions ▸
-Notes shows the pins; a pin's tap opens its thread). People review together over FaceTime: every note written,
+Notes ▸ Show notes shows the pins; a pin's tap opens its thread). People review together over FaceTime: every note written,
 answered or resolved reaches everyone. Use notes to leave feedback or a to-do on a shot, not to explain your build.
 
 ```json

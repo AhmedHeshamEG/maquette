@@ -57,6 +57,10 @@ struct ObjectUniforms {
     var params = SIMD4<Float>(-1, -1, 0, 1)
     /// x = object index (1-based), y = look index, z = flags, w = first joint.
     var ids = SIMD4<UInt32>.zero
+    /// x = roughness (−1 = the Look's), y = metal, z = clear coat, w = clear coat roughness (the Real Look).
+    var material = SIMD4<Float>(-1, 0, 0, 0.1)
+    /// x = see-through (transmission), y = index of refraction.
+    var optics = SIMD4<Float>(0, 1.5, 0, 0)
 }
 
 struct LightData {
@@ -64,8 +68,12 @@ struct LightData {
     var color = SIMD4<Float>.zero
     var direction = SIMD4<Float>.zero
     var params = SIMD4<Float>.zero
-    /// A soft panel's right edge direction (xyz).
+    /// A soft panel's right edge direction (xyz); w = the source's size in metres (a bulb's, for its reflection).
     var axis = SIMD4<Float>.zero
+    /// A spot's shadow: world to its depth map.
+    var shadowMatrix = matrix_identity_float4x4
+    /// x = the depth map's slice (−1: no shadow), y = one texel of it (uv), z = 1 when it asks for a shadow.
+    var shadow = SIMD4<Float>(-1, 0, 0, 0)
 }
 
 struct AOParams {

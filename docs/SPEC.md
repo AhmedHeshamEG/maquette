@@ -6,6 +6,12 @@ continuation of 3D-lowey 2.0, made by **studio h.**; this file is studio-h's CON
 is built says so, what isn't says which phase brings it. Everything 2.0 does (sections 1–12 below) is the behavioural
 reference and stays.
 
+> **Where things live changed in U9 (0.36, D-622):** the object panel has four tabs (Move · Look · Shape · Real), Rig
+> is the one home for characters, Actions is six (Share · Windows · Notes · History · Learn · Settings), Model ▸ Add is in
+> groups, Export opens on what it's for, one Save to Library, and the menu bar is Scene · Model · Draw · Rig · Animate ·
+> Look. Where a line below names an older home, [LAYOUT.md](LAYOUT.md) is the map. **The Real Look** (D-621) and
+> **GPL 3.0** (D-623) are new in 0.36.
+
 | Area (CONTEXT §10) | Status |
 |---|---|
 | Name, icon, bundle ids, `.maquette` projects | **0.1.** Temporary icon (2.0's cube in the studio neutrals) until the identity phase (S1). |

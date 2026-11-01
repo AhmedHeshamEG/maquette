@@ -6,6 +6,9 @@ public enum LookModel: String, Codable, Sendable, CaseIterable {
     case toon
     /// Soft, rounded lighting (the v1 look): smooth diffuse, soft shadows, sky light, fog and bloom.
     case clay
+    /// Light as a camera sees it (U9, the S16 report): physically based surfaces (roughness, metal, clearcoat, glass),
+    /// light that falls off with the square of the distance, reflections of the room's own lights, a filmic tone curve.
+    case real
 }
 
 /// Shading parameters of a Look (the per-fragment recipe; see docs/SPEC.md §2.1).

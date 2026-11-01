@@ -31,7 +31,7 @@ compositions = ["center", "leftThird", "rightThird", "lowAngle", "highAngle"]
 recipes = ["three-point", "golden-hour", "moonlit", "neon", "key-warm-world-cool", "noir-single-source", "golden-rim", "monitor-glow",
            "studio-soft"]
 intents = ["enter", "exit", "emphasise", "react", "walk_to", "look_at", "talk", "idle"]
-looks = ["ink", "comic", "sketch", "painterly", "watercolour", "gouache", "paperman", "animeCel", "clay", "cleanProduct", "lowPoly",
+looks = ["ink", "comic", "sketch", "painterly", "watercolour", "gouache", "paperman", "animeCel", "clay", "cleanProduct", "real", "lowPoly",
          "lowpoly", "pixel"]
 fx = ["speedLines", "impactBurst", "sweatDrop", "sparkle", "smear"]
 expressions = ["neutral", "happy", "laugh", "smug", "surprised", "shocked", "scared", "sad", "angry", "sleepy", "wink", "thinking"]
@@ -44,7 +44,8 @@ verbs = {
     "add": ("A Kit/library model (\"asset\": an id like kit.office-desk, or words), a shape, or a group; optionally placed by relation.",
             {"asset": s, "shape": {"enum": ["cube", "sphere", "cylinder", "cone", "plane", "torus", "ramp", "group"]}, "name": s,
              "at": point, "size": {"anyOf": [n, v3]}, "color": color, "rotation": v3, "glow": n, "parent": tgt, "onGround": b,
-             "look": {"enum": looks}, "relation": {"enum": relations}, "reference": tgt, "offset": v3}, []),
+             "look": {"enum": looks}, "relation": {"enum": relations}, "reference": tgt, "offset": v3,
+             "anchor": {"enum": ["bottom", "center"]}}, []),
     "place": ("Place by relation (grounded, apart from what's there; left/right as seen from the reference's front).",
               {"target": tgt, "relation": {"enum": relations}, "reference": tgt, "offset": v3, "radius": n, "spacing": n,
                "columns": n, "seed": n}, ["target", "relation"]),
@@ -77,14 +78,20 @@ verbs = {
     "particles": ("An emitter.", {"preset": s, "name": s, "at": point, "amount": n, "time": time}, ["preset"]),
     "light": ("A light: a bulb (point), a spot, a sun, or a soft panel (a rectangle, \"size\" in metres) aimed at a thing.",
               {"type": {"enum": ["point", "bulb", "spot", "sun", "panel"]}, "name": s, "at": point, "color": color, "intensity": n,
-               "range": n, "size": {"type": "array", "items": n}, "aim": point}, []),
-    "camera": ("A camera.", {"name": s, "from": point, "lookAt": point, "focalLength": n, "fov": n, "aperture": n, "active": b}, []),
+               "range": n, "size": {"type": "array", "items": n}, "aim": point, "cone": n, "penumbra": n, "shadows": b}, []),
+    "camera": ("A camera; \"watch\" keeps it turned to a thing (or a mark) and sharp on it; \"drift\" (0–1) a slow sway.",
+               {"name": s, "from": point, "lookAt": point, "focalLength": n, "fov": n, "aperture": n, "active": b, "watch": tgt,
+                "drift": n}, []),
+    "show": ("Shown only in these stretches ([[from, to], …], times or words) or while the edit is on these cameras; hidden the rest.",
+             {"target": tgt, "during": {"type": "array", "items": {"type": "array"}}, "shots": {"type": "array", "items": tgt}}, ["target"]),
+    "mark": ("A named spot that draws nothing (\"at\", or \"on\" a thing to ride with it), for cameras to watch, frame and focus on.",
+             {"name": s, "at": point, "on": tgt, "radius": n}, ["name"]),
     "frameShot": ("The camera solver: shot type and composition on a subject (a new camera when \"camera\" doesn't exist).",
                   {"subject": tgt, "shotType": {"enum": shot_types}, "composition": {"enum": compositions}, "lens": n, "other": tgt,
                    "side": {"enum": ["left", "right"]}, "camera": s, "at": time, "aspect": n, "active": b}, ["subject"]),
     "lighting": ("A lighting recipe placed for the shot camera (replaces the recipe's earlier lamps).",
                  {"recipe": {"enum": recipes}, "subject": tgt, "intensity": n, "warmth": n}, ["recipe"]),
-    "look": ("The Look, mood and post; per-object Looks.", {"look": {"enum": looks}, "mood": s, "post": s, "shading": s,
+    "look": ("The Look, mood and post; per-object Looks.", {"look": {"enum": looks}, "mood": s, "post": {"anyOf": [s, {"type": "object"}]}, "shading": s,
                                                             "fog": {"anyOf": [b, n]}, "palette": {"type": "array", "items": color},
                                                             "bloom": n, "grain": n, "sceneOnly": b,
                                                             "ground": {"enum": ["plain", "desert", "grass", "snow", "rock", "sand", "pavement",
@@ -193,7 +200,7 @@ verbs = {
               "sensor": {"enum": ["fullFrame", "super35", "apsC", "microFourThirds", "super16", "phone", "largeFormat", "imax"]},
               "aperture": n, "shape": {"enum": ["16:9", "2.39:1", "9:16", "4:5", "1:1"]}, "on": {"anyOf": [tgt, {"type": "null"}]},
               "at": time, "kind": {"enum": ["none", "dolly", "crane", "orbit", "handheld"]}, "travel": n, "lift": n, "swing": n,
-              "arm": n, "shake": n, "keys": {"type": "object"}, "haze": n, "godRays": n, "color": color, "turn": n, "exposure": n,
+              "arm": n, "shake": n, "drift": n, "keys": {"type": "object"}, "haze": n, "godRays": n, "color": color, "turn": n, "exposure": n,
               "off": b}, ["op"]),
     "design": ("D1's motion design: an SVG logo stood up as solids (one a colour); copies of a thing in a grid, a circle, a "
                "line or along a path, moved by effects (random, delay, push) through fields (everywhere, near a point, a "

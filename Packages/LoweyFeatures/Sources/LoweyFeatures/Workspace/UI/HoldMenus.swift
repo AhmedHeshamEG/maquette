@@ -16,12 +16,15 @@ extension EditorModel {
     /// The menu of some objects. Acting on it makes them the selection first.
     func holdMenu(for ids: [ObjectID], extras custom: [HmmHoldMenu.Item]? = nil) -> HmmHoldMenu {
         let objects = ids.compactMap { scene.objects[$0] }
-        return HmmHoldMenu(duplicate: on(ids) { $0.duplicateSelection() },
-                           rename: holdAction(if: objects.count == 1) { [weak self] in self?.renamingObject = ids.first },
-                           copy: on(ids) { $0.copySelection() },
-                           paste: holdAction(if: canPaste) { [weak self] in self?.paste() },
-                           extras: custom ?? objectExtras(ids, objects),
-                           delete: on(ids) { $0.deleteSelection() })
+        var menu = HmmHoldMenu(duplicate: on(ids) { $0.duplicateSelection() },
+                               rename: holdAction(if: objects.count == 1) { [weak self] in self?.renamingObject = ids.first },
+                               copy: on(ids) { $0.copySelection() },
+                               paste: holdAction(if: canPaste) { [weak self] in self?.paste() },
+                               extras: custom ?? objectExtras(ids, objects),
+                               delete: on(ids) { $0.deleteSelection() })
+        // An object's menu is six rows (U9): Rename and Lock are in More (its name is also a tap in its panel).
+        if custom == nil { menu.showsRename = false }
+        return menu
     }
 
     /// A finger held still on the stage with the Select tool: the menu of the object under it (nil: nothing there, or
@@ -151,21 +154,25 @@ extension EditorModel {
         }
     }
 
-    /// Hide and Lock (Show, Unlock when that's what they'd undo), then More: everything else an object can do, so the
-    /// one menu holds it all (CONTEXT §10.10: Group, Array, To the ground, Swap, Save to the library, Unpack).
+    /// Hide (Show when that's what it'd undo), then More: Rename, Lock and everything else an object can do, so the
+    /// one menu holds it all in six rows (U9; CONTEXT §10.10: Group, Array, To the ground, Swap, Save to Library, Unpack).
     private func objectExtras(_ ids: [ObjectID], _ objects: [SceneObject]) -> [HmmHoldMenu.Item] {
         let hidden = !objects.isEmpty && objects.allSatisfy { !$0.isVisible }
         let locked = !objects.isEmpty && objects.allSatisfy(\.isLocked)
+        var more: [HmmHoldMenu.Item] = []
+        if objects.count == 1 {
+            more.append(HmmHoldMenu.Item("Rename", systemName: "pencil") { [weak self] in self?.renamingObject = ids.first })
+        }
+        more.append(HmmHoldMenu.Item(locked ? "Unlock" : "Lock", systemName: locked ? "lock.open" : "lock") { [weak self] in
+            guard let self else { return }
+            perform(operations.setFlag(ids, key: .locked, !locked))
+        })
         return [
             HmmHoldMenu.Item(hidden ? "Show" : "Hide", systemName: hidden ? "eye" : "eye.slash") { [weak self] in
                 guard let self else { return }
                 perform(operations.setFlag(ids, key: .visible, hidden))
             },
-            HmmHoldMenu.Item(locked ? "Unlock" : "Lock", systemName: locked ? "lock.open" : "lock") { [weak self] in
-                guard let self else { return }
-                perform(operations.setFlag(ids, key: .locked, !locked))
-            },
-            HmmHoldMenu.Item("More", systemName: "ellipsis.circle", children: moreItems(ids, objects))
+            HmmHoldMenu.Item("More", systemName: "ellipsis.circle", children: more + moreItems(ids, objects))
         ]
     }
 
@@ -192,7 +199,7 @@ extension EditorModel {
         if objects.count == 1, case .primitive = objects[0].kind {
             items.append(HmmHoldMenu.Item("Swap for a model…", systemName: "arrow.triangle.swap", action: on(ids) { $0.beginSwap() }))
         }
-        items.append(HmmHoldMenu.Item("Save to the library…", systemName: "tray.and.arrow.down", action: on(ids) { $0.savingPrefab = true }))
+        items.append(HmmHoldMenu.Item("Save to Library", systemName: "tray.and.arrow.down", action: on(ids) { $0.savingPrefab = true }))
         if objects.contains(where: { $0.kind.prefabID != nil }) {
             items.append(HmmHoldMenu.Item("Unpack", systemName: "shippingbox", action: on(ids) { $0.unpackSelection() }))
         }

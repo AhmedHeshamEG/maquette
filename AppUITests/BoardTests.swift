@@ -40,6 +40,7 @@ final class BoardTests: XCTestCase {
     func testPlanOnTheBoardAndPinItToTheProject() {
         newProject("Planned")
         tap("Actions")
+        tap("actions-windows")
         tap("open-board")
         let canvas = element("board-canvas")
         XCTAssertTrue(canvas.waitForExistence(timeout: 10), "the board covers the stage")
@@ -78,6 +79,7 @@ final class BoardTests: XCTestCase {
 
         // The board is the project's: it's all there when it opens again, undo included.
         tap("Actions")
+        tap("actions-windows")
         tap("open-board")
         XCTAssertTrue(canvas.waitForExistence(timeout: 10))
         XCTAssertTrue(element("Undo").isEnabled, "the board came back with its history")

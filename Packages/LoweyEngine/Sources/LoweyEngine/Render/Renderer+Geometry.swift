@@ -16,7 +16,7 @@ extension LoweyRenderer {
             if let last = runs.last, last.start + last.count == index {
                 let previous = ordered[last.start]
                 if previous.mesh === item.mesh, previous.texture === item.texture, !item.mesh.isSkinned, !item.blended, previous.maps == nil,
-                   item.maps == nil {
+                   item.maps == nil, previous.uniforms.ids.y == item.uniforms.ids.y {
                     runs[runs.count - 1].count += 1
                     continue
                 }
@@ -53,6 +53,7 @@ extension LoweyRenderer {
         }
         if request.transparent || !look.ground.visible { frame.groundBounce.w = 0 }
         frame.environment = Self.environmentUniform(look, loaded: !request.transparent && environmentTexture(request.input) != nil)
+        frame.environment.w = Float(scene.lights.filter { $0.shadow.x >= 0 }.count)
         return frame
     }
 
@@ -62,6 +63,7 @@ extension LoweyRenderer {
                                   shadingWidth: targets.shadingWidth, shadingHeight: targets.shadingHeight)
         let showsGround = !request.transparent && request.input.document.effectiveLook.ground.visible
         if frame.sunColor.w > 0.5 { encodeShadows(frame: frame, ordered: ordered, gpu: gpu, commandBuffer: commandBuffer) }
+        encodeSpotShadows(frame: frame, lights: scene.lights, ordered: ordered, gpu: gpu, commandBuffer: commandBuffer)
         // The prepass is native resolution: its viewport uses the native size.
         var native = frame
         native.viewport = SIMD4<Float>(Float(targets.width), Float(targets.height), 1 / Float(targets.width), 1 / Float(targets.height))
@@ -82,6 +84,23 @@ extension LoweyRenderer {
             upscaler.encode(from: targets.color, to: upscaled, commandBuffer: commandBuffer, pipelines: device.pipelines)
         }
         encodePost(shot, request: request, gpu: gpu, targets: targets, commandBuffer: commandBuffer)
+    }
+
+    /// The program that shades this draw: its Look's (Real's own, or the stylised one), skinned or not, blended or not.
+    func shadingPipeline(_ item: DrawItem, looks: [LookUniforms]) -> MTLRenderPipelineState {
+        let index = Int(item.uniforms.ids.y)
+        let real = looks.indices.contains(index) && LookResolver.isReal(looks[index])
+        let pipelines = device.pipelines
+        switch (real, item.mesh.isSkinned, item.blended) {
+        case (false, false, false): return pipelines.shadeStatic
+        case (false, true, false): return pipelines.shadeSkinned
+        case (false, false, true): return pipelines.shadeStaticBlended
+        case (false, true, true): return pipelines.shadeSkinnedBlended
+        case (true, false, false): return pipelines.realStatic
+        case (true, true, false): return pipelines.realSkinned
+        case (true, false, true): return pipelines.realStaticBlended
+        case (true, true, true): return pipelines.realSkinnedBlended
+        }
     }
 
     /// Character outlines: each part pushed out along its normals, back faces only, in the line colour.
@@ -119,6 +138,36 @@ extension LoweyRenderer {
             encoder.setDepthBias(0.0005, slopeScale: 2.0, clamp: 0.01)
             encoder.setCullMode(.none)
             var index = UInt32(cascade)
+            encoder.setVertexBytes(&uniforms, length: MemoryLayout<FrameUniforms>.stride, index: BufferIndex.frame)
+            encoder.setVertexBytes(&index, length: 4, index: BufferIndex.cascade)
+            encoder.setVertexBuffer(gpu.joints, offset: 0, index: BufferIndex.joints)
+            for run in Self.runs(ordered, where: { $0.castsShadow && !$0.blended && !$0.ghost && !$0.furCards }) {
+                let item = ordered[run.start]
+                encoder.setRenderPipelineState(item.mesh.isSkinned ? device.pipelines.shadowSkinned : device.pipelines.shadowStatic)
+                draw(item.mesh, run: run, encoder: encoder, objects: gpu.objects)
+            }
+            encoder.endEncoding()
+        }
+    }
+
+    /// Each shadowed spot's depth from the lamp, into its slice (the sun's pass, with the lamp's matrix).
+    func encodeSpotShadows(frame: FrameUniforms, lights: [LightData], ordered: [DrawItem], gpu: FrameBuffers, commandBuffer: MTLCommandBuffer) {
+        for light in lights where light.shadow.x >= 0 {
+            var uniforms = frame
+            uniforms.shadowMatrix0 = light.shadowMatrix
+            let pass = MTLRenderPassDescriptor()
+            pass.depthAttachment.texture = spotShadowMap
+            pass.depthAttachment.slice = Int(light.shadow.x)
+            pass.depthAttachment.loadAction = .clear
+            pass.depthAttachment.clearDepth = 1
+            pass.depthAttachment.storeAction = .store
+            guard let encoder = commandBuffer.makeRenderCommandEncoder(descriptor: pass) else { continue }
+            encoder.setFrontFacing(.counterClockwise)
+            encoder.label = "Spot shadows \(Int(light.shadow.x))"
+            encoder.setDepthStencilState(device.pipelines.shadowDepth)
+            encoder.setDepthBias(0.0002, slopeScale: 1.5, clamp: 0.005)
+            encoder.setCullMode(.none)
+            var index: UInt32 = 0
             encoder.setVertexBytes(&uniforms, length: MemoryLayout<FrameUniforms>.stride, index: BufferIndex.frame)
             encoder.setVertexBytes(&index, length: 4, index: BufferIndex.cascade)
             encoder.setVertexBuffer(gpu.joints, offset: 0, index: BufferIndex.joints)
@@ -230,6 +279,7 @@ extension LoweyRenderer {
         encoder.setVertexBuffer(gpu.joints, offset: 0, index: BufferIndex.joints)
         encoder.setFragmentTexture(targets.ao, index: 1)
         encoder.setFragmentTexture(shadowMap, index: 2)
+        encoder.setFragmentTexture(spotShadowMap, index: 10)
         // Sky first (never writes depth), then the ground, then objects.
         encoder.setDepthStencilState(device.pipelines.depthAlways)
         encoder.setRenderPipelineState(device.pipelines.sky)
@@ -239,7 +289,8 @@ extension LoweyRenderer {
         var draws = 1
         if let ground {
             var groundColor = ground
-            encoder.setRenderPipelineState(device.pipelines.shadeGround)
+            let real = gpu.looks.first.map(LookResolver.isReal) ?? false
+            encoder.setRenderPipelineState(real ? device.pipelines.realGround : device.pipelines.shadeGround)
             encoder.setFragmentBytes(&groundColor, length: MemoryLayout<SIMD4<Float>>.stride, index: BufferIndex.objects)
             encoder.setVertexBuffer(groundMesh.vertices, offset: 0, index: BufferIndex.vertices)
             encoder.drawIndexedPrimitives(type: .triangle, indexCount: groundMesh.indexCount, indexType: .uint32,
@@ -248,13 +299,8 @@ extension LoweyRenderer {
         }
         for run in Self.runs(ordered, where: { !$0.brushDrawn && !$0.furCards }) {
             let item = ordered[run.start]
-            let skinned = item.mesh.isSkinned
-            if item.blended {
-                encoder.setDepthStencilState(device.pipelines.depthRead)
-                encoder.setRenderPipelineState(skinned ? device.pipelines.shadeSkinnedBlended : device.pipelines.shadeStaticBlended)
-            } else {
-                encoder.setRenderPipelineState(skinned ? device.pipelines.shadeSkinned : device.pipelines.shadeStatic)
-            }
+            encoder.setRenderPipelineState(shadingPipeline(item, looks: gpu.looks))
+            if item.blended { encoder.setDepthStencilState(device.pipelines.depthRead) }
             encoder.setFragmentTexture(item.texture ?? editorMeshes.white, index: 0)
             bindMaps(item.maps, encoder: encoder)
             draw(item.mesh, run: run, encoder: encoder, objects: gpu.objects)

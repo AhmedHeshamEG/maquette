@@ -5,8 +5,10 @@ import XCTest
 final class LookSystemTests: XCTestCase {
     func testTheBuiltInLooksWithTheirIdentity() {
         XCTAssertEqual(LookPreset.builtIns.map(\.id), ["ink", "comic", "sketch", "painterly", "watercolour", "gouache", "paperman", "animeCel",
-                                                       "clay", "cleanProduct", "lowPoly", "pixel"])
-        XCTAssertEqual(Set(LookPreset.builtIns.map(\.id)).count, 12)
+                                                       "clay", "cleanProduct", "real", "lowPoly", "pixel"])
+        XCTAssertEqual(Set(LookPreset.builtIns.map(\.id)).count, 13)
+        XCTAssertEqual(LookPreset.real.shading.model, .real)
+        XCTAssertFalse(LookPreset.real.lines.enabled)
         XCTAssertEqual(LookPreset.comic.stepping, .onTwos, "Comic animates on twos")
         XCTAssertGreaterThan(LookPreset.comic.comic.halftone, 0)
         XCTAssertTrue(LookPreset.comic.comic.misregistration)
@@ -31,7 +33,7 @@ final class LookSystemTests: XCTestCase {
         XCTAssertEqual(LookLibrary.resolve("clay").id, "clay")
         XCTAssertEqual(LookLibrary.resolve("deleted").id, "ink")
         XCTAssertEqual(LookLibrary.resolve(nil).id, "ink")
-        XCTAssertEqual(LookLibrary.all(custom: [mine]).count, 13)
+        XCTAssertEqual(LookLibrary.all(custom: [mine]).count, 14)
         XCTAssertEqual(mine.basedOn, "comic")
         XCTAssertFalse(mine.isBuiltIn)
     }

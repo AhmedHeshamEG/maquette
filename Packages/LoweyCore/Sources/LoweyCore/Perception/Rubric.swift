@@ -32,15 +32,34 @@ public enum ShotRubric {
     public static let minimumContrast = 25.0
     public static let maximumClutter = 7
 
-    static func evaluate(objects: [ObservedObject], frame: FrameRead, scaleIssues: [String]) -> [RubricCheck] {
+    static func evaluate(objects: [ObservedObject], frame: FrameRead, scaleIssues: [String], cameraInside: String? = nil) -> [RubricCheck] {
         let subject = frame.subject.flatMap { name in objects.first { $0.name == name } }
-        return [read(frame), focus(subject, objects: objects), framing(subject, frame: frame), ground(objects),
-                RubricCheck.check("Scale", scaleIssues.isEmpty,
-                                  scaleIssues.isEmpty ? "Sizes match the Kit's real sizes" : scaleIssues.joined(separator: "; "),
-                                  fix: "scaleTo the real size (the Kit knows it), or swap for a model made at that size"),
-                light(frame, subjectCoverage: subject?.coverage),
-                RubricCheck.check("Clutter", frame.clutter <= maximumClutter, "\(frame.clutter) significant things in frame",
-                                  fix: "Remove or push back what doesn't serve the beat; let empty space frame the subject")]
+        return [
+            camera(inside: cameraInside, subject: subject, objects: objects, frame: frame),
+            read(frame),
+            focus(subject, objects: objects),
+            framing(subject, frame: frame),
+            ground(objects),
+            RubricCheck.check("Scale", scaleIssues.isEmpty,
+                              scaleIssues.isEmpty ? "Sizes match the Kit's real sizes" : scaleIssues.joined(separator: "; "),
+                              fix: "scaleTo the real size (the Kit knows it), or swap for a model made at that size"),
+            light(frame, subjectCoverage: subject?.coverage),
+            RubricCheck.check("Clutter", frame.clutter <= maximumClutter, "\(frame.clutter) significant things in frame",
+                              fix: "Remove or push back what doesn't serve the beat; let empty space frame the subject")
+        ]
+    }
+
+    /// Can the lens see anything at all: not inside a solid, not an empty frame, the subject not hidden behind something.
+    static func camera(inside: String?, subject: ObservedObject?, objects: [ObservedObject], frame: FrameRead) -> RubricCheck {
+        var problems: [String] = []
+        if let inside { problems.append("the camera is inside “\(inside)”") }
+        let seen = objects.reduce(0) { $0 + $1.coverage }
+        if seen < 1 || frame.emptyArea > 97 { problems.append("the frame is empty") }
+        if let subject, subject.visible < 25 {
+            problems.append("“\(subject.name)” is \(percent(100 - subject.visible)) hidden behind something")
+        }
+        return .check("Camera", problems.isEmpty, problems.isEmpty ? "The lens sees the subject" : problems.joined(separator: "; "),
+                      fix: "Move the camera out of the solid and in front of the subject (frame_shot with another angle), or move what blocks it")
     }
 
     static func read(_ frame: FrameRead) -> RubricCheck {

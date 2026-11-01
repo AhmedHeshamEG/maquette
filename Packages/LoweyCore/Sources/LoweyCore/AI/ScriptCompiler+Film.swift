@@ -91,7 +91,7 @@ extension ScriptState {
         guard let name = string(action, "kind"), let rig = CameraRig(rawValue: name) else {
             throw fail("rig needs “kind”: \(CameraRig.allCases.map(\.rawValue).joined(separator: ", "))")
         }
-        let names: [String: PropertyKey] = ["travel": .rigTravel, "lift": .rigLift, "swing": .rigSwing, "arm": .rigArm, "shake": .rigShake]
+        let names: [String: PropertyKey] = ["travel": .rigTravel, "lift": .rigLift, "swing": .rigSwing, "arm": .rigArm, "shake": .rigShake, "drift": .rigDrift]
         var changes = [PropertyChange(object: id, key: .rig, value: rig == .none ? nil : .enumeration(rig.rawValue))]
         for (word, key) in names.sorted(by: { $0.key < $1.key }) {
             if let value = number(action, word) { changes.append(PropertyChange(object: id, key: key, value: .float(value))) }
@@ -100,7 +100,7 @@ extension ScriptState {
         guard case let .object(keyed)? = action["keys"] else { return }
         var edits: [TrackEdit] = []
         for (word, value) in keyed.sorted(by: { $0.key < $1.key }) {
-            guard let key = names[word], key.spec?.animatable == true else { throw fail("keys are for travel, lift, swing or shake") }
+            guard let key = names[word], key.spec?.animatable == true else { throw fail("keys are for travel, lift, swing, shake or drift") }
             var track = timeline.track(for: id, key) ?? Track(id: context.ids.next(), target: id, property: key)
             for pair in value.arrayValue ?? [] {
                 guard let numbers = pair.arrayValue?.compactMap(\.numberValue), numbers.count == 2 else { throw fail("a key is [seconds, value]") }

@@ -6,7 +6,7 @@ import UIKit
 
 /// The Look Studio (L2, D-484), in the Studio grammar every made thing shares: the Look on its check scene at the top,
 /// changing as you go; its settings in pages (Light, Lines, Paint, Print, Motion); About last. It edits one of the
-/// project's own Looks; "Save to Yours" keeps it for every project, the share button sends it as a pack.
+/// project's own Looks; "Save to Library" keeps it for every project, the share button sends it as a pack.
 struct LookStudioView: View {
     let editor: EditorModel
     let id: String
@@ -41,7 +41,7 @@ struct LookStudioView: View {
         .toolbar {
             ToolbarItem(placement: .cancellationAction) { Button("Done") { dismiss() } }
             ToolbarItemGroup(placement: .primaryAction) {
-                Button("Save to Yours", systemImage: "tray.and.arrow.down") { editor.saveLookToYours(preset) }
+                Button("Save to Library", systemImage: "tray.and.arrow.down") { editor.saveLookToYours(preset) }
                     .accessibilityIdentifier("look-studio-save")
                 Button("Share as a pack", systemImage: "square.and.arrow.up") {
                     sharing = editor.app.writePack([.look(id)], name: preset.name, author: editor.app.packAuthor, licence: editor.app.packLicence,

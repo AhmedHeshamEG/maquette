@@ -2,8 +2,9 @@ import HmmDesign
 import LoweyCore
 import SwiftUI
 
-/// Rig: give the selected thing a skeleton and pose it. Bones → Skin → Pose for anything with a surface; a character's
-/// saved poses and its clips. Characters themselves (a Blob, Me, a Puppet) come from the Library; what a character
+/// Rig: give the selected thing a skeleton and pose it, and make it a character (U9: the one home for bodies and
+/// characters). Bones → Skin → Pose for anything with a surface; a character's saved poses and its clips. Characters themselves (a Blob, Me, a Puppet) come
+/// from the Library; what a character
 /// does live (expressions, the voice, the face, triggers) is performed in the timeline's Perform.
 struct RigPanel: View {
     @Bindable var editor: EditorModel
@@ -15,11 +16,15 @@ struct RigPanel: View {
                     nothingSelected
                 } else {
                     RigSection(editor: editor)
+                    // Rig is the one home for bodies and characters (U9): its parts, face, proportions, lines, acting
+                    // and game exports, as the object panel had them.
+                    if let object = editor.singleSelection { CharacterSection(editor: editor, object: object) }
                     if let character = currentCharacter { CharacterSections(editor: editor, character: character) }
                     PartSection(editor: editor)
                 }
             }
         }
+        .accessibilityIdentifier("rig-panel")
     }
 
     private var currentCharacter: ObjectID? {

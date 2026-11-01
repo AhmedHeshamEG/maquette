@@ -43,9 +43,10 @@ final class HoldMenuFlowTests: XCTestCase {
             editor.holdMenu(forClip: clip),
             editor.holdMenu(forFlipbookDrawing: 0, of: "track")
         ]
-        for menu in menus {
+        for (index, menu) in menus.enumerated() {
             let sections = titles(menu)
-            XCTAssertEqual(sections.first, ["Duplicate", "Rename", "Copy", "Paste"])
+            // An object's menu keeps Rename in More (U9): six rows under the finger.
+            XCTAssertEqual(sections.first, index == 0 ? ["Duplicate", "Copy", "Paste"] : ["Duplicate", "Rename", "Copy", "Paste"])
             XCTAssertEqual(sections.last, ["Delete"])
             XCTAssertEqual(sections.count, 3, "extras sit between")
             XCTAssertLessThanOrEqual(sections[1].count, 3)
@@ -94,7 +95,8 @@ final class HoldMenuFlowTests: XCTestCase {
         editor.addPrimitive(.sphere)
         let sphere = try XCTUnwrap(editor.singleSelection?.id)
         let menu = editor.holdMenu(for: [cube, sphere])
-        XCTAssertFalse(try row("Rename", in: menu).isEnabled)
+        let rows = menu.sections.joined().flatMap { [$0] + $0.children }.map(\.title)
+        XCTAssertFalse(rows.contains("Rename"), "several things have no Rename")
         try row("Group", in: menu).action()
         let group = try XCTUnwrap(editor.singleSelection)
         XCTAssertEqual(group.kind, .group)

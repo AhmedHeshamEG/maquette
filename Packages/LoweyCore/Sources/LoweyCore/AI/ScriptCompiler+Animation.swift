@@ -5,8 +5,8 @@ import Foundation
 extension ScriptState {
     mutating func set(_ action: JSONValue) throws {
         guard let keyName = string(action, "property") else { throw fail("set needs “property”") }
-        let key = PropertyKey(keyName)
-        let value = try propertyValue(key, action["value"])
+        let (key, convert) = try scriptProperty(keyName)
+        let value = try convert(propertyValue(key, action["value"]))
         let ids = try targets(action["target"])
         if action["at"] != nil {
             let at = try time(action["at"])
@@ -74,11 +74,47 @@ extension ScriptState {
         try run(.setTracks(edits), label: "\(values.count) key\(values.count == 1 ? "" : "s") on \(property) × \(ids.count)")
     }
 
+    /// `{"do": "show", "target": "Phone", "during": [[0, 12], [40, 52.5]]}` or `"shots": ["Close on the phone"]`: shown
+    /// only in those stretches (or while the edit is on those cameras), hidden the rest of the film (S16 item 21).
+    mutating func show(_ action: JSONValue) throws {
+        let ids = try targets(action["target"])
+        var spans: [(Double, Double)] = []
+        for pair in action["during"]?.arrayValue ?? [] {
+            guard let ends = pair.arrayValue, ends.count == 2 else { throw fail("“during” is a list of [from, to]") }
+            try spans.append((time(ends[0]), time(ends[1])))
+        }
+        let cuts = timeline.cuts.sorted { $0.time < $1.time }
+        for shot in action["shots"]?.arrayValue ?? [] {
+            let camera = try target(shot)
+            for (index, cut) in cuts.enumerated() where cut.camera == camera {
+                spans.append((cut.time, index + 1 < cuts.count ? cuts[index + 1].time : max(timeline.duration, cut.time)))
+            }
+        }
+        guard !spans.isEmpty else { throw fail("show needs “during” ([[from, to], …]) or “shots” (camera names the edit cuts to)") }
+        spans.sort { $0.0 < $1.0 }
+        var values: [(Double, PropertyValue, Easing)] = [(0, .bool(false), .step)]
+        for (from, to) in spans where to > from {
+            values.removeAll { abs($0.0 - from) < 1e-9 }
+            values.append((from, .bool(true), .step))
+            values.append((to, .bool(false), .step))
+        }
+        var edits: [TrackEdit] = []
+        for id in ids {
+            // The visibility track is replaced whole: these stretches are the answer.
+            var track = timeline.track(for: id, .visible) ?? Track(id: context.ids.next(), target: id, property: .visible)
+            track.setKeys(values.map { Keyframe(time: $0.0, value: $0.1, easing: $0.2) })
+            edits.append(TrackEdit(track))
+        }
+        try run(.setTracks(edits), label: "Shown in \(spans.count) stretch\(spans.count == 1 ? "" : "es")")
+    }
+
     mutating func keys(_ action: JSONValue) throws {
         guard let keyName = string(action, "property") else { throw fail("keys need “property”") }
-        let property = PropertyKey(keyName)
+        let (property, convert) = try scriptProperty(keyName)
         guard let list = action["keys"]?.arrayValue, !list.isEmpty else { throw fail("keys need a “keys” list of {t, value}") }
-        let values = try list.map { entry in try (time(entry["t"] ?? entry["at"]), propertyValue(property, entry["value"]), easing(entry["easing"])) }
+        let values = try list.map { entry in
+            try (time(entry["t"] ?? entry["at"]), convert(propertyValue(property, entry["value"])), easing(entry["easing"]))
+        }
         try addKeys(targets(action["target"]), property, values)
     }
 
@@ -153,7 +189,7 @@ extension ScriptState {
             }
             look.presetID = found.id
         }
-        if let post = string(action, "post").flatMap(PostSettings.Preset.init(rawValue:)) { look.post = post.settings }
+        try lookPost(action, into: &look)
         if let shading = string(action, "shading").flatMap(ShadingStyle.init(rawValue:)) { look.shading = shading }
         if let fog = action["fog"] {
             if case let .bool(on) = fog { look.fog.enabled = on }
@@ -172,6 +208,39 @@ extension ScriptState {
         try lookExtras(action, into: &look)
         try run(.setLook(look, scope: sceneOnly ? .scene : .project), label: "Look")
         try perObjectLooks(action)
+    }
+
+    /// A post preset by name, or the stack by its numbers (S16 item 5): {"post": {"exposure": -0.5, "halation": 0.4,
+    /// "toneCurve": "filmic", …}}. The Real Look is filmic unless told otherwise.
+    func lookPost(_ action: JSONValue, into look: inout Look) throws {
+        if let post = string(action, "post").flatMap(PostSettings.Preset.init(rawValue:)) { look.post = post.settings }
+        if case let .object(numbers)? = action["post"] { look.post = try postNumbers(numbers, onto: look.post) }
+        if look.presetID == LookPreset.real.id, look.post.toneCurve == nil { look.post.toneCurve = .filmic }
+    }
+
+    /// The post stack from its numbers; an unknown name is refused (as properties are).
+    func postNumbers(_ numbers: [String: JSONValue], onto post: PostSettings) throws -> PostSettings {
+        var post = post
+        let fields: [String: WritableKeyPath<PostSettings, Double>] = [
+            "bloom": \.bloom, "vignette": \.vignette, "grain": \.grain, "exposure": \.exposure, "contrast": \.contrast,
+            "saturation": \.saturation, "temperature": \.temperature, "warmth": \.temperature, "chromaticAberration": \.chromaticAberration,
+            "fringing": \.chromaticAberration, "halation": \.halation, "outline": \.outline
+        ]
+        for (name, value) in numbers.sorted(by: { $0.key < $1.key }) {
+            if let field = fields[name] {
+                guard let number = value.numberValue else { throw fail("post “\(name)” needs a number") }
+                post[keyPath: field] = number
+            } else if name == "toneCurve" {
+                guard let curve = value.stringValue.flatMap(PostSettings.ToneCurve.init(rawValue:)) else { throw fail("toneCurve is soft or filmic") }
+                post.toneCurve = curve
+            } else if name == "depthOfField" {
+                guard case let .bool(on) = value else { throw fail("depthOfField is true or false") }
+                post.depthOfField = on
+            } else {
+                throw fail("unknown post “\(name)” (\((fields.keys.sorted() + ["toneCurve", "depthOfField"]).joined(separator: ", ")))")
+            }
+        }
+        return post
     }
 
     /// Per object: {"perObject": {"Robot": "sketch"}} (a thing drawn in another Look).
@@ -223,7 +292,7 @@ extension ScriptState {
     mutating func transcript(_ action: JSONValue) throws {
         let clipID = string(action, "clip")
         guard let clip = timeline.audio.first(where: { clipID == nil ? $0.role == .voiceover : $0.id == clipID }) else {
-            throw fail("transcript needs a voiceover clip on the timeline (add the audio first)")
+            throw fail("transcript needs a voiceover clip on the timeline first: `hmm-bridge audio vo.m4a` (role voiceover) or add_media, then send the words")
         }
         // Timeline seconds → the audio file's own time.
         let fileTime = { (time: Double) in time - clip.start + clip.offset }

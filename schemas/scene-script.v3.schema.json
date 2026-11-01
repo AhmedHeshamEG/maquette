@@ -794,6 +794,7 @@
             "lighting",
             "lipSync",
             "look",
+            "mark",
             "marker",
             "model",
             "motion",
@@ -812,6 +813,7 @@
             "scaleTo",
             "scatter",
             "set",
+            "show",
             "sketch",
             "text",
             "transcript",
@@ -890,6 +892,7 @@
                   "animeCel",
                   "clay",
                   "cleanProduct",
+                  "real",
                   "lowPoly",
                   "lowpoly",
                   "pixel"
@@ -918,6 +921,12 @@
               },
               "offset": {
                 "$ref": "#/$defs/vec3"
+              },
+              "anchor": {
+                "enum": [
+                  "bottom",
+                  "center"
+                ]
               }
             }
           }
@@ -1094,7 +1103,7 @@
             }
           },
           "then": {
-            "description": "A camera.",
+            "description": "A camera; \"watch\" keeps it turned to a thing (or a mark) and sharp on it; \"drift\" (0–1) a slow sway.",
             "properties": {
               "name": {
                 "type": "string"
@@ -1116,6 +1125,12 @@
               },
               "active": {
                 "type": "boolean"
+              },
+              "watch": {
+                "$ref": "#/$defs/target"
+              },
+              "drift": {
+                "type": "number"
               }
             }
           }
@@ -1874,6 +1889,9 @@
               "shake": {
                 "type": "number"
               },
+              "drift": {
+                "type": "number"
+              },
               "keys": {
                 "type": "object"
               },
@@ -2407,6 +2425,15 @@
               },
               "aim": {
                 "$ref": "#/$defs/point"
+              },
+              "cone": {
+                "type": "number"
+              },
+              "penumbra": {
+                "type": "number"
+              },
+              "shadows": {
+                "type": "boolean"
               }
             }
           }
@@ -2496,6 +2523,7 @@
                   "animeCel",
                   "clay",
                   "cleanProduct",
+                  "real",
                   "lowPoly",
                   "lowpoly",
                   "pixel"
@@ -2505,7 +2533,14 @@
                 "type": "string"
               },
               "post": {
-                "type": "string"
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "object"
+                  }
+                ]
               },
               "shading": {
                 "type": "string"
@@ -2590,6 +2625,7 @@
                     "animeCel",
                     "clay",
                     "cleanProduct",
+                    "real",
                     "lowPoly",
                     "lowpoly",
                     "pixel"
@@ -2597,6 +2633,35 @@
                 }
               }
             }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "do": {
+                "const": "mark"
+              }
+            }
+          },
+          "then": {
+            "description": "A named spot that draws nothing (\"at\", or \"on\" a thing to ride with it), for cameras to watch, frame and focus on.",
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "at": {
+                "$ref": "#/$defs/point"
+              },
+              "on": {
+                "$ref": "#/$defs/target"
+              },
+              "radius": {
+                "type": "number"
+              }
+            },
+            "required": [
+              "name"
+            ]
           }
         },
         {
@@ -3737,6 +3802,38 @@
             "required": [
               "target",
               "property"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "do": {
+                "const": "show"
+              }
+            }
+          },
+          "then": {
+            "description": "Shown only in these stretches ([[from, to], …], times or words) or while the edit is on these cameras; hidden the rest.",
+            "properties": {
+              "target": {
+                "$ref": "#/$defs/target"
+              },
+              "during": {
+                "type": "array",
+                "items": {
+                  "type": "array"
+                }
+              },
+              "shots": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/$defs/target"
+                }
+              }
+            },
+            "required": [
+              "target"
             ]
           }
         },

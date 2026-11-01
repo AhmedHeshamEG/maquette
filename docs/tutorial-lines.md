@@ -69,7 +69,7 @@ Learn place links to (CONTEXT §8). A phase adds the lines of what it built; M16
 - **The Procreate person:** "Drop your Procreate file on the stage: every layer stands up as a sheet, the sky at the back.
   Push the camera in slowly and the layers part."
 - **The illustrator:** "Painterly: the strokes follow the shapes. Hold it, Duplicate, and in the Look Studio make the
-  strokes bigger; Save to Yours and it's in every project."
+  strokes bigger; Save to Library and it's in every project."
 - **The explainer maker:** "Library, Things, Grounds, Snow: the whole floor is snow, lit by the Look like everything on it."
 - **The comic maker:** "Look, Finish, Print: Ben-Day dots on any Look, lines that boil, and the out-of-focus things as
   slipped plates. Newsprint under it all."

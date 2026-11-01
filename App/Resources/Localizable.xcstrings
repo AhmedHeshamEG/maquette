@@ -145,6 +145,22 @@
         }
       }
     },
+    "%@ is a character. Its parts are in Rig": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ è un personaggio. Le sue parti sono in Rig"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ أصبح شخصية. أجزاؤه في Rig"
+          }
+        }
+      }
+    },
     "%@ is a fill: give it a mask and paint the mask": {
       "localizations": {
         "it": {
@@ -173,6 +189,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "%@ هنا. أجزاؤه في لوحته"
+          }
+        }
+      }
+    },
+    "%@ is here. Its parts are in Rig": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ è qui. Le sue parti sono in Rig"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ هنا. أجزاؤه في Rig"
           }
         }
       }
@@ -1121,6 +1153,22 @@
         }
       }
     },
+    "A 3D file": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Un file 3D"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ملف ثلاثي الأبعاد"
+          }
+        }
+      }
+    },
     "A ball of %@": {
       "localizations": {
         "it": {
@@ -1309,6 +1357,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "جزء من الوجه"
+          }
+        }
+      }
+    },
+    "A picture": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Un'immagine"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "صورة"
           }
         }
       }
@@ -1549,6 +1613,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "اللمسة تؤدي…"
+          }
+        }
+      }
+    },
+    "A video": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Un video"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "فيديو"
           }
         }
       }
@@ -2073,6 +2153,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "أضف أول جزء من لوحته: عين واحدة تصنع مخلوقًا"
+          }
+        }
+      }
+    },
+    "Add its first part in Rig: an eye makes a creature": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aggiungi la prima parte in Rig: un occhio fa una creatura"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "أضف أول جزء في Rig: عين واحدة تصنع مخلوقًا"
           }
         }
       }
@@ -13645,6 +13741,22 @@
         }
       }
     },
+    "For the web": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Per il web"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "للويب"
+          }
+        }
+      }
+    },
     "For Unity and other game engines: the rigged thing with its bones and their keys.": {
       "localizations": {
         "it": {
@@ -13737,6 +13849,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "الصيغة"
+          }
+        }
+      }
+    },
+    "Format: %@": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Formato: %@"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الصيغة: %@"
           }
         }
       }
@@ -18633,6 +18761,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "أخف عتامة"
+          }
+        }
+      }
+    },
+    "Lights": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Luci"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الأضواء"
           }
         }
       }
@@ -26897,6 +27041,22 @@
         }
       }
     },
+    "Print it": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Stampalo"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "اطبعه"
+          }
+        }
+      }
+    },
     "Printer": {
       "localizations": {
         "it": {
@@ -30017,6 +30177,38 @@
         }
       }
     },
+    "Save to Library": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Salva nella Libreria"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "حفظ في المكتبة"
+          }
+        }
+      }
+    },
+    "Save to Library as a loop": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Salva nella Libreria come loop"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "حفظ في المكتبة كحلقة متكررة"
+          }
+        }
+      }
+    },
     "Save to library…": {
       "localizations": {
         "it": {
@@ -32125,6 +32317,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "أظهر القياسات المحفوظة"
+          }
+        }
+      }
+    },
+    "Show notes": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mostra le note"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "إظهار الملاحظات"
           }
         }
       }
@@ -35337,6 +35545,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "افصله"
+          }
+        }
+      }
+    },
+    "Take it to a game": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Portalo in un gioco"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "انقله إلى لعبة"
           }
         }
       }
@@ -42225,6 +42449,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "جدار بنافذة"
+          }
+        }
+      }
+    },
+    "Windows": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Finestre"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "النوافذ"
           }
         }
       }

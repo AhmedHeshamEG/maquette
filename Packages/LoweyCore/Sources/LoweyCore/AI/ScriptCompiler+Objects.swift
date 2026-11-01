@@ -40,6 +40,29 @@ extension ScriptState {
             object = operations.placeOnGround(object, at: at)
         }
         try insert(object, action: action, verb: "Add")
+        try settle(object.id, action, at: at)
+    }
+
+    /// After a thing is added: `"anchor": "center"` puts its middle (not its bottom) at `at`, and a `relation` places it
+    /// by the solver, for shapes as for Kit models (S16: a cube "on" a desk landed on the floor).
+    mutating func settle(_ id: ObjectID, _ action: JSONValue, at: Vec3) throws {
+        if action["relation"] != nil {
+            var placed = action.objectValue ?? [:]
+            placed["target"] = .string(id.raw)
+            try relate(.object(placed))
+            return
+        }
+        switch string(action, "anchor") {
+        case nil, "bottom"?:
+            return
+        case "center"?, "centre"?, "middle"?:
+            guard let box = SceneBounds(library: context.library).worldBounds(of: id, in: scene),
+                  let position = scene.objects[id]?.transform.position else { return }
+            let moved = position + (at - box.center)
+            try run(.setProperties([PropertyChange(object: id, key: .position, value: .vec3(moved))]), label: nil)
+        case let other?:
+            throw fail("unknown anchor “\(other)” (bottom, center)")
+        }
     }
 
     mutating func place(_ action: JSONValue) throws {
@@ -61,8 +84,10 @@ extension ScriptState {
             throw fail("nothing in the library matches “\(query)”. Library: \(names.joined(separator: ", "))")
         }
         if let scale = vec3(action["scale"]) { object.transform.scale = scale }
-        object = try operations.placeOnGround(object, at: point(action["at"]) ?? context.focus)
+        let at = try point(action["at"]) ?? context.focus
+        object = operations.placeOnGround(object, at: at)
         try insert(object, action: action, verb: "Place")
+        try settle(object.id, action, at: at)
     }
 
     mutating func text(_ action: JSONValue) throws {
@@ -171,6 +196,9 @@ extension ScriptState {
         if let color = try color(action["color"]) { object[.lightColor] = .color(color) }
         if let intensity = number(action, "intensity") { object[.lightIntensity] = .float(intensity) }
         if let range = number(action, "range") { object[.lightRange] = .float(range) }
+        if let cone = number(action, "cone") ?? number(action, "angle") { object[.spotAngle] = .float(min(max(cone, 1), 179)) }
+        if let softness = number(action, "penumbra") ?? number(action, "softness") { object[.spotSoftness] = .float(min(max(softness, 0), 1)) }
+        if let shadows = bool(action, "shadows") { object[.lightShadows] = .bool(shadows) }
         if let size = action["size"]?.arrayValue?.compactMap(\.numberValue), size.count == 2 {
             object[.lightWidth] = .float(max(size[0], 0.05))
             object[.lightHeight] = .float(max(size[1], 0.05))
@@ -179,6 +207,25 @@ extension ScriptState {
             object.transform.rotation = BehaviorEvaluator.facing(aim - object.transform.position, cameraStyle: true)
         }
         try insert(object, action: action, verb: "Light")
+    }
+
+    /// `{"do": "mark", "name": "Plate", "at": [0, 0.8, 0], "radius": 0.1}` or `"on": "Plate 3"`: a named spot that
+    /// draws nothing, for cameras to watch and focus on. On a thing, it rides with it.
+    mutating func mark(_ action: JSONValue) throws {
+        var object = SceneObject(id: context.ids.next(), name: name(action, fallback: "Mark"), kind: .group)
+        object[.markRadius] = .float(max(number(action, "radius") ?? 0.1, 0.001))
+        var parent: ObjectID?
+        if let on = action["on"] {
+            let host = try target(on)
+            parent = host
+            let box = SceneBounds(library: context.library).worldBounds(of: host, in: scene)
+            let world = try point(action["at"]) ?? box?.center ?? scene.worldTransform(of: host).position
+            object.transform = Transform.relative(world: Transform(position: world), toParent: scene.worldTransform(of: host))
+        } else {
+            object.transform.position = try point(action["at"]) ?? context.focus
+        }
+        try run(operations.add(object, parent: parent), label: "Mark “\(object.name)”")
+        remember(action, object.id, name: object.name)
     }
 
     mutating func camera(_ action: JSONValue) throws {
@@ -193,6 +240,13 @@ extension ScriptState {
         object[.fieldOfView] = object[.fieldOfView] ?? .float(number(action, "fov") ?? 45)
         object[.focusDistance] = .float(from.distance(to: look))
         if let aperture = number(action, "aperture") { object[.aperture] = .float(aperture) }
+        if let drift = number(action, "drift") { object[.rigDrift] = .float(min(max(drift, 0), 1)) }
+        // Keeps turning to watch a thing (a mark that moves takes the camera with it), and keeps it sharp.
+        if let watched = action["watch"] {
+            let id = try target(watched)
+            object[.lookAt] = .string(id.raw)
+            object[.focusOn] = .string(id.raw)
+        }
         try insert(object, action: action, verb: "Camera")
         if bool(action, "active") ?? (scene.activeCamera == nil) {
             try run(.setActiveCamera(object.id), label: nil)

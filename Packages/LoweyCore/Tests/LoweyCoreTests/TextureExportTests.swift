@@ -357,4 +357,23 @@ final class TextureExportTests: XCTestCase {
         XCTAssertThrowsError(try compile([##"{"do":"paint","target":"A","op":"material","material":"cheese"}"##], document: document))
         XCTAssertThrowsError(try compile([##"{"do":"paint","target":"A","op":"decal","picture":"missing.png","at":[1,0.5,0.5]}"##], document: document))
     }
+
+    /// S16 item 15: a decal can name the picture card add_media made; a wrong name lists the cards there are.
+    func testADecalNamesAPictureCard() throws {
+        var document = bridgeDocument()
+        let card = SceneObject(id: "card", name: "Spectrogram", kind: .card(CardRecipe(image: "media/spectrogram.png")),
+                               transform: Transform(position: Vec3(5, 0, 0)))
+        document.scene.objects[card.id] = card
+        document.scene.roots.append(card.id)
+        let picture = PNGCodec.encode(RGBAImage(width: 4, height: 4, color: RGBA(1, 1, 1, 1)))
+        let result = try compile([##"{"do":"paint","target":"A","op":"decal","picture":"Spectrogram","at":[1,0.5,0.5],"facing":[0,0,1]}"##],
+                                 document: document, files: ["media/spectrogram.png": picture])
+        XCTAssertEqual(result.document.scene.objects["a"]?.paint?.layers.last?.name, "Decal")
+        do {
+            _ = try compile([##"{"do":"paint","target":"A","op":"decal","picture":"Nope","at":[1,0.5,0.5]}"##], document: document)
+            XCTFail("a missing picture is refused")
+        } catch {
+            XCTAssertTrue(String(describing: error).contains("“Spectrogram” (media/spectrogram.png)"), String(describing: error))
+        }
+    }
 }

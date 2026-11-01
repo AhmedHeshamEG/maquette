@@ -139,6 +139,22 @@ extension ScriptState {
         }
         if let scale = number(action, "scale") { material.scale = max(scale, 0.001) }
         if action["color"] != nil { material.color = try paintColor(action) }
+        // A placed model's mesh lives on the iPad: it takes the material whole (its colour, roughness, metal and glow)
+        // instead of a painted fill, so "gold" works on a Kit lamp too (S16).
+        if let object = scene.objects[id], PaintSource.unshaped(of: object) == nil {
+            var changes = [PropertyChange(object: id, key: .color, value: .color(.rgba(material.color))),
+                           PropertyChange(object: id, key: .roughness, value: .float(material.roughness)),
+                           PropertyChange(object: id, key: .metallic, value: .float(material.metal))]
+            if material.id == "glass" {
+                changes.append(PropertyChange(object: id, key: .transmission, value: .float(0.95)))
+                changes.append(PropertyChange(object: id, key: .ior, value: .float(1.5)))
+            }
+            if material.glow.r + material.glow.g + material.glow.b > 0.001 {
+                changes.append(PropertyChange(object: id, key: .emissive, value: .color(.rgba(material.glow))))
+            }
+            try run(.setProperties(changes), label: "\(material.name) on “\(object.name)”")
+            return
+        }
         var images: [String: RGBAImage] = [:]
         for key in material.pictures?.files ?? [] {
             images[key] = paintFile(key).flatMap { try? PNGCodec.decode($0) }
@@ -149,8 +165,16 @@ extension ScriptState {
     // MARK: Decals and faces
 
     mutating func paintDecal(_ id: ObjectID, _ action: JSONValue) throws {
-        guard let key = string(action, "picture"), let picture = paintFile(key).flatMap({ try? PNGCodec.decode($0) }) else {
-            throw fail("decal needs “picture”: a PNG in the project's assets (send it with media first)")
+        // A picture card brought in with add_media can be named instead of its file (S16: the path wasn't discoverable).
+        let cards = scene.objects.values.compactMap { object -> (name: String, file: String)? in
+            if case let .card(recipe) = object.kind, let image = recipe.image { return (object.name, image) }
+            return nil
+        }
+        let asked = string(action, "picture")
+        let key = asked.flatMap { name in cards.first { $0.name.caseInsensitiveCompare(name) == .orderedSame }?.file } ?? asked
+        guard let key, let picture = paintFile(key).flatMap({ try? PNGCodec.decode($0) }) else {
+            let known = cards.map { "“\($0.name)” (\($0.file))" }.joined(separator: ", ")
+            throw fail("decal needs “picture”: a PNG picture card's name or its file" + (known.isEmpty ? " (bring one in with add_media first)" : ": \(known)"))
         }
         guard let at = vec3(action["at"]) else { throw fail("decal needs “at” (a point on the thing)") }
         let ready = try paintReady(id)

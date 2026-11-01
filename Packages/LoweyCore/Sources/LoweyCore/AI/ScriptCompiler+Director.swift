@@ -50,7 +50,13 @@ extension ScriptState {
 
     /// What the solver needs to know about a subject: its box, which way it faces, whether it's a character.
     func shotSubject(_ id: ObjectID) -> ShotSubject? {
-        guard let object = scene.objects[id], let bounds = SceneBounds(library: context.library).worldBounds(of: id, in: scene) else { return nil }
+        guard let object = scene.objects[id] else { return nil }
+        // A mark has no shape: it's framed as a ball of its size.
+        let markBall = object[.markRadius]?.floatValue.map { radius in
+            let middle = scene.worldTransform(of: id).position
+            return Bounds(min: middle - Vec3(radius, radius, radius), max: middle + Vec3(radius, radius, radius))
+        }
+        guard let bounds = SceneBounds(library: context.library).worldBounds(of: id, in: scene) ?? markBall else { return nil }
         let local = object.kind.assetID.flatMap { context.library.asset($0)?.kit?.front } ?? Vec3(0, 0, 1)
         var front = scene.worldTransform(of: id).rotation.act(local)
         front.y = 0

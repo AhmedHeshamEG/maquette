@@ -89,6 +89,7 @@ extension RelationSolver {
     func facingRotation(of target: ObjectID, toward point: Vec3, from position: Vec3) -> Quat {
         let local = kitInfo(target)?.front ?? Vec3(0, 0, 1)
         return Quat(angle: atan2(point.x - position.x, point.z - position.z) - atan2(local.x, local.z), axis: .unitY)
+            * Self.tilt(of: scene.worldTransform(of: target).rotation)
     }
 
     /// Scattered over a flat reference's footprint (a lawn, a floor), or in a circle round anything else; turned at

@@ -157,7 +157,10 @@ struct ThreeReaderBuilder {
             object[.lightColor] = .color(.rgba(Self.colour(source["color"] as? Int ?? 0xFFFFFF)))
             object[.lightIntensity] = .float(source["intensity"] as? Double ?? 1)
             if let distance = source["distance"] as? Double, distance > 0 { object[.lightRange] = .float(distance) }
-            if lightType == .spot { object[.spotAngle] = .float((source["angle"] as? Double ?? .pi / 3) * 360 / .pi) }
+            if lightType == .spot {
+                object[.spotAngle] = .float((source["angle"] as? Double ?? .pi / 3) * 360 / .pi)
+                if let penumbra = source["penumbra"] as? Double { object[.spotSoftness] = .float(min(max(penumbra, 0), 1)) }
+            }
             if lightType == .area {
                 object[.lightWidth] = .float(source["width"] as? Double ?? 1)
                 object[.lightHeight] = .float(source["height"] as? Double ?? 1)

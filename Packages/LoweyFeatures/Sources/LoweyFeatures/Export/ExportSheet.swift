@@ -4,9 +4,10 @@ import LoweyCore
 import LoweyEngine
 import SwiftUI
 
-/// Export asks formats first (A1, CONTEXT §10.11): Video · Picture · 3D · Paper, then the format (MP4, ProRes 4444,
-/// render passes; glTF, FBX, 3MF; PDF…), then its named presets (glTF ▸ for Godot, FBX ▸ for Unity…), the last one
-/// used already picked. Final, transparency, only the selection and every scene or shot are options beside them. It
+/// Export opens on what it's for (U9, D-596): a video, a picture, take it to a game, print it, for the web, a 3D file for
+/// another app. The format is picked for you and one tap deeper (MP4, ProRes 4444, render passes; glTF, FBX, 3MF;
+/// PDF…), then its named presets (glTF ▸ for Godot, FBX ▸ for Unity…), the last one used already picked. Final, transparency, only the selection and every
+/// scene or shot are options beside them. It
 /// renders in the background with the stage still usable, carries on when you leave the app, and every video is
 /// checked before it counts as done.
 struct ExportSheet: View {
@@ -18,6 +19,9 @@ struct ExportSheet: View {
     @State private var preset: ExportPreset = .hd1080
     @State private var settings = ExportPreset.hd1080.settings(range: TimeRange(start: 0, end: 1), fps: 30)
     @State private var options = ExportOptions()
+    @AppStorage("export.purpose") private var purpose = ExportPurpose.video
+    /// The formats row, folded until asked for.
+    @State private var showsFormats = false
     @State private var sharing: [URL] = []
     /// Whether this iPad writes ProRes (asked once, by writing two small frames).
     @State private var proRes = false
@@ -27,8 +31,9 @@ struct ExportSheet: View {
 
     var body: some View {
         HmmSheet("Export") {
-            categories
-            formats
+            purposes
+            formatButton
+            if showsFormats { formats }
             Text(LocalizedStringKey(format.purpose)).font(.hmm(.footnote)).foregroundStyle(theme.text2)
             LazyVGrid(columns: [GridItem(.adaptive(minimum: 150), spacing: HmmSpacing.xs)], spacing: HmmSpacing.xs) {
                 ForEach(format.presets.filter { hdr || !$0.settings(range: range, fps: 30).codec.isHDR }) { item in
@@ -44,7 +49,7 @@ struct ExportSheet: View {
             progressOrStart
             results
         }
-        .onAppear { open(category, remembered: true) }
+        .onAppear { open(purpose, remembered: true) }
         .task {
             proRes = await ExportCapabilities.proRes()
             hdr = await ExportCapabilities.hdr()
@@ -57,23 +62,39 @@ struct ExportSheet: View {
         options.onlyLoop ? (editor.timeline.loop ?? TimeRange(start: 0, end: editor.timeline.duration)) : TimeRange(start: 0, end: editor.timeline.duration)
     }
 
-    /// Video, Picture, 3D, Paper: the first choice.
-    private var categories: some View {
-        HStack(spacing: HmmSpacing.xs) {
-            ForEach(ExportCategory.allCases) { item in
-                ChoiceChip(title: item.title, systemName: item.systemImage, isOn: category == item) {
+    /// What it's for: the first choice.
+    private var purposes: some View {
+        LazyVGrid(columns: [GridItem(.adaptive(minimum: 110), spacing: HmmSpacing.xs)], spacing: HmmSpacing.xs) {
+            ForEach(ExportPurpose.allCases) { item in
+                ChoiceChip(title: item.title, systemName: item.systemImage, isOn: purpose == item) {
                     withHmmAnimation(.snappy) { open(item, remembered: false) }
                 }
-                .accessibilityIdentifier("export-kind-\(item.rawValue)")
+                .accessibilityIdentifier("export-for-\(item.rawValue)")
             }
         }
+    }
+
+    /// The format picked for the purpose; a tap shows the others.
+    private var formatButton: some View {
+        Button {
+            withHmmAnimation(.snappy) { showsFormats.toggle() }
+        } label: {
+            HStack(spacing: HmmSpacing.xxs) {
+                Text("Format: \(format.title)").font(.hmm(.footnote, weight: .semibold))
+                Image(systemName: showsFormats ? "chevron.up" : "chevron.down").font(.system(size: 10, weight: .bold))
+            }
+            .foregroundStyle(theme.text2)
+            .frame(minHeight: 32)
+        }
+        .buttonStyle(.plain)
+        .accessibilityIdentifier("export-formats")
     }
 
     /// The category's formats this iPad can write (ProRes needs its media engine; FBX a rigged thing; maps paint).
     private var formats: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: HmmSpacing.xs) {
-                ForEach(available(category)) { item in
+                ForEach(available(purpose)) { item in
                     ChoiceChip(title: item.title, systemName: nil, isOn: format == item) {
                         withHmmAnimation(.snappy) { pick(item) }
                     }
@@ -83,8 +104,8 @@ struct ExportSheet: View {
         }
     }
 
-    private func available(_ category: ExportCategory) -> [ExportFormat] {
-        category.formats.filter { item in
+    private func available(_ purpose: ExportPurpose) -> [ExportFormat] {
+        purpose.formats.filter { item in
             switch item {
             case .prores: proRes
             case .spatialVideo: SpatialVideoEncoder.isSupported
@@ -99,12 +120,13 @@ struct ExportSheet: View {
         }
     }
 
-    /// Opens a category on its last format and preset (or its first).
-    private func open(_ item: ExportCategory, remembered: Bool) {
-        category = item
+    /// Opens a purpose on its last format and preset (or the one it picks).
+    private func open(_ item: ExportPurpose, remembered: Bool) {
+        purpose = item
         let formats = available(item)
         let last = ExportFormat(rawValue: lastFormat).flatMap { formats.contains($0) ? $0 : nil }
         pick(last ?? formats.first ?? .mp4)
+        category = format.category
         if remembered, let saved = ExportPreset(rawValue: lastPreset), saved.format == format { choose(saved) }
     }
 

@@ -66,10 +66,13 @@ final class GuestTests: XCTestCase {
         XCTAssertTrue(tap(identifier), identifier)
     }
 
-    private func export(kind: String, format: String, preset: String, file: String) {
+    /// Export opens on what it's for (U9); the format is one tap under it.
+    private func export(for purpose: String, format: String, preset: String, file: String) {
         XCTAssertTrue(tap("Actions"))
+        XCTAssertTrue(tap("actions-share"))
         XCTAssertTrue(tap("open-export"))
-        XCTAssertTrue(tap("export-kind-\(kind)"))
+        XCTAssertTrue(tap("export-for-\(purpose)"), purpose)
+        XCTAssertTrue(tap("export-formats"))
         XCTAssertTrue(tap("export-format-\(format)"), format)
         XCTAssertTrue(tap("export-\(preset)"), preset)
         XCTAssertTrue(tap("export-start"))
@@ -95,7 +98,7 @@ final class GuestTests: XCTestCase {
         XCTAssertTrue(element("plans-rooms").waitForExistence(timeout: 5), "with its room and area")
         shot("Sara's plan")
         app.buttons["Done"].firstMatch.tap()
-        export(kind: "model", format: "ifc", preset: "ifcBuilding", file: ".ifc")
+        export(for: "file", format: "ifc", preset: "ifcBuilding", file: ".ifc")
         XCTAssertLessThan(Date().timeIntervalSince(clock), 180, "Sara's plan to IFC")
     }
 
@@ -105,7 +108,7 @@ final class GuestTests: XCTestCase {
         add("print-jar")
         XCTAssertTrue(waitForTrail("cmd=Jar & lid"), "the jar and its screw-on lid")
         shot("Giulia's jar and lid")
-        export(kind: "model", format: "threeMF", preset: "threeMFPrint", file: ".3mf")
+        export(for: "print", format: "threeMF", preset: "threeMFPrint", file: ".3mf")
         XCTAssertLessThan(Date().timeIntervalSince(clock), 180, "Giulia's threaded lid to 3MF")
     }
 
@@ -117,7 +120,7 @@ final class GuestTests: XCTestCase {
         }
         XCTAssertTrue(waitForTrail("cmd=Pillar"), "four greybox pieces")
         shot("Dev's level")
-        export(kind: "model", format: "level", preset: "levelGodot", file: "level.glb")
+        export(for: "game", format: "level", preset: "levelGodot", file: "level.glb")
         XCTAssertLessThan(Date().timeIntervalSince(clock), 180, "Dev's level to Godot")
     }
 }

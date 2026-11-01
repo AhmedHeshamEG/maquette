@@ -14,8 +14,13 @@ public extension PropertyKey {
     static let rigArm: PropertyKey = "rigArm"
     /// Handheld: how much the hands shake, 0…1 (any rig can add it).
     static let rigShake: PropertyKey = "rigShake"
+    /// A slow drift, 0…1, so no frame is dead still (S16): a few seconds a sway, its size a share of how far the lens
+    /// is focused, so a macro shot drifts millimetres and a wide one centimetres. Any camera, on any rig.
+    static let rigDrift: PropertyKey = "drift"
     /// The thing the lens keeps sharp (F1): it follows the thing as it moves; keyed, the focus pulls to the next one.
     static let focusOn: PropertyKey = "focusOn"
+    /// A mark's size in metres (S16's marks: a named spot and how big the thing there is, for framing it).
+    static let markRadius: PropertyKey = "markRadius"
 }
 
 public extension PropertySpec {
@@ -27,7 +32,9 @@ public extension PropertySpec {
         .rigSwing: PropertySpec(type: .float, animatable: true, label: "Swing"),
         .rigArm: PropertySpec(type: .float, animatable: false, label: "Arm"),
         .rigShake: PropertySpec(type: .float, animatable: true, label: "Handheld"),
+        .rigDrift: PropertySpec(type: .float, animatable: true, label: "Drift"),
         .focusOn: PropertySpec(type: .string, animatable: true, label: "Focus on"),
+        .markRadius: PropertySpec(type: .float, animatable: false, label: "Mark size"),
         .lightWidth: PropertySpec(type: .float, animatable: true, label: "Width"),
         .lightHeight: PropertySpec(type: .float, animatable: true, label: "Height")
     ]
@@ -99,7 +106,23 @@ public enum CameraRig: String, Codable, Sendable, CaseIterable, Identifiable {
     /// The hands on top of everything else (after the camera has turned to what it watches).
     static func shaken(_ camera: SceneObject, _ pose: Transform, time: Double) -> Transform {
         let shake = camera[.rigShake]?.floatValue ?? (of(camera) == .handheld ? defaultShake : 0)
-        return shake > 0 ? handheld(pose, amount: min(shake, 1), time: time, seed: Noise.seed(camera.id.raw)) : pose
+        let shaken = shake > 0 ? handheld(pose, amount: min(shake, 1), time: time, seed: Noise.seed(camera.id.raw)) : pose
+        let drift = min(max(camera[.rigDrift]?.floatValue ?? 0, 0), 1)
+        guard drift > 0 else { return shaken }
+        return drifting(shaken, amount: drift, reach: camera[.focusDistance]?.floatValue ?? 5, time: time, seed: Noise.seed(camera.id.raw) &+ 99)
+    }
+
+    /// The slow drift: smooth noise at a sway every 4–8 seconds, at most 1.5 % of the focus distance sideways and up
+    /// and a third of a degree of turn, at full amount.
+    static func drifting(_ pose: Transform, amount: Double, reach: Double, time: Double, seed: UInt64) -> Transform {
+        func wander(_ salt: UInt64, _ rate: Double) -> Double { Noise.fractal(time * rate, seed: seed &+ salt) }
+        let size = max(reach, 0.05) * 0.015 * amount
+        let local = Vec3(wander(1, 0.17) * size, wander(2, 0.13) * size * 0.7, wander(3, 0.11) * size * 0.5)
+        let turn = Quat(eulerDegrees: Vec3(wander(4, 0.15) * 0.3, wander(5, 0.12) * 0.3, 0) * amount)
+        var result = pose
+        result.position = pose.position + pose.rotation.act(local)
+        result.rotation = (pose.rotation * turn).normalized
+        return result
     }
 
     /// A person holding the camera: slow breathing drift, a little sway, small fast corrections. Smooth noise on each
@@ -116,7 +139,7 @@ public enum CameraRig: String, Codable, Sendable, CaseIterable, Identifiable {
     }
 
     static func anyone(in scene: Scene) -> Bool {
-        scene.objects.values.contains { $0.kind == .camera && ($0[.rig] != nil || $0[.rigShake] != nil) }
+        scene.objects.values.contains { $0.kind == .camera && ($0[.rig] != nil || $0[.rigShake] != nil || $0[.rigDrift] != nil) }
     }
 
     /// Every rigged camera onto its rig: the Animator's step before looks and focus.
@@ -135,7 +158,8 @@ public enum CameraRig: String, Codable, Sendable, CaseIterable, Identifiable {
 
     private static func each(in state: inout Animator.Posed, _ placed: (SceneObject, Transform, Animator.Posed) -> Transform) {
         for id in state.scene.objects.keys.sorted() {
-            guard let camera = state.scene.objects[id], camera.kind == .camera, camera[.rig] != nil || camera[.rigShake] != nil else { continue }
+            guard let camera = state.scene.objects[id], camera.kind == .camera,
+                  camera[.rig] != nil || camera[.rigShake] != nil || camera[.rigDrift] != nil else { continue }
             let world = state.scene.worldTransform(of: id)
             let pose = placed(camera, world, state)
             var object = camera

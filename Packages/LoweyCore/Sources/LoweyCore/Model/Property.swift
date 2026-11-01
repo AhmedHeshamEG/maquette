@@ -180,11 +180,22 @@ public struct PropertyKey: RawRepresentable, Hashable, Sendable, Codable, Compar
     public static let metallic: PropertyKey = "metallic"
     public static let shading: PropertyKey = "shading"
     public static let castsShadow: PropertyKey = "castsShadow"
+    /// Shows its own colours, untouched by the lights and the Look's shading (a picture, a screen, a sign).
+    public static let unlit: PropertyKey = "unlit"
+    /// A clear lacquer over the surface, 0…1 (enamel, bakelite, a car's paint), and how rough that lacquer is (Real Look).
+    public static let clearcoat: PropertyKey = "clearcoat"
+    public static let clearcoatRoughness: PropertyKey = "clearcoatRoughness"
+    /// How much light passes through, 0…1 (glass, water, a loupe's lens), and how much it bends (index of refraction,
+    /// 1.0 air … 1.5 glass … 2.4 diamond) (Real Look).
+    public static let transmission: PropertyKey = "transmission"
+    public static let ior: PropertyKey = "ior"
     // Light
     public static let lightColor: PropertyKey = "lightColor"
     public static let lightIntensity: PropertyKey = "lightIntensity"
     public static let lightRange: PropertyKey = "lightRange"
     public static let spotAngle: PropertyKey = "spotAngle"
+    /// 0…1: how much of a spot's cone fades to its edge (0 a hard disc, 1 soft from the middle; 0.4 by default).
+    public static let spotSoftness: PropertyKey = "penumbra"
     public static let lightShadows: PropertyKey = "lightShadows"
     public static let opacity: PropertyKey = "opacity"
     // Animation
@@ -272,10 +283,16 @@ public struct PropertySpec: Sendable, Hashable {
         .metallic: PropertySpec(type: .float, animatable: true, label: "Metallic"),
         .shading: PropertySpec(type: .enumeration, animatable: false, label: "Shading"),
         .castsShadow: PropertySpec(type: .bool, animatable: false, label: "Casts shadow"),
+        .unlit: PropertySpec(type: .bool, animatable: false, label: "Its own colours"),
+        .clearcoat: PropertySpec(type: .float, animatable: true, label: "Clear coat"),
+        .clearcoatRoughness: PropertySpec(type: .float, animatable: true, label: "Clear coat roughness"),
+        .transmission: PropertySpec(type: .float, animatable: true, label: "See-through"),
+        .ior: PropertySpec(type: .float, animatable: false, label: "Bends light"),
         .lightColor: PropertySpec(type: .color, animatable: true, label: "Light color"),
         .lightIntensity: PropertySpec(type: .float, animatable: true, label: "Intensity"),
         .lightRange: PropertySpec(type: .float, animatable: true, label: "Range"),
         .spotAngle: PropertySpec(type: .float, animatable: true, label: "Spot angle"),
+        .spotSoftness: PropertySpec(type: .float, animatable: true, label: "Spot softness"),
         .lightShadows: PropertySpec(type: .bool, animatable: false, label: "Shadows"),
         .opacity: PropertySpec(type: .float, animatable: true, label: "Opacity"),
         .stepping: PropertySpec(type: .enumeration, animatable: true, label: "Frame rate"),

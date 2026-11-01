@@ -38,7 +38,7 @@ end says what came from where.
    a finger or the hovering Pencil comes near.
 3. **Time lives in the timeline**, and the timeline comes when called: the corner control (⏱) or Animate. Performing
    live, overlays on the video, sound and words are there.
-4. **Actions holds making and sharing**: export, the project file, the Monitor, the Board, the Reference window, History, Learn, Settings.
+4. **Actions holds making and sharing**, in six: Share, Windows, Notes, History, Learn, Settings (U9).
 5. **The object panel belongs to the selection.** It floats beside it and never covers it, can be moved by hand and
    stays where it was left, and folds to a chip (its name and Move · Turn · Size) while anything bigger is open.
 6. **One big thing open at a time.** Opening a panel folds the whole timeline to its transport and the object panel to
@@ -90,25 +90,30 @@ when they disagree. In the App Store configuration the walk asserts a held row's
 
 ### Actions
 
+Six (U9): **Share** (export, the project file, share for AR, present) · **Windows** (Reference, Monitor, Rotoscope, the AR
+view, the Board, your iPhone) · **Notes** · History · Learn · Settings. The first three open their page in the panel;
+a back arrow returns.
+
 | Control | Walk |
 |---|---|
-| Export: Video · Picture · 3D · Paper, then the format, then its presets; Final and the options beside them | `Actions › open-export` |
+| Share, Windows, Notes: their pages | `Actions › actions-windows` |
+| Export opens on what it's for (U9): video, picture, game, print, web, 3D file; the format one tap deeper; presets, Final | `Actions › actions-share › open-export` |
 | Export (F1): Video ▸ Animatic, Spatial video (where the iPad encodes it), 360° video, HEVC ▸ HDR; Picture ▸ Spatial photo, 360° panorama, PNG ▸ Wide colour; Paper ▸ Storyboard | in the Export sheet |
 | Export (D1): loops seamlessly, or what jumps when it loops and Close the loop | in the Export sheet, beside a video or GIF preset |
 | Export (G1): Picture ▸ Layered PSD, Ink as SVG; 3D ▸ IFC (when there's a building; *held*), Game level for Godot, Unity, Unreal (one texture for everything); Paper ▸ Plans & elevations (PDF, DXF, SVG; when there's a building), Technical drawing, Papercraft (and a laser net) (the IFC, the plans, the technical drawing and papercraft are held, rule 9) | in the Export sheet |
-| Share the project file | `Actions › Project file` |
-| Monitor window (Stage Manager, external display) | `Actions › open-monitor` |
-| Present: the stage fills the screen (a TV by AirPlay or a cable); a tap brings back its few controls (U8) | `Actions › present` |
-| Notes: the review pins on their spots; tap one for its thread (reply, Resolve, Delete) (U8) | `Actions › open-notes` |
-| Add a note: then tap the spot; the words, signed with your name (U8) | `Actions › add-note` |
-| Clear resolved notes (U8) | Actions, while the notes show and one is resolved |
-| Review over FaceTime: the project goes to the people on the call; everyone turns the same view and leaves notes (U8) *(held: 1.0)* | Actions, during a FaceTime call |
-| Your iPhone: use it as your face, a camera, the remote, an AR view, a room or object scanner (U8) *(held: 1.0)* | `Actions › open-phone` |
-| Share for AR: the scene as a USDZ any iPhone or iPad opens in AR Quick Look (M12) | `Actions › share-ar` |
-| View in AR: the scene on your floor or table, in its own Look; table or life size, play, share (M12; an iPad with a rear camera) | Actions, on an iPad that can |
-| The Board: plan before building (below) *(held: 1.0)* | `Actions › open-board` |
-| The Reference window (Q1): the whole scene from its own camera, a picture (Import, Paste, Clear; one finger pans it, two zoom it) or the front camera; drag its bar, size it by its corner or a pinch on the bar, ✕ closes it; Pick takes a colour from it; a two-finger tap hides it a moment | Actions ▸ Reference, or ⌘⌥R |
-| Rotoscope: a video behind the stage, its frame the one under the playhead (opacity, over the scene, start at the playhead); never exported (F1) | Actions ▸ Rotoscope, once a video is picked from Photos |
+| Share the project file | `Actions › actions-share › Project file` |
+| Monitor window (Stage Manager, external display) | `Actions › actions-windows › open-monitor` |
+| Present: the stage fills the screen (a TV by AirPlay or a cable); a tap brings back its few controls (U8) | `Actions › actions-share › present` |
+| Notes: the review pins on their spots; tap one for its thread (reply, Resolve, Delete) (U8) | `Actions › actions-notes › open-notes` |
+| Add a note: then tap the spot; the words, signed with your name (U8) | `Actions › actions-notes › add-note` |
+| Clear resolved notes (U8) | Actions ▸ Notes, while the notes show and one is resolved |
+| Review over FaceTime: the project goes to the people on the call; everyone turns the same view and leaves notes (U8) *(held: 1.0)* | Actions ▸ Notes, during a FaceTime call |
+| Your iPhone: use it as your face, a camera, the remote, an AR view, a room or object scanner (U8) *(held: 1.0)* | `Actions › actions-windows › open-phone` |
+| Share for AR: the scene as a USDZ any iPhone or iPad opens in AR Quick Look (M12) | `Actions › actions-share › share-ar` |
+| View in AR: the scene on your floor or table, in its own Look; table or life size, play, share (M12; an iPad with a rear camera) | Actions ▸ Windows, on an iPad that can |
+| The Board: plan before building (below) *(held: 1.0)* | `Actions › actions-windows › open-board` |
+| The Reference window (Q1): the whole scene from its own camera, a picture (Import, Paste, Clear; one finger pans it, two zoom it) or the front camera; drag its bar, size it by its corner or a pinch on the bar, ✕ closes it; Pick takes a colour from it; a two-finger tap hides it a moment | Actions ▸ Windows ▸ Reference, or ⌘⌥R |
+| Rotoscope: a video behind the stage, its frame the one under the playhead (opacity, over the scene, start at the playhead); never exported (F1) | Actions ▸ Windows ▸ Rotoscope, once a video is picked from Photos |
 | History scrubber, versions; over it, the selected thing's modelling steps to change (H1) | `Actions › open-history` |
 | Learn: the tour, every gesture, the instructions switch | `Actions › open-learn` |
 | Settings | `Actions › Settings` |
@@ -120,16 +125,16 @@ Three short pages; the page is remembered.
 | Control | Walk |
 |---|---|
 | Only this scene | `Look › Only this scene` |
-| Style: twelve Looks (Ink … Painterly, Watercolour, Gouache, Paperman, Anime cel … Pixel), My Looks, Your Looks | `Look › look-style › look-painterly` |
+| Style: thirteen Looks (Ink … Painterly, Watercolour, Gouache, Paperman, Anime cel … Real … Pixel), My Looks, Your Looks | `Look › look-style › look-painterly` |
 | Style: duplicate as My Look | `Look › look-style › duplicate-look` |
-| Style: the Look Studio (Light, Lines, Paint, Print, Motion, About); Save to Yours; Share as a pack (L2) | Look ▸ Style ▸ Open “My Look” in the Look Studio, or a My Look's hold menu |
+| Style: the Look Studio (Light, Lines, Paint, Print, Motion, About); Save to Library; Share as a pack (L2) | Look ▸ Style ▸ Open “My Look” in the Look Studio, or a My Look's hold menu |
 | Style: a Look's hold menu: duplicate, open in the Look Studio, save to Yours, share as a pack, delete | touch and hold a Look |
 | Style: the palette (linked colours; the sidebar's Pick fills the slot being edited) | `Look › look-style › Add a colour` |
 | World: moods (Day … Studio, Dark studio) | `Look › look-world › mood-dusk` |
 | World: sky from a picture (an HDRI that shows behind everything and lights the world; turn, brightness) (F1) | Look ▸ World ▸ Choose an HDRI… (the Files sheet) |
 | World: the air, haze and god rays (F1) | `Look › look-world › Haze` |
 | World: fine tune the world | `Look › look-world › Fine tune the world` |
-| World: save the world to the library | `Look › look-world › Save this world to the library` |
+| World: Save to Library (one verb, one icon, everywhere something can be saved; U9) | `Look › look-world › Save to Library` |
 | World: the real sun (a place, a date, a time; a shadow study across the timeline; which way north is), in Fine tune the world | Look ▸ World ▸ Fine tune the world ▸ Real sun |
 | Finish: clean, cinematic, dreamy, retro, ink outlines, collage, old film; grain, bloom | `Look › look-finish › Cinematic` |
 | Finish: Motion (smooth, on twos, on threes) for the whole scene | `Look › look-finish › finish-motion` |
@@ -179,19 +184,20 @@ Three short pages; the page is remembered.
 
 | Control | Walk |
 |---|---|
+| Add in groups (U9): Shapes, Lights, Words & pictures, Effects; a Room, Print or Game project's Kit first | `Model › model-add › add-group-effects` |
 | Add: shapes (cube, sphere, cylinder, cone, plane, torus, ramp; bevelled), in the colour in the hand | `Model › model-add › add-cube` |
 | | `Model › model-add › add-ramp` |
-| Add: bulb, spot, soft panel, sun | `Model › model-add › add-spot` |
-| | `Model › model-add › add-panel` |
+| Add: bulb, spot, soft panel, sun | `Model › model-add › add-group-lights › add-spot` |
+| | `Model › model-add › add-group-lights › add-panel` |
 | A light: colour, strength, reach, a spot's cone, a soft panel's size; Setups (three-point, golden hour, moonlight, neon; more one step deeper) (F1) | in the panel of a light |
-| Add: 3D text | `Model › model-add › add-text3d` |
-| Add: a photo or video (a card in the world) | `Model › model-add › add-media` |
-| Add: a logo (an SVG: one solid a colour, the upper colours standing proud) | `Model › model-add › add-logo` |
-| Add: a drawing (PSD, PSB, Procreate): a painted sheet a layer, stacked in depth, ready to pin and rig (L2) | `Model › model-add › add-drawing` |
-| Add: a web page, a folder with one or a Lottie file, on a screen in the scene or over the frame (M12) *(held: 1.0)* | `Model › model-add › add-web` |
-| Add: effects (fire, sparks, smoke…) | `Model › model-add › add-fx-fire` |
-| Add: forces (fan, pull, whirl) and fluids (pour water, splash, billowing smoke, flames) | `Model › model-add › add-force-fan` |
-| | `Model › model-add › add-fluid-pour` |
+| Add: 3D text | `Model › model-add › add-group-words › add-text3d` |
+| Add: a photo or video (a card in the world) | `Model › model-add › add-group-words › add-media` |
+| Add: a logo (an SVG: one solid a colour, the upper colours standing proud) | `Model › model-add › add-group-words › add-logo` |
+| Add: a drawing (PSD, PSB, Procreate): a painted sheet a layer, stacked in depth, ready to pin and rig (L2) | `Model › model-add › add-group-words › add-drawing` |
+| Add: a web page, a folder with one or a Lottie file, on a screen in the scene or over the frame (M12) *(held: 1.0)* | `Model › model-add › add-group-words › add-web` |
+| Add: effects (fire, sparks, smoke…) | `Model › model-add › add-group-effects › add-fx-fire` |
+| Add: forces (fan, pull, whirl) and fluids (pour water, splash, billowing smoke, flames) | `Model › model-add › add-group-effects › add-force-fan` |
+| | `Model › model-add › add-group-effects › add-fluid-pour` |
 | Add: Building: walls, floor, door, window, stairs; roof, column, beam, railing, person, room name, terrain (G1) | `scene-name › setup-room › Model › model-add › build-roof` |
 | Add: Plans and the site: walk through, match a photo (G1) | `scene-name › setup-room › Model › model-add › room-walk` |
 | Add: plans with areas, an underlay set to scale (G1) *(held: 1.0)* | `scene-name › setup-room › Model › model-add › room-plans` |
@@ -264,6 +270,14 @@ you until a finger's tap places it, and reads as paper while you draw. Tap Draw 
 | A dot is a joint, a pin a soft bend; tap a mark so the next hangs from it, double-tap it to switch pin and dot | the marks on the stage while Rig is on |
 | The Rig tool's bar: Dots or Pins for the Pencil, done; a person's Rig and cancel; the weight brush's bone, erase and done | shown under the stage while Rig is on |
 | Several things chosen: rig them together (each part rides the bone nearest it; a dot between two parts hinges them) | Rig with two or more things selected |
+| Give it parts: eyes, arms, a mouth… (the thing becomes the body of a character that rigs itself; U9: moved from the object panel) | `[cube] Rig › character-give` |
+| A made character's parts: every job a tap away (hold one for its styles), Mirrored; the picked part's styles, Take it away; Name its parts | Rig, with a made character selected |
+| A made character: Face (the states of its mouth, brows and eyes; tap to see one, bend it one step deeper) | Rig, with a made character selected |
+| A made character: Proportions (each in metres; handles on the stage: head, feet, hands, waist) | Rig, with a made character selected |
+| A made character: Say a line (lip sync from typed words, from the playhead) | Rig, with a made character selected |
+| A made character: Act it out (film yourself or a video; the character copies the body), people only | Rig, with a made person selected |
+| A made character: For games (engines, sprite sheets, turnaround) | Rig, with a made character selected |
+| A drawing or a modelled thing near a character: Make it a part (or the drawing of a face state) | Rig, with the drawing selected |
 | Rigged: change the rig (it relaxes to its rest shape and shows its pins and dots; poses and keys stay), reset the pose, remove the rig | Rig on a rigged thing |
 | How it bends: paint weights; fit the weights to a new shape | Rig ▸ How it bends, on a rigged thing |
 | Pose: Dangle for the joint last touched (and everything below it) | Rig on a rigged thing, after touching a joint |
@@ -299,31 +313,24 @@ Animate calls the timeline and its bar, under the stage (A1): six verbs. With no
 | Its size in the project's units, and what the Model tool picked | `[cube] selection-size` |
 | Colour (the scene's palette) | `[cube] section-Colour` |
 | What kind of thing it is: a light's, a text's, an overlay's, an effect's own controls | in the panel for those things |
-| Make it move, one strip: loops (spin, float, bounce, wiggle, swing, follow a path), then once-moves; speed, keyframes | `[cube] motion-bounce` |
-| Make it move: Link (moved by another thing: tap it next) | `[cube] motion-link` |
-| | `[cube] preset-popIn` |
-| On the selection: Scatter copies on the ground | `[cube] tool-scatter` |
-| On the selection: Mirror and symmetry | `[cube] mirror` |
-| On the selection: Model it (a placed library model; shapes are always editable) | in the panel of a placed model |
-| On the selection: Combine (union, subtract, intersect), with two or more shapes | in the panel when two or more shapes are selected |
-| Look of this object: glow, smoothing, bevel; its own Look, line weight, rim light, accent, gloss | `[cube] object-look` |
-| Shape of this object: typed sides, Smooth, the smooth angle, triangles, clean up, holes, linked copies, the pivot | `[cube] object-shape` |
+| Make it move, one strip: loops (spin, float, bounce, wiggle, swing, follow a path), then once-moves; speed, keyframes | `[cube] object-move › motion-bounce` |
+| Make it move: Link (moved by another thing: tap it next) | `[cube] object-move › motion-link` |
+| | `[cube] object-move › preset-popIn` |
+| The four tabs (U9): Move (open first) · Look · Shape · Real; the tab chosen is remembered | `[cube] object-move` |
+| Shape: Scatter copies on the ground | `[cube] object-shape › tool-scatter` |
+| Shape: Mirror and symmetry | `[cube] object-shape › mirror` |
+| Shape: Model it (a placed library model; shapes are always editable) | the Shape tab of a placed model |
+| Shape: Combine (union, subtract, intersect), with two or more shapes | in the panel when two or more shapes are selected |
+| Look: glow, smoothing, bevel; its own Look, line weight, rim light, accent, gloss | `[cube] object-look` |
+| Shape: typed sides, Smooth, the smooth angle, triangles, clean up, holes, linked copies, the pivot | `[cube] object-shape` |
 | Real: a material in words, how it moves, its weight; joints; Settle, Does it stand?, Keep it; exact numbers deeper | `[cube] object-real` |
-| Give it parts: eyes, arms, a mouth… (the thing becomes the body of a character that rigs itself) | `[cube] character-give` |
-| A made character's parts: every job a tap away (hold one for its styles), Mirrored; the picked part's styles, Take it away | in the panel of a made character |
-| A made character: Face (the states of its mouth, brows and eyes; tap to see one, bend it one step deeper) | in the panel of a made character |
-| A made character: Proportions (each in metres; handles on the stage: head, feet, hands, waist) | in the panel of a made character |
-| A made character: Say a line (lip sync from typed words, from the playhead) | in the panel of a made character |
-| A made character: Act it out (film yourself or a video; the character copies the body), people only | in the panel of a made person |
-| A made character: For games (engines, sprite sheets, turnaround) | in the panel of a made character |
-| A drawing or a modelled thing near a character: Make it a part (or the drawing of a face state) | in the panel of a drawing |
-| More ways to move: once-moves' length, behaviours, animated on (ones…fours), physics, joints, paths, onion skin | `[cube] more-motion` |
-| Links: link it to another thing (a gear, moving with it, growing as it rises) or to the music's loudness, bass or beat | `[cube] more-motion › link-thing` |
+| More ways to move: once-moves' length, behaviours, animated on (ones…fours), physics, joints, paths, onion skin | `[cube] object-move › more-motion` |
+| Links: link it to another thing (a gear, moving with it, growing as it rises) or to the music's loudness, bass or beat | `[cube] object-move › more-motion › link-thing` |
 | Clones: the layout and its numbers, effects (random, delay, push) through fields (everywhere, near a point, a ripple), effect strength, Remove | in the panel of a cloned thing |
 | Morph: what it becomes, Remove the morph | in the panel of a morphing thing |
 | 3D text: its font (the style's, or one brought in), letters that animate (fly in, bounce in, cascade, pop, spin in, type on, wave), their order and timing | in the panel of 3D text |
-| Numbers: position, rotation, size | `[cube] transform-toggle` |
-| About this object | `[cube] inspector-more` |
+| Numbers: position, rotation, size | `[cube] object-move › transform-toggle` |
+| About this object | `[cube] object-move › inspector-more` |
 | Duplicate, hide | `[cube] Duplicate` |
 | The object's one menu (the same as touching and holding it) | `[cube] more-actions` |
 | Delete | `[cube] Delete` |
@@ -375,7 +382,7 @@ titles are 3D text that sticks to the camera, screen effects are in Look ▸ Fin
 | The ruler: drag to scrub; tap just beside the playhead to step a frame; flick left to go to the start | `[timeline] timeline-ruler` |
 | A thing's row (Motion): its icon in its colour and a curve of how much it moves; frames as cells when zoomed in; the dope sheet lists every property instead | the lanes |
 | A selected row's whole animation: drag the grip under it to slide it in time; drag the dot at its end to repeat it (the repeats show lighter) | under a selected animated row |
-| The grip's hold menu: loop forever or play once; save as a clip or a loop to the Library | touch and hold the grip |
+| The grip's hold menu: loop forever or play once; Save to Library, or Save to Library as a loop | touch and hold the grip |
 | A key's hold menu: copy, paste; feel (ease, snap, bounce, straight; the curve one step deeper), reverse, mirror; delete | touch and hold a key |
 | A clip's hold menu: split at the playhead, loop or play once; delete | touch and hold a clip |
 | A flipbook drawing's hold menu: duplicate; hold longer, hold shorter; delete (the track's is on its name) | touch and hold a drawing |
@@ -415,8 +422,9 @@ grammar: the board itself top left, the making tools top right, the sidebar, the
 
 Touch and hold any thing and the same menu opens in the same order (CONTEXT §4.1): **Duplicate · Rename · Copy ·
 Paste**, then one to three extras that fit the thing, then **Delete** in red. The first four and Delete are always in
-the same places; a row a thing can't do is dimmed. An object's menu holds everything it can do: Hide, Lock, and More
-(Group or Ungroup, Array, Clone, Morph into, To the ground, Settle, Swap for a model, Save to the library, Unpack); on the stage, with other
+the same places; a row a thing can't do is dimmed. An object's menu is six rows (U9): Duplicate · Copy · Paste · Hide ·
+More · Delete, and More holds everything else it can do (Rename, Lock, Group or Ungroup, Array, Clone, Morph into, To the
+ground, Settle, Swap for a model, Save to Library, Unpack); on the stage, with other
 things selected, **Add to the selection** comes first. A finger held still on an object opens it; a finger that moves
 is a drag. The same object has the same menu on the stage, in the outliner, on its timeline row and behind its panel's
 ⋯ button. Also on: keys, clips, flipbook drawings and tracks, cuts, screen effects, paint layers, brushes, Looks,
@@ -460,10 +468,11 @@ explanations in panels; on by default).
 - **Messages** (U5: one toast system): every message, the guide line at the bottom included, leaves after two seconds
   or on any touch.
 - **Under load nothing is said on the stage** (CONTEXT §6): the preview lightens by itself and comes back.
-- **The menu bar and keyboard** reach the same controls: ⌘1–⌘4 Model, Draw, Rig, Animate; ⌘6–⌘8 Actions, Look, the
-  lasso; ⌘L the Library; ⌥⌘1–3 move, turn, size; ⌘T the timeline; Space/J/K/L and ⌥←→ the transport; the Physics
-  menu: ⇧⌘J make real, ⌥⌘J not real, ⌘J settle, ⌥⌘U does it stand, ⇧⌘K keep the run as keys. Holding ⌘ lists
-  them. The Perform menu has the microphone and the trigger keys.
+- **The menu bar mirrors the screen** (U9): Scene · Model · Draw · Rig · Animate · Look, named like the buttons, each
+  tool's switch first (Model holds Shape, Real and the set-ups' kits; Draw holds Texture; Rig the characters; Animate
+  the timeline and Perform). ⌘1–⌘4 Model, Draw, Rig, Animate; ⌘6–⌘8 Actions, Look, the lasso; ⌘L the Library; ⌥⌘1–3
+  move, turn, size; ⌘T the timeline; Space/J/K/L and ⌥←→ the transport; Real: ⇧⌘J make real, ⌥⌘J not real, ⌘J
+  settle, ⌥⌘U does it stand, ⇧⌘K keep the run as keys. Holding ⌘ lists them.
 - **Proposals** from the AI bridge appear at the bottom of the stage while one is waiting.
 
 ## What moved in 0.26 (U8)

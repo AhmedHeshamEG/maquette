@@ -71,7 +71,12 @@ enum LookResolver {
         look.rim = SIMD4<Float>(Float(shading.rim), Float(shading.rimThreshold), Float(shading.rimSoftness), Float(shading.contactShading))
         look.specular = SIMD4<Float>(Float(shading.specular), Float(shading.specularSize), Float(shading.specularSoftness),
                                      Float(shading.smoothing))
-        look.model = SIMD4<Float>(shading.model == .clay ? 1 : 0, shading.posterizeTextures ? 1 : 0, shading.softShadows ? 1 : 0,
+        let model: Float = switch shading.model {
+        case .toon: 0
+        case .clay: 1
+        case .real: 2
+        }
+        look.model = SIMD4<Float>(model, shading.posterizeTextures ? 1 : 0, shading.softShadows ? 1 : 0,
                                   Float(shading.bloom))
         let lines = preset.lines
         look.lines = SIMD4<Float>(lines.enabled ? 1 : 0, Float(lines.width), Float(lines.darken), lines.colorMode == .ink ? 1 : 0)
@@ -99,6 +104,11 @@ enum LookResolver {
     }
 
     /// Whether any Look in the frame lays paint over the picture (the paint pass runs only then).
+    /// Whether these uniforms are the Real Look's (shading model 2).
+    static func isReal(_ look: LookUniforms) -> Bool {
+        look.model.x > 1.5
+    }
+
     static func paints(_ looks: [LookUniforms]) -> Bool {
         looks.contains { $0.paint.x > 0 || $0.paint.z > 0 || $0.paint.w > 0 || $0.paper.x > 0 }
     }
@@ -108,12 +118,15 @@ enum LookResolver {
         var uniforms = PostUniforms()
         uniforms.size = SIMD4<Float>(size.x, size.y, 1 / max(size.x, 1), 1 / max(size.y, 1))
         uniforms.grade = SIMD4<Float>(Float(pow(2, post.exposure)), Float(post.contrast), Float(post.saturation), Float(post.temperature))
-        uniforms.bloom = SIMD4<Float>(Float(post.bloom) * 0.8, 1.0, Float(sceneLook.shading.bloom) * 0.5, 0)
+        uniforms.bloom = SIMD4<Float>(Float(post.bloom) * 0.8, 1.0, Float(sceneLook.shading.bloom) * 0.5, Float(post.halation))
         uniforms.film = SIMD4<Float>(Float(post.vignette), Float(post.grain), Float(post.chromaticAberration), Float(post.retro))
         // 0 none, 1 paper, 2 collage, 3 old film, 4 newsprint, 5 risograph, 6 canvas (Post.metal's lw_finish).
         uniforms.texture = SIMD4<Float>(Float(post.texture.shaderIndex), Float(post.textureStrength), Float(frame), 0)
         uniforms.pixels = SIMD4<Float>(size.y / 1080, Float(frame), Float(frame / 2), 0)
         uniforms.print.x = Float(post.benDay)
+        // The filmic curve when the Finish asks, or by default in the Real Look.
+        let filmic = (post.toneCurve ?? (sceneLook.shading.model == .real ? .filmic : .soft)) == .filmic
+        uniforms.print.w = filmic ? 1 : 0
         if let pixel = sceneLook.pixel {
             // The whole frame takes its blocks from the scene's Look, at the picture's own height (D-481).
             uniforms.print.y = Float(pixel.blockPixels(height: Int(size.y)))

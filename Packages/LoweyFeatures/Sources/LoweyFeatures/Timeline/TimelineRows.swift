@@ -277,8 +277,8 @@ struct AnimationGrip: View {
             HmmHoldMenu.Item(loops ? "Play once" : "Loop forever", systemName: "repeat") {
                 editor.repeatAnimation(of: ids, repeats: loops ? 0 : nil)
             },
-            HmmHoldMenu.Item("Save as a clip", systemName: "film") { editor.saveMotionToLibrary(of: id, loops: false) },
-            HmmHoldMenu.Item("Save as a loop", systemName: "repeat.circle") { editor.saveMotionToLibrary(of: id, loops: true) }
+            HmmHoldMenu.Item("Save to Library", systemName: "tray.and.arrow.down") { editor.saveMotionToLibrary(of: id, loops: false) },
+            HmmHoldMenu.Item("Save to Library as a loop", systemName: "repeat.circle") { editor.saveMotionToLibrary(of: id, loops: true) }
         ])
     }
 

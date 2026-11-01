@@ -32,6 +32,11 @@ final class LibraryTests: XCTestCase {
         XCTAssertEqual(LibrarySearch.search("", in: manifest).count, 6)
         XCTAssertEqual(LibrarySearch.search("moody", in: manifest, filter: .looks).count, 1)
         XCTAssertEqual(LibrarySearch.search("desk", in: manifest).first?.name, "Desk", "exact name beats word match")
+        // S16: a description finds the closest thing instead of nothing; plurals find the singular.
+        XCTAssertEqual(LibrarySearch.search("wooden desk table", in: manifest).first?.name, "Desk")
+        XCTAssertEqual(LibrarySearch.search("desk lamp", in: manifest).first?.name, "Warm desk lamp")
+        XCTAssertEqual(LibrarySearch.search("trees", in: manifest).count, 2)
+        XCTAssertEqual(LibrarySearch.singular("shelves"), "shelf")
     }
 
     func testFilters() {

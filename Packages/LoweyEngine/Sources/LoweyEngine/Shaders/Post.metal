@@ -6,7 +6,7 @@
 struct PostUniforms {
     float4 size;       // width, height, 1/width, 1/height
     float4 grade;      // x = exposure multiplier, y = contrast, z = saturation, w = temperature
-    float4 bloom;      // x = intensity, y = threshold, z = scene Look bloom, w = unused
+    float4 bloom;      // x = intensity, y = threshold, z = scene Look bloom, w = halation (U9)
     float4 film;       // x = vignette, y = grain, z = chromatic aberration, w = retro
     float4 texture;    // x = kind (0 none, 1 paper, 2 collage, 3 old film), y = strength, z = frame, w = unused
     float4 lens;       // x = CoC pixels per unit of |1/focus − 1/d|, y = 1/focus, z = max CoC (px), w = mode (0 off, 1 blur, 2 misregistration)
@@ -14,7 +14,7 @@ struct PostUniforms {
     float4 air;        // x = haze density (per metre), y = god rays, zw = the sun on the frame (0…1 from the top left)
     float4 airColor;   // haze colour (linear), w = how much the sun faces the camera
     float4 sunGlow;    // the sun's colour (linear), w = 1 for an HDR frame (highlights kept past white)
-    float4 print;      // x = Ben-Day dots, y = pixel block (px, 0 = off), z = colour levels (Pixel), w = unused (L2)
+    float4 print;      // x = Ben-Day dots, y = pixel block (px, 0 = off), z = colour levels (Pixel), w = 1 filmic tone curve (U9)
 };
 
 constexpr sampler lw_postSampler(coord::normalized, address::clamp_to_edge, filter::linear);
@@ -116,6 +116,21 @@ kernel void lw_lens(texture2d<float, access::sample> source [[texture(0)]],
         color.b = mix(color.b, source.sample(lw_postSampler, 0.5 + fromCenter * (1.0 - spread)).b, 1.0);
     }
     output.write(float4(color, center.a), gid);
+}
+
+// ---------------------------------------------------------------------------------------------------------------
+// The filmic tone curve (U9, the Real Look): Stephen Hill's fit of ACES (the reference rendering and output
+// transforms), so a lamp keeps its shape past white and the darks stay rich instead of lifting.
+
+static inline float3 lw_aces(float3 color) {
+    float3 v = float3(dot(float3(0.59719, 0.35458, 0.04823), color), dot(float3(0.07600, 0.90834, 0.01566), color),
+                      dot(float3(0.02840, 0.13383, 0.83777), color));
+    float3 a = v * (v + 0.0245786) - 0.000090537;
+    float3 b = v * (0.983729 * v + 0.4329510) + 0.238081;
+    v = a / b;
+    float3 out = float3(dot(float3(1.60475, -0.53108, -0.07367), v), dot(float3(-0.10208, 1.10813, -0.00605), v),
+                        dot(float3(-0.00327, -0.07276, 1.07602), v));
+    return saturate(out);
 }
 
 // ---------------------------------------------------------------------------------------------------------------
@@ -262,10 +277,13 @@ kernel void lw_finish(texture2d<float, access::sample> source [[texture(0)]],
         color = mix(color, color * 0.45, strokes * darkness);
     }
     if (u.air.x > 0.0 || u.air.y > 0.0) { color = lw_air(color, uv, normalDepth, u); }
-    color += bloom.sample(lw_postSampler, uv).rgb * (u.bloom.x + u.bloom.z);
+    float3 glow = bloom.sample(lw_postSampler, uv).rgb;
+    color += glow * (u.bloom.x + u.bloom.z);
+    // Halation: film's red-orange glow where light past white bleeds back through the emulsion.
+    if (u.bloom.w > 0.0) { color += glow * float3(1.0, 0.3, 0.1) * u.bloom.w * 1.6; }
     // An HDR frame keeps its highlights past white (the encoder's HLG holds them); SDR rolls them off.
     bool hdr = u.sunGlow.w > 0.5;
-    color = hdr ? clamp(color * u.grade.x, 0.0, 3.78) : lw_softClip(color * u.grade.x);
+    color = hdr ? clamp(color * u.grade.x, 0.0, 3.78) : (u.print.w > 0.5 ? lw_aces(color * u.grade.x) : lw_softClip(color * u.grade.x));
     color = lw_grade(color, u, look, accent);
     if (u.print.x > 0.0 && normalDepth.sample(lw_pointSampler, uv).w < 1e5) { color = lw_benDay(color, pixel, look, u); }
     if (u.print.z > 1.0) {

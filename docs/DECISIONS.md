@@ -3890,3 +3890,46 @@ anything made by hand. Things opens on them; the CC0 Kit folds under More sets a
 pictures are rendered once on the iPad and kept with the library's, named for the kit's version, so a changed kit
 renders new ones. **Still to come in M14:** handles on the stage that rebuild a thing at a new size (the builders
 already take one), pictures baked in CI and shipped, the bridge's verb for them, and starter projects per set-up.
+
+## U9 · Clean (0.36)
+
+**D-619 — No card on the empty stage.** Hesham, in U9's converge: the "An empty stage" card from D-617 is a pop-up he
+doesn't want ("really dumb"). It is gone; the first open keeps its lower, closer view, and where things come from is
+the tutorial's job (M16). Rejected: showing it once per device (still a card over the stage on the very first look).
+
+**D-620 — The S16 report: the script reaches what the app does.** The first finished three.js film rebuilt through
+the bridge (S16, 157 s, 38 shots) found that most of its gap was the script, not the app: properties written by
+another name were kept and ignored (a lens keyed as `focalLength`, `metalness`), so a script's property is now
+resolved through a short alias table and an unknown one is refused. Fixed with it: `anchor` (a thing's `at` is its
+bottom; `center` puts its middle there), a relation honoured for shapes on add, a placed thing keeping its tilt, a
+search that finds the closest thing for a description, hidden things not measured as motion, a rubric that fails a
+camera inside a solid or an empty frame, a spot's softness (penumbra) and cone, `unlit` for a picture's own colours,
+a placed model taking a material whole, marks (named spots) and a camera that watches one, a slow camera drift sized
+to the focus distance, and `scene_graph` to read the scene back. The clone cap rises from 1,000 to 4,096: copies of
+one thing are one instanced draw. Rejected: keeping unknown properties for later (the bug class itself).
+
+**D-621 — The Real Look.** S16's three.js film looked filmed; Maquette's Looks are drawn. Real is a thirteenth Look
+on a third shading model: GGX microfacets with height-correlated Smith visibility and Schlick's Fresnel, energy kept
+between the diffuse and the mirror; light falling with the square of the distance, brought to nothing at its reach by
+three.js's window; lights with a size, so a lamp's reflection is a lamp (Karis's sphere-light widening); a clear coat;
+glass as see-through with its Fresnel (alpha, no refraction yet); the sky as the environment through Karis's split-sum
+fit, with specular occlusion from the AO; ACES (Hill's fit) as its tone curve; halation from the bloom. Spot lights
+cast shadows (two slots, a perspective depth map each), in every Look when a spot asks and by default in Real. Roughness
+and metal on a thing are now read by every Look (they were stored and ignored). Rejected: a path tracer (Tier B can't),
+screen-space refraction (a later step; the alpha glass already reads as glass), auto-lights from glowing things (the
+script adds a panel where a practical glows).
+
+**D-622 — The U9 layout** (the converge of 2026-11-01). The object panel: its colour and own controls, then four
+tabs, Move (open first) · Look · Shape · Real, remembered. Rig is the one home for characters (parts, face,
+proportions, a line, acting, games); a new character opens Rig. Actions in six: Share, Windows and Notes open their
+page in the panel; History, Learn, Settings as they were. One "Save to Library" with one icon wherever something is
+saved. Model ▸ Add in groups (no search): Shapes, Lights, Words & pictures, Effects, and the set-up's kit first in a
+Room, Print or Game project. Export opens on what it's for (video, picture, game, print, web, 3D file), the format one
+tap deeper. The menu bar mirrors the screen: Scene, Model, Draw, Rig, Animate, Look; no command or key changed.
+Rejected: doors at the bottom of the panel (Hesham chose tabs), a search box in Add (Hesham: groups only).
+
+**D-623 — Open source, GPL 3.0** (CONTEXT §D.30). Hesham: free, open, and nobody may take it and sell it. GPL 3.0
+keeps every copy free and open, and Apple's terms keep GPL copies off the App Store, while the owner can still publish
+there; contributors grant the owner a licence for that (CONTRIBUTING.md). The name, studio h. and the icon are kept
+out of the licence (TRADEMARKS.md). hmm-kit takes GPL 3.0 too. Rejected: Apache and MIT (anyone could sell a copy),
+PolyForm Noncommercial (not open source; Hesham chose GPL).

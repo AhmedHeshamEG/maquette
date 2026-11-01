@@ -272,6 +272,19 @@ final class PerceptionTests: XCTestCase {
         XCTAssertTrue(json.contains("\"summary\""))
     }
 
+    /// S16: the camera inside the back wall, frame empty, used to pass the rubric.
+    func testACameraInsideAWallFails() throws {
+        var wall = cube("wall", at: Vec3(0, 0, 6), size: 1)
+        wall.transform.scale = Vec3(8, 4, 0.4)
+        let inside = ShotObserver(document: document([cube("box", at: .zero), wall], camera: Vec3(0, 1, 6))).observe(at: 0)
+        let check = try XCTUnwrap(inside.checks.first { $0.name == "Camera" })
+        XCTAssertEqual(check.result, .fail)
+        XCTAssertTrue(check.detail.contains("inside “Wall”"), check.detail)
+        let clear = ShotObserver(document: document([cube("box", at: .zero)], camera: Vec3(0, 1, 6))).observe(at: 0)
+        XCTAssertEqual(clear.checks.first { $0.name == "Camera" }?.result, .pass)
+        XCTAssertFalse(ShotObserver.encloses([], .zero))
+    }
+
     // MARK: Contact sheet
 
     private func movingDocument(easing: Easing, words: Bool) -> Document {
@@ -311,6 +324,22 @@ final class PerceptionTests: XCTestCase {
         XCTAssertTrue(motion.detail.contains("ruler-straight"), motion.detail)
         XCTAssertTrue(sheet.summary.contains("Moving: Box"), sheet.summary)
         XCTAssertEqual(sheet.camera?.constantSpeed, false, "the camera holds")
+    }
+
+    /// S16: a hidden thing whose keys jump (it's parked out of the way between shots) doesn't "travel" at all.
+    func testAHiddenThingIsNotMeasured() throws {
+        var doc = movingDocument(easing: .linear, words: false)
+        doc.scene.objects["box"]?[.opacity] = .float(0)
+        let sheet = ShotObserver(document: doc).contactSheet(from: 0, to: 4)
+        XCTAssertNil(sheet.motion.first { $0.name == "Box" }, "hidden, so not on screen")
+        // A point through the camera's plane projects thousands of frames away: it's dropped, not added to the path.
+        var close = movingDocument(easing: .linear, words: false)
+        close.scene.timeline.tracks = [Track(id: "t", target: "box", property: .position, keyframes: [
+            Keyframe(time: 0.5, value: .vec3(Vec3(-2, 0, 0)), easing: .linear),
+            Keyframe(time: 2.5, value: .vec3(Vec3(0, 1, 7.99)), easing: .linear)
+        ])]
+        let near = try XCTUnwrap(ShotObserver(document: close).contactSheet(from: 0, to: 4).motion.first { $0.name == "Box" })
+        XCTAssertLessThan(near.pathLength, 10)
     }
 
     func testEasedMovesLandOnWords() throws {

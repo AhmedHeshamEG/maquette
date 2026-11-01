@@ -41,113 +41,12 @@ public struct LoweyMenuCommands: Commands {
             Button("Group") { editor?.groupSelection() }.hmmKeyboardShortcut(KeyCommands.editGroup, in: keyboard).disabled(board != nil)
             Button("Ungroup") { editor?.ungroupSelection() }.hmmKeyboardShortcut(KeyCommands.editUngroup, in: keyboard).disabled(board != nil)
         }
-        // The making tools in the order of the top-right cluster, then the document's panels.
-        CommandMenu("Tools") {
-            Button("Model") { panel(.model) }.hmmKeyboardShortcut(KeyCommands.toolsModel, in: keyboard)
-            Button("Draw") { stageEditor?.toggleDraw() }.hmmKeyboardShortcut(KeyCommands.toolsDraw, in: keyboard)
-            Button("Rig") { panel(.rig) }.hmmKeyboardShortcut(KeyCommands.toolsRig, in: keyboard)
-            Button("Animate") { editor?.toggleAnimate() }.hmmKeyboardShortcut(KeyCommands.toolsAnimate, in: keyboard)
-            Divider()
+        // The menu bar mirrors the screen (U9): Scene · Model · Draw · Rig · Animate · Look, named like the buttons, each
+        // tool's switch first. Every command and its keys are the same as before; only where they're listed moved.
+        CommandMenu("Scene") {
             Button("Actions") { panel(.actions) }.hmmKeyboardShortcut(KeyCommands.toolsActions, in: keyboard)
-            Button("Look") { panel(.look) }.hmmKeyboardShortcut(KeyCommands.toolsLook, in: keyboard)
-            Button("Lasso") { tool(.lasso, panel: nil) }.hmmKeyboardShortcut(KeyCommands.toolsLasso, in: keyboard)
             Button("Library") { panel(.library) }.hmmKeyboardShortcut(KeyCommands.toolsLibrary, in: keyboard)
             Divider()
-            Button("Precision") { modelPage(.precision) }.hmmKeyboardShortcut(KeyCommands.toolsPrecision, in: keyboard)
-            Button("Solid Shape") { stageEditor?.chooseDrawBrush(.solid(.tube)) }.hmmKeyboardShortcut(KeyCommands.toolsSolidShape, in: keyboard)
-            Button("Frames") { stageEditor?.setDrawFrames(true) }.hmmKeyboardShortcut(KeyCommands.toolsFrames, in: keyboard)
-            Button("Shadow Brush") { stageEditor?.chooseDrawBrush(.shadow(pushes: true)) }
-                .hmmKeyboardShortcut(KeyCommands.toolsShadowBrush, in: keyboard)
-            Button("Scatter") { tool(.scatter, panel: nil) }.hmmKeyboardShortcut(KeyCommands.toolsScatter, in: keyboard)
-            Divider()
-            Button("Move") { gizmo(.move) }.hmmKeyboardShortcut(KeyCommands.toolsMove, in: keyboard)
-            Button("Turn") { gizmo(.rotate) }.hmmKeyboardShortcut(KeyCommands.toolsTurn, in: keyboard)
-            Button("Size") { gizmo(.scale) }.hmmKeyboardShortcut(KeyCommands.toolsSize, in: keyboard)
-        }
-        CommandMenu("Shape") {
-            Button("Shape by Touch") { stageEditor?.chooseModelVerb(.shape) }.hmmKeyboardShortcut(KeyCommands.shapeShapeByTouch, in: keyboard)
-            Button("Brush the Surface") { stageEditor?.chooseModelVerb(.brush) }.hmmKeyboardShortcut(KeyCommands.shapeBrushTheSurface, in: keyboard)
-            Button("Cage") { stageEditor?.chooseModelVerb(.cage) }.hmmKeyboardShortcut(KeyCommands.shapeCage, in: keyboard)
-            Button("Bend") { stageEditor?.chooseModelVerb(.bend) }.hmmKeyboardShortcut(KeyCommands.shapeBend, in: keyboard)
-            Divider()
-            Button("Smooth More") { smooth(by: 1) }
-                .hmmKeyboardShortcut(KeyCommands.shapeSmoothMore, in: keyboard)
-            Button("Smooth Less") { smooth(by: -1) }
-                .hmmKeyboardShortcut(KeyCommands.shapeSmoothLess, in: keyboard)
-            Button("Loop Cut") { stageEditor?.loopCutPickedEdge() }.hmmKeyboardShortcut(KeyCommands.shapeLoopCut, in: keyboard)
-            Button("Linked Copy") { stageEditor?.makeLinkedCopy() }.hmmKeyboardShortcut(KeyCommands.shapeLinkedCopy, in: keyboard)
-            Divider()
-            Button("Clone") { stageEditor?.cloneSelection() }.hmmKeyboardShortcut(KeyCommands.shapeClone, in: keyboard)
-            Button("Morph Into…") { stageEditor?.beginMorph() }.hmmKeyboardShortcut(KeyCommands.shapeMorphInto, in: keyboard)
-            Button("Pivot to the Middle") { stageEditor?.movePivot(to: .middle) }.hmmKeyboardShortcut(KeyCommands.shapePivotToTheMiddle, in: keyboard)
-        }
-        CommandMenu("Texture") {
-            // U7: the surface's tools, for the keyboard.
-            Button("Paint Flat") { stageEditor?.colourPaint.flatView = true }.hmmKeyboardShortcut(KeyCommands.texturePaintFlat, in: keyboard)
-            Button("Add Dirt") { stageEditor?.addFill(.wear(PaintWear(kind: .dirt))) }.hmmKeyboardShortcut(KeyCommands.textureAddDirt, in: keyboard)
-            Button("Add Worn Edges") { stageEditor?.addFill(.wear(PaintWear(kind: .edges))) }
-                .hmmKeyboardShortcut(KeyCommands.textureAddWornEdges, in: keyboard)
-            Button("Mirror Paint") { stageEditor?.togglePaintMirror() }.hmmKeyboardShortcut(KeyCommands.textureMirrorPaint, in: keyboard)
-            Button("Fill Faces") { stageEditor?.toggleFacesBrush() }.hmmKeyboardShortcut(KeyCommands.textureFillFaces, in: keyboard)
-        }
-        CommandMenu("Look") {
-            // L2: the Looks one after another, and the drawn set at the playhead (aimed at the selection).
-            Button("Next Look") { stageEditor?.stepLook(by: 1) }.hmmKeyboardShortcut(KeyCommands.lookNextLook, in: keyboard)
-            Button("Previous Look") { stageEditor?.stepLook(by: -1) }.hmmKeyboardShortcut(KeyCommands.lookPreviousLook, in: keyboard)
-            Divider()
-            Button("Impact Frame") { stageEditor?.addScreenEffect(.impact) }.hmmKeyboardShortcut(KeyCommands.lookImpactFrame, in: keyboard)
-            Button("Focus Lines") { stageEditor?.addScreenEffect(.focusLines) }.hmmKeyboardShortcut(KeyCommands.lookFocusLines, in: keyboard)
-            Button("Comic Dots") { stageEditor?.addScreenEffect(.comicDots) }.hmmKeyboardShortcut(KeyCommands.lookComicDots, in: keyboard)
-        }
-        CommandMenu("Physics") {
-            Button("Make Real") { stageEditor?.makeReal() }.hmmKeyboardShortcut(KeyCommands.physicsMakeReal, in: keyboard)
-            Button("Not Real") { stageEditor?.makeUnreal() }.hmmKeyboardShortcut(KeyCommands.physicsNotReal, in: keyboard)
-            Button("Settle") { stageEditor?.settleSelection() }.hmmKeyboardShortcut(KeyCommands.physicsSettle, in: keyboard)
-            Button("Does It Stand?") { stageEditor?.checkStands() }.hmmKeyboardShortcut(KeyCommands.physicsDoesItStand, in: keyboard)
-            Button("Keep the Run as Keys") { stageEditor?.keepRun() }.hmmKeyboardShortcut(KeyCommands.physicsKeepTheRunAsKeys, in: keyboard)
-            Button("Show Speed and Forces") { stageEditor.map { $0.physicsRun.showsArrows.toggle(); $0.refreshPhysicsOverlay() } }
-                .hmmKeyboardShortcut(KeyCommands.physicsShowSpeedAndForces, in: keyboard)
-        }
-        CommandMenu("Character") {
-            Button("New Character…") {
-                editor?.libraryPage = .characters
-                editor?.openPanel = .library
-            }
-            .hmmKeyboardShortcut(KeyCommands.characterNewCharacter, in: keyboard)
-            Button("Make It a Character") { editor.map { editor in editor.singleSelection.map { editor.makeCharacter(from: $0.id) } } }
-                .disabled(editor?.singleSelection.map { editor?.canMakeCharacter($0) ?? false } != true)
-                .hmmKeyboardShortcut(KeyCommands.characterMakeItACharacter, in: keyboard)
-            Button("New Person") { editor?.newCharacter(.person) }.hmmKeyboardShortcut(KeyCommands.characterNewPerson, in: keyboard)
-            Button("New Four-Legged") { editor?.newCharacter(.fourLegs) }.hmmKeyboardShortcut(KeyCommands.characterNewFourLegged, in: keyboard)
-            Button("New Creature from Nothing") { editor?.newCharacter(.nothing) }
-                .hmmKeyboardShortcut(KeyCommands.characterNewCreatureFromNothing, in: keyboard)
-            Divider()
-            Button(editor?.maker.symmetric == false ? "Mirror Parts" : "Stop Mirroring Parts") { editor?.maker.symmetric.toggle() }
-                .hmmKeyboardShortcut(KeyCommands.characterMirrorParts, in: keyboard)
-            Button("Rig It Again") { editor.map { editor in editor.makerCharacter.map { editor.rigAgain($0, gesture: nil) } } }
-                .disabled(editor?.makerCharacter == nil).hmmKeyboardShortcut(KeyCommands.characterRigItAgain, in: keyboard)
-            Button("Export for Games…") { editor?.sheet = .gameExport }.hmmKeyboardShortcut(KeyCommands.characterExportForGames, in: keyboard)
-        }
-        CommandMenu("Kit") {
-            Section("Room") {
-                if Held.isOn(.buildingFiles) {
-                    Button("Plans and Elevations") { editor?.sheet = .plans }.hmmKeyboardShortcut(KeyCommands.kitPlansAndElevations, in: keyboard)
-                }
-                Button("Walk Through") { editor.map { $0.guest.walkHeight == nil ? $0.startWalking() : $0.stopWalking() } }
-                    .hmmKeyboardShortcut(KeyCommands.kitWalkThrough, in: keyboard)
-                Button("Match a Photo…") { editor?.sheet = .matchPhoto }.hmmKeyboardShortcut(KeyCommands.kitMatchAPhoto, in: keyboard)
-            }
-            Section("Print") {
-                Button("Best Way Up") { stageEditor?.orientForPrinting() }.hmmKeyboardShortcut(KeyCommands.kitBestWayUp, in: keyboard)
-                Button("Split for Printing") { stageEditor?.splitForPrinting() }.hmmKeyboardShortcut(KeyCommands.kitSplitForPrinting, in: keyboard)
-                Button("Hollow") { stageEditor?.hollowForPrinting() }.hmmKeyboardShortcut(KeyCommands.kitHollow, in: keyboard)
-                Button("Show Overhangs") { stageEditor?.guest.overhangs.toggle() }.hmmKeyboardShortcut(KeyCommands.kitShowOverhangs, in: keyboard)
-            }
-            Section("Game") {
-                Button("Freeze Transforms") { stageEditor?.freezeTransforms() }.hmmKeyboardShortcut(KeyCommands.kitFreezeTransforms, in: keyboard)
-            }
-        }
-        CommandMenu("Scene") {
             Button("Frame Selection") { editor?.frameSelection() }.hmmKeyboardShortcut(KeyCommands.sceneFrameSelection, in: keyboard)
             Button("Director View") { editor.map { $0.setDirectorView(!$0.directorView) } }
                 .hmmKeyboardShortcut(KeyCommands.sceneDirectorView, in: keyboard)
@@ -181,7 +80,100 @@ public struct LoweyMenuCommands: Commands {
                 .hmmKeyboardShortcut(KeyCommands.sceneReferenceWindow, in: keyboard)
             Button("New Monitor Window") { openWindow(id: LoweyWindow.monitor) }.hmmKeyboardShortcut(KeyCommands.sceneNewMonitorWindow, in: keyboard)
         }
-        CommandMenu("Timeline") {
+        CommandMenu("Model") {
+            Button("Model") { panel(.model) }.hmmKeyboardShortcut(KeyCommands.toolsModel, in: keyboard)
+            Button("Precision") { modelPage(.precision) }.hmmKeyboardShortcut(KeyCommands.toolsPrecision, in: keyboard)
+            Button("Scatter") { tool(.scatter, panel: nil) }.hmmKeyboardShortcut(KeyCommands.toolsScatter, in: keyboard)
+            Divider()
+            Button("Move") { gizmo(.move) }.hmmKeyboardShortcut(KeyCommands.toolsMove, in: keyboard)
+            Button("Turn") { gizmo(.rotate) }.hmmKeyboardShortcut(KeyCommands.toolsTurn, in: keyboard)
+            Button("Size") { gizmo(.scale) }.hmmKeyboardShortcut(KeyCommands.toolsSize, in: keyboard)
+            Section("Shape") {
+                Button("Shape by Touch") { stageEditor?.chooseModelVerb(.shape) }.hmmKeyboardShortcut(KeyCommands.shapeShapeByTouch, in: keyboard)
+                Button("Brush the Surface") { stageEditor?.chooseModelVerb(.brush) }.hmmKeyboardShortcut(KeyCommands.shapeBrushTheSurface, in: keyboard)
+                Button("Cage") { stageEditor?.chooseModelVerb(.cage) }.hmmKeyboardShortcut(KeyCommands.shapeCage, in: keyboard)
+                Button("Bend") { stageEditor?.chooseModelVerb(.bend) }.hmmKeyboardShortcut(KeyCommands.shapeBend, in: keyboard)
+                Divider()
+                Button("Smooth More") { smooth(by: 1) }
+                    .hmmKeyboardShortcut(KeyCommands.shapeSmoothMore, in: keyboard)
+                Button("Smooth Less") { smooth(by: -1) }
+                    .hmmKeyboardShortcut(KeyCommands.shapeSmoothLess, in: keyboard)
+                Button("Loop Cut") { stageEditor?.loopCutPickedEdge() }.hmmKeyboardShortcut(KeyCommands.shapeLoopCut, in: keyboard)
+                Button("Linked Copy") { stageEditor?.makeLinkedCopy() }.hmmKeyboardShortcut(KeyCommands.shapeLinkedCopy, in: keyboard)
+                Divider()
+                Button("Clone") { stageEditor?.cloneSelection() }.hmmKeyboardShortcut(KeyCommands.shapeClone, in: keyboard)
+                Button("Morph Into…") { stageEditor?.beginMorph() }.hmmKeyboardShortcut(KeyCommands.shapeMorphInto, in: keyboard)
+                Button("Pivot to the Middle") { stageEditor?.movePivot(to: .middle) }.hmmKeyboardShortcut(KeyCommands.shapePivotToTheMiddle, in: keyboard)
+            }
+            Section("Real") {
+                Button("Make Real") { stageEditor?.makeReal() }.hmmKeyboardShortcut(KeyCommands.physicsMakeReal, in: keyboard)
+                Button("Not Real") { stageEditor?.makeUnreal() }.hmmKeyboardShortcut(KeyCommands.physicsNotReal, in: keyboard)
+                Button("Settle") { stageEditor?.settleSelection() }.hmmKeyboardShortcut(KeyCommands.physicsSettle, in: keyboard)
+                Button("Does It Stand?") { stageEditor?.checkStands() }.hmmKeyboardShortcut(KeyCommands.physicsDoesItStand, in: keyboard)
+                Button("Keep the Run as Keys") { stageEditor?.keepRun() }.hmmKeyboardShortcut(KeyCommands.physicsKeepTheRunAsKeys, in: keyboard)
+                Button("Show Speed and Forces") { stageEditor.map { $0.physicsRun.showsArrows.toggle(); $0.refreshPhysicsOverlay() } }
+                    .hmmKeyboardShortcut(KeyCommands.physicsShowSpeedAndForces, in: keyboard)
+            }
+            Section("Room") {
+                if Held.isOn(.buildingFiles) {
+                    Button("Plans and Elevations") { editor?.sheet = .plans }.hmmKeyboardShortcut(KeyCommands.kitPlansAndElevations, in: keyboard)
+                }
+                Button("Walk Through") { editor.map { $0.guest.walkHeight == nil ? $0.startWalking() : $0.stopWalking() } }
+                    .hmmKeyboardShortcut(KeyCommands.kitWalkThrough, in: keyboard)
+                Button("Match a Photo…") { editor?.sheet = .matchPhoto }.hmmKeyboardShortcut(KeyCommands.kitMatchAPhoto, in: keyboard)
+            }
+            Section("Print") {
+                Button("Best Way Up") { stageEditor?.orientForPrinting() }.hmmKeyboardShortcut(KeyCommands.kitBestWayUp, in: keyboard)
+                Button("Split for Printing") { stageEditor?.splitForPrinting() }.hmmKeyboardShortcut(KeyCommands.kitSplitForPrinting, in: keyboard)
+                Button("Hollow") { stageEditor?.hollowForPrinting() }.hmmKeyboardShortcut(KeyCommands.kitHollow, in: keyboard)
+                Button("Show Overhangs") { stageEditor?.guest.overhangs.toggle() }.hmmKeyboardShortcut(KeyCommands.kitShowOverhangs, in: keyboard)
+            }
+            Section("Game") {
+                Button("Freeze Transforms") { stageEditor?.freezeTransforms() }.hmmKeyboardShortcut(KeyCommands.kitFreezeTransforms, in: keyboard)
+            }
+        }
+        CommandMenu("Draw") {
+            Button("Draw") { stageEditor?.toggleDraw() }.hmmKeyboardShortcut(KeyCommands.toolsDraw, in: keyboard)
+            Button("Lasso") { tool(.lasso, panel: nil) }.hmmKeyboardShortcut(KeyCommands.toolsLasso, in: keyboard)
+            Button("Solid Shape") { stageEditor?.chooseDrawBrush(.solid(.tube)) }.hmmKeyboardShortcut(KeyCommands.toolsSolidShape, in: keyboard)
+            Button("Frames") { stageEditor?.setDrawFrames(true) }.hmmKeyboardShortcut(KeyCommands.toolsFrames, in: keyboard)
+            Button("Shadow Brush") { stageEditor?.chooseDrawBrush(.shadow(pushes: true)) }
+                .hmmKeyboardShortcut(KeyCommands.toolsShadowBrush, in: keyboard)
+            Section("Texture") {
+                // U7: the surface's tools, for the keyboard.
+                Button("Paint Flat") { stageEditor?.colourPaint.flatView = true }.hmmKeyboardShortcut(KeyCommands.texturePaintFlat, in: keyboard)
+                Button("Add Dirt") { stageEditor?.addFill(.wear(PaintWear(kind: .dirt))) }.hmmKeyboardShortcut(KeyCommands.textureAddDirt, in: keyboard)
+                Button("Add Worn Edges") { stageEditor?.addFill(.wear(PaintWear(kind: .edges))) }
+                    .hmmKeyboardShortcut(KeyCommands.textureAddWornEdges, in: keyboard)
+                Button("Mirror Paint") { stageEditor?.togglePaintMirror() }.hmmKeyboardShortcut(KeyCommands.textureMirrorPaint, in: keyboard)
+                Button("Fill Faces") { stageEditor?.toggleFacesBrush() }.hmmKeyboardShortcut(KeyCommands.textureFillFaces, in: keyboard)
+            }
+        }
+        CommandMenu("Rig") {
+            Button("Rig") { panel(.rig) }.hmmKeyboardShortcut(KeyCommands.toolsRig, in: keyboard)
+            Divider()
+            Button("New Character…") {
+                editor?.libraryPage = .characters
+                editor?.openPanel = .library
+            }
+            .hmmKeyboardShortcut(KeyCommands.characterNewCharacter, in: keyboard)
+            Button("Make It a Character") { editor.map { editor in editor.singleSelection.map { editor.makeCharacter(from: $0.id) } } }
+                .disabled(editor?.singleSelection.map { editor?.canMakeCharacter($0) ?? false } != true)
+                .hmmKeyboardShortcut(KeyCommands.characterMakeItACharacter, in: keyboard)
+            Button("New Person") { editor?.newCharacter(.person) }.hmmKeyboardShortcut(KeyCommands.characterNewPerson, in: keyboard)
+            Button("New Four-Legged") { editor?.newCharacter(.fourLegs) }.hmmKeyboardShortcut(KeyCommands.characterNewFourLegged, in: keyboard)
+            Button("New Creature from Nothing") { editor?.newCharacter(.nothing) }
+                .hmmKeyboardShortcut(KeyCommands.characterNewCreatureFromNothing, in: keyboard)
+            Divider()
+            Button(editor?.maker.symmetric == false ? "Mirror Parts" : "Stop Mirroring Parts") { editor?.maker.symmetric.toggle() }
+                .hmmKeyboardShortcut(KeyCommands.characterMirrorParts, in: keyboard)
+            Button("Rig It Again") { editor.map { editor in editor.makerCharacter.map { editor.rigAgain($0, gesture: nil) } } }
+                .disabled(editor?.makerCharacter == nil).hmmKeyboardShortcut(KeyCommands.characterRigItAgain, in: keyboard)
+            Button("Export for Games…") { editor?.sheet = .gameExport }.hmmKeyboardShortcut(KeyCommands.characterExportForGames, in: keyboard)
+        }
+        CommandMenu("Animate") {
+            Button("Animate") { editor?.toggleAnimate() }.hmmKeyboardShortcut(KeyCommands.toolsAnimate, in: keyboard)
+            Divider()
             Button(editor?.timelinePresence == .hidden ? "Show Timeline" : "Hide Timeline") { editor?.toggleTimeline() }
                 .hmmKeyboardShortcut(KeyCommands.timelineShowTimeline, in: keyboard)
             Button("Play / Pause") { editor?.togglePlay() }.hmmKeyboardShortcut(KeyCommands.timelinePlayPause, in: keyboard)
@@ -223,17 +215,28 @@ public struct LoweyMenuCommands: Commands {
                 .hmmKeyboardShortcut(KeyCommands.timelineFocusOnTheSelection, in: keyboard)
             Button("Pull Focus to the Selection") { editor?.focusOnSelection(pull: true) }
                 .hmmKeyboardShortcut(KeyCommands.timelinePullFocusToTheSelection, in: keyboard)
-        }
-        // Live performance (M10): the microphone and the trigger keys.
-        CommandMenu("Perform") {
-            Button(editor?.live.voiceOn == true ? "Stop the Microphone" : "Mouth from the Microphone") { editor?.toggleVoice() }
-                .hmmKeyboardShortcut(KeyCommands.performMicrophone, in: keyboard)
-            Divider()
-            ForEach(TriggerDeck.keys, id: \.self) { key in
-                Button("Trigger \(key)") { editor?.fireTriggerKey(key) }
-                    .keyboardShortcut(KeyEquivalent(Character(key)), modifiers: [])
-                    .disabled(board != nil || editor?.hasTrigger(key: key) != true)
+            // Live performance (M10): the microphone and the trigger keys.
+            Section("Perform") {
+                Button(editor?.live.voiceOn == true ? "Stop the Microphone" : "Mouth from the Microphone") { editor?.toggleVoice() }
+                    .hmmKeyboardShortcut(KeyCommands.performMicrophone, in: keyboard)
+                Divider()
+                ForEach(TriggerDeck.keys, id: \.self) { key in
+                    Button("Trigger \(key)") { editor?.fireTriggerKey(key) }
+                        .keyboardShortcut(KeyEquivalent(Character(key)), modifiers: [])
+                        .disabled(board != nil || editor?.hasTrigger(key: key) != true)
+                }
             }
+        }
+        CommandMenu("Look") {
+            Button("Look") { panel(.look) }.hmmKeyboardShortcut(KeyCommands.toolsLook, in: keyboard)
+            Divider()
+            // L2: the Looks one after another, and the drawn set at the playhead (aimed at the selection).
+            Button("Next Look") { stageEditor?.stepLook(by: 1) }.hmmKeyboardShortcut(KeyCommands.lookNextLook, in: keyboard)
+            Button("Previous Look") { stageEditor?.stepLook(by: -1) }.hmmKeyboardShortcut(KeyCommands.lookPreviousLook, in: keyboard)
+            Divider()
+            Button("Impact Frame") { stageEditor?.addScreenEffect(.impact) }.hmmKeyboardShortcut(KeyCommands.lookImpactFrame, in: keyboard)
+            Button("Focus Lines") { stageEditor?.addScreenEffect(.focusLines) }.hmmKeyboardShortcut(KeyCommands.lookFocusLines, in: keyboard)
+            Button("Comic Dots") { stageEditor?.addScreenEffect(.comicDots) }.hmmKeyboardShortcut(KeyCommands.lookComicDots, in: keyboard)
         }
     }
 

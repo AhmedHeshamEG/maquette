@@ -101,11 +101,21 @@ extension RelationSolver {
 
     /// The level turn that points the target's front at a point.
     func facingRotation(of target: ObjectID, toward point: Vec3) -> Quat {
-        let from = scene.worldTransform(of: target).position
+        let world = scene.worldTransform(of: target)
         let local = kitInfo(target)?.front ?? Vec3(0, 0, 1)
-        let wanted = atan2(point.x - from.x, point.z - from.z)
+        let wanted = atan2(point.x - world.position.x, point.z - world.position.z)
         let own = atan2(local.x, local.z)
-        return Quat(angle: wanted - own, axis: .unitY)
+        return Quat(angle: wanted - own, axis: .unitY) * Self.tilt(of: world.rotation)
+    }
+
+    /// What's left of a turn once its heading is taken away: a card laid flat stays flat when it's turned to face
+    /// somewhere (S16: placing the spectrogram stood it back up).
+    static func tilt(of rotation: Quat) -> Quat {
+        let forward = rotation.act(Vec3(0, 0, 1))
+        let up = rotation.act(Vec3(0, 1, 0))
+        // The heading from the front, or from the top when the front points straight up or down.
+        let heading = abs(forward.y) < 0.999 ? atan2(forward.x, forward.z) : atan2(-up.x * forward.y, -up.z * forward.y)
+        return (Quat(angle: -heading, axis: .unitY) * rotation).normalized
     }
 
     /// A free spot on the reference's best surface: as near its middle (plus the nudge) as the things already there allow.

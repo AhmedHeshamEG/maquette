@@ -324,16 +324,27 @@ public enum LibrarySearch {
         let candidates = items(in: manifest, filter: filter)
         let terms = query.lowercased().split(whereSeparator: { $0 == " " || $0 == "," }).map(String.init)
         guard !terms.isEmpty else { return candidates }
-        let scored: [(LibraryItem, Double)] = candidates.compactMap { item in
+        // Every word matching wins; when nothing matches them all ("wooden desk table"), what matches the most words
+        // still comes back, so a description finds the desk.
+        var all: [(LibraryItem, Double)] = []
+        var some: [(LibraryItem, Double)] = []
+        for item in candidates {
             var total = 0.0
+            var matched = 0
             for term in terms {
-                let best = score(term: term, item: item)
-                if best <= 0 { return nil } // every term must match something
+                let best = max(score(term: term, item: item), singular(term).map { score(term: $0, item: item) } ?? 0)
+                if best > 0 { matched += 1 }
                 total += best
             }
+            guard matched > 0 else { continue }
             if item.favorite { total += 0.5 }
-            return (item, total)
+            if matched == terms.count {
+                all.append((item, total))
+            } else {
+                some.append((item, total + Double(matched) * 10))
+            }
         }
+        let scored = all.isEmpty ? some : all
         return scored.sorted { lhs, rhs in
             lhs.1 != rhs.1 ? lhs.1 > rhs.1 : lhs.0.name.localizedCaseInsensitiveCompare(rhs.0.name) == .orderedAscending
         }.map(\.0)
@@ -353,6 +364,16 @@ public enum LibrarySearch {
         if name.contains(term) { best = max(best, 3) }
         if best == 0, isSubsequence(term, of: name), term.count >= 3 { best = 1 }
         return best
+    }
+
+    /// "shelves" → "shelf", "boxes" → "box", "plates" → "plate"; nil when the word isn't a plural.
+    static func singular(_ word: String) -> String? {
+        guard word.count > 3 else { return nil }
+        if word.hasSuffix("ves") { return String(word.dropLast(3)) + "f" }
+        if word.hasSuffix("ies") { return String(word.dropLast(3)) + "y" }
+        if word.hasSuffix("ses") || word.hasSuffix("xes") || word.hasSuffix("ches") || word.hasSuffix("shes") { return String(word.dropLast(2)) }
+        if word.hasSuffix("s"), !word.hasSuffix("ss") { return String(word.dropLast()) }
+        return nil
     }
 
     static func isSubsequence(_ needle: String, of haystack: String) -> Bool {

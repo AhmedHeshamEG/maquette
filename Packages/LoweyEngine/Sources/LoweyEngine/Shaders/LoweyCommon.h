@@ -59,7 +59,8 @@ struct FrameUniforms {
     float4 cascades;         // x = far of cascade 0, y = far of cascade 1, z = 1 / shadow map size, w = frame index
     float4 misc;             // x = light count, y = near plane, z = far plane, w = orthographic (1) or not
     float4 section;          // the stage's section view: xyz = normal, w = offset (normal · p > offset is cut); 0 = off
-    float4 environment;      // an HDRI behind everything: x = 1 when it shows, y = turn (rad), z = exposure multiplier
+    float4 environment;      // an HDRI behind everything: x = 1 when it shows, y = turn (rad), z = exposure multiplier;
+                             // w = how many spots cast a shadow (0: the per-pixel lookup is skipped)
 };
 
 struct LookUniforms {
@@ -67,7 +68,7 @@ struct LookUniforms {
     float4 shadow;     // x = hue shift toward ambient, y = value drop, z = saturation boost, w = ambient steps
     float4 rim;        // x = strength, y = threshold, z = softness, w = contact shading
     float4 specular;   // x = strength, y = size, z = softness, w = default smoothing
-    float4 model;      // x = model (0 toon, 1 clay), y = posterize textures, z = soft shadows, w = bloom
+    float4 model;      // x = model (0 toon, 1 clay, 2 real), y = posterize textures, z = soft shadows, w = bloom
     float4 lines;      // x = enabled, y = width (pt @1080p), z = darken, w = colour mode (0 darkened, 1 ink)
     float4 lineInk;    // rgb = ink colour (linear), w = boil
     float4 lineShape;  // x = cos(crease angle), y = depth sensitivity, z = pencil (1 / 0), w = hatching
@@ -86,6 +87,8 @@ struct ObjectUniforms {
     float4 emissive;   // linear rgb × intensity, w = glow intensity
     float4 params;     // x = smoothing (0 faceted … 1 smooth), y = rim strength (−1 = the look's), z = glossy, w = line weight
     uint4 ids;         // x = object index (1-based), y = look index, z = flags, w = first joint in the joint buffer
+    float4 material;   // x = roughness (−1 = the Look's), y = metal, z = clear coat, w = clear coat roughness (Real Look)
+    float4 optics;     // x = see-through (transmission), y = index of refraction, zw = unused
 };
 
 struct LightData {
@@ -93,7 +96,9 @@ struct LightData {
     float4 color;      // linear rgb × intensity, w = type (0 point, 1 spot, 2 directional, 3 soft panel)
     float4 direction;  // xyz spot or panel direction (where it shines), w = cos(outer angle)
     float4 params;     // x = cos(inner angle); panel: y = half width, z = half height (m)
-    float4 axis;       // panel: xyz = its right edge's direction
+    float4 axis;       // panel: xyz = its right edge's direction; w = the source's size (m)
+    float4x4 shadowMatrix; // a spot's shadow: world to its depth map
+    float4 shadow;     // x = depth map slice (−1 none), y = one texel (uv), z = asks for a shadow
 };
 
 struct VertexIn {

@@ -5,7 +5,7 @@ description: Drive Maquette (formerly 3D-lowey), Hesham's iPad app for 3D by han
 
 # Maquette — the director (and the second pair of hands)
 
-*For Maquette 0.28, Scene Script v3 (51 verbs). An older copy in `~/.claude/skills` teaches tools that are gone: install it
+*For Maquette 0.36, Scene Script v3 (53 verbs). An older copy in `~/.claude/skills` teaches tools that are gone: install it
 again.*
 
 **The bridge reaches everything** a person can do: every menu-bar command has a path (`reference/coverage.md`): a verb
@@ -41,6 +41,7 @@ grounds things; you decide what the shot is, then check it with your own eyes (`
 |---|---|
 | a script, an idea, "what do I show" | `modules/brief.md` |
 | a place, a room, a set, props | `modules/set-building.md` |
+| a finished scene from three.js, Blender or a glTF; "make it look like the original"; marks, sightlines, the Real Look, low-key light, PBR surfaces, post | `modules/cinematography.md` |
 | framing, lenses, bodies, the frame's shape, focus pulls, rigs, moves, cuts | `modules/camera.md` |
 | light, setups, soft panels, haze, god rays, an HDRI, mood, "it looks flat" | `modules/lighting.md` |
 | how things move, timing, twos | `modules/animation.md` |
@@ -57,7 +58,7 @@ grounds things; you decide what the shot is, then check it with your own eyes (`
 | "can the bridge do X?", any menu command | `reference/coverage.md` |
 | "is it good?", fixing a shot | `modules/critique.md` |
 | photos, video, Manim graphs | `modules/media.md` |
-| which Look (twelve), the Finish, grounds, drawn effects, a drawing as a diorama, colour, composition | `style/looks.md`, `style/color.md`, `style/composition.md` |
+| which Look (thirteen, Real among them), the Finish, grounds, drawn effects, a drawing as a diorama, colour, composition | `style/looks.md`, `style/color.md`, `style/composition.md` |
 | exact tool parameters | `reference/tools.md` |
 | what went wrong before | `lessons.md` (read it once per session, always) |
 

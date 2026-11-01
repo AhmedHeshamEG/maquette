@@ -1,6 +1,7 @@
 """The laptop tools against a fake iPad bridge (same endpoints and replies as the app): every MCP tool goes through it."""
 import base64
 import json
+import urllib.parse
 import pathlib
 import threading
 from http.server import BaseHTTPRequestHandler, HTTPServer
@@ -44,6 +45,8 @@ class FakeBridge(BaseHTTPRequestHandler):
             return self.reply(200, {"app": "3D-lowey", "bridge": 2, "project": "Enigma", "scene": "Desk", "shot": "Shot", "autoApply": False})
         if path == "/v2/project":
             return self.reply(200, {"summary": "“Enigma”, scene “Desk”", "shots": [{"camera": "Shot", "at": [0]}], "cast": ["Hesham"]})
+        if path == "/v2/scene":
+            return self.reply(200, {"space": "metres; y is up", "time": 0, "things": [{"name": "Desk", "sitsOn": "ground"}]})
         if path == "/v2/transcript":
             return self.reply(200, {"language": "en-US", "words": [{"i": 0, "w": "Enigma", "t": 1.2, "e": 1.8}]})
         if path == "/v2/actions":
@@ -71,6 +74,9 @@ class FakeBridge(BaseHTTPRequestHandler):
         if not self.authorized():
             return self.reply(401, {"error": "Pair first"})
         RECEIVED.append((path, self.path, body, self.headers.get("X-Lowey-Client")))
+        if path == "/v2/import":
+            name = urllib.parse.parse_qs(urllib.parse.urlparse(self.path).query)["name"][0]
+            return self.reply(200, {"imported": name, "things": "3", "names": "Desk, Lamp, Plate"})
         if path == "/v2/build":
             script = json.loads(body)
             dry = script.get("dry_run", False)
@@ -137,7 +143,7 @@ def _sent():
 
 
 def test_the_sixteen_tools_go_through_the_bridge(bridge_host, monkeypatch, tmp_path):
-    """MCP v2: exactly 16 tools, and each one reaches the right endpoint with the right Scene Script v3."""
+    """MCP v2: exactly 18 tools (S16 added scene_graph and import_scene), and each one reaches the right endpoint with the right Scene Script v3."""
     monkeypatch.setenv("LOWEY_HOST", bridge_host)
     monkeypatch.setenv("LOWEY_TOKEN", TOKEN)
     import asyncio
@@ -147,7 +153,18 @@ def test_the_sixteen_tools_go_through_the_bridge(bridge_host, monkeypatch, tmp_p
     importlib.reload(mcp_server)
     names = sorted(tool.name for tool in asyncio.run(mcp_server.mcp.list_tools()))
     assert names == sorted(["status", "read_project", "find_assets", "build", "frame_shot", "light", "set_look", "animate", "camera_move",
-                            "add_overlay", "flipbook", "add_media", "render_manim", "observe", "contact_sheet", "commit"])
+                            "add_overlay", "flipbook", "add_media", "render_manim", "observe", "contact_sheet", "commit", "scene_graph", "import_scene"])
+    scene_file = tmp_path / "plate-room.json"
+    scene_file.write_text('{"metadata": {"type": "Object"}, "object": {}}')
+    imported = json.loads(mcp_server.import_scene(str(scene_file)))
+    assert imported["imported"] == "plate-room.json" and RECEIVED[-1][0] == "/v2/import"
+    project = tmp_path / "s16"
+    project.mkdir()
+    (project / "index.html").write_text("<html></html>")
+    assert json.loads(mcp_server.import_scene(str(project)))["imported"] == "s16.zip", "a folder goes as a zip"
+    graph = json.loads(mcp_server.scene_graph(time=2, names=["Desk", "Lamp"]))
+    assert graph["things"][0]["sitsOn"] == "ground"
+    assert RECEIVED[-1][0] == "/v2/scene" and "names=Desk%2CLamp" in RECEIVED[-1][1] and "time=2" in RECEIVED[-1][1]
 
     # 1–3: reading
     assert '"bridge":2' in mcp_server.status() and RECEIVED[-1][0] == "/v2/status"

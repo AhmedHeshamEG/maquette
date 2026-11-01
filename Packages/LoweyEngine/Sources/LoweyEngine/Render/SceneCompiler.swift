@@ -113,7 +113,7 @@ final class SceneCompiler {
             }
             visitGhost(ghost.root, state)
         }
-        scene.lights = Array(lights.sorted { $0.1 < $1.1 }.prefix(max(input.lightBudget, 0)).map(\.0))
+        scene.lights = Self.assignShadows(Array(lights.sorted { $0.1 < $1.1 }.prefix(max(input.lightBudget, 0)).map(\.0)))
         return scene
     }
 
@@ -127,7 +127,11 @@ final class SceneCompiler {
         case .light where state.ghost, .camera where state.ghost, .particles where state.ghost:
             return
         case let .light(type):
-            let light = Self.lightData(type, object: object, world: state.world, palette: input.document.palette)
+            var light = Self.lightData(type, object: object, world: state.world, palette: input.document.palette)
+            // Spots cast shadows when asked, and in the Real Look unless told not to.
+            let real = LookLibrary.resolve(input.document.effectiveLook.presetID, custom: input.document.project.customLooks).shading.model == .real
+            let asks = object[.lightShadows]?.boolValue ?? real
+            if type == .spot, asks { light.shadow.z = 1 }
             lights.append((light, simd_distance(light.position.xyz4, cameraPosition)))
             if input.showsHelpers {
                 let color = object[.lightColor]?.colorValue?.resolved(in: input.document.palette) ?? .white
@@ -161,6 +165,14 @@ final class SceneCompiler {
         var uniforms = ObjectUniforms()
         let color = (state.tint ?? object.color)?.resolved(in: palette) ?? .blockout
         uniforms.baseColor = SIMD4<Float>(color.linear, Float(min(max(state.opacity, 0), 1)))
+        // The surface's own material, read by the Real Look (the others use roughness and metal through paint only).
+        let number = { (key: PropertyKey) in object[key]?.floatValue.map { Float($0) } }
+        uniforms.material = SIMD4<Float>(number(.roughness).map { min(max($0, 0.02), 1) } ?? -1, min(max(number(.metallic) ?? 0, 0), 1),
+                                         min(max(number(.clearcoat) ?? 0, 0), 1), min(max(number(.clearcoatRoughness) ?? 0.1, 0.02), 1))
+        let transmission = min(max(number(.transmission) ?? 0, 0), 1)
+        uniforms.optics = SIMD4<Float>(transmission, min(max(number(.ior) ?? 1.5, 1), 3), 0, 0)
+        // Glass is drawn with what's behind it.
+        if transmission > 0 { uniforms.baseColor.w = min(uniforms.baseColor.w, 0.99) }
         let intensity = object.emissiveIntensity
         if intensity > 0 {
             let glow = object.emissive?.resolved(in: palette) ?? color
@@ -181,7 +193,7 @@ final class SceneCompiler {
                                          custom: input.document.project.customLooks)
         var flags = ObjectFlags()
         if state.accent { flags.insert(.accent) }
-        if state.decal { flags.insert(.unlit) }
+        if state.decal || object[.unlit] == .bool(true) { flags.insert(.unlit) }
         if state.selected { flags.insert(.selected) }
         if object.isGlossy { flags.insert(.glossy) }
         uniforms.ids = SIMD4<UInt32>(objectIndex, scene.lookIndex(preset), flags.rawValue, 0)
@@ -226,11 +238,15 @@ final class SceneCompiler {
         switch type {
         case .point:
             light.color = SIMD4<Float>(color * intensity * 1.6, 0)
+            light.axis.w = 0.05
         case .spot:
             let angle = Float(object[.spotAngle]?.floatValue ?? 40) * .pi / 180
             light.color = SIMD4<Float>(color * intensity * 2.2, 1)
+            light.axis.w = 0.05
             light.direction = SIMD4<Float>(forward, cos(angle / 2))
-            light.params = SIMD4<Float>(cos(angle * 0.3), 0, 0, 0)
+            // The inner cone, where the fade to the edge starts: the softness of the cone (three.js's penumbra).
+            let softness = Float(min(max(object[.spotSoftness]?.floatValue ?? 0.4, 0), 1))
+            light.params = SIMD4<Float>(cos(angle / 2 * (1 - softness) - 1e-3), 0, 0, 0)
         case .directional:
             light.color = SIMD4<Float>(color * intensity, 2)
             light.direction = SIMD4<Float>(forward, 0)

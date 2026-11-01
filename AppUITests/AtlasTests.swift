@@ -208,9 +208,9 @@ final class AtlasTests: XCTestCase {
     func test04Sheets() {
         area = "4 Sheets"
         each([
-            Page(name: "Export", steps: ["Actions", "open-export"], scrolls: 2, side: .centre),
+            Page(name: "Export", steps: ["Actions", "actions-share", "open-export"], scrolls: 2, side: .centre),
             Page(name: "History", steps: ["Actions", "open-history"]),
-            Page(name: "Board", steps: ["Actions", "open-board"]),
+            Page(name: "Board", steps: ["Actions", "actions-windows", "open-board"]),
             Page(name: "Learn", steps: ["Actions", "open-learn"], side: .centre),
             Page(name: "Gestures", steps: ["Actions", "open-learn", "learn-gestures"], scrolls: 2, side: .centre),
             Page(name: "Settings", steps: ["Actions", "Settings"], scrolls: 3, side: .centre),
@@ -226,7 +226,7 @@ final class AtlasTests: XCTestCase {
         area = "5 Selection"
         fresh(.cube)
         shot("Object panel")
-        for index in 1 ... 2 {
+        for index in 1 ... 6 {
             element("inspector").swipeUp()
             settle(1)
             shot("Object panel, further \(index)")
@@ -299,6 +299,7 @@ final class AtlasTests: XCTestCase {
         area = "8 Reference"
         fresh(.sample)
         tap("Actions")
+        tap("actions-windows")
         tap("open-reference")
         settle(2)
         shot("Reference window: the whole scene")
