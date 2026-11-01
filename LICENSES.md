@@ -1,6 +1,7 @@
 # Third-party software
 
-Only permissively licensed dependencies are allowed.
+Maquette itself is under the GPL v3.0 ([LICENSE](LICENSE)). Only dependencies whose licences are compatible with it
+are allowed (Apache 2.0, MIT, BSD, MPL 2.0, zlib, CC0).
 
 | Dependency | Version | License | Used for |
 |---|---|---|---|
