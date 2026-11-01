@@ -3890,3 +3890,9 @@ anything made by hand. Things opens on them; the CC0 Kit folds under More sets a
 pictures are rendered once on the iPad and kept with the library's, named for the kit's version, so a changed kit
 renders new ones. **Still to come in M14:** handles on the stage that rebuild a thing at a new size (the builders
 already take one), pictures baked in CI and shipped, the bridge's verb for them, and starter projects per set-up.
+
+## U9 · Clean (0.36)
+
+**D-619 — No card on the empty stage.** Hesham, in U9's converge: the "An empty stage" card from D-617 is a pop-up he
+doesn't want ("really dumb"). It is gone; the first open keeps its lower, closer view, and where things come from is
+the tutorial's job (M16). Rejected: showing it once per device (still a card over the stage on the very first look).
