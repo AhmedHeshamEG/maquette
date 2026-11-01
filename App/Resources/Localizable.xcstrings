@@ -1153,6 +1153,22 @@
         }
       }
     },
+    "A 3D file": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Un file 3D"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ملف ثلاثي الأبعاد"
+          }
+        }
+      }
+    },
     "A ball of %@": {
       "localizations": {
         "it": {
@@ -1341,6 +1357,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "جزء من الوجه"
+          }
+        }
+      }
+    },
+    "A picture": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Un'immagine"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "صورة"
           }
         }
       }
@@ -1581,6 +1613,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "اللمسة تؤدي…"
+          }
+        }
+      }
+    },
+    "A video": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Un video"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "فيديو"
           }
         }
       }
@@ -13689,6 +13737,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "للّوحة"
+          }
+        }
+      }
+    },
+    "For the web": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Per il web"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "للويب"
           }
         }
       }
@@ -26977,6 +27041,22 @@
         }
       }
     },
+    "Print it": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Stampalo"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "اطبعه"
+          }
+        }
+      }
+    },
     "Printer": {
       "localizations": {
         "it": {
@@ -35465,6 +35545,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "افصله"
+          }
+        }
+      }
+    },
+    "Take it to a game": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Portalo in un gioco"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "انقله إلى لعبة"
           }
         }
       }

@@ -97,7 +97,8 @@ final class LayoutTests: XCTestCase {
     }
 
     /// Touch and hold opens the same menu on every kind of thing: Duplicate, Rename, Copy, Paste first, Delete last
-    /// (CONTEXT §4.1); an object's keeps Rename in More so it stays at six rows (U9). Walks an object on the stage, a Look and a project's card; keys, clips, drawings: `HoldMenuFlowTests`.
+    /// (CONTEXT §4.1); an object's keeps Rename in More so it stays at six rows (U9). Walks an object on the stage, a Look and a project's card; keys, clips,
+    /// drawings: `HoldMenuFlowTests`.
     func testTheHoldMenuStartsTheSameOnEveryKindOfThing() {
         let expected = ["Duplicate", "Rename", "Copy", "Paste", "Delete"]
         newProject("Holding")

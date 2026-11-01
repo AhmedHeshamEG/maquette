@@ -172,7 +172,7 @@ final class SceneCompiler {
         let transmission = min(max(number(.transmission) ?? 0, 0), 1)
         uniforms.optics = SIMD4<Float>(transmission, min(max(number(.ior) ?? 1.5, 1), 3), 0, 0)
         // Glass is drawn with what's behind it.
-        if transmission > 0 { uniforms.baseColor.w = min(uniforms.baseColor.w, 0.999) }
+        if transmission > 0 { uniforms.baseColor.w = min(uniforms.baseColor.w, 0.99) }
         let intensity = object.emissiveIntensity
         if intensity > 0 {
             let glow = object.emissive?.resolved(in: palette) ?? color
