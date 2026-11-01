@@ -3,6 +3,31 @@
 All notable changes. 1.x grew in four phases (v0.1 → v1.4); 2.0 is the remaster, released as betas first. Maquette
 continues from 2.0 and numbers its phases again from 0.1 (each phase bumps the minor version until 1.0).
 
+## [0.36] — Maquette — Clean, the Real Look and open source (phase U9, in progress)
+
+- **Open source**: Maquette is free software under the GPL 3.0. The name, studio h. and the icon stay the author's
+  (TRADEMARKS.md); CONTRIBUTING.md explains contributions. A new README.
+- **The Real Look**: light as a camera sees it. Physically based surfaces (roughness, metal, a clear coat, glass), lamps
+  that fall off with distance, a lamp's reflection the size of the lamp, the sky in every glossy surface, a filmic tone
+  curve, halation. **Spot lights cast shadows**, in every Look when asked, by default in Real.
+- **Roughness and metal on a thing work in every Look** (they were kept and ignored unless painted).
+- **The object panel in four tabs**: Move · Look · Shape · Real, under its colour; the tab you chose is remembered.
+- **Rig is the one home for characters**: making one, its parts, Face, Proportions, Say a line, Act it out, For games.
+  A new character opens Rig.
+- **Actions in six**: Share, Windows, Notes, History, Learn, Settings.
+- **Model ▸ Add in groups**: Shapes, Lights, Words & pictures, Effects; a Room, Print or Game project's kit first.
+- **Export opens on what it's for**: a video, a picture, a game, a print, the web, a 3D file. The format is picked and
+  one tap deeper.
+- **One Save to Library** wherever something can be saved.
+- **The menu bar mirrors the screen**: Scene, Model, Draw, Rig, Animate, Look. Every command keeps its keys.
+- **No card on an empty stage.**
+- **The bridge, after the S16 report** (a finished three.js film rebuilt in Maquette): `import_scene` brings a three.js
+  scene, project or a model in as built; `scene_graph` reads the scene back; marks, a camera that watches one, a slow
+  drift; lens keys in millimetres that play; spot cone and softness; `unlit` pictures; post by numbers; shapes honour
+  relations and `anchor`; placing keeps a tilt; up to 4,096 clones; `show` a thing only in its shots; a search that
+  understands a description; the rubric fails a camera inside a wall; hidden things don't count as motion; the laptop
+  tool prints UTF-8 on Windows.
+
 ## [0.30] — Maquette — Draw, characters and the legal pass (phase Q2, in progress)
 
 - **A line lands exactly under the Pencil**, on a surface seen at any angle and on the sheet: it was lifted along the
