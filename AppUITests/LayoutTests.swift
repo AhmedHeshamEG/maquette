@@ -140,10 +140,20 @@ final class LayoutTests: XCTestCase {
         }
     }
 
-    /// Everything but Model and the making tools (the walk outgrew ten minutes in one test at M4, again at U3).
+    /// Everything but Model, the making tools, Library and Look (the walk outgrew ten minutes in one test at M4, at U3,
+    /// and again at U9).
     func testPanelAndChromeControlsAreReachable() {
-        walkInAProject(["", "blob"]) { $0.home != "Model" && !Self.makingHomes.contains($0.home) }
+        walkInAProject(["", "blob"]) {
+            $0.home != "Model" && !Self.makingHomes.contains($0.home) && !Self.libraryAndLook.contains($0.home)
+        }
     }
+
+    /// Library and Look.
+    func testLibraryAndLookControlsAreReachable() {
+        walkInAProject(["", "blob"]) { Self.libraryAndLook.contains($0.home) }
+    }
+
+    private static let libraryAndLook: Set<String> = ["Library", "Look"]
 
     /// Draw and Rig.
     func testMakingControlsAreReachable() {
