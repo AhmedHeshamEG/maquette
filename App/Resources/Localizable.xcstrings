@@ -30065,6 +30065,38 @@
         }
       }
     },
+    "Save to Library": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Salva nella Libreria"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "حفظ في المكتبة"
+          }
+        }
+      }
+    },
+    "Save to Library as a loop": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Salva nella Libreria come loop"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "حفظ في المكتبة كحلقة متكررة"
+          }
+        }
+      }
+    },
     "Save to library…": {
       "localizations": {
         "it": {

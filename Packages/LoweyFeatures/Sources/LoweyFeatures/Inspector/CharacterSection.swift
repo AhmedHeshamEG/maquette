@@ -84,7 +84,7 @@ struct CharacterSection: View {
                     .accessibilityIdentifier("remove-part")
                 // Kept in Yours (L2): it goes onto any character from Library ▸ Yours ▸ Parts.
                 if let id = editor.selectedPart?.id {
-                    HmmPillButton("Save to Yours", systemName: "tray.and.arrow.down") { Task { await editor.savePartToYours(id) } }
+                    HmmPillButton("Save to Library", systemName: "tray.and.arrow.down") { Task { await editor.savePartToYours(id) } }
                         .accessibilityIdentifier("part-save-yours")
                 }
             }

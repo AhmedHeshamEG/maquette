@@ -127,14 +127,14 @@ Three short pages; the page is remembered.
 | Only this scene | `Look › Only this scene` |
 | Style: thirteen Looks (Ink … Painterly, Watercolour, Gouache, Paperman, Anime cel … Real … Pixel), My Looks, Your Looks | `Look › look-style › look-painterly` |
 | Style: duplicate as My Look | `Look › look-style › duplicate-look` |
-| Style: the Look Studio (Light, Lines, Paint, Print, Motion, About); Save to Yours; Share as a pack (L2) | Look ▸ Style ▸ Open “My Look” in the Look Studio, or a My Look's hold menu |
+| Style: the Look Studio (Light, Lines, Paint, Print, Motion, About); Save to Library; Share as a pack (L2) | Look ▸ Style ▸ Open “My Look” in the Look Studio, or a My Look's hold menu |
 | Style: a Look's hold menu: duplicate, open in the Look Studio, save to Yours, share as a pack, delete | touch and hold a Look |
 | Style: the palette (linked colours; the sidebar's Pick fills the slot being edited) | `Look › look-style › Add a colour` |
 | World: moods (Day … Studio, Dark studio) | `Look › look-world › mood-dusk` |
 | World: sky from a picture (an HDRI that shows behind everything and lights the world; turn, brightness) (F1) | Look ▸ World ▸ Choose an HDRI… (the Files sheet) |
 | World: the air, haze and god rays (F1) | `Look › look-world › Haze` |
 | World: fine tune the world | `Look › look-world › Fine tune the world` |
-| World: save the world to the library | `Look › look-world › Save this world to the library` |
+| World: Save to Library (one verb, one icon, everywhere something can be saved; U9) | `Look › look-world › Save to Library` |
 | World: the real sun (a place, a date, a time; a shadow study across the timeline; which way north is), in Fine tune the world | Look ▸ World ▸ Fine tune the world ▸ Real sun |
 | Finish: clean, cinematic, dreamy, retro, ink outlines, collage, old film; grain, bloom | `Look › look-finish › Cinematic` |
 | Finish: Motion (smooth, on twos, on threes) for the whole scene | `Look › look-finish › finish-motion` |
@@ -381,7 +381,7 @@ titles are 3D text that sticks to the camera, screen effects are in Look ▸ Fin
 | The ruler: drag to scrub; tap just beside the playhead to step a frame; flick left to go to the start | `[timeline] timeline-ruler` |
 | A thing's row (Motion): its icon in its colour and a curve of how much it moves; frames as cells when zoomed in; the dope sheet lists every property instead | the lanes |
 | A selected row's whole animation: drag the grip under it to slide it in time; drag the dot at its end to repeat it (the repeats show lighter) | under a selected animated row |
-| The grip's hold menu: loop forever or play once; save as a clip or a loop to the Library | touch and hold the grip |
+| The grip's hold menu: loop forever or play once; Save to Library, or Save to Library as a loop | touch and hold the grip |
 | A key's hold menu: copy, paste; feel (ease, snap, bounce, straight; the curve one step deeper), reverse, mirror; delete | touch and hold a key |
 | A clip's hold menu: split at the playhead, loop or play once; delete | touch and hold a clip |
 | A flipbook drawing's hold menu: duplicate; hold longer, hold shorter; delete (the track's is on its name) | touch and hold a drawing |
@@ -422,7 +422,7 @@ grammar: the board itself top left, the making tools top right, the sidebar, the
 Touch and hold any thing and the same menu opens in the same order (CONTEXT §4.1): **Duplicate · Rename · Copy ·
 Paste**, then one to three extras that fit the thing, then **Delete** in red. The first four and Delete are always in
 the same places; a row a thing can't do is dimmed. An object's menu holds everything it can do: Hide, Lock, and More
-(Group or Ungroup, Array, Clone, Morph into, To the ground, Settle, Swap for a model, Save to the library, Unpack); on the stage, with other
+(Group or Ungroup, Array, Clone, Morph into, To the ground, Settle, Swap for a model, Save to Library, Unpack); on the stage, with other
 things selected, **Add to the selection** comes first. A finger held still on an object opens it; a finger that moves
 is a drag. The same object has the same menu on the stage, in the outliner, on its timeline row and behind its panel's
 ⋯ button. Also on: keys, clips, flipbook drawings and tracks, cuts, screen effects, paint layers, brushes, Looks,

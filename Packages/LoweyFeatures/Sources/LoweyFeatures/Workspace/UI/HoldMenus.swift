@@ -192,7 +192,7 @@ extension EditorModel {
         if objects.count == 1, case .primitive = objects[0].kind {
             items.append(HmmHoldMenu.Item("Swap for a model…", systemName: "arrow.triangle.swap", action: on(ids) { $0.beginSwap() }))
         }
-        items.append(HmmHoldMenu.Item("Save to the library…", systemName: "tray.and.arrow.down", action: on(ids) { $0.savingPrefab = true }))
+        items.append(HmmHoldMenu.Item("Save to Library", systemName: "tray.and.arrow.down", action: on(ids) { $0.savingPrefab = true }))
         if objects.contains(where: { $0.kind.prefabID != nil }) {
             items.append(HmmHoldMenu.Item("Unpack", systemName: "shippingbox", action: on(ids) { $0.unpackSelection() }))
         }

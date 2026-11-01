@@ -112,7 +112,7 @@ struct LookPanel: View {
         var extras: [HmmHoldMenu.Item] = []
         if !preset.isBuiltIn {
             extras.append(HmmHoldMenu.Item("Open in the Look Studio", systemName: "slider.horizontal.3") { studio = LookStudioTarget(id: preset.id) })
-            extras.append(HmmHoldMenu.Item("Save to Yours", systemName: "tray.and.arrow.down") { editor.saveLookToYours(preset) })
+            extras.append(HmmHoldMenu.Item("Save to Library", systemName: "tray.and.arrow.down") { editor.saveLookToYours(preset) })
             extras.append(HmmHoldMenu.Item("Share as a pack", systemName: "square.and.arrow.up") { share(preset) })
         }
         return HmmHoldMenu(duplicate: { editor.duplicateLook(preset) }, extras: extras,
@@ -143,7 +143,7 @@ struct LookPanel: View {
 
     private var saved: some View {
         PanelSection("Library") {
-            HmmPillButton("Save this world to the library", systemName: "tray.and.arrow.down") {
+            HmmPillButton("Save to Library", systemName: "tray.and.arrow.down") {
                 lookName = look.lightingPreset?.displayName ?? "My world"
                 savingLook = true
             }
