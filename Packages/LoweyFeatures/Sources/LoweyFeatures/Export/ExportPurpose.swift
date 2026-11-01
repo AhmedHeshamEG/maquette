@@ -7,7 +7,7 @@ enum ExportPurpose: String, CaseIterable, Identifiable {
 
     var id: String { rawValue }
 
-    var title: LocalizedStringKey {
+    var title: String {
         switch self {
         case .video: "A video"
         case .picture: "A picture"
