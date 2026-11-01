@@ -1,5 +1,0 @@
-; A project only so Godot can run the checks in Tools/godot headless on CI (U4's skins, P1's physics, K1's characters and sprites).
-config_version=5
-
-[application]
-config/name="Maquette glTF check"
