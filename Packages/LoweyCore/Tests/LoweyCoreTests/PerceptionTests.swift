@@ -313,6 +313,22 @@ final class PerceptionTests: XCTestCase {
         XCTAssertEqual(sheet.camera?.constantSpeed, false, "the camera holds")
     }
 
+    /// S16: a hidden thing whose keys jump (it's parked out of the way between shots) doesn't "travel" at all.
+    func testAHiddenThingIsNotMeasured() throws {
+        var doc = movingDocument(easing: .linear, words: false)
+        doc.scene.objects["box"]?[.opacity] = .float(0)
+        let sheet = ShotObserver(document: doc).contactSheet(from: 0, to: 4)
+        XCTAssertNil(sheet.motion.first { $0.name == "Box" }, "hidden, so not on screen")
+        // A point through the camera's plane projects thousands of frames away: it's dropped, not added to the path.
+        var close = movingDocument(easing: .linear, words: false)
+        close.scene.timeline.tracks = [Track(id: "t", target: "box", property: .position, keyframes: [
+            Keyframe(time: 0.5, value: .vec3(Vec3(-2, 0, 0)), easing: .linear),
+            Keyframe(time: 2.5, value: .vec3(Vec3(0, 1, 7.99)), easing: .linear)
+        ])]
+        let near = try XCTUnwrap(ShotObserver(document: close).contactSheet(from: 0, to: 4).motion.first { $0.name == "Box" })
+        XCTAssertLessThan(near.pathLength, 10)
+    }
+
     func testEasedMovesLandOnWords() throws {
         let sheet = ShotObserver(document: movingDocument(easing: .easeInOut, words: true)).contactSheet(from: 0, to: 4, frames: 4)
         XCTAssertEqual(sheet.frames.count, 4)

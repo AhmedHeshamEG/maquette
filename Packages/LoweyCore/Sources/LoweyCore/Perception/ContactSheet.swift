@@ -107,6 +107,17 @@ extension ShotObserver {
         return String(format: "%d:%02d.%02d", seconds / 60, seconds % 60, frame % max(fps, 1))
     }
 
+    /// Shown: it and everything above it visible, and not faded out.
+    static func isShown(_ id: ObjectID, in scene: Scene) -> Bool {
+        var current: ObjectID? = id
+        while let at = current, let object = scene.objects[at] {
+            if case .bool(false)? = object[.visible] { return false }
+            if case let .float(opacity)? = object[.opacity], opacity < 0.01 { return false }
+            current = object.parent
+        }
+        return true
+    }
+
     struct MotionSamples {
         var times: [Double] = []
         /// Screen positions (x in frame heights from the left, y in frame heights from the top; nil behind the camera).
@@ -129,10 +140,13 @@ extension ShotObserver {
             samples.times.append(time)
             samples.camera.append((camera.position, camera.forward))
             for (index, unit) in units.enumerated() {
-                let center = bounds.worldBounds(of: unit, in: animated.scene)?.center
+                // A hidden thing isn't on screen, and a point far off the frame (near the camera's plane it projects
+                // to thousands of frame heights) isn't a path: neither counts (S16: a hidden phone "travelled 36 km").
+                let center = Self.isShown(unit, in: animated.scene) ? bounds.worldBounds(of: unit, in: animated.scene)?.center : nil
                 worlds[index].append(center)
-                screens[index].append(center.flatMap { camera.project($0) }.map { point in
-                    (point.x * aspect, point.y, point.x >= 0 && point.x <= 1 && point.y >= 0 && point.y <= 1)
+                screens[index].append(center.flatMap { camera.project($0) }.flatMap { point in
+                    guard abs(point.x - 0.5) < 2, abs(point.y - 0.5) < 2 else { return nil }
+                    return (point.x * aspect, point.y, point.x >= 0 && point.x <= 1 && point.y >= 0 && point.y <= 1)
                 })
             }
             time += step
