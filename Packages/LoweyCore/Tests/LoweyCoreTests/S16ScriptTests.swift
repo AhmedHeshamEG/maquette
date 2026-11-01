@@ -39,4 +39,28 @@ final class S16ScriptTests: XCTestCase {
         XCTAssertTrue(error(##"{"do": "add", "shape": "cube", "name": "A"}, {"do": "set", "target": "A", "property": "shininess", "value": 1}"##)
             .contains("unknown property “shininess”"))
     }
+
+    /// Item 12: `"anchor": "center"` puts the middle at `at`; the bottom stays the default.
+    func testAnchorCenterPutsTheMiddleAtThePoint() throws {
+        let (document, result) = try compile("""
+        {"do": "add", "shape": "cube", "name": "Mid", "at": [0, 1, 0], "size": [1, 0.5, 1], "anchor": "center"},
+        {"do": "add", "shape": "cube", "name": "Base", "at": [2, 1, 0], "size": [1, 0.5, 1]}
+        """)
+        let bounds = SceneBounds()
+        let mid = try XCTUnwrap(bounds.worldBounds(of: XCTUnwrap(result.created["Mid"]), in: document.scene))
+        let base = try XCTUnwrap(bounds.worldBounds(of: XCTUnwrap(result.created["Base"]), in: document.scene))
+        XCTAssertEqual(mid.center.y, 1, accuracy: 1e-6)
+        XCTAssertEqual(base.min.y, 1, accuracy: 1e-6)
+    }
+
+    /// Item 13: a shape added "on" another stands on it, not on the floor.
+    func testAShapeAddedOnAnotherStandsOnIt() throws {
+        let (document, result) = try compile("""
+        {"do": "add", "shape": "cube", "name": "Desk", "at": [0, 0, 0], "size": [1.6, 0.75, 0.8]},
+        {"do": "add", "shape": "cylinder", "name": "Cup", "size": [0.08, 0.1, 0.08], "relation": "on", "reference": "Desk"}
+        """)
+        let bounds = SceneBounds()
+        let cup = try XCTUnwrap(bounds.worldBounds(of: XCTUnwrap(result.created["Cup"]), in: document.scene))
+        XCTAssertEqual(cup.min.y, 0.75, accuracy: 0.01)
+    }
 }

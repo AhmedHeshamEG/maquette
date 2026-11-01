@@ -40,13 +40,10 @@ extension ScriptState {
         }
         var object = SceneObject(id: context.ids.next(), name: name(action, fallback: asset.name), kind: .asset(asset.id))
         if let look = string(action, "look") { object[.lookPreset] = .enumeration(look) }
-        object = try operations.placeOnGround(object, at: point(action["at"]) ?? context.focus)
+        let at = try point(action["at"]) ?? context.focus
+        object = operations.placeOnGround(object, at: at)
         try insert(object, action: action, verb: "Add")
-        if action["relation"] != nil {
-            var placed = action.objectValue ?? [:]
-            placed["target"] = .string(object.id.raw)
-            try relate(.object(placed))
-        }
+        try settle(object.id, action, at: at)
     }
 
     /// `{"do": "scaleTo", "target": "Tree", "meters": 6, "axis": "height"}`: real-world size (height by default).

@@ -40,6 +40,29 @@ extension ScriptState {
             object = operations.placeOnGround(object, at: at)
         }
         try insert(object, action: action, verb: "Add")
+        try settle(object.id, action, at: at)
+    }
+
+    /// After a thing is added: `"anchor": "center"` puts its middle (not its bottom) at `at`, and a `relation` places it
+    /// by the solver, for shapes as for Kit models (S16: a cube "on" a desk landed on the floor).
+    mutating func settle(_ id: ObjectID, _ action: JSONValue, at: Vec3) throws {
+        if action["relation"] != nil {
+            var placed = action.objectValue ?? [:]
+            placed["target"] = .string(id.raw)
+            try relate(.object(placed))
+            return
+        }
+        switch string(action, "anchor") {
+        case nil, "bottom"?:
+            return
+        case "center"?, "centre"?, "middle"?:
+            guard let box = SceneBounds(library: context.library).worldBounds(of: id, in: scene),
+                  let position = scene.objects[id]?.transform.position else { return }
+            let moved = position + (at - box.center)
+            try run(.setProperties([PropertyChange(object: id, key: .position, value: .vec3(moved))]), label: nil)
+        case let other?:
+            throw fail("unknown anchor “\(other)” (bottom, center)")
+        }
     }
 
     mutating func place(_ action: JSONValue) throws {
@@ -61,8 +84,10 @@ extension ScriptState {
             throw fail("nothing in the library matches “\(query)”. Library: \(names.joined(separator: ", "))")
         }
         if let scale = vec3(action["scale"]) { object.transform.scale = scale }
-        object = try operations.placeOnGround(object, at: point(action["at"]) ?? context.focus)
+        let at = try point(action["at"]) ?? context.focus
+        object = operations.placeOnGround(object, at: at)
         try insert(object, action: action, verb: "Place")
+        try settle(object.id, action, at: at)
     }
 
     mutating func text(_ action: JSONValue) throws {
