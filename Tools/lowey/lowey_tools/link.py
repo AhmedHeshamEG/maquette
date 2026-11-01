@@ -85,6 +85,11 @@ def save_observe(reply: dict, folder: pathlib.Path) -> None:
 
 
 def main(argv: list[str] | None = None) -> int:
+    # Windows consoles default to cp1252: a reply with "Δ" or "…" would crash the print AFTER the iPad applied it, and a
+    # resend would apply it twice. Print UTF-8 whatever the console is.
+    for stream in (sys.stdout, sys.stderr):
+        if hasattr(stream, "reconfigure"):
+            stream.reconfigure(encoding="utf-8", errors="replace")
     parser = argparse.ArgumentParser(prog="hmm-bridge", description="Laptop companion for 3D-lowey")
     sub = parser.add_subparsers(dest="command", required=True)
     pair = sub.add_parser("pair", help="pair with the iPad: hmm-bridge pair [address] <code>  (the code is on the iPad)")
