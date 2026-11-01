@@ -99,4 +99,17 @@ final class S16ScriptTests: XCTestCase {
         """)
         XCTAssertEqual(try document.scene.objects[XCTUnwrap(result.created["Spectrogram"])]?[.unlit], .bool(true))
     }
+
+    /// Item 3: "gold" on a placed model (its mesh is on the iPad) takes the material whole instead of being refused.
+    func testAPlacedModelTakesAMaterialWhole() throws {
+        var document = makeDocument()
+        let lamp = SceneObject(id: "lamp", name: "Lamp", kind: .asset("kit.lamp"))
+        document.scene.objects[lamp.id] = lamp
+        document.scene.roots.append(lamp.id)
+        let (painted, _) = try compile(##"{"do": "paint", "target": "Lamp", "op": "material", "material": "gold"}"##, document: document)
+        let object = try XCTUnwrap(painted.scene.objects["lamp"])
+        XCTAssertGreaterThan(object[.metallic]?.floatValue ?? 0, 0.8)
+        XCTAssertNotNil(object[.roughness])
+        XCTAssertNil(object.paint, "nothing painted")
+    }
 }

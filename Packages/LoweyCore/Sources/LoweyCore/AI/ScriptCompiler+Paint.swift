@@ -139,6 +139,18 @@ extension ScriptState {
         }
         if let scale = number(action, "scale") { material.scale = max(scale, 0.001) }
         if action["color"] != nil { material.color = try paintColor(action) }
+        // A placed model's mesh lives on the iPad: it takes the material whole (its colour, roughness, metal and glow)
+        // instead of a painted fill, so "gold" works on a Kit lamp too (S16).
+        if let object = scene.objects[id], PaintSource.unshaped(of: object) == nil {
+            var changes = [PropertyChange(object: id, key: .color, value: .color(.rgba(material.color))),
+                           PropertyChange(object: id, key: .roughness, value: .float(material.roughness)),
+                           PropertyChange(object: id, key: .metallic, value: .float(material.metal))]
+            if material.glow.r + material.glow.g + material.glow.b > 0.001 {
+                changes.append(PropertyChange(object: id, key: .emissive, value: .color(.rgba(material.glow))))
+            }
+            try run(.setProperties(changes), label: "\(material.name) on “\(object.name)”")
+            return
+        }
         var images: [String: RGBAImage] = [:]
         for key in material.pictures?.files ?? [] {
             images[key] = paintFile(key).flatMap { try? PNGCodec.decode($0) }
