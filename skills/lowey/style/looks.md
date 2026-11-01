@@ -16,6 +16,7 @@ differently on purpose). Names in any case (`lowpoly` works).
 | **Anime cel** | characters, action, slice of life; on twos | TV anime cels (two hard tones, a lavender shadow, a hard rim, lines in each thing's own colour) |
 | **Clay** | soft, playful, kids' explainers | Aardman (tactile, rounded) |
 | **Clean product** | products, objects, architecture models | studio product shots (soft light, soft shadows, lacquer mirroring the room, no lines) |
+| **Real** | a filmed look: macro tabletops, low-key rooms at night, products, anything recreated from three.js or Blender | live-action cinematography (physically based surfaces, practical lamps, inverse-square falloff, a filmic curve, halation); see `modules/cinematography.md` |
 | **Low-poly** | tech, data, games, abstract explainers | faceted indie games: geometry as the style |
 | **Pixel** | games, retro, a 16-bit flashback; on twos | pixel art (square blocks, a few colours, a one-pixel line); the blocks follow the frame's height, so exports match the stage |
 
