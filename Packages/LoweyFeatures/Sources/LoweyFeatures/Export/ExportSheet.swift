@@ -6,7 +6,8 @@ import SwiftUI
 
 /// Export opens on what it's for (U9, D-596): a video, a picture, take it to a game, print it, for the web, a 3D file for
 /// another app. The format is picked for you and one tap deeper (MP4, ProRes 4444, render passes; glTF, FBX, 3MF;
-/// PDF…), then its named presets (glTF ▸ for Godot, FBX ▸ for Unity…), the last one used already picked. Final, transparency, only the selection and every scene or shot are options beside them. It
+/// PDF…), then its named presets (glTF ▸ for Godot, FBX ▸ for Unity…), the last one used already picked. Final, transparency, only the selection and every
+/// scene or shot are options beside them. It
 /// renders in the background with the stage still usable, carries on when you leave the app, and every video is
 /// checked before it counts as done.
 struct ExportSheet: View {

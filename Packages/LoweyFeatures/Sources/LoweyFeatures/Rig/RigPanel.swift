@@ -3,7 +3,8 @@ import LoweyCore
 import SwiftUI
 
 /// Rig: give the selected thing a skeleton and pose it, and make it a character (U9: the one home for bodies and
-/// characters). Bones → Skin → Pose for anything with a surface; a character's saved poses and its clips. Characters themselves (a Blob, Me, a Puppet) come from the Library; what a character
+/// characters). Bones → Skin → Pose for anything with a surface; a character's saved poses and its clips. Characters themselves (a Blob, Me, a Puppet) come
+/// from the Library; what a character
 /// does live (expressions, the voice, the face, triggers) is performed in the timeline's Perform.
 struct RigPanel: View {
     @Bindable var editor: EditorModel

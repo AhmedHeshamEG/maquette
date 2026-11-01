@@ -97,7 +97,7 @@ a back arrow returns.
 | Control | Walk |
 |---|---|
 | Share, Windows, Notes: their pages | `Actions › actions-windows` |
-| Export opens on what it's for (U9): a video, a picture, take it to a game, print it, for the web, a 3D file; the format picked for it, the others one tap deeper (Format: …); then its presets; Final and the options beside them | `Actions › actions-share › open-export` |
+| Export opens on what it's for (U9): video, picture, game, print, web, 3D file; the format one tap deeper; presets, Final | `Actions › actions-share › open-export` |
 | Export (F1): Video ▸ Animatic, Spatial video (where the iPad encodes it), 360° video, HEVC ▸ HDR; Picture ▸ Spatial photo, 360° panorama, PNG ▸ Wide colour; Paper ▸ Storyboard | in the Export sheet |
 | Export (D1): loops seamlessly, or what jumps when it loops and Close the loop | in the Export sheet, beside a video or GIF preset |
 | Export (G1): Picture ▸ Layered PSD, Ink as SVG; 3D ▸ IFC (when there's a building; *held*), Game level for Godot, Unity, Unreal (one texture for everything); Paper ▸ Plans & elevations (PDF, DXF, SVG; when there's a building), Technical drawing, Papercraft (and a laser net) (the IFC, the plans, the technical drawing and papercraft are held, rule 9) | in the Export sheet |
@@ -184,7 +184,7 @@ Three short pages; the page is remembered.
 
 | Control | Walk |
 |---|---|
-| Add, in groups (U9): Shapes (open first) · Lights · Words & pictures · Effects; in a Room, Print or Game project its Kit comes first | `Model › model-add › add-group-effects` |
+| Add in groups (U9): Shapes, Lights, Words & pictures, Effects; a Room, Print or Game project's Kit first | `Model › model-add › add-group-effects` |
 | Add: shapes (cube, sphere, cylinder, cone, plane, torus, ramp; bevelled), in the colour in the hand | `Model › model-add › add-cube` |
 | | `Model › model-add › add-ramp` |
 | Add: bulb, spot, soft panel, sun | `Model › model-add › add-group-lights › add-spot` |
@@ -467,10 +467,11 @@ explanations in panels; on by default).
 - **Messages** (U5: one toast system): every message, the guide line at the bottom included, leaves after two seconds
   or on any touch.
 - **Under load nothing is said on the stage** (CONTEXT §6): the preview lightens by itself and comes back.
-- **The menu bar and keyboard** reach the same controls: ⌘1–⌘4 Model, Draw, Rig, Animate; ⌘6–⌘8 Actions, Look, the
-  lasso; ⌘L the Library; ⌥⌘1–3 move, turn, size; ⌘T the timeline; Space/J/K/L and ⌥←→ the transport; the Physics
-  menu: ⇧⌘J make real, ⌥⌘J not real, ⌘J settle, ⌥⌘U does it stand, ⇧⌘K keep the run as keys. Holding ⌘ lists
-  them. The Perform menu has the microphone and the trigger keys.
+- **The menu bar mirrors the screen** (U9): Scene · Model · Draw · Rig · Animate · Look, named like the buttons, each
+  tool's switch first (Model holds Shape, Real and the set-ups' kits; Draw holds Texture; Rig the characters; Animate
+  the timeline and Perform). ⌘1–⌘4 Model, Draw, Rig, Animate; ⌘6–⌘8 Actions, Look, the lasso; ⌘L the Library; ⌥⌘1–3
+  move, turn, size; ⌘T the timeline; Space/J/K/L and ⌥←→ the transport; Real: ⇧⌘J make real, ⌥⌘J not real, ⌘J
+  settle, ⌥⌘U does it stand, ⇧⌘K keep the run as keys. Holding ⌘ lists them.
 - **Proposals** from the AI bridge appear at the bottom of the stage while one is waiting.
 
 ## What moved in 0.26 (U8)
