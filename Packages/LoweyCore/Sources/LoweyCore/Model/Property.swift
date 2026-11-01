@@ -185,6 +185,8 @@ public struct PropertyKey: RawRepresentable, Hashable, Sendable, Codable, Compar
     public static let lightIntensity: PropertyKey = "lightIntensity"
     public static let lightRange: PropertyKey = "lightRange"
     public static let spotAngle: PropertyKey = "spotAngle"
+    /// 0…1: how much of a spot's cone fades to its edge (0 a hard disc, 1 soft from the middle; 0.4 by default).
+    public static let spotSoftness: PropertyKey = "penumbra"
     public static let lightShadows: PropertyKey = "lightShadows"
     public static let opacity: PropertyKey = "opacity"
     // Animation
@@ -276,6 +278,7 @@ public struct PropertySpec: Sendable, Hashable {
         .lightIntensity: PropertySpec(type: .float, animatable: true, label: "Intensity"),
         .lightRange: PropertySpec(type: .float, animatable: true, label: "Range"),
         .spotAngle: PropertySpec(type: .float, animatable: true, label: "Spot angle"),
+        .spotSoftness: PropertySpec(type: .float, animatable: true, label: "Spot softness"),
         .lightShadows: PropertySpec(type: .bool, animatable: false, label: "Shadows"),
         .opacity: PropertySpec(type: .float, animatable: true, label: "Opacity"),
         .stepping: PropertySpec(type: .enumeration, animatable: true, label: "Frame rate"),

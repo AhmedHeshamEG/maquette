@@ -196,6 +196,9 @@ extension ScriptState {
         if let color = try color(action["color"]) { object[.lightColor] = .color(color) }
         if let intensity = number(action, "intensity") { object[.lightIntensity] = .float(intensity) }
         if let range = number(action, "range") { object[.lightRange] = .float(range) }
+        if let cone = number(action, "cone") ?? number(action, "angle") { object[.spotAngle] = .float(min(max(cone, 1), 179)) }
+        if let softness = number(action, "penumbra") ?? number(action, "softness") { object[.spotSoftness] = .float(min(max(softness, 0), 1)) }
+        if let shadows = bool(action, "shadows") { object[.lightShadows] = .bool(shadows) }
         if let size = action["size"]?.arrayValue?.compactMap(\.numberValue), size.count == 2 {
             object[.lightWidth] = .float(max(size[0], 0.05))
             object[.lightHeight] = .float(max(size[1], 0.05))

@@ -230,7 +230,9 @@ final class SceneCompiler {
             let angle = Float(object[.spotAngle]?.floatValue ?? 40) * .pi / 180
             light.color = SIMD4<Float>(color * intensity * 2.2, 1)
             light.direction = SIMD4<Float>(forward, cos(angle / 2))
-            light.params = SIMD4<Float>(cos(angle * 0.3), 0, 0, 0)
+            // The inner cone, where the fade to the edge starts: the softness of the cone (three.js's penumbra).
+            let softness = Float(min(max(object[.spotSoftness]?.floatValue ?? 0.4, 0), 1))
+            light.params = SIMD4<Float>(cos(angle / 2 * (1 - softness) - 1e-3), 0, 0, 0)
         case .directional:
             light.color = SIMD4<Float>(color * intensity, 2)
             light.direction = SIMD4<Float>(forward, 0)

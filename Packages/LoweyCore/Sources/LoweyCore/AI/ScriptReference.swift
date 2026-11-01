@@ -71,6 +71,7 @@ public enum ScriptReference {
 
     Film (F1; "camera" defaults to the shot camera)
     {"do":"light","type":"panel|bulb|spot|sun","name":"Window","at":[2,2,2],"size":[1.2,0.8],"aim":"Hero"}   (panel = a soft panel)
+    {"do":"light","type":"spot","name":"Desk lamp","at":[0.4,1.1,0],"aim":"Plate","color":"#FFB070","intensity":3,"range":4,"cone":50,"penumbra":0.6,"shadows":true}
     {"do":"lighting","recipe":"three-point|golden-hour|moonlit|neon|key-warm-world-cool|noir-single-source|golden-rim|monitor-glow|studio-soft","subject":"Hero"}
     {"do":"film","op":"lens","camera":"Shot","mm":35,"sensor":"fullFrame|super35|apsC|microFourThirds|super16|phone|largeFormat|imax","aperture":2.8}
     {"do":"film","op":"frame","shape":"16:9|2.39:1|9:16|4:5|1:1"}   (the Director view, Frame shot and every export)

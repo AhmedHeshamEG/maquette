@@ -76,4 +76,18 @@ final class S16ScriptTests: XCTestCase {
         XCTAssertEqual(abs(up.y), 1, accuracy: 1e-6, "the card's face still points up")
         XCTAssertEqual(abs(RelationSolver.tilt(of: Quat(angle: 0.7, axis: .unitY)).w), 1, accuracy: 1e-9, "a plain heading leaves no tilt")
     }
+
+    /// Item 1: a light's colour, strength, reach, cone and its softness, from the script.
+    func testASpotLightFromTheScript() throws {
+        let (document, result) = try compile("""
+        {"do": "light", "type": "spot", "name": "Lamp", "at": [0, 2, 0], "aim": [0, 0, 0], "color": "#FFB070", "intensity": 3,
+         "range": 4, "cone": 50, "penumbra": 0.6, "shadows": true}
+        """)
+        let lamp = try XCTUnwrap(document.scene.objects[XCTUnwrap(result.created["Lamp"])])
+        XCTAssertEqual(lamp[.spotAngle]?.floatValue, 50)
+        XCTAssertEqual(lamp[.spotSoftness]?.floatValue, 0.6)
+        XCTAssertEqual(lamp[.lightIntensity]?.floatValue, 3)
+        XCTAssertEqual(lamp[.lightRange]?.floatValue, 4)
+        XCTAssertEqual(lamp[.lightShadows], .bool(true))
+    }
 }
