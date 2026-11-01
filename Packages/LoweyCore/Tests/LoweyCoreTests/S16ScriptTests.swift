@@ -63,4 +63,17 @@ final class S16ScriptTests: XCTestCase {
         let cup = try XCTUnwrap(bounds.worldBounds(of: XCTUnwrap(result.created["Cup"]), in: document.scene))
         XCTAssertEqual(cup.min.y, 0.75, accuracy: 0.01)
     }
+
+    /// Item 14: placing a thing that was laid down keeps it laid down; only its heading changes.
+    func testPlacingKeepsATilt() throws {
+        let (document, result) = try compile("""
+        {"do": "add", "shape": "cube", "name": "Desk", "at": [0, 0, 0], "size": [1.6, 0.75, 0.8]},
+        {"do": "add", "shape": "cube", "name": "Card", "at": [3, 0, 0], "size": [0.4, 0.3, 0.01], "rotation": [-90, 0, 0]},
+        {"do": "place", "target": "Card", "relation": "on", "reference": "Desk"}
+        """)
+        let card = try XCTUnwrap(result.created["Card"])
+        let up = document.scene.worldTransform(of: card).rotation.act(Vec3(0, 0, 1))
+        XCTAssertEqual(abs(up.y), 1, accuracy: 1e-6, "the card's face still points up")
+        XCTAssertEqual(abs(RelationSolver.tilt(of: Quat(angle: 0.7, axis: .unitY)).w), 1, accuracy: 1e-9, "a plain heading leaves no tilt")
+    }
 }
