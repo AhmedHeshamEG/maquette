@@ -794,6 +794,7 @@
             "lighting",
             "lipSync",
             "look",
+            "mark",
             "marker",
             "model",
             "motion",
@@ -918,6 +919,12 @@
               },
               "offset": {
                 "$ref": "#/$defs/vec3"
+              },
+              "anchor": {
+                "enum": [
+                  "bottom",
+                  "center"
+                ]
               }
             }
           }
@@ -1094,7 +1101,7 @@
             }
           },
           "then": {
-            "description": "A camera.",
+            "description": "A camera; \"watch\" keeps it turned to a thing (or a mark) and sharp on it; \"drift\" (0–1) a slow sway.",
             "properties": {
               "name": {
                 "type": "string"
@@ -1116,6 +1123,12 @@
               },
               "active": {
                 "type": "boolean"
+              },
+              "watch": {
+                "$ref": "#/$defs/target"
+              },
+              "drift": {
+                "type": "number"
               }
             }
           }
@@ -1874,6 +1887,9 @@
               "shake": {
                 "type": "number"
               },
+              "drift": {
+                "type": "number"
+              },
               "keys": {
                 "type": "object"
               },
@@ -2407,6 +2423,15 @@
               },
               "aim": {
                 "$ref": "#/$defs/point"
+              },
+              "cone": {
+                "type": "number"
+              },
+              "penumbra": {
+                "type": "number"
+              },
+              "shadows": {
+                "type": "boolean"
               }
             }
           }
@@ -2597,6 +2622,35 @@
                 }
               }
             }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "do": {
+                "const": "mark"
+              }
+            }
+          },
+          "then": {
+            "description": "A named spot that draws nothing (\"at\", or \"on\" a thing to ride with it), for cameras to watch, frame and focus on.",
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "at": {
+                "$ref": "#/$defs/point"
+              },
+              "on": {
+                "$ref": "#/$defs/target"
+              },
+              "radius": {
+                "type": "number"
+              }
+            },
+            "required": [
+              "name"
+            ]
           }
         },
         {

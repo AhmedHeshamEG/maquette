@@ -98,6 +98,10 @@ public enum ScriptReference {
     {"do":"physics","op":"sun","place":"Rome","date":"2026-06-21","hour":15,"north":0,"study":[7,19]}   {"op":"sun","latitude":45.1,"longitude":7.7,"utcOffset":2}   {"op":"sun","off":true}
 
     Shoot and light
+    {"do":"mark","name":"Plate","at":[0,0.8,0],"radius":0.05}   (or "on":"Plate 3": rides with it) a named spot that draws nothing
+    {"do":"camera","name":"Macro","from":[0.3,1,0.6],"watch":"Plate","focalLength":85,"aperture":2,"drift":0.4}
+      watch: turns to the thing or mark and keeps it sharp as it moves (key the MARK's position, never the camera's angles)
+      drift 0–1: a slow sway sized to the focus distance, so no frame is dead still (also "drift" on film op rig, keyable)
     {"do":"frameShot","subject":"Hesham","shotType":"extremeWide|wide|full|medium|closeUp|extremeCloseUp|overTheShoulder|twoShot|insert",
      "composition":"center|leftThird|rightThird|lowAngle|highAngle","lens":85,"other":"Ada","side":"left|right","camera":"Shot 2","at":{"word":"Nobody"}}
     {"do":"cameraMove","camera":"Shot 2","move":"pushIn|pullOut|punchIn|snapZoom|orbit|dolly|truck|crane|whipPan|shake|reveal","subject":"Paper","at":{"word":"message"},"duration":2,"strength":1}

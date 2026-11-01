@@ -209,6 +209,25 @@ extension ScriptState {
         try insert(object, action: action, verb: "Light")
     }
 
+    /// `{"do": "mark", "name": "Plate", "at": [0, 0.8, 0], "radius": 0.1}` or `"on": "Plate 3"`: a named spot that
+    /// draws nothing, for cameras to watch and focus on. On a thing, it rides with it.
+    mutating func mark(_ action: JSONValue) throws {
+        var object = SceneObject(id: context.ids.next(), name: name(action, fallback: "Mark"), kind: .group)
+        object[.markRadius] = .float(max(number(action, "radius") ?? 0.1, 0.001))
+        var parent: ObjectID?
+        if let on = action["on"] {
+            let host = try target(on)
+            parent = host
+            let box = SceneBounds(library: context.library).worldBounds(of: host, in: scene)
+            let world = try point(action["at"]) ?? box?.center ?? scene.worldTransform(of: host).position
+            object.transform = Transform.relative(world: Transform(position: world), toParent: scene.worldTransform(of: host))
+        } else {
+            object.transform.position = try point(action["at"]) ?? context.focus
+        }
+        try run(operations.add(object, parent: parent), label: "Mark “\(object.name)”")
+        remember(action, object.id, name: object.name)
+    }
+
     mutating func camera(_ action: JSONValue) throws {
         let from = try point(action["from"] ?? action["at"]) ?? (context.focus + Vec3(0, 1.6, 6))
         let look = try point(action["lookAt"]) ?? context.focus
@@ -221,6 +240,13 @@ extension ScriptState {
         object[.fieldOfView] = object[.fieldOfView] ?? .float(number(action, "fov") ?? 45)
         object[.focusDistance] = .float(from.distance(to: look))
         if let aperture = number(action, "aperture") { object[.aperture] = .float(aperture) }
+        if let drift = number(action, "drift") { object[.rigDrift] = .float(min(max(drift, 0), 1)) }
+        // Keeps turning to watch a thing (a mark that moves takes the camera with it), and keeps it sharp.
+        if let watched = action["watch"] {
+            let id = try target(watched)
+            object[.lookAt] = .string(id.raw)
+            object[.focusOn] = .string(id.raw)
+        }
         try insert(object, action: action, verb: "Camera")
         if bool(action, "active") ?? (scene.activeCamera == nil) {
             try run(.setActiveCamera(object.id), label: nil)

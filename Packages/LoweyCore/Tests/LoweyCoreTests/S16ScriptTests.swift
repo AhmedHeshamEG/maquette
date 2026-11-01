@@ -112,4 +112,26 @@ final class S16ScriptTests: XCTestCase {
         XCTAssertNotNil(object[.roughness])
         XCTAssertNil(object.paint, "nothing painted")
     }
+
+    /// Items 8 and 10: a camera watches a mark that moves (keys on the mark, not Euler angles), and drifts slowly.
+    func testACameraWatchesAMovingMarkAndDrifts() throws {
+        let (document, result) = try compile("""
+        {"do": "mark", "name": "Plate", "at": [0, 1, 0], "radius": 0.05},
+        {"do": "keys", "target": "Plate", "property": "position", "keys": [{"t": 0, "value": [0, 1, 0]}, {"t": 2, "value": [1, 1, 0]}]},
+        {"do": "camera", "name": "Macro", "from": [0, 1.2, 1], "watch": "Plate", "drift": 0.5, "focalLength": 85},
+        {"do": "frameShot", "subject": "Plate", "shotType": "closeUp", "camera": "Close"}
+        """)
+        let camera = try XCTUnwrap(result.created["Macro"])
+        func forward(at time: Double) -> Vec3 {
+            let posed = Animator.evaluate(document, at: time)
+            return posed.scene.worldTransform(of: camera).rotation.act(Vec3(0, 0, -1))
+        }
+        XCTAssertLessThan(abs(forward(at: 0).x), 0.05, "looks straight at the mark")
+        XCTAssertGreaterThan(forward(at: 2).x, 0.5, "and turns as it moves")
+        let still = Animator.evaluate(document, at: 0.5).scene.worldTransform(of: camera).position
+        let later = Animator.evaluate(document, at: 3.5).scene.worldTransform(of: camera).position
+        XCTAssertGreaterThan((later - still).length, 1e-5, "the drift moves it")
+        XCTAssertLessThan((later - still).length, 0.05, "slowly")
+        XCTAssertNotNil(result.created["Close"], "a mark can be framed")
+    }
 }
