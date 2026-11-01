@@ -62,6 +62,7 @@ extension LoweyRenderer {
                                   shadingWidth: targets.shadingWidth, shadingHeight: targets.shadingHeight)
         let showsGround = !request.transparent && request.input.document.effectiveLook.ground.visible
         if frame.sunColor.w > 0.5 { encodeShadows(frame: frame, ordered: ordered, gpu: gpu, commandBuffer: commandBuffer) }
+        encodeSpotShadows(frame: frame, lights: scene.lights, ordered: ordered, gpu: gpu, commandBuffer: commandBuffer)
         // The prepass is native resolution: its viewport uses the native size.
         var native = frame
         native.viewport = SIMD4<Float>(Float(targets.width), Float(targets.height), 1 / Float(targets.width), 1 / Float(targets.height))
@@ -119,6 +120,36 @@ extension LoweyRenderer {
             encoder.setDepthBias(0.0005, slopeScale: 2.0, clamp: 0.01)
             encoder.setCullMode(.none)
             var index = UInt32(cascade)
+            encoder.setVertexBytes(&uniforms, length: MemoryLayout<FrameUniforms>.stride, index: BufferIndex.frame)
+            encoder.setVertexBytes(&index, length: 4, index: BufferIndex.cascade)
+            encoder.setVertexBuffer(gpu.joints, offset: 0, index: BufferIndex.joints)
+            for run in Self.runs(ordered, where: { $0.castsShadow && !$0.blended && !$0.ghost && !$0.furCards }) {
+                let item = ordered[run.start]
+                encoder.setRenderPipelineState(item.mesh.isSkinned ? device.pipelines.shadowSkinned : device.pipelines.shadowStatic)
+                draw(item.mesh, run: run, encoder: encoder, objects: gpu.objects)
+            }
+            encoder.endEncoding()
+        }
+    }
+
+    /// Each shadowed spot's depth from the lamp, into its slice (the sun's pass, with the lamp's matrix).
+    func encodeSpotShadows(frame: FrameUniforms, lights: [LightData], ordered: [DrawItem], gpu: FrameBuffers, commandBuffer: MTLCommandBuffer) {
+        for light in lights where light.shadow.x >= 0 {
+            var uniforms = frame
+            uniforms.shadowMatrix0 = light.shadowMatrix
+            let pass = MTLRenderPassDescriptor()
+            pass.depthAttachment.texture = spotShadowMap
+            pass.depthAttachment.slice = Int(light.shadow.x)
+            pass.depthAttachment.loadAction = .clear
+            pass.depthAttachment.clearDepth = 1
+            pass.depthAttachment.storeAction = .store
+            guard let encoder = commandBuffer.makeRenderCommandEncoder(descriptor: pass) else { continue }
+            encoder.setFrontFacing(.counterClockwise)
+            encoder.label = "Spot shadows \(Int(light.shadow.x))"
+            encoder.setDepthStencilState(device.pipelines.shadowDepth)
+            encoder.setDepthBias(0.0002, slopeScale: 1.5, clamp: 0.005)
+            encoder.setCullMode(.none)
+            var index: UInt32 = 0
             encoder.setVertexBytes(&uniforms, length: MemoryLayout<FrameUniforms>.stride, index: BufferIndex.frame)
             encoder.setVertexBytes(&index, length: 4, index: BufferIndex.cascade)
             encoder.setVertexBuffer(gpu.joints, offset: 0, index: BufferIndex.joints)
@@ -230,6 +261,7 @@ extension LoweyRenderer {
         encoder.setVertexBuffer(gpu.joints, offset: 0, index: BufferIndex.joints)
         encoder.setFragmentTexture(targets.ao, index: 1)
         encoder.setFragmentTexture(shadowMap, index: 2)
+        encoder.setFragmentTexture(spotShadowMap, index: 10)
         // Sky first (never writes depth), then the ground, then objects.
         encoder.setDepthStencilState(device.pipelines.depthAlways)
         encoder.setRenderPipelineState(device.pipelines.sky)

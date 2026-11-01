@@ -61,7 +61,54 @@ struct SurfaceInput {
     float3 emissive;
     float roughness;     // painted roughness 0…1, or −1: the Look decides (unpainted surfaces)
     float metal;         // painted metal 0…1
+    float clearcoat;     // a clear lacquer over it, 0…1 (Real)
+    float coatRoughness;
+    float transmission;  // how much light passes through, 0…1 (Real: glass)
+    float ior;
+    float2 spotShadow;   // each shadowed spot's visibility, by its slice
 };
+
+// ---------------------------------------------------------------------------------------------------------------
+// Spot shadows (U9): a spot that asks has a depth map drawn from the lamp.
+
+static inline float lw_spotShadowSample(LightData light, depth2d_array<float> map, float3 world, float3 normal) {
+    float distance = length(light.position.xyz - world);
+    float3 offset = world + normal * (0.004 + distance * 0.004);
+    float4 p = light.shadowMatrix * float4(offset, 1.0);
+    if (p.w <= 0.0) { return 1.0; }
+    float3 ndc = p.xyz / p.w;
+    float2 uv = ndc.xy * float2(0.5, -0.5) + 0.5;
+    if (any(uv < 0.0) || any(uv > 1.0) || ndc.z > 1.0) { return 1.0; }
+    float texel = 1.0 / float(map.get_width());
+    uint slice = uint(light.shadow.x);
+    float sum = 0.0;
+    for (int y = -1; y <= 1; y++) {
+        for (int x = -1; x <= 1; x++) {
+            sum += map.sample_compare(lw_shadowSampler, uv + float2(x, y) * texel * 1.5, slice, ndc.z - 0.0002);
+        }
+    }
+    return sum / 9.0;
+}
+
+/// Every shadowed spot's visibility at this point, once per pixel.
+static inline float2 lw_spotShadows(constant FrameUniforms &frame, constant LightData *lights, depth2d_array<float> map, float3 world,
+                                    float3 normal) {
+    float2 result = 1.0;
+    uint count = uint(frame.misc.x);
+    for (uint index = 0; index < count; index++) {
+        LightData light = lights[index];
+        if (light.shadow.x < 0.0) { continue; }
+        float visible = lw_spotShadowSample(light, map, world, normal);
+        if (light.shadow.x < 0.5) { result.x = visible; } else { result.y = visible; }
+    }
+    return result;
+}
+
+/// This light's shadow at the surface (1 when it casts none).
+static inline float lw_spotShadow(LightData light, float2 spotShadow) {
+    if (light.shadow.x < 0.0) { return 1.0; }
+    return light.shadow.x < 0.5 ? spotShadow.x : spotShadow.y;
+}
 
 /// The colour a highlight takes: white on a dielectric, the surface's own colour on metal.
 static inline float3 lw_specularTint(SurfaceInput s) {
@@ -146,6 +193,7 @@ static inline float3 lw_localLights(SurfaceInput s, constant FrameUniforms &fram
         if (light.color.w > 0.5 && light.color.w < 1.5) {
             float cosine = dot(-direction, normalize(light.direction.xyz));
             falloff *= smoothstep(light.direction.w, light.params.x, cosine);
+            falloff *= lw_spotShadow(light, s.spotShadow);
         }
         float x = saturate(dot(s.normal, direction) * 0.5 + 0.5 + s.bias * 0.5);
         float level = look.model.x > 0.5 ? saturate(dot(s.normal, direction)) : lw_band(x, look);
@@ -155,9 +203,163 @@ static inline float3 lw_localLights(SurfaceInput s, constant FrameUniforms &fram
     return sum;
 }
 
+// ---------------------------------------------------------------------------------------------------------------
+// Real (U9): light as a camera sees it. GGX microfacets with height-correlated Smith visibility and Schlick's Fresnel,
+// energy kept between the diffuse and the mirror, light falling with the square of the distance (three.js's window
+// at its reach), lights with a size so a lamp's reflection is a lamp (Karis's sphere-light widening), a clear coat on
+// top, glass that lets the scene through, the sky as the environment by the split sum.
+
+static inline float lw_ggx(float NoH, float a) {
+    float a2 = a * a;
+    float d = NoH * NoH * (a2 - 1.0) + 1.0;
+    return a2 / (M_PI_F * d * d + 1e-7);
+}
+
+static inline float lw_smithVisibility(float NoV, float NoL, float a) {
+    float a2 = a * a;
+    float gv = NoL * sqrt(NoV * NoV * (1.0 - a2) + a2);
+    float gl = NoV * sqrt(NoL * NoL * (1.0 - a2) + a2);
+    return 0.5 / max(gv + gl, 1e-5);
+}
+
+static inline float3 lw_schlick(float3 f0, float cosine) {
+    return f0 + (1.0 - f0) * pow(1.0 - saturate(cosine), 5.0);
+}
+
+/// Karis's fit of the split-sum environment BRDF: the scale and bias on F0.
+static inline float2 lw_environmentBRDF(float NoV, float roughness) {
+    const float4 c0 = float4(-1.0, -0.0275, -0.572, 0.022);
+    const float4 c1 = float4(1.0, 0.0425, 1.04, -0.04);
+    float4 r = roughness * c0 + c1;
+    float a004 = min(r.x * r.x, exp2(-9.28 * NoV)) * r.x + r.y;
+    return float2(-1.04, 1.04) * a004 + r.zw;
+}
+
+/// Inverse-square, brought smoothly to nothing at the light's reach; never brighter than at 10 cm.
+static inline float lw_realFalloff(float distance, float reach) {
+    float ratio = distance / max(reach, 1e-3);
+    float window = saturate(1.0 - ratio * ratio * ratio * ratio);
+    return window * window / max(distance * distance, 0.01);
+}
+
+struct RealSum {
+    float3 diffuse;
+    float3 specular;
+};
+
+/// One light from direction `l` with `radiance` (white paper facing it reads as that much), from a source `size`
+/// metres across at `distance`: its mirror image is widened by its size, the energy kept.
+static inline void lw_realLight(thread RealSum &sum, SurfaceInput s, float3 l, float3 radiance, float size, float distance) {
+    float NoL = saturate(dot(s.normal, l));
+    if (NoL <= 0.0 || all(radiance <= 0.0)) { return; }
+    float3 h = normalize(l + s.view);
+    float NoV = max(dot(s.normal, s.view), 1e-4);
+    float NoH = saturate(dot(s.normal, h));
+    float VoH = saturate(dot(s.view, h));
+    float rough = max(s.roughness, 0.03);
+    float a = rough * rough;
+    float widened = saturate(a + size / max(2.0 * distance, 1e-3));
+    float energy = (a / widened) * (a / widened);
+    float3 f0 = mix(float3(0.04), s.base, s.metal);
+    float3 F = lw_schlick(f0, VoH);
+    float3 mirror = F * lw_ggx(NoH, widened) * lw_smithVisibility(NoV, NoL, widened) * energy;
+    float coatRough = max(s.coatRoughness, 0.03);
+    float coatA = coatRough * coatRough;
+    float coatWide = saturate(coatA + size / max(2.0 * distance, 1e-3));
+    float coatF = (0.04 + 0.96 * pow(1.0 - VoH, 5.0)) * s.clearcoat;
+    float coat = coatF * lw_ggx(NoH, coatWide) * lw_smithVisibility(NoV, NoL, coatWide) * (coatA / coatWide) * (coatA / coatWide);
+    float under = 1.0 - coatF;
+    float3 diffuse = (1.0 - F) * (1.0 - s.metal) * (1.0 - s.transmission) * s.base;
+    sum.diffuse += diffuse * radiance * NoL * under;
+    sum.specular += (mirror * under + coat) * radiance * NoL * M_PI_F;
+}
+
+/// The sky seen along `r`, blurred toward its average as the surface roughens.
+static inline float3 lw_realSky(float3 r, float roughness, constant FrameUniforms &frame) {
+    float3 sky = mix(frame.skyHorizon.rgb, frame.skyTop.rgb, saturate(r.y));
+    sky = mix(sky, frame.groundBounce.rgb, saturate(-r.y * 2.0));
+    float3 average = (frame.skyHorizon.rgb + frame.skyTop.rgb + frame.groundBounce.rgb) / 3.0;
+    return mix(sky, average, roughness * roughness) * frame.ambient.w;
+}
+
+static inline float2x4 lw_shadeReal(SurfaceInput s, constant FrameUniforms &frame, constant LookUniforms &look, constant LightData *lights) {
+    // A surface with no roughness of its own: matte, or lacquered when it's glossy.
+    s.roughness = s.roughness >= 0.0 ? s.roughness : (s.glossy ? 0.3 : 0.7);
+    RealSum sum;
+    sum.diffuse = 0.0;
+    sum.specular = 0.0;
+    // The sun: far, small, shadowed.
+    lw_realLight(sum, s, normalize(frame.sunDirection.xyz), frame.sunColor.rgb * s.shadow, 0.01, 1.0);
+    uint count = uint(frame.misc.x);
+    for (uint index = 0; index < count; index++) {
+        LightData light = lights[index];
+        float type = light.color.w;
+        float size = max(light.axis.w, 0.02);
+        if (type > 2.5) {
+            // A soft panel: from the nearest point of its rectangle, only out of its front.
+            float3 forward = normalize(light.direction.xyz);
+            float3 right = normalize(light.axis.xyz);
+            float3 up = cross(forward, right);
+            float3 local = s.world - light.position.xyz;
+            if (dot(local, forward) <= 0.0) { continue; }
+            float3 nearest = light.position.xyz + right * clamp(dot(local, right), -light.params.y, light.params.y)
+                + up * clamp(dot(local, up), -light.params.z, light.params.z);
+            float3 toLight = nearest - s.world;
+            float distance = length(toLight);
+            float3 l = toLight / max(distance, 1e-4);
+            float facing = saturate(dot(-l, forward));
+            lw_realLight(sum, s, l, light.color.rgb * lw_realFalloff(distance, light.position.w) * facing,
+                         2.0 * max(light.params.y, light.params.z), distance);
+        } else if (type > 1.5) {
+            lw_realLight(sum, s, -normalize(light.direction.xyz), light.color.rgb, 0.01, 1.0);
+        } else {
+            float3 toLight = light.position.xyz - s.world;
+            float distance = length(toLight);
+            if (distance > light.position.w) { continue; }
+            float3 l = toLight / max(distance, 1e-4);
+            float falloff = lw_realFalloff(distance, light.position.w);
+            if (type > 0.5) {
+                falloff *= smoothstep(light.direction.w, light.params.x, dot(-l, normalize(light.direction.xyz)));
+                falloff *= lw_spotShadow(light, s.spotShadow);
+            }
+            lw_realLight(sum, s, l, light.color.rgb * falloff, size, distance);
+        }
+    }
+    // The environment: the sky's light from around (diffuse) and in the mirror (specular), occluded where it's closed in.
+    float NoV = max(dot(s.normal, s.view), 1e-4);
+    float occlusion = mix(1.0, s.ao, look.rim.w);
+    float3 f0 = mix(float3(0.04), s.base, s.metal);
+    float2 brdf = lw_environmentBRDF(NoV, s.roughness);
+    float3 r = reflect(-s.view, s.normal);
+    float specularOcclusion = saturate(pow(NoV + occlusion, exp2(-16.0 * s.roughness - 1.0)) - 1.0 + occlusion);
+    float coatF = (0.04 + 0.96 * pow(1.0 - NoV, 5.0)) * s.clearcoat;
+    float3 environmentSpecular = lw_realSky(r, s.roughness, frame) * (f0 * brdf.x + brdf.y) * (1.0 - coatF)
+        + lw_realSky(r, s.coatRoughness, frame) * coatF;
+    environmentSpecular *= specularOcclusion;
+    float3 irradiance = mix(frame.groundBounce.rgb, frame.ambient.rgb, s.normal.y * 0.5 + 0.5) * frame.ambient.w;
+    float3 environmentDiffuse = irradiance * s.base * (1.0 - s.metal) * (1.0 - s.transmission) * occlusion;
+    float3 color = sum.diffuse + sum.specular + environmentDiffuse + environmentSpecular + s.emissive;
+    float alpha = s.alpha;
+    if (s.transmission > 0.0) {
+        // Glass: what's behind comes through where the surface doesn't reflect; the reflections ride on top.
+        float3 fresnel = lw_schlick(f0, NoV);
+        float through = s.transmission * (1.0 - max(fresnel.r, max(fresnel.g, fresnel.b)));
+        alpha = saturate(1.0 - through) * s.alpha;
+        color = color / max(alpha, 1e-3);
+    }
+    if (frame.fog.w > 0.0) {
+        float fog = 1.0 - exp(-length(s.world - frame.cameraPosition.xyz) * frame.fog.w);
+        color = mix(color, frame.fog.rgb, fog);
+    }
+    float3 luma = float3(0.2126, 0.7152, 0.0722);
+    float level = saturate(dot(sum.diffuse, luma) / max(dot(s.base, luma), 1e-3));
+    return float2x4(float4(color, alpha), float4(level, 0, 0, 0));
+}
+
 /// The whole recipe. Returns colour and the banded light level.
 static inline float2x4 lw_shadeSurface(SurfaceInput s, constant FrameUniforms &frame, constant LookUniforms &look,
                                 constant LightData *lights) {
+    if (look.model.x > 1.5) { return lw_shadeReal(s, frame, look, lights); }
     float3 sun = frame.sunDirection.xyz;
     float3 ambient = lw_ambient(s.normal, frame, look);
     float contact = mix(1.0, s.ao, look.rim.w);
@@ -250,7 +452,7 @@ static inline void lw_applyMaps(thread SurfaceInput &s, SurfaceVaryings in, uint
         float4 height = bumps.sample(lw_linearSampler, uv);
         s.normal = lw_bumpNormal(s.normal, in.worldPosition, (height.r - 0.5) * height.a * 0.01);
     }
-    float base = s.glossy ? 0.35 : 0.85;
+    float base = s.roughness >= 0.0 ? s.roughness : (s.glossy ? 0.35 : 0.85);
     if ((flags & LW_FLAG_ROUGHNESS) != 0u) {
         float4 painted = roughness.sample(lw_linearSampler, uv);
         s.roughness = mix(base, painted.r, painted.a);
@@ -272,7 +474,8 @@ static inline void lw_applyMaps(thread SurfaceInput &s, SurfaceVaryings in, uint
 
 static inline SurfaceInput lw_surfaceInput(SurfaceVaryings in, constant ObjectUniforms &object, constant FrameUniforms &frame,
                                            constant LookUniforms &look, texture2d<float> albedo, texture2d<float> ao,
-                                           depth2d_array<float> shadowMap, bool frontFacing) {
+                                           depth2d_array<float> shadowMap, bool frontFacing, constant LightData *lights,
+                                           depth2d_array<float> spotShadowMap) {
     SurfaceInput s;
     float4 base = object.baseColor;
     if ((object.ids.z & LW_FLAG_TEXTURED) != 0u) {
@@ -301,8 +504,13 @@ static inline SurfaceInput lw_surfaceInput(SurfaceVaryings in, constant ObjectUn
     s.rimStrength = object.params.y;
     s.glossy = object.params.z > 0.5;
     s.emissive = object.emissive.rgb;
-    s.roughness = -1.0;
-    s.metal = 0.0;
+    s.roughness = object.material.x;
+    s.metal = object.material.y;
+    s.clearcoat = object.material.z;
+    s.coatRoughness = object.material.w;
+    s.transmission = object.optics.x;
+    s.ior = object.optics.y;
+    s.spotShadow = lw_spotShadows(frame, lights, spotShadowMap, in.worldPosition, s.normal);
     return s;
 }
 
@@ -318,7 +526,8 @@ fragment ShadeOut lw_shade(SurfaceVaryings in [[stage_in]], bool frontFacing [[f
                            texture2d<float> metal [[texture(4)]],
                            texture2d<float> glow [[texture(5)]],
                            texture2d<float> bumps [[texture(6)]],
-                           texture2d<float> normals [[texture(7)]]) {
+                           texture2d<float> normals [[texture(7)]],
+                           depth2d_array<float> spotShadowMap [[texture(10)]]) {
     constant ObjectUniforms &object = objects[in.objectIndex];
     constant LookUniforms &look = looks[object.ids.y];
     ShadeOut out;
@@ -338,7 +547,7 @@ fragment ShadeOut lw_shade(SurfaceVaryings in [[stage_in]], bool frontFacing [[f
         out.light = 1.0;
         return out;
     }
-    SurfaceInput s = lw_surfaceInput(in, object, frame, look, albedo, ao, shadowMap, frontFacing);
+    SurfaceInput s = lw_surfaceInput(in, object, frame, look, albedo, ao, shadowMap, frontFacing, lights, spotShadowMap);
     if ((object.ids.z & LW_FLAG_MAPS) != 0u) {
         lw_applyMaps(s, in, object.ids.z, roughness, metal, glow, bumps, normals);
     }
@@ -362,7 +571,8 @@ fragment ShadeOut lw_shadeFur(SurfaceVaryings in [[stage_in]],
                               texture2d<float> albedo [[texture(0)]],
                               texture2d<float> ao [[texture(1)]],
                               depth2d_array<float> shadowMap [[texture(2)]],
-                              texture2d<float> furMap [[texture(8)]]) {
+                              texture2d<float> furMap [[texture(8)]],
+                              depth2d_array<float> spotShadowMap [[texture(10)]]) {
     constant ObjectUniforms &object = objects[in.objectIndex];
     constant LookUniforms &look = looks[object.ids.y];
     float t = fur.w;
@@ -374,7 +584,7 @@ fragment ShadeOut lw_shadeFur(SurfaceVaryings in [[stage_in]],
     if (t > reach) { discard_fragment(); }
     float radius = 0.42 * (1.0 - t / max(reach, 1e-3)) + 0.05;
     if (length(local) > radius) { discard_fragment(); }
-    SurfaceInput s = lw_surfaceInput(in, object, frame, look, albedo, ao, shadowMap, true);
+    SurfaceInput s = lw_surfaceInput(in, object, frame, look, albedo, ao, shadowMap, true, lights, spotShadowMap);
     s.base *= mix(0.45, 1.05, t);
     s.roughness = 0.9;
     float2x4 shaded = lw_shadeSurface(s, frame, look, lights);
@@ -392,7 +602,8 @@ fragment ShadeOut lw_shadeFurCard(SurfaceVaryings in [[stage_in]], bool frontFac
                                   constant LightData *lights [[buffer(LW_LIGHTS)]],
                                   texture2d<float> albedo [[texture(0)]],
                                   texture2d<float> ao [[texture(1)]],
-                                  depth2d_array<float> shadowMap [[texture(2)]]) {
+                                  depth2d_array<float> shadowMap [[texture(2)]],
+                                  depth2d_array<float> spotShadowMap [[texture(10)]]) {
     constant ObjectUniforms &object = objects[in.objectIndex];
     constant LookUniforms &look = looks[object.ids.y];
     float t = 1.0 - in.uv.y;
@@ -402,7 +613,7 @@ fragment ShadeOut lw_shadeFurCard(SurfaceVaryings in [[stage_in]], bool frontFac
     if (t > reach) { discard_fragment(); }
     float width = 0.36 * (1.0 - t / reach) + 0.04;
     if (abs(fract(strands) - 0.5) > width) { discard_fragment(); }
-    SurfaceInput s = lw_surfaceInput(in, object, frame, look, albedo, ao, shadowMap, frontFacing);
+    SurfaceInput s = lw_surfaceInput(in, object, frame, look, albedo, ao, shadowMap, frontFacing, lights, spotShadowMap);
     s.base *= mix(0.45, 1.05, t);
     s.roughness = 0.9;
     float2x4 shaded = lw_shadeSurface(s, frame, look, lights);
@@ -448,7 +659,8 @@ fragment ShadeOut lw_shadeGround(SurfaceVaryings in [[stage_in]],
                                  constant LightData *lights [[buffer(LW_LIGHTS)]],
                                  constant float4 &groundColor [[buffer(LW_OBJECTS)]],
                                  texture2d<float> ao [[texture(1)]],
-                                 depth2d_array<float> shadowMap [[texture(2)]]) {
+                                 depth2d_array<float> shadowMap [[texture(2)]],
+                                 depth2d_array<float> spotShadowMap [[texture(10)]]) {
     constant LookUniforms &look = looks[0];
     float2 p = in.worldPosition.xz;
     float grain = lw_noise(p * 0.16) * 0.65 + lw_noise(p * 0.53 + 17.0) * 0.35;
@@ -470,6 +682,11 @@ fragment ShadeOut lw_shadeGround(SurfaceVaryings in [[stage_in]],
     s.emissive = 0.0;
     s.roughness = made.roughness;
     s.metal = 0.0;
+    s.clearcoat = 0.0;
+    s.coatRoughness = 0.1;
+    s.transmission = 0.0;
+    s.ior = 1.5;
+    s.spotShadow = lw_spotShadows(frame, lights, spotShadowMap, in.worldPosition, s.normal);
     float2x4 shaded = lw_shadeSurface(s, frame, look, lights);
     float radius = max(frame.groundBounce.w, 1.0);
     float edge = smoothstep(radius * 0.45, radius * 0.97, length(p));

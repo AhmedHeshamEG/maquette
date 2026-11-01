@@ -189,10 +189,7 @@ extension ScriptState {
             }
             look.presetID = found.id
         }
-        if let post = string(action, "post").flatMap(PostSettings.Preset.init(rawValue:)) { look.post = post.settings }
-        // The post stack by its numbers (S16 item 5): {"post": {"exposure": -0.5, "bloom": 0.3, "halation": 0.4, "toneCurve": "filmic", …}}.
-        if case let .object(numbers)? = action["post"] { look.post = try postNumbers(numbers, onto: look.post) }
-        if look.presetID == LookPreset.real.id, look.post.toneCurve == nil { look.post.toneCurve = .filmic }
+        try lookPost(action, into: &look)
         if let shading = string(action, "shading").flatMap(ShadingStyle.init(rawValue:)) { look.shading = shading }
         if let fog = action["fog"] {
             if case let .bool(on) = fog { look.fog.enabled = on }
@@ -211,6 +208,14 @@ extension ScriptState {
         try lookExtras(action, into: &look)
         try run(.setLook(look, scope: sceneOnly ? .scene : .project), label: "Look")
         try perObjectLooks(action)
+    }
+
+    /// A post preset by name, or the stack by its numbers (S16 item 5): {"post": {"exposure": -0.5, "halation": 0.4,
+    /// "toneCurve": "filmic", …}}. The Real Look is filmic unless told otherwise.
+    func lookPost(_ action: JSONValue, into look: inout Look) throws {
+        if let post = string(action, "post").flatMap(PostSettings.Preset.init(rawValue:)) { look.post = post.settings }
+        if case let .object(numbers)? = action["post"] { look.post = try postNumbers(numbers, onto: look.post) }
+        if look.presetID == LookPreset.real.id, look.post.toneCurve == nil { look.post.toneCurve = .filmic }
     }
 
     /// The post stack from its numbers; an unknown name is refused (as properties are).
