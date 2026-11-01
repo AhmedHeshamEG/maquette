@@ -53,6 +53,7 @@ extension LoweyRenderer {
         }
         if request.transparent || !look.ground.visible { frame.groundBounce.w = 0 }
         frame.environment = Self.environmentUniform(look, loaded: !request.transparent && environmentTexture(request.input) != nil)
+        frame.environment.w = Float(scene.lights.filter { $0.shadow.x >= 0 }.count)
         return frame
     }
 

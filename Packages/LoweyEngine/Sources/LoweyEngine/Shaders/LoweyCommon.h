@@ -59,7 +59,8 @@ struct FrameUniforms {
     float4 cascades;         // x = far of cascade 0, y = far of cascade 1, z = 1 / shadow map size, w = frame index
     float4 misc;             // x = light count, y = near plane, z = far plane, w = orthographic (1) or not
     float4 section;          // the stage's section view: xyz = normal, w = offset (normal · p > offset is cut); 0 = off
-    float4 environment;      // an HDRI behind everything: x = 1 when it shows, y = turn (rad), z = exposure multiplier
+    float4 environment;      // an HDRI behind everything: x = 1 when it shows, y = turn (rad), z = exposure multiplier;
+                             // w = how many spots cast a shadow (0: the per-pixel lookup is skipped)
 };
 
 struct LookUniforms {

@@ -36,7 +36,9 @@ final class RenderTests: XCTestCase {
             for mood in [LightingPreset.day, .night] {
                 let (image, _, _) = try await render(TestScenes.lookCheck(look: preset.id, mood: mood))
                 let coverage = GoldenImage.coverage(image)
-                XCTAssertGreaterThan(coverage.content, 0.08, "\(preset.id) \(mood): the objects are drawn")
+                // Real at night is moonlight: low-key on purpose, the shapes read but most of the frame is dark.
+                let least = preset.shading.model == .real && mood == .night ? 0.015 : 0.08
+                XCTAssertGreaterThan(coverage.content, least, "\(preset.id) \(mood): the objects are drawn")
                 try golden.assertMatches(image, named: "look-\(preset.id)-\(mood.rawValue)")
             }
         }

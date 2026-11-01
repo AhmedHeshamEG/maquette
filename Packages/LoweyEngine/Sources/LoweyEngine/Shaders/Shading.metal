@@ -94,6 +94,7 @@ static inline float lw_spotShadowSample(LightData light, depth2d_array<float> ma
 static inline float2 lw_spotShadows(constant FrameUniforms &frame, constant LightData *lights, depth2d_array<float> map, float3 world,
                                     float3 normal) {
     float2 result = 1.0;
+    if (frame.environment.w < 0.5) { return result; }
     uint count = uint(frame.misc.x);
     for (uint index = 0; index < count; index++) {
         LightData light = lights[index];
