@@ -5,8 +5,8 @@ import Foundation
 extension ScriptState {
     mutating func set(_ action: JSONValue) throws {
         guard let keyName = string(action, "property") else { throw fail("set needs “property”") }
-        let key = PropertyKey(keyName)
-        let value = try propertyValue(key, action["value"])
+        let (key, convert) = try scriptProperty(keyName)
+        let value = try convert(propertyValue(key, action["value"]))
         let ids = try targets(action["target"])
         if action["at"] != nil {
             let at = try time(action["at"])
@@ -76,9 +76,11 @@ extension ScriptState {
 
     mutating func keys(_ action: JSONValue) throws {
         guard let keyName = string(action, "property") else { throw fail("keys need “property”") }
-        let property = PropertyKey(keyName)
+        let (property, convert) = try scriptProperty(keyName)
         guard let list = action["keys"]?.arrayValue, !list.isEmpty else { throw fail("keys need a “keys” list of {t, value}") }
-        let values = try list.map { entry in try (time(entry["t"] ?? entry["at"]), propertyValue(property, entry["value"]), easing(entry["easing"])) }
+        let values = try list.map { entry in
+            try (time(entry["t"] ?? entry["at"]), convert(propertyValue(property, entry["value"])), easing(entry["easing"]))
+        }
         try addKeys(targets(action["target"]), property, values)
     }
 
