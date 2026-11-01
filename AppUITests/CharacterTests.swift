@@ -29,7 +29,7 @@ final class CharacterTests: XCTestCase {
 
     /// Scrolls the object panel (not the stage) until the control can be tapped.
     private func reveal(_ target: XCUIElement) {
-        let panel = element("inspector")
+        let panel = element("inspector").exists ? element("inspector") : element("rig-panel")
         for _ in 0 ..< 6 where !target.isHittable && panel.exists {
             panel.swipeUp()
         }

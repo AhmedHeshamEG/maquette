@@ -145,6 +145,22 @@
         }
       }
     },
+    "%@ is a character. Its parts are in Rig": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ è un personaggio. Le sue parti sono in Rig"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ أصبح شخصية. أجزاؤه في Rig"
+          }
+        }
+      }
+    },
     "%@ is a fill: give it a mask and paint the mask": {
       "localizations": {
         "it": {
@@ -173,6 +189,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "%@ هنا. أجزاؤه في لوحته"
+          }
+        }
+      }
+    },
+    "%@ is here. Its parts are in Rig": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ è qui. Le sue parti sono in Rig"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ هنا. أجزاؤه في Rig"
           }
         }
       }
@@ -2073,6 +2105,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "أضف أول جزء من لوحته: عين واحدة تصنع مخلوقًا"
+          }
+        }
+      }
+    },
+    "Add its first part in Rig: an eye makes a creature": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aggiungi la prima parte in Rig: un occhio fa una creatura"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "أضف أول جزء في Rig: عين واحدة تصنع مخلوقًا"
           }
         }
       }

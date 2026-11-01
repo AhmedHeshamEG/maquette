@@ -14,6 +14,8 @@ struct InspectorPanel: View {
     static let sizing = HmmPanelSizing(id: "inspector", minimum: CGSize(width: 290, height: 240), maximum: CGSize(width: 520, height: 1400))
     static let defaultSize = CGSize(width: 330, height: 560)
     @State private var name = ""
+    /// The tab the panel shows (U9), remembered on the device.
+    @AppStorage("inspector-tab") private var tab: InspectorTab = .move
     @Environment(\.hmmTheme) private var theme
 
     var body: some View {
@@ -53,49 +55,45 @@ struct InspectorPanel: View {
         .accessibilityIdentifier("inspector")
     }
 
+    /// At rest (U9): its colour and its own controls, then four tabs, Move · Look · Shape · Real. Move opens first, so
+    /// a thing's motion is one tap away; the tab chosen is remembered.
     @ViewBuilder
     private func single(_ object: SceneObject) -> some View {
         if object.kind.hasSurface { ColourRow(editor: editor, object: object) }
         KindSection(editor: editor, object: object)
-        // A made character's parts and face, or "Give it parts" for any thing (K1).
-        CharacterSection(editor: editor, object: object)
-        MakeItMove(editor: editor)
-        SelectionActions(editor: editor)
-        VStack(alignment: .leading, spacing: 0) {
-            if object.kind.hasSurface || object.kind == .group {
-                DisclosureRow("Look of this object", systemName: "paintpalette", identifier: "object-look") {
-                    ObjectLookSection(editor: editor, object: object)
+        let tabs = InspectorTab.tabs(for: object)
+        InspectorTabBar(tabs: tabs, selected: tabs.contains(tab) ? tab : .move) { tab = $0 }
+        switch tabs.contains(tab) ? tab : .move {
+        case .move:
+            MakeItMove(editor: editor)
+            VStack(alignment: .leading, spacing: 0) {
+                if let clones = object.motionDesign?.clones {
+                    DisclosureRow("Clones: \(clones.count)", systemName: "square.grid.3x3.square", identifier: "object-clones") {
+                        CloneSection(editor: editor, object: object, clones: clones)
+                    }
+                }
+                if let morph = object.motionDesign?.morph {
+                    DisclosureRow("Morph", systemName: "wand.and.rays", identifier: "object-morph") {
+                        MorphRow(editor: editor, object: object, morph: morph)
+                    }
+                }
+                DisclosureRow("More ways to move", systemName: "figure.run", identifier: "more-motion") {
+                    MoreWaysToMove(editor: editor)
+                }
+                DisclosureRow("Numbers", systemName: "number", identifier: "transform-toggle") {
+                    TransformSection(editor: editor, object: object)
+                }
+                DisclosureRow("About this object", systemName: "info.circle", identifier: "inspector-more") {
+                    MetadataSection(editor: editor, object: object)
                 }
             }
-            if object.kind.hasSurface {
-                DisclosureRow("Shape of this object", systemName: "cube.transparent", identifier: "object-shape") {
-                    ShapeSection(editor: editor, object: object)
-                }
-            }
-            if object.kind.hasSurface || object.kind == .group {
-                DisclosureRow(object.physics == nil ? "Real" : "Real: \(object.physics?.material.title ?? "")", systemName: "atom", identifier: "object-real") {
-                    RealSection(editor: editor, object: object)
-                }
-            }
-            if let clones = object.motionDesign?.clones {
-                DisclosureRow("Clones: \(clones.count)", systemName: "square.grid.3x3.square", identifier: "object-clones") {
-                    CloneSection(editor: editor, object: object, clones: clones)
-                }
-            }
-            if let morph = object.motionDesign?.morph {
-                DisclosureRow("Morph", systemName: "wand.and.rays", identifier: "object-morph") {
-                    MorphRow(editor: editor, object: object, morph: morph)
-                }
-            }
-            DisclosureRow("More ways to move", systemName: "figure.run", identifier: "more-motion") {
-                MoreWaysToMove(editor: editor)
-            }
-            DisclosureRow("Numbers", systemName: "number", identifier: "transform-toggle") {
-                TransformSection(editor: editor, object: object)
-            }
-            DisclosureRow("About this object", systemName: "info.circle", identifier: "inspector-more") {
-                MetadataSection(editor: editor, object: object)
-            }
+        case .look:
+            ObjectLookSection(editor: editor, object: object)
+        case .shape:
+            SelectionActions(editor: editor)
+            if object.kind.hasSurface { ShapeSection(editor: editor, object: object) }
+        case .real:
+            RealSection(editor: editor, object: object)
         }
     }
 
@@ -170,6 +168,82 @@ struct InspectorPanel: View {
 
     static func icon(for kind: ObjectKind) -> String {
         kind.symbolName
+    }
+}
+
+/// The object panel's four tabs (U9 converge: tabs at the top rather than doors).
+enum InspectorTab: String, CaseIterable, Identifiable {
+    case move, look, shape, real
+
+    var id: String { rawValue }
+
+    var title: LocalizedStringKey {
+        switch self {
+        case .move: "Move"
+        case .look: "Look"
+        case .shape: "Shape"
+        case .real: "Real"
+        }
+    }
+
+    var symbol: String {
+        switch self {
+        case .move: "figure.run"
+        case .look: "paintpalette"
+        case .shape: "cube.transparent"
+        case .real: "atom"
+        }
+    }
+
+    /// The tabs a thing has: Move for everything; Look and Real for what has a surface (or is a group); Shape for a
+    /// surface.
+    static func tabs(for object: SceneObject) -> [InspectorTab] {
+        var tabs: [InspectorTab] = [.move]
+        if object.kind.hasSurface || object.kind == .group { tabs.append(.look) }
+        if object.kind.hasSurface { tabs.append(.shape) }
+        if object.kind.hasSurface || object.kind == .group { tabs.append(.real) }
+        return tabs
+    }
+
+    /// The identifiers the layout walk taps (the old rows' names, so the walk's paths still read).
+    var identifier: String {
+        switch self {
+        case .move: "object-move"
+        case .look: "object-look"
+        case .shape: "object-shape"
+        case .real: "object-real"
+        }
+    }
+}
+
+/// The tab row: one tap switches; the chosen tab is filled.
+struct InspectorTabBar: View {
+    let tabs: [InspectorTab]
+    let selected: InspectorTab
+    let choose: (InspectorTab) -> Void
+    @Environment(\.hmmTheme) private var theme
+
+    var body: some View {
+        HStack(spacing: HmmSpacing.xxs) {
+            ForEach(tabs) { tab in
+                Button {
+                    HmmHaptics.play(.selection)
+                    choose(tab)
+                } label: {
+                    VStack(spacing: 2) {
+                        Image(systemName: tab.symbol).font(.system(size: 15, weight: .semibold))
+                        Text(tab.title).font(.hmm(.caption, weight: .semibold)).lineLimit(1).minimumScaleFactor(0.8)
+                    }
+                    .foregroundStyle(tab == selected ? theme.accent : theme.text2)
+                    .frame(maxWidth: .infinity, minHeight: 44)
+                    .background(RoundedRectangle(cornerRadius: HmmRadius.card).fill(tab == selected ? theme.accent.opacity(0.14) : .clear))
+                    .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+                .accessibilityAddTraits(tab == selected ? .isSelected : [])
+                .accessibilityIdentifier(tab.identifier)
+            }
+        }
     }
 }
 

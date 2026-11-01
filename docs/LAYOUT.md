@@ -264,6 +264,14 @@ you until a finger's tap places it, and reads as paper while you draw. Tap Draw 
 | A dot is a joint, a pin a soft bend; tap a mark so the next hangs from it, double-tap it to switch pin and dot | the marks on the stage while Rig is on |
 | The Rig tool's bar: Dots or Pins for the Pencil, done; a person's Rig and cancel; the weight brush's bone, erase and done | shown under the stage while Rig is on |
 | Several things chosen: rig them together (each part rides the bone nearest it; a dot between two parts hinges them) | Rig with two or more things selected |
+| Give it parts: eyes, arms, a mouth… (the thing becomes the body of a character that rigs itself; U9: moved from the object panel) | `[cube] Rig › character-give` |
+| A made character's parts: every job a tap away (hold one for its styles), Mirrored; the picked part's styles, Take it away; Name its parts | Rig, with a made character selected |
+| A made character: Face (the states of its mouth, brows and eyes; tap to see one, bend it one step deeper) | Rig, with a made character selected |
+| A made character: Proportions (each in metres; handles on the stage: head, feet, hands, waist) | Rig, with a made character selected |
+| A made character: Say a line (lip sync from typed words, from the playhead) | Rig, with a made character selected |
+| A made character: Act it out (film yourself or a video; the character copies the body), people only | Rig, with a made person selected |
+| A made character: For games (engines, sprite sheets, turnaround) | Rig, with a made character selected |
+| A drawing or a modelled thing near a character: Make it a part (or the drawing of a face state) | Rig, with the drawing selected |
 | Rigged: change the rig (it relaxes to its rest shape and shows its pins and dots; poses and keys stay), reset the pose, remove the rig | Rig on a rigged thing |
 | How it bends: paint weights; fit the weights to a new shape | Rig ▸ How it bends, on a rigged thing |
 | Pose: Dangle for the joint last touched (and everything below it) | Rig on a rigged thing, after touching a joint |
@@ -302,21 +310,14 @@ Animate calls the timeline and its bar, under the stage (A1): six verbs. With no
 | Make it move, one strip: loops (spin, float, bounce, wiggle, swing, follow a path), then once-moves; speed, keyframes | `[cube] motion-bounce` |
 | Make it move: Link (moved by another thing: tap it next) | `[cube] motion-link` |
 | | `[cube] preset-popIn` |
-| On the selection: Scatter copies on the ground | `[cube] tool-scatter` |
-| On the selection: Mirror and symmetry | `[cube] mirror` |
-| On the selection: Model it (a placed library model; shapes are always editable) | in the panel of a placed model |
-| On the selection: Combine (union, subtract, intersect), with two or more shapes | in the panel when two or more shapes are selected |
-| Look of this object: glow, smoothing, bevel; its own Look, line weight, rim light, accent, gloss | `[cube] object-look` |
-| Shape of this object: typed sides, Smooth, the smooth angle, triangles, clean up, holes, linked copies, the pivot | `[cube] object-shape` |
+| The four tabs (U9): Move (open first) · Look · Shape · Real; the tab chosen is remembered | `[cube] object-move` |
+| Shape: Scatter copies on the ground | `[cube] object-shape › tool-scatter` |
+| Shape: Mirror and symmetry | `[cube] object-shape › mirror` |
+| Shape: Model it (a placed library model; shapes are always editable) | the Shape tab of a placed model |
+| Shape: Combine (union, subtract, intersect), with two or more shapes | in the panel when two or more shapes are selected |
+| Look: glow, smoothing, bevel; its own Look, line weight, rim light, accent, gloss | `[cube] object-look` |
+| Shape: typed sides, Smooth, the smooth angle, triangles, clean up, holes, linked copies, the pivot | `[cube] object-shape` |
 | Real: a material in words, how it moves, its weight; joints; Settle, Does it stand?, Keep it; exact numbers deeper | `[cube] object-real` |
-| Give it parts: eyes, arms, a mouth… (the thing becomes the body of a character that rigs itself) | `[cube] character-give` |
-| A made character's parts: every job a tap away (hold one for its styles), Mirrored; the picked part's styles, Take it away | in the panel of a made character |
-| A made character: Face (the states of its mouth, brows and eyes; tap to see one, bend it one step deeper) | in the panel of a made character |
-| A made character: Proportions (each in metres; handles on the stage: head, feet, hands, waist) | in the panel of a made character |
-| A made character: Say a line (lip sync from typed words, from the playhead) | in the panel of a made character |
-| A made character: Act it out (film yourself or a video; the character copies the body), people only | in the panel of a made person |
-| A made character: For games (engines, sprite sheets, turnaround) | in the panel of a made character |
-| A drawing or a modelled thing near a character: Make it a part (or the drawing of a face state) | in the panel of a drawing |
 | More ways to move: once-moves' length, behaviours, animated on (ones…fours), physics, joints, paths, onion skin | `[cube] more-motion` |
 | Links: link it to another thing (a gear, moving with it, growing as it rises) or to the music's loudness, bass or beat | `[cube] more-motion › link-thing` |
 | Clones: the layout and its numbers, effects (random, delay, push) through fields (everywhere, near a point, a ripple), effect strength, Remove | in the panel of a cloned thing |

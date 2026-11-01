@@ -41,10 +41,11 @@ extension EditorModel {
         }
         guard perform(adopt) else { return }
         select(id)
+        openPanel = .rig
         HmmHaptics.play(.commit)
         if AppIdentity.isUITesting { trail("adopted=\(object.name)") }
         guard object.rig == nil, rigBlocker(object) == nil else {
-            app.show("\(object.name) is a character. Its parts are in its panel")
+            app.show("\(object.name) is a character. Its parts are in Rig")
             return
         }
         switch start {
@@ -60,7 +61,7 @@ extension EditorModel {
         app.show("Drag the dots that are wrong, then Rig")
     }
 
-    /// A new character from a start, where new things land, selected with its panel open. With a thing selected that
+    /// A new character from a start, where new things land, selected with Rig open. With a thing selected that
     /// isn't a character yet, the thing becomes the character instead (Q2: "I'm trying to rig the actual one").
     func newCharacter(_ start: CharacterStart) {
         if let thing = singleSelection, canMakeCharacter(thing) {
@@ -74,13 +75,14 @@ extension EditorModel {
         let insert = EditCommand.insert(fragment, parent: nil, index: nil)
         guard perform(CharacterAutoRig.rigging(after: insert, root: root, in: document, label: "New \(start.title.lowercased())")) else { return }
         select(root)
-        foldInspector(false)
+        // Its parts are in Rig, the one home for characters (U9).
+        openPanel = .rig
         traceRig(root)
         HmmHaptics.play(.commit)
         if start == .nothing {
-            app.show("Add its first part from its panel: an eye makes a creature")
+            app.show("Add its first part in Rig: an eye makes a creature")
         } else {
-            app.show("\(name) is here. Its parts are in its panel")
+            app.show("\(name) is here. Its parts are in Rig")
         }
     }
 
