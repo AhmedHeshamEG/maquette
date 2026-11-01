@@ -180,6 +180,8 @@ public struct PropertyKey: RawRepresentable, Hashable, Sendable, Codable, Compar
     public static let metallic: PropertyKey = "metallic"
     public static let shading: PropertyKey = "shading"
     public static let castsShadow: PropertyKey = "castsShadow"
+    /// Shows its own colours, untouched by the lights and the Look's shading (a picture, a screen, a sign).
+    public static let unlit: PropertyKey = "unlit"
     // Light
     public static let lightColor: PropertyKey = "lightColor"
     public static let lightIntensity: PropertyKey = "lightIntensity"
@@ -274,6 +276,7 @@ public struct PropertySpec: Sendable, Hashable {
         .metallic: PropertySpec(type: .float, animatable: true, label: "Metallic"),
         .shading: PropertySpec(type: .enumeration, animatable: false, label: "Shading"),
         .castsShadow: PropertySpec(type: .bool, animatable: false, label: "Casts shadow"),
+        .unlit: PropertySpec(type: .bool, animatable: false, label: "Its own colours"),
         .lightColor: PropertySpec(type: .color, animatable: true, label: "Light color"),
         .lightIntensity: PropertySpec(type: .float, animatable: true, label: "Intensity"),
         .lightRange: PropertySpec(type: .float, animatable: true, label: "Range"),

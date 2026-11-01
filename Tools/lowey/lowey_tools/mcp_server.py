@@ -243,7 +243,9 @@ def add_media(path: str, at: float | None = None, overlay: bool = False, environ
     text (build's {"do": "text", "font": "fonts/…"}); logo=True stands an SVG logo up as solids, one a colour; drawing=True
     stands a layered PSD, PSB or Procreate drawing up as a diorama, one painted sheet a layer. reference=True shows a
     picture in the Reference window over the stage (not in the shot): build's {"do": "reference"} switches it to the
-    whole scene (mode canvas), the picture or the front camera, or closes it."""
+    whole scene (mode canvas), the picture or the front camera, or closes it. A card is lit by the scene like any
+    surface; for a picture's true colours (a chart, a screen) send {"do": "set", "target": <card>, "property": "unlit",
+    "value": true}."""
     placement = ("reference" if reference else "font" if font else "logo" if logo else "drawing" if drawing else "environment" if environment
                  else "overlay" if overlay else "card")
     try:

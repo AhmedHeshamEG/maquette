@@ -124,7 +124,8 @@ public enum ScriptReference {
     {"do":"set","target":"Paper","property":"color|opacity|emissiveIntensity|stepping|accent|airborne|smear","value":"#F2E8D5","at":2}
       Properties (set and keys): position rotation scale visible opacity color emissive emissiveIntensity (glow) roughness
       metallic (metalness) · lights: lightColor lightIntensity lightRange (range) spotAngle (cone) · cameras: fieldOfView
-      (fov; focalLength/lens/mm in millimetres convert) focusDistance (focus) aperture. An unknown name is refused.
+      (fov; focalLength/lens/mm in millimetres convert) focusDistance (focus) aperture · unlit (true: a picture or screen
+      shows its own colours, untouched by lights and the Look). An unknown name is refused.
     Easings: linear, easeIn, easeOut, easeInOut, backOut, bounce, elastic, step.
 
     Story

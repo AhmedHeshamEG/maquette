@@ -181,7 +181,7 @@ final class SceneCompiler {
                                          custom: input.document.project.customLooks)
         var flags = ObjectFlags()
         if state.accent { flags.insert(.accent) }
-        if state.decal { flags.insert(.unlit) }
+        if state.decal || object[.unlit] == .bool(true) { flags.insert(.unlit) }
         if state.selected { flags.insert(.selected) }
         if object.isGlossy { flags.insert(.glossy) }
         uniforms.ids = SIMD4<UInt32>(objectIndex, scene.lookIndex(preset), flags.rawValue, 0)

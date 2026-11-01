@@ -90,4 +90,13 @@ final class S16ScriptTests: XCTestCase {
         XCTAssertEqual(lamp[.lightRange]?.floatValue, 4)
         XCTAssertEqual(lamp[.lightShadows], .bool(true))
     }
+
+    /// Item 6: a picture keeps its own colours when it's told to (unlit).
+    func testUnlitIsAProperty() throws {
+        let (document, result) = try compile("""
+        {"do": "add", "shape": "plane", "name": "Spectrogram"},
+        {"do": "set", "target": "Spectrogram", "property": "unlit", "value": true}
+        """)
+        XCTAssertEqual(try document.scene.objects[XCTUnwrap(result.created["Spectrogram"])]?[.unlit], .bool(true))
+    }
 }
