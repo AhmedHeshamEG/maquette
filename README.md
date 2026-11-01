@@ -82,6 +82,11 @@ tone curve.
   <img src="docs/images/readme/looks-grid.jpg" width="820" alt="The same scene in twelve Looks, side by side">
 </p>
 
+<p align="center">
+  <img src="docs/images/readme/real-desk.png" width="640" alt="The Real Look: a desk under a spot lamp, a red box casting its shadow, a glass ball and a copper ball">
+  <br><sub>Real: one spot lamp with a soft edge and a real shadow, a glass ball, a metal one reflecting the lamp.</sub>
+</p>
+
 ## Install
 
 Maquette isn't on the App Store yet. Every green build makes an installable `.ipa`, and you can put it on your own
