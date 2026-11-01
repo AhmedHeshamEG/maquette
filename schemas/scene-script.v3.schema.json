@@ -892,6 +892,7 @@
                   "animeCel",
                   "clay",
                   "cleanProduct",
+                  "real",
                   "lowPoly",
                   "lowpoly",
                   "pixel"
@@ -2522,6 +2523,7 @@
                   "animeCel",
                   "clay",
                   "cleanProduct",
+                  "real",
                   "lowPoly",
                   "lowpoly",
                   "pixel"
@@ -2531,7 +2533,14 @@
                 "type": "string"
               },
               "post": {
-                "type": "string"
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "object"
+                  }
+                ]
               },
               "shading": {
                 "type": "string"
@@ -2616,6 +2625,7 @@
                     "animeCel",
                     "clay",
                     "cleanProduct",
+                    "real",
                     "lowPoly",
                     "lowpoly",
                     "pixel"

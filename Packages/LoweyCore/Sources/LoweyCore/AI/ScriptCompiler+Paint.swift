@@ -145,6 +145,10 @@ extension ScriptState {
             var changes = [PropertyChange(object: id, key: .color, value: .color(.rgba(material.color))),
                            PropertyChange(object: id, key: .roughness, value: .float(material.roughness)),
                            PropertyChange(object: id, key: .metallic, value: .float(material.metal))]
+            if material.id == "glass" {
+                changes.append(PropertyChange(object: id, key: .transmission, value: .float(0.95)))
+                changes.append(PropertyChange(object: id, key: .ior, value: .float(1.5)))
+            }
             if material.glow.r + material.glow.g + material.glow.b > 0.001 {
                 changes.append(PropertyChange(object: id, key: .emissive, value: .color(.rgba(material.glow))))
             }

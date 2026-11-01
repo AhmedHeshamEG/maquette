@@ -198,4 +198,29 @@ final class S16ScriptTests: XCTestCase {
         XCTAssertTrue(visible(15.5))
         XCTAssertFalse(visible(17))
     }
+
+    /// Items 1, 2 and 5: the Real Look, its post stack by numbers, and surfaces from the script.
+    func testTheRealLookAndItsSurfaces() throws {
+        let (document, result) = try compile("""
+        {"do": "look", "look": "real", "mood": "darkStudio", "post": {"exposure": -0.3, "halation": 0.3, "fringing": 0.1}},
+        {"do": "add", "shape": "sphere", "name": "Loupe"},
+        {"do": "set", "target": "Loupe", "property": "transmission", "value": 0.95},
+        {"do": "set", "target": "Loupe", "property": "ior", "value": 1.5},
+        {"do": "set", "target": "Loupe", "property": "clearcoat", "value": 1}
+        """)
+        let look = document.effectiveLook
+        XCTAssertEqual(look.presetID, "real")
+        XCTAssertEqual(LookLibrary.resolve(look.presetID).shading.model, .real)
+        XCTAssertEqual(look.post.toneCurve, .filmic, "Real is filmic unless told otherwise")
+        XCTAssertEqual(look.post.halation, 0.3)
+        XCTAssertEqual(look.post.chromaticAberration, 0.1)
+        let loupe = try XCTUnwrap(document.scene.objects[XCTUnwrap(result.created["Loupe"])])
+        XCTAssertEqual(loupe[.transmission]?.floatValue, 0.95)
+        XCTAssertEqual(loupe[.clearcoat]?.floatValue, 1)
+        XCTAssertTrue(error(##"{"do": "look", "post": {"sparkle": 1}}"##).contains("unknown post “sparkle”"))
+        // The new post fields round-trip, and an old file without them still reads.
+        let data = try LoweyJSON.encode(look.post)
+        XCTAssertEqual(try LoweyJSON.decode(PostSettings.self, from: data), look.post)
+        XCTAssertEqual(try LoweyJSON.decode(PostSettings.self, from: Data("{}".utf8)).toneCurve, nil)
+    }
 }

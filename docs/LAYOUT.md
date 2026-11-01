@@ -120,7 +120,7 @@ Three short pages; the page is remembered.
 | Control | Walk |
 |---|---|
 | Only this scene | `Look › Only this scene` |
-| Style: twelve Looks (Ink … Painterly, Watercolour, Gouache, Paperman, Anime cel … Pixel), My Looks, Your Looks | `Look › look-style › look-painterly` |
+| Style: thirteen Looks (Ink … Painterly, Watercolour, Gouache, Paperman, Anime cel … Real … Pixel), My Looks, Your Looks | `Look › look-style › look-painterly` |
 | Style: duplicate as My Look | `Look › look-style › duplicate-look` |
 | Style: the Look Studio (Light, Lines, Paint, Print, Motion, About); Save to Yours; Share as a pack (L2) | Look ▸ Style ▸ Open “My Look” in the Look Studio, or a My Look's hold menu |
 | Style: a Look's hold menu: duplicate, open in the Look Studio, save to Yours, share as a pack, delete | touch and hold a Look |

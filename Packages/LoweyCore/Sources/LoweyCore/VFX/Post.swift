@@ -55,12 +55,21 @@ public struct PostSettings: Codable, Hashable, Sendable {
     public var boil: Double
     /// Ben-Day dots: flat colours printed as dots of ink on paper (0…1).
     public var benDay: Double
+    /// Film's red glow bleeding round the brightest things (0…1, U9).
+    public var halation: Double
+    /// How light past white is brought into the picture: the soft roll-off (the stylised Looks), or a filmic curve
+    /// (ACES) that keeps detail in the lamps and the darks rich (the Real Look's default).
+    public var toneCurve: ToneCurve?
+
+    public enum ToneCurve: String, Codable, Sendable, CaseIterable {
+        case soft, filmic
+    }
 
     public init(
         bloom: Double = 0, vignette: Double = 0, grain: Double = 0, exposure: Double = 0, contrast: Double = 0, saturation: Double = 0,
         temperature: Double = 0, outline: Double = 0, outlineColor: RGBA = RGBA(0.08, 0.07, 0.1), chromaticAberration: Double = 0,
         retro: Double = 0, depthOfField: Bool = true, texture: Texture = .none, textureStrength: Double = 0.5, misregistration: Bool = false,
-        boil: Double = 0, benDay: Double = 0
+        boil: Double = 0, benDay: Double = 0, halation: Double = 0, toneCurve: ToneCurve? = nil
     ) {
         self.bloom = bloom
         self.vignette = vignette
@@ -79,11 +88,13 @@ public struct PostSettings: Codable, Hashable, Sendable {
         self.misregistration = misregistration
         self.boil = boil
         self.benDay = benDay
+        self.halation = halation
+        self.toneCurve = toneCurve
     }
 
     private enum CodingKeys: String, CodingKey {
         case bloom, vignette, grain, exposure, contrast, saturation, temperature, outline, outlineColor, chromaticAberration, retro
-        case depthOfField, texture, textureStrength, misregistration, boil, benDay
+        case depthOfField, texture, textureStrength, misregistration, boil, benDay, halation, toneCurve
     }
 
     /// Every field may be missing (files from before it existed); an unknown texture reads as none.
@@ -98,7 +109,8 @@ public struct PostSettings: Codable, Hashable, Sendable {
                       texture: (try? c.decodeIfPresent(Texture.self, forKey: .texture)) ?? Texture.none,
                       textureStrength: c.decodeIfPresent(Double.self, forKey: .textureStrength) ?? 0.5,
                       misregistration: c.decodeIfPresent(Bool.self, forKey: .misregistration) ?? false, boil: number(.boil),
-                      benDay: number(.benDay))
+                      benDay: number(.benDay), halation: number(.halation),
+                      toneCurve: try? c.decodeIfPresent(ToneCurve.self, forKey: .toneCurve))
     }
 
     public func encode(to encoder: Encoder) throws {
@@ -115,6 +127,8 @@ public struct PostSettings: Codable, Hashable, Sendable {
         if misregistration { try c.encode(true, forKey: .misregistration) }
         if boil != 0 { try c.encode(boil, forKey: .boil) }
         if benDay != 0 { try c.encode(benDay, forKey: .benDay) }
+        if halation != 0 { try c.encode(halation, forKey: .halation) }
+        try c.encodeIfPresent(toneCurve, forKey: .toneCurve)
     }
 
     public static let none = PostSettings()
@@ -123,7 +137,7 @@ public struct PostSettings: Codable, Hashable, Sendable {
     public var isNeutral: Bool {
         bloom == 0 && vignette == 0 && grain == 0 && exposure == 0 && contrast == 0 && saturation == 0 && temperature == 0
             && outline == 0 && chromaticAberration == 0 && retro == 0 && (texture == .none || textureStrength == 0) && !misregistration
-            && boil == 0 && benDay == 0
+            && boil == 0 && benDay == 0 && halation == 0 && toneCurve == nil
     }
 
     public var needsDepth: Bool { outline > 0 || depthOfField }

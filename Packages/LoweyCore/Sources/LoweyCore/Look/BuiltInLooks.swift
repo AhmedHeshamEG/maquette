@@ -111,6 +111,17 @@ public extension LookPreset {
         lines: .off
     )
 
+    /// Real (U9): a camera's picture. Physically based surfaces, inverse-square light from the lamps you can see, the room's
+    /// lights mirrored in what's glossy, soft shadows from every light, contact shadows, a filmic tone curve that holds the
+    /// highlights, bloom only past white. No lines. Low-key scenes stay near black and let the lamps carve the subject.
+    static let real = LookPreset(
+        id: "real", name: "Real",
+        shading: ShadingParams(model: .real, edgeSoftness: 0.5, shadowHueShift: 0, shadowValue: 0, shadowSaturation: 0, ambientSteps: 0,
+                               contactShading: 1, rim: 0, specular: 1, specularSize: 0.5, specularSoftness: 0.5, posterizeTextures: false,
+                               bloom: 0.25, softShadows: true, reflection: 1),
+        lines: .off
+    )
+
     /// Pixel: hard toon light in square blocks and few colours, a one-pixel ink line, on twos (D-481).
     static let pixel = LookPreset(
         id: "pixel", name: "Pixel",
@@ -123,7 +134,7 @@ public extension LookPreset {
 
     /// The built-in Looks, in the order the Look panel shows them: the toon family, paint, film, solid, pixels.
     static let builtIns: [LookPreset] = [
-        .ink, .comic, .sketch, .painterly, .watercolour, .gouache, .paperman, .animeCel, .clay, .cleanProduct, .lowPoly, .pixel
+        .ink, .comic, .sketch, .painterly, .watercolour, .gouache, .paperman, .animeCel, .clay, .cleanProduct, .real, .lowPoly, .pixel
     ]
 }
 

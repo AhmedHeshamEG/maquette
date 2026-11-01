@@ -31,7 +31,7 @@ compositions = ["center", "leftThird", "rightThird", "lowAngle", "highAngle"]
 recipes = ["three-point", "golden-hour", "moonlit", "neon", "key-warm-world-cool", "noir-single-source", "golden-rim", "monitor-glow",
            "studio-soft"]
 intents = ["enter", "exit", "emphasise", "react", "walk_to", "look_at", "talk", "idle"]
-looks = ["ink", "comic", "sketch", "painterly", "watercolour", "gouache", "paperman", "animeCel", "clay", "cleanProduct", "lowPoly",
+looks = ["ink", "comic", "sketch", "painterly", "watercolour", "gouache", "paperman", "animeCel", "clay", "cleanProduct", "real", "lowPoly",
          "lowpoly", "pixel"]
 fx = ["speedLines", "impactBurst", "sweatDrop", "sparkle", "smear"]
 expressions = ["neutral", "happy", "laugh", "smug", "surprised", "shocked", "scared", "sad", "angry", "sleepy", "wink", "thinking"]
@@ -91,7 +91,7 @@ verbs = {
                    "side": {"enum": ["left", "right"]}, "camera": s, "at": time, "aspect": n, "active": b}, ["subject"]),
     "lighting": ("A lighting recipe placed for the shot camera (replaces the recipe's earlier lamps).",
                  {"recipe": {"enum": recipes}, "subject": tgt, "intensity": n, "warmth": n}, ["recipe"]),
-    "look": ("The Look, mood and post; per-object Looks.", {"look": {"enum": looks}, "mood": s, "post": s, "shading": s,
+    "look": ("The Look, mood and post; per-object Looks.", {"look": {"enum": looks}, "mood": s, "post": {"anyOf": [s, {"type": "object"}]}, "shading": s,
                                                             "fog": {"anyOf": [b, n]}, "palette": {"type": "array", "items": color},
                                                             "bloom": n, "grain": n, "sceneOnly": b,
                                                             "ground": {"enum": ["plain", "desert", "grass", "snow", "rock", "sand", "pavement",

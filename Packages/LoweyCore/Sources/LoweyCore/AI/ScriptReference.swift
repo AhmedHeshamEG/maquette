@@ -112,7 +112,12 @@ public enum ScriptReference {
     {"do":"cameraMove","camera":"Shot 2","move":"pushIn|pullOut|punchIn|snapZoom|orbit|dolly|truck|crane|whipPan|shake|reveal","subject":"Paper","at":{"word":"message"},"duration":2,"strength":1}
     {"do":"cut","camera":"Room cam","at":{"word":"people"},"transition":"cut|fade|dipToBlack|wipe|zoomThrough","duration":0.6}
     {"do":"lighting","recipe":"key-warm-world-cool|noir-single-source|golden-rim|monitor-glow|moonlit|studio-soft","subject":"Hesham","intensity":1,"warmth":0.3}
-    {"do":"look","look":"ink|comic|sketch|painterly|watercolour|gouache|paperman|animeCel|clay|cleanProduct|lowPoly|pixel","mood":"day|goldenHour|dusk|night|space|studio|darkStudio","perObject":{"Robot":"sketch"},"fog":40,"sceneOnly":true}
+    {"do":"look","look":"ink|comic|sketch|painterly|watercolour|gouache|paperman|animeCel|clay|cleanProduct|real|lowPoly|pixel","mood":"day|goldenHour|dusk|night|space|studio|darkStudio","perObject":{"Robot":"sketch"},"fog":40,"sceneOnly":true}
+    Real (a camera's picture: physically based, inverse-square light, filmic): {"do":"look","look":"real","mood":"darkStudio",
+     "post":{"exposure":-0.3,"bloom":0.2,"halation":0.3,"vignette":0.3,"grain":0.15,"fringing":0.1,"toneCurve":"filmic"}}
+      Low-key: a dark mood, then light the subject with practicals (spots with a cone and softness, glowing panels).
+      Surfaces: set roughness, metallic, clearcoat, clearcoatRoughness, transmission (glass, 0–1) and ior (1.5 glass) per thing;
+      glow (emissiveIntensity) is real light past white in Real: only what glows blooms.
     {"do":"look","ground":"desert|grass|snow|rock|sand|pavement|waterEdge|roomFloor|plain","finish":{"misregistration":true,"boil":0.4,"benDay":0.6,"texture":"none|paper|collage|film|newsprint|riso|canvas","textureStrength":0.7}}
 
     Animate (say the intent; the app picks the animation)
@@ -132,7 +137,7 @@ public enum ScriptReference {
     {"do":"motion","op":"evenSpeed","target":"Car"}   {"op":"timing","target":"Car","duration":3}   {"op":"front","target":"Car","quarterTurns":1}
     {"do":"set","target":"Paper","property":"color|opacity|emissiveIntensity|stepping|accent|airborne|smear","value":"#F2E8D5","at":2}
       Properties (set and keys): position rotation scale visible opacity color emissive emissiveIntensity (glow) roughness
-      metallic (metalness) · lights: lightColor lightIntensity lightRange (range) spotAngle (cone) · cameras: fieldOfView
+      metallic (metalness) clearcoat clearcoatRoughness transmission ior · lights: lightColor lightIntensity lightRange (range) spotAngle (cone) · cameras: fieldOfView
       (fov; focalLength/lens/mm in millimetres convert) focusDistance (focus) aperture · unlit (true: a picture or screen
       shows its own colours, untouched by lights and the Look). An unknown name is refused.
     Easings: linear, easeIn, easeOut, easeInOut, backOut, bounce, elastic, step.

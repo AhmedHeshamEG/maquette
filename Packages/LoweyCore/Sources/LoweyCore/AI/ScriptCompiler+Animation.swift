@@ -190,6 +190,9 @@ extension ScriptState {
             look.presetID = found.id
         }
         if let post = string(action, "post").flatMap(PostSettings.Preset.init(rawValue:)) { look.post = post.settings }
+        // The post stack by its numbers (S16 item 5): {"post": {"exposure": -0.5, "bloom": 0.3, "halation": 0.4, "toneCurve": "filmic", …}}.
+        if case let .object(numbers)? = action["post"] { look.post = try postNumbers(numbers, onto: look.post) }
+        if look.presetID == LookPreset.real.id, look.post.toneCurve == nil { look.post.toneCurve = .filmic }
         if let shading = string(action, "shading").flatMap(ShadingStyle.init(rawValue:)) { look.shading = shading }
         if let fog = action["fog"] {
             if case let .bool(on) = fog { look.fog.enabled = on }
@@ -208,6 +211,31 @@ extension ScriptState {
         try lookExtras(action, into: &look)
         try run(.setLook(look, scope: sceneOnly ? .scene : .project), label: "Look")
         try perObjectLooks(action)
+    }
+
+    /// The post stack from its numbers; an unknown name is refused (as properties are).
+    func postNumbers(_ numbers: [String: JSONValue], onto post: PostSettings) throws -> PostSettings {
+        var post = post
+        let fields: [String: WritableKeyPath<PostSettings, Double>] = [
+            "bloom": \.bloom, "vignette": \.vignette, "grain": \.grain, "exposure": \.exposure, "contrast": \.contrast,
+            "saturation": \.saturation, "temperature": \.temperature, "warmth": \.temperature, "chromaticAberration": \.chromaticAberration,
+            "fringing": \.chromaticAberration, "halation": \.halation, "outline": \.outline
+        ]
+        for (name, value) in numbers.sorted(by: { $0.key < $1.key }) {
+            if let field = fields[name] {
+                guard let number = value.numberValue else { throw fail("post “\(name)” needs a number") }
+                post[keyPath: field] = number
+            } else if name == "toneCurve" {
+                guard let curve = value.stringValue.flatMap(PostSettings.ToneCurve.init(rawValue:)) else { throw fail("toneCurve is soft or filmic") }
+                post.toneCurve = curve
+            } else if name == "depthOfField" {
+                guard case let .bool(on) = value else { throw fail("depthOfField is true or false") }
+                post.depthOfField = on
+            } else {
+                throw fail("unknown post “\(name)” (\((fields.keys.sorted() + ["toneCurve", "depthOfField"]).joined(separator: ", ")))")
+            }
+        }
+        return post
     }
 
     /// Per object: {"perObject": {"Robot": "sketch"}} (a thing drawn in another Look).

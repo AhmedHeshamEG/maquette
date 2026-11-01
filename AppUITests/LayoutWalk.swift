@@ -89,7 +89,7 @@ private let layoutWalkRows: [LayoutWalk.Row] = [
                    control: "Only this scene",
                    steps: ["Look", "Only this scene"], held: ""),
     LayoutWalk.Row(home: "Look", precondition: "",
-                   control: "Style: twelve Looks (Ink … Painterly, Watercolour, Gouache, Paperman, Anime cel … Pixel), My Looks, Your Looks",
+                   control: "Style: thirteen Looks (Ink … Painterly, Watercolour, Gouache, Paperman, Anime cel … Real … Pixel), My Looks, Your Looks",
                    steps: ["Look", "look-style", "look-painterly"], held: ""),
     LayoutWalk.Row(home: "Look", precondition: "",
                    control: "Style: duplicate as My Look",
