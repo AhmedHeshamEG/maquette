@@ -16,7 +16,7 @@ final class RealLookRenderTests: XCTestCase {
         floor[.roughness] = .float(0.6)
         var factory = ObjectFactory(ids: .sequential("real"))
         // The lamp: up and to the left, tipped 45° down toward the right of the desk.
-        var lamp = factory.light(.spot, at: Vec3(-1.2, 1.6, 0), color: .rgba(RGBA(1, 0.78, 0.55)))
+        var lamp = factory.light(.spot, at: Vec3(-1.2, 1.6, 0), color: RGBA(1, 0.78, 0.55))
         lamp.transform.rotation = (Quat(angle: -.pi / 2, axis: .unitY) * Quat(angle: -.pi / 4, axis: .unitX)).normalized
         lamp[.lightIntensity] = .float(3)
         lamp[.lightRange] = .float(6)
