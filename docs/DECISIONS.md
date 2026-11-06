@@ -3933,3 +3933,19 @@ keeps every copy free and open, and Apple's terms keep GPL copies off the App St
 there; contributors grant the owner a licence for that (CONTRIBUTING.md). The name, studio h. and the icon are kept
 out of the licence (TRADEMARKS.md). hmm-kit takes GPL 3.0 too. Rejected: Apache and MIT (anyone could sell a copy),
 PolyForm Noncommercial (not open source; Hesham chose GPL).
+
+**D-624 — Support in the app touches nothing else** (CONTEXT §D.32). Settings ▸ About gains Support Maquette and
+Credits; the credits read `SUPPORTERS.md`, bundled as a resource, so a new name ships with the next build and nothing
+goes over the network. The thank-you card lives inside the Export sheet beside the results, after the first export
+ever, gated by one flag (`ThankYouCardGate`, tested in Core; `SupportTests` proves once and never on the canvas). The
+App Store build (`MaquetteStoreBuild`) links out only on the US storefront (App Review 3.1.1(a), 3.1.3); elsewhere the
+row and the card thank you and link nowhere. Rejected: a card over the stage (§D.21's canvas rule), an in-app tip jar
+(needs the developer account; L1 can add one), fetching the list from GitHub (no network).
+
+**D-625 — The $99 checkpoint keeps Maquette on the App Store.** Hesham's call in O1: every word is written as if
+Maquette is already on the store (the link comes from him later). Apple's fee is yearly, so the checkpoint reads
+"keeps Maquette on the App Store" and stays true every year. Rejected: "puts it on the App Store" (false once it's there).
+
+**D-626 — Ko-fi is `ko-fi.com/heshamvox`**, matching his handles everywhere else (TikTok, Instagram, Facebook,
+Linktree, Patreon). GitHub Sponsors is his own account, `AhmedHeshamEG`, which pays out in Italy and Egypt with no fee
+on personal sponsorships. Rejected: a studio-h account (none exists; the seller is his own name).

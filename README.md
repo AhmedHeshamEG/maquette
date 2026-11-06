@@ -6,8 +6,15 @@
 
 <p align="center">
   <b>3D for people who have never done 3D.</b><br>
-  Build a scene on the iPad with your Pencil and your fingers, give it a character or don't, light it, film it,
-  and export the video. Free and open source.
+  A native iPad app, built for the Pencil. Build a scene with your Pencil and your fingers, give it a character or
+  don't, light it, film it, and get the video out. Free and open source, forever.
+</p>
+
+<p align="center">
+  <a href="APP_STORE_URL"><b>Download on the App Store</b></a> ·
+  <a href="https://ahmedhesham.github.io/maquette/"><b>See it fly</b></a> ·
+  <a href="#support"><b>Support it</b></a><br>
+  <sub>(If you've done 3D before, you're also allowed in.)</sub>
 </p>
 
 <p align="center">
@@ -25,6 +32,7 @@
   <a href="#looks">Looks</a> ·
   <a href="#direct-it-with-claude">Direct it with Claude</a> ·
   <a href="#build-from-source">Build from source</a> ·
+  <a href="#support">Support</a> ·
   <a href="#contributing">Contributing</a>
 </p>
 
@@ -89,8 +97,10 @@ tone curve.
 
 ## Install
 
-Maquette isn't on the App Store yet. Every green build makes an installable `.ipa`, and you can put it on your own
-iPad from any computer, Windows included. No Mac needed.
+**On the App Store:** [Maquette](APP_STORE_URL). Free, no account, no in-app anything.
+
+**From this repo:** every green build makes an `.ipa` you can sideload from any computer, Windows included. For
+people who like to live on the edge of main.
 
 1. **Get the app**: [Releases](https://github.com/AhmedHeshamEG/maquette/releases/latest) → `Maquette.ipa`.
 2. **Install [Sideloadly](https://sideloadly.io)** on a computer and connect the iPad with a cable.
@@ -147,10 +157,35 @@ skills/lowey            the Claude skill and its evals
 - Where every control lives: [docs/LAYOUT.md](docs/LAYOUT.md). Why things are the way they are:
   [docs/DECISIONS.md](docs/DECISIONS.md). What changed: [CHANGELOG.md](CHANGELOG.md).
 
+## Support
+
+Maquette was going to cost $14.99. I had the price set, the launch discount planned, the whole thing. Then I deleted
+the price, because the people I made it for are the ones who'd never pay for a 3D app before trying one.
+
+So it's free. If it's useful to you, you can help me keep going:
+
+- **[A coffee on Ko-fi](https://ko-fi.com/heshamvox)**, any amount, once.
+- **[Founding Supporter](https://github.com/sponsors/AhmedHeshamEG)**, $5 a month on GitHub Sponsors or Ko-fi. The
+  first 100 get a number, #1 to #100, in the app's credits and right here, forever.
+
+**The goal: $25,000, "Maquette, full time".** The app is already built; this pays for what comes after it.
+
+```
+$99      ▸ keeps Maquette on the App Store (Apple charges it every year)
+~$700    ▸ a Mac, so Maquette comes to the Mac
+$25,000  ▸ a year of me working on nothing else but Maquette
+```
+
+Every month there's one short post on Ko-fi saying what your money did: one clip, three lines.
+
+**Founding Supporters:** see [SUPPORTERS.md](SUPPORTERS.md). *(Empty for now. Number one could be you. No pressure.
+Some pressure.)*
+
 ## Contributing
 
-Bug reports and ideas are welcome in [Issues](https://github.com/AhmedHeshamEG/maquette/issues). Pull requests are
-welcome too; read [CONTRIBUTING.md](CONTRIBUTING.md) first (it explains the small contributor agreement).
+Bug fixes, translations and ports are very welcome. For a new feature, open an issue first and wait for a yes: the
+layout is small on purpose, and every feature has to find a home that already exists. I read issues once a week, so
+give me a few days. Every pull request agrees to the [contributor agreement](CONTRIBUTING.md).
 
 ## Licence
 
