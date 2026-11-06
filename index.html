@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Maquette · 3D for people who have never done 3D</title>
+  <meta name="description" content="A native iPad app, built for the Pencil. Build a scene, give it a character, light it, film it. Free and open source, forever.">
+  <meta name="theme-color" content="#141a33">
+  <meta property="og:title" content="Maquette">
+  <meta property="og:description" content="3D for people who have never done 3D. Free, for iPad.">
+  <meta property="og:image" content="https://ahmedheshameg.github.io/maquette/img/preview.jpg">
+  <meta property="og:url" content="https://ahmedheshameg.github.io/maquette/">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="img/icon.png">
+  <link rel="apple-touch-icon" href="img/icon.png">
+  <link rel="stylesheet" href="style.css">
+  <link rel="modulepreload" href="lib/three/three.module.js">
+  <script type="importmap">
+    { "imports": { "three": "./lib/three/three.module.js", "three/addons/": "./lib/three/addons/" } }
+  </script>
+</head>
+<body>
+  <div id="world" aria-hidden="true"><img id="still" src="img/still.jpg" alt=""></div>
+
+  <header class="bar">
+    <a class="mark" href="#top"><img src="img/icon.png" alt="" width="28" height="28">Maquette</a>
+    <a class="pill amber" href="https://github.com/AhmedHeshamEG/maquette/releases/latest">Get it free</a>
+  </header>
+
+  <main>
+    <section id="top" class="stop opening" data-key="0">
+      <h1>Maquette</h1>
+      <p class="sub">3D for people who have never done 3D.</p>
+      <p class="hint">scroll. it's a whole world down there.</p>
+    </section>
+
+    <section class="stop" data-key="1"><div class="card"><span class="n">01</span><h2>Draw</h2><p>Draw in the air. The line lands exactly under the Pencil.</p></div></section>
+    <section class="stop" data-key="2"><div class="card"><span class="n">02</span><h2>Shape</h2><p>Draw a shape, pull it, and it's solid.</p></div></section>
+    <section class="stop" data-key="3"><div class="card"><span class="n">03</span><h2>Build</h2><p>A house kit you snap together like Lego. Walls, floors, terrain.</p></div></section>
+    <section class="stop" data-key="4"><div class="card"><span class="n">04</span><h2>Paint</h2><p>Paint right on the model. Rust, fur, glow, 24 materials.</p></div></section>
+    <section class="stop" data-key="5"><div class="card"><span class="n">05</span><h2>Characters</h2><p>Tap anything, give it eyes and a mouth. Now it's somebody.</p></div></section>
+    <section class="stop" data-key="6"><div class="card"><span class="n">06</span><h2>Talk</h2><p>Type a line or record your voice. It lip-syncs.</p></div></section>
+    <section class="stop" data-key="7"><div class="card"><span class="n">07</span><h2>Physics</h2><p>Knock it over. Things fall the way things fall.</p></div></section>
+    <section class="stop" data-key="8"><div class="card"><span class="n">08</span><h2>Film</h2><p>Real lenses, a crane, a dolly, cuts on your own words.</p></div></section>
+    <section class="stop" data-key="9"><div class="card"><span class="n">09</span><h2>Looks</h2><p>Ink, Comic, Watercolour, Anime, Real, Pixel. Thirteen of them. Same scene.</p></div></section>
+    <section class="stop" data-key="10"><div class="card"><span class="n">10</span><h2>Out</h2><p>MP4, ProRes, glTF, USDZ, STL for your printer, a Blender package.</p></div></section>
+    <section class="stop" data-key="11"><div class="card"><span class="n">11</span><h2>Yours</h2><p>No account. No ads. No tracking. Your projects are folders on your iPad.</p></div></section>
+
+    <section id="roadmap" class="panel" data-key="12">
+      <h2>The road</h2>
+      <ol class="road">
+        <li class="done"><h3>Done</h3>
+          <p class="chips"><span>Draw</span><span>Shape</span><span>Paint</span><span>Rig</span><span>Characters</span><span>Physics</span><span>Animate</span><span>Film</span><span>Motion</span><span>Looks</span><span>Real</span><span>Files</span><span>Bridge</span></p></li>
+        <li class="now"><h3>Now</h3><p class="chips"><span>Polish</span></p><p class="aside">the last test on real iPads</p></li>
+        <li class="next"><h3>Next</h3><p class="chips"><span>Mac</span><span>Languages</span><a href="https://github.com/AhmedHeshamEG/maquette/issues">Whatever you ask for</a></p></li>
+      </ol>
+      <!-- The bar: change data-raised (dollars, all-time, Patreon + GitHub Sponsors) once a month with the post. -->
+      <div class="goal" data-raised="0" data-target="25000">
+        <h3>Maquette, full time</h3>
+        <div class="track"><div class="fill"></div>
+          <i class="tick" style="--at: 99" data-label="$99 App Store"></i>
+          <i class="tick low" style="--at: 700" data-label="~$700 Mac"></i>
+        </div>
+        <p class="amount"><b class="raised">$0</b> of $25,000</p>
+      </div>
+    </section>
+
+    <section id="wall" class="panel" data-key="13">
+      <h2>Made with Maquette</h2>
+      <p class="lead">made something? tag it <b>#MadeWithMaquette</b> and it goes up here.</p>
+      <div class="grid">
+        <figure class="wide"><img loading="lazy" src="img/looks-grid.jpg" width="1280" height="540" alt="One scene in twelve of Maquette's Looks: Ink, Comic, Sketch, Painterly, Watercolour, Gouache, Paperman, Anime cel, Clay, Clean product, Low-poly and Pixel."></figure>
+        <figure><img loading="lazy" src="img/screen-model.jpg" width="1200" height="899" alt="Modelling in Maquette on an iPad."></figure>
+        <figure><img loading="lazy" src="img/screen-rig.jpg" width="1200" height="899" alt="A rigged character in Maquette."></figure>
+        <figure><img loading="lazy" src="img/screen-timeline.jpg" width="1200" height="899" alt="Maquette's timeline, animating a scene."></figure>
+        <figure><img loading="lazy" src="img/screen-look.jpg" width="1200" height="899" alt="Choosing a Look in Maquette."></figure>
+        <figure class="wide"><img loading="lazy" src="img/real-desk.png" width="640" height="360" alt="A desk scene in Maquette's Real Look."></figure>
+      </div>
+    </section>
+
+    <section id="get" class="panel end" data-key="14">
+      <div class="cta">
+        <a class="pill amber big" href="https://github.com/AhmedHeshamEG/maquette/releases/latest">Get it free</a>
+        <a class="small" href="https://github.com/AhmedHeshamEG/maquette">or build it yourself</a>
+      </div>
+      <div class="cta">
+        <h2>Keep it going</h2>
+        <p>Maquette was going to cost $14.99. Then I deleted the price. If it's useful to you, you can help me keep it growing.
+          The first 100 monthly supporters get a number in the app's credits, forever.</p>
+        <p class="row">
+          <a class="pill" href="https://www.patreon.com/HeshamVox">Patreon</a>
+          <a class="pill" href="https://github.com/sponsors/AhmedHeshamEG">GitHub Sponsors</a>
+        </p>
+      </div>
+    </section>
+
+    <section id="faq" class="panel" data-key="15">
+      <h2>Questions</h2>
+      <details><summary>Is it really free?</summary><p>Yes. No ads, no account, no "Pro" version waiting later. The whole thing.</p></details>
+      <details><summary>Why give it away?</summary><p>It was going to be $14.99. I'd rather everyone with an iPad can make 3D than have it be another paid app. If you want to help, there's a Support button.</p></details>
+      <details><summary>Android? Windows?</summary><p>Maquette is native, made for iPad and Pencil, Mac next (that's the $700 checkpoint). It's open source, so anyone can port it. If you do, tell me, I want to see it.</p></details>
+      <details><summary>Which iPads?</summary><p>Any iPad on iPadOS 26. The Pencil is best. A finger draws too, just with worse handwriting.</p></details>
+      <details><summary>I've never done 3D. Is that a problem?</summary><p>That's the person it was made for.</p></details>
+      <details><summary>Was it made with AI?</summary><p>I designed it and made every decision; Claude helped me write the code. Nothing inside the app generates art. What's in your frame is what you put there.</p></details>
+      <details><summary>Can I use what I make commercially?</summary><p>Yes. It's yours. The Looks and shaders you export come with a licence that says "use them in anything".</p></details>
+      <details><summary>Can I sell my own copy of the app?</summary><p>No. The GPL keeps every copy free and open, and the name and the icon stay mine (<a href="https://github.com/AhmedHeshamEG/maquette/blob/main/TRADEMARKS.md">TRADEMARKS.md</a>).</p></details>
+      <details><summary>Where does the money go?</summary><p>Into Maquette: the App Store fee, a Mac to port it, then time. One post a month on Patreon shows exactly what it paid for.</p></details>
+      <details><summary>Can I help with code?</summary><p>Fixes, translations and ports, yes please. New features: open an issue first. <a href="https://github.com/AhmedHeshamEG/maquette/blob/main/CONTRIBUTING.md">How</a>.</p></details>
+    </section>
+  </main>
+
+  <footer>Made by H (Hesham). Native for iPad, built for the Pencil. Open source under the GPL.
+    <span class="credit">The world on this page is three.js with Maquette's own Ink Look, the Keeper's Tower from the app's samples and
+      CC0 models from its Kit (Kenney).</span></footer>
+
+  <script type="module" src="world.js"></script>
+</body>
+</html>
