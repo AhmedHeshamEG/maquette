@@ -11,8 +11,8 @@
 </p>
 
 <p align="center">
-  <a href="APP_STORE_URL"><b>Download on the App Store</b></a> ·
-  <a href="https://ahmedhesham.github.io/maquette/"><b>See it fly</b></a> ·
+  <a href="https://github.com/AhmedHeshamEG/maquette/releases/latest"><b>Download on the App Store</b></a> ·
+  <a href="https://ahmedheshameg.github.io/maquette/"><b>See it fly</b></a> ·
   <a href="#support"><b>Support it</b></a><br>
   <sub>(If you've done 3D before, you're also allowed in.)</sub>
 </p>
@@ -97,7 +97,7 @@ tone curve.
 
 ## Install
 
-**On the App Store:** [Maquette](APP_STORE_URL). Free, no account, no in-app anything.
+**On the App Store:** [Maquette](https://github.com/AhmedHeshamEG/maquette/releases/latest). Free, no account, no in-app anything.
 
 **From this repo:** every green build makes an `.ipa` you can sideload from any computer, Windows included. For
 people who like to live on the edge of main.
