@@ -29,7 +29,16 @@ best = None
 for runtime, entries in devices.items():
     if "iOS" not in runtime:
         continue
-    version = tuple(int(part) for part in runtime.split("iOS-")[-1].split("-"))
+    # "iOS-26-1" → (26, 1). Newer images add device-specific runtimes ("iOS-26-1-iPhone19-…"): the numbers stop there.
+    parts = runtime.split("iOS-")[-1].split("-")
+    numbers = []
+    for part in parts:
+        if not part.isdigit():
+            break
+        numbers.append(int(part))
+    if not numbers:
+        continue
+    version = tuple(numbers)
     for device in entries:
         name = device["name"]
         if WANT_PHONE:
