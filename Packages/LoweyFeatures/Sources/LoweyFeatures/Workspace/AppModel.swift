@@ -51,6 +51,8 @@ public final class AppModel {
     let keyboard = HmmKeyboard(commands: KeyCommands.all)
     /// Shows exports outside the app (Live Activity, notification); set by the app target.
     @ObservationIgnored public weak var exportReporter: (any ExportProgressReporting)?
+    /// The thank-you card in the Export sheet, after the first export ever (O1; never on the canvas).
+    var showsThankYou = false
     @ObservationIgnored let diagnostics = DiagnosticsCenter.shared
     @ObservationIgnored let thumbnailer = Thumbnailer()
     @ObservationIgnored private var started = false

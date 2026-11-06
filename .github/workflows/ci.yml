@@ -50,6 +50,8 @@ jobs:
               - '!**/*.md'
               - '!docs/**'
               - '!LICENSE'
+              - '!site/**'
+              - '!.github/workflows/pages.yml'
             core:
               - 'Packages/LoweyCore/**'
               - 'Packages/HmmKit/**'

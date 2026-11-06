@@ -4,11 +4,13 @@ Thank you for wanting to help. A few things first.
 
 ## Before you start
 
-- **Bugs**: open an issue with what you did, what you expected and what happened. A screen recording helps most.
-- **Ideas**: open an issue before writing code. Maquette's layout is deliberately small; a feature has to find a home
-  that already exists ([docs/LAYOUT.md](docs/LAYOUT.md)).
-- **Pull requests**: one change per pull request, with a test. CI must be green (lint, the Core tests on Linux, the
-  render tests and the UI tests).
+- **Bugs:** open an issue with what you did, what you expected and what happened. A screen recording helps most.
+- **Fixes, translations and ports:** go ahead, one change per pull request, with a test. CI must be green (lint, the
+  Core tests on Linux, the render tests and the UI tests).
+- **New features:** open an issue first and wait for a yes before you write code. After 1.0 the layout is frozen
+  ([docs/LAYOUT.md](docs/LAYOUT.md)), so most "add a button" ideas will get a kind no.
+- **Speed:** issues are read once a week. I'm one person, so be patient with me and I'll be patient with your commit
+  messages.
 
 ## The contributor agreement
 

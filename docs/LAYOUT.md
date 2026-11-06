@@ -445,7 +445,7 @@ In this order. From Home (the gear) and from Actions.
 | Your name (it signs your notes) | Settings ▸ Yours |
 | Theme (automatic, dark, light), haptics | Settings ▸ Appearance |
 | The assistant on this network (the laptop bridge for MCP), pairing and proposals, Scripts, paste a script; with Hesham's note | Settings ▸ Assistant |
-| Version, licences; Diagnostics: the feel recorder, the benchmarks, the Pencil's latency, smoothness, logs, the chrome-restraint trial | Settings ▸ About |
+| Version, Support Maquette and the credits (O1), licences; Diagnostics: the feel recorder, the benchmarks, the Pencil's latency, smoothness, logs, the chrome-restraint trial | Settings ▸ About |
 | iCloud Drive | Settings ▸ Storage |
 
 ## Learn

@@ -3933,3 +3933,35 @@ keeps every copy free and open, and Apple's terms keep GPL copies off the App St
 there; contributors grant the owner a licence for that (CONTRIBUTING.md). The name, studio h. and the icon are kept
 out of the licence (TRADEMARKS.md). hmm-kit takes GPL 3.0 too. Rejected: Apache and MIT (anyone could sell a copy),
 PolyForm Noncommercial (not open source; Hesham chose GPL).
+
+**D-624 — Support in the app touches nothing else** (CONTEXT §D.32). Settings ▸ About gains Support Maquette and
+Credits; the credits read `SUPPORTERS.md`, bundled as a resource, so a new name ships with the next build and nothing
+goes over the network. The thank-you card lives inside the Export sheet beside the results, after the first export
+ever, gated by one flag (`ThankYouCardGate`, tested in Core; `SupportTests` proves once and never on the canvas). The
+App Store build (`MaquetteStoreBuild`) links out only on the US storefront (App Review 3.1.1(a), 3.1.3); elsewhere the
+row and the card thank you and link nowhere. Rejected: a card over the stage (§D.21's canvas rule), an in-app tip jar
+(needs the developer account; L1 can add one), fetching the list from GitHub (no network).
+
+**D-625 — The $99 checkpoint keeps Maquette on the App Store.** Hesham's call in O1: every word is written as if
+Maquette is already on the store (the link comes from him later). Apple's fee is yearly, so the checkpoint reads
+"keeps Maquette on the App Store" and stays true every year. Rejected: "puts it on the App Store" (false once it's there).
+
+**D-626 — Patreon and GitHub Sponsors, no Ko-fi.** Hesham already runs `patreon.com/HeshamVox` (every video's
+footer links it), so the monthly Founding Supporter tier lives there and on GitHub Sponsors (`AhmedHeshamEG`, which pays
+out in Italy and Egypt with no fee on personal sponsorships). One-off coffees are a one-time Sponsors tier. The app's
+button opens Patreon: anyone can pay there without a GitHub account. The $25,000 goal is a running total, which
+Patreon's goals can't show, so the site's bar carries it. Rejected: Ko-fi (one more account to keep for no gain), a
+studio-h account (none exists; the seller is his own name).
+
+**D-627 — The site is the app's own world.** `site/` is one static page: three.js with `maquette/look.js` from the
+app's three.js export (the Ink Look itself), the Keeper's Tower rebuilt from `KeepersTowerSample`'s Scene Script, and
+the eleven stops made from Kit models (CC0). The scroll drives the camera along one path through the stops; each
+stop's card sits on one side and the camera frames the stop on the other (`setViewOffset`). Reduced motion or no WebGL
+shows `img/still.jpg`. Everything is ~2 MB, no build step, no fonts to fetch, no analytics. Rejected: a video
+background (heavy on phones, not interactive), a page builder (another account), screenshots only (doesn't show what
+3D is).
+
+**D-628 — The wall shows what's made in Maquette, and nothing else.** The approved copy said "every 3D shot on my
+channel was made in this app"; checking it, the channel's 3D is three.js, HyperFrames and Blender. The wall shows the
+app's own screens and Looks, and invites people to tag #MadeWithMaquette. Rejected: the channel's clips (not made in
+the app).

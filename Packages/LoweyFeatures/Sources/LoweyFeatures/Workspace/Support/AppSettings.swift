@@ -35,6 +35,8 @@ public enum AppSettings {
     public static let storeInICloud = "storeInICloud"
     /// The 60-second tour was seen (it never comes back by itself; Settings replays it).
     public static let tourSeen = "tourSeen"
+    /// The thank-you card after the first export was shown (O1: once, ever).
+    public static let thankYouCardShown = "thankYouCardShown"
     /// The Schizzo board (on by default). Off: no board in Actions, no Sketch template, pinned cards put away.
     public static let boardEnabled = "boardEnabled"
     /// Settings ▸ Gestures: one finger draws around keys and clips on the timeline (off: the Pencil does; a finger pans).

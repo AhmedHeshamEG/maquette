@@ -8085,6 +8085,22 @@
         }
       }
     },
+    "Credits": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Riconoscimenti"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الشكر"
+          }
+        }
+      }
+    },
     "Crowd of %lld": {
       "localizations": {
         "it": {
@@ -11437,6 +11453,22 @@
         }
       }
     },
+    "Everyone who bought a coffee": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tutti quelli che hanno offerto un caffè"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "كل من اشترى قهوة"
+          }
+        }
+      }
+    },
     "Everything after the playhead": {
       "localizations": {
         "it": {
@@ -13881,6 +13913,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "تقدّم 10 ثوانٍ"
+          }
+        }
+      }
+    },
+    "Founding Supporters": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sostenitori fondatori"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الداعمون المؤسسون"
           }
         }
       }
@@ -17017,6 +17065,22 @@
         }
       }
     },
+    "It's free. If it helped you, you can help it.": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "È gratis. Se ti è stato utile, puoi aiutarlo."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "مجاني. لو ساعدك، تقدر تساعده."
+          }
+        }
+      }
+    },
     "It's part of %@ now and moves with its bones": {
       "localizations": {
         "it": {
@@ -19565,6 +19629,22 @@
         }
       }
     },
+    "Made by H (Hesham). Code licensed under the GPL 3.0.": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fatto da H (Hesham). Codice con licenza GPL 3.0."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "من صنع H (هشام). الكود مرخّص بـ GPL 3.0."
+          }
+        }
+      }
+    },
     "Made here": {
       "localizations": {
         "it": {
@@ -19609,6 +19689,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "مصنوعة من…"
+          }
+        }
+      }
+    },
+    "Made possible by": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reso possibile da"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "بفضل"
           }
         }
       }
@@ -19901,6 +19997,54 @@
         }
       }
     },
+    "Maquette is free and open source. Thank you for using it.": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Maquette è gratis e open source. Grazie di usarlo."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Maquette مجاني ومفتوح المصدر. شكرًا لاستخدامك له."
+          }
+        }
+      }
+    },
+    "Maquette is free, and it'll stay free. Go show someone what you made.": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Maquette è gratis e lo resterà. Vai a far vedere a qualcuno cosa hai fatto."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Maquette مجاني وسيبقى مجانيًا. اذهب وأرِ أحدًا ما صنعته."
+          }
+        }
+      }
+    },
+    "Maquette is free, and it'll stay free. If you want to help it grow, there's a Support button.": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Maquette è gratis e lo resterà. Se vuoi aiutarla a crescere, c'è il pulsante Sostieni."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Maquette مجاني وسيبقى مجانيًا. إن أردت أن تساعده على النمو، فهناك زر «ادعم»."
+          }
+        }
+      }
+    },
     "Maquette may use the front camera only to show you your face here": {
       "localizations": {
         "it": {
@@ -20169,6 +20313,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "الأقصى"
+          }
+        }
+      }
+    },
+    "Maybe later": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Magari dopo"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ربما لاحقًا"
           }
         }
       }
@@ -22685,6 +22845,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "لا توجد نسخ بعد"
+          }
+        }
+      }
+    },
+    "Nobody yet. The first name here gets a lot of attention.": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ancora nessuno. Il primo nome qui si farà notare parecchio."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "لا أحد بعد. أول اسم هنا سيلفت الأنظار."
           }
         }
       }
@@ -35165,6 +35341,38 @@
         }
       }
     },
+    "Support": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sostieni"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ادعم"
+          }
+        }
+      }
+    },
+    "Support Maquette": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sostieni Maquette"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ادعم Maquette"
+          }
+        }
+      }
+    },
     "Surface": {
       "localizations": {
         "it": {
@@ -42801,6 +43009,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "xatlas"
+          }
+        }
+      }
+    },
+    "You made a thing. In 3D.": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hai fatto una cosa. In 3D."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "صنعت شيئًا. بالأبعاد الثلاثة."
           }
         }
       }

@@ -3,6 +3,20 @@
 All notable changes. 1.x grew in four phases (v0.1 → v1.4); 2.0 is the remaster, released as betas first. Maquette
 continues from 2.0 and numbers its phases again from 0.1 (each phase bumps the minor version until 1.0).
 
+## [0.37] — Maquette — Supporters and the open launch (phase O1)
+
+- **Support Maquette** in Settings ▸ About, and **Credits** from `SUPPORTERS.md`, shipped inside each build (no
+  network). The App Store build links to Patreon only on the US storefront, as Apple's rules allow; elsewhere it thanks
+  you and opens the credits.
+- **A thank-you card** in the Export sheet after your first export: shown once, closed with one tap, never on the
+  canvas.
+- `SUPPORTERS.md`, `.github/FUNDING.yml` (GitHub Sponsors and Patreon), a Support section in the README and the
+  contributor rules in CONTRIBUTING.md.
+- **The site**, [ahmedheshameg.github.io/maquette](https://ahmedheshameg.github.io/maquette/): one page where the
+  scroll flies a camera around the Keeper's Tower through eleven stops (Draw to Yours), in Maquette's own Ink Look.
+  Then the road (Done, Now, Next), the bar to "Maquette, full time", the wall, and the questions. A still picture
+  with reduced motion. Published from `site/` by GitHub Pages.
+
 ## [0.36] — Maquette — Clean, the Real Look and open source (phase U9, in progress)
 
 - **Open source**: Maquette is free software under the GPL 3.0. The name, studio h. and the icon stay the author's

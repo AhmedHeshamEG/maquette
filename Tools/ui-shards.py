@@ -59,6 +59,7 @@ TIMES = {
     "SmokeTests/testNothingAppearsOnTheCanvasUnderLoad": 54,
     "SmokeTests/testTheFeelRecorder": 71,
     "SmokeTests/testThingsOpensOnTheHouseKit": 40,
+    "SupportTests/testTheThankYouCardShowsOnceAndNeverOnTheCanvas": 70,
     "SmokeTests/testTourRunsToTheEnd": 43,
     "YoursTests/testAMirroredReorderedLayoutSurvivesARelaunchAndResets": 127,
     "YoursTests/testPresentHidesEverythingAndANoteIsAnsweredInPlace": 75,
@@ -79,7 +80,8 @@ AREAS = {
     "Library": ["CharacterTests", "SmokeTests"],
     "Learn": ["SmokeTests"],
     "Diagnostics": ["SmokeTests"],
-    "Export": ["AnimateTests", "GuestTests"],
+    "Export": ["AnimateTests", "GuestTests", "SupportTests"],
+    "Settings": ["SupportTests"],
 }
 # Always run on a draft, whatever changed: the app opens, builds, undoes and reopens.
 ALWAYS = ["SmokeTests/testCreateBuildUndoAndReopen"]
@@ -104,7 +106,7 @@ def affected(tests, changed):
     classes = set()
     prefix = "Packages/LoweyFeatures/Sources/LoweyFeatures/"
     for path in changed:
-        if path.endswith(".md") or path.startswith("docs/"):
+        if path.endswith(".md") or path.startswith(("docs/", "site/", ".github/workflows/pages.yml")):
             continue
         if path.startswith("AppUITests/"):
             classes.add(pathlib.Path(path).stem)
