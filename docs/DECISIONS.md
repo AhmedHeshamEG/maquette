@@ -3946,6 +3946,9 @@ row and the card thank you and link nowhere. Rejected: a card over the stage (§
 Maquette is already on the store (the link comes from him later). Apple's fee is yearly, so the checkpoint reads
 "keeps Maquette on the App Store" and stays true every year. Rejected: "puts it on the App Store" (false once it's there).
 
-**D-626 — Ko-fi is `ko-fi.com/heshamvox`**, matching his handles everywhere else (TikTok, Instagram, Facebook,
-Linktree, Patreon). GitHub Sponsors is his own account, `AhmedHeshamEG`, which pays out in Italy and Egypt with no fee
-on personal sponsorships. Rejected: a studio-h account (none exists; the seller is his own name).
+**D-626 — Patreon and GitHub Sponsors, no Ko-fi.** Hesham already runs `patreon.com/HeshamVox` (every video's
+footer links it), so the monthly Founding Supporter tier lives there and on GitHub Sponsors (`AhmedHeshamEG`, which pays
+out in Italy and Egypt with no fee on personal sponsorships). One-off coffees are a one-time Sponsors tier. The app's
+button opens Patreon: anyone can pay there without a GitHub account. The $25,000 goal is a running total, which
+Patreon's goals can't show, so the site's bar carries it. Rejected: Ko-fi (one more account to keep for no gain), a
+studio-h account (none exists; the seller is his own name).

@@ -5,17 +5,17 @@ import SwiftUI
 
 /// Supporting Maquette (O1, CONTEXT §D.32): a Support row and the credits in Settings ▸ About, and one thank-you card
 /// in the Export sheet after the first export. Nothing on the canvas, no network, no tracking. The App Store build
-/// links out to Ko-fi only on the US storefront (App Review 3.1.1(a) and 3.1.3); everywhere else it shows no link.
+/// links out to Patreon only on the US storefront (App Review 3.1.1(a) and 3.1.3); everywhere else it shows no link.
 @MainActor
 enum Support {
-    static let koFi = URL(string: "https://ko-fi.com/heshamvox")!
+    static let patreon = URL(string: "https://www.patreon.com/HeshamVox")!
 
     /// The App Store build (`MaquetteStoreBuild` in the Info.plist). The sideloaded and Debug builds aren't.
     static var isStoreBuild: Bool {
         (Bundle.main.object(forInfoDictionaryKey: "MaquetteStoreBuild") as? String)?.uppercased() == "YES"
     }
 
-    /// Whether this build may show a link to Ko-fi.
+    /// Whether this build may show a link to Patreon.
     static func linksOut() async -> Bool {
         guard isStoreBuild else { return true }
         return await Storefront.current?.countryCode == "USA"
@@ -49,7 +49,7 @@ struct SupportRows: View {
     var body: some View {
         Group {
             if linksOut {
-                Button { openURL(Support.koFi) } label: {
+                Button { openURL(Support.patreon) } label: {
                     VStack(alignment: .leading, spacing: 2) {
                         Text("Support Maquette")
                         Text("It's free. If it helped you, you can help it.").font(.hmm(.footnote))
@@ -116,16 +116,21 @@ struct ThankYouCard: View {
     var body: some View {
         VStack(alignment: .leading, spacing: HmmSpacing.xs) {
             Text("You made a thing. In 3D.").font(.hmm(.headline, weight: .semibold))
-            Text(linksOut ? "Maquette is free, and it'll stay free. If you want to help it grow, there's a coffee button."
-                : "Maquette is free, and it'll stay free. Go show someone what you made.")
-                .font(.hmm(.footnote)).foregroundStyle(theme.text2)
+            Group {
+                if linksOut {
+                    Text("Maquette is free, and it'll stay free. If you want to help it grow, there's a Support button.")
+                } else {
+                    Text("Maquette is free, and it'll stay free. Go show someone what you made.")
+                }
+            }
+            .font(.hmm(.footnote)).foregroundStyle(theme.text2)
             HStack(spacing: HmmSpacing.xs) {
                 if linksOut {
                     HmmPillButton("Maybe later") { editor.app.showsThankYou = false }
                         .accessibilityIdentifier("thanks-close")
                     HmmPillButton("Support", systemName: "cup.and.saucer", prominent: true) {
                         editor.app.showsThankYou = false
-                        openURL(Support.koFi)
+                        openURL(Support.patreon)
                     }
                     .accessibilityIdentifier("thanks-support")
                 } else {

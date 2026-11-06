@@ -20013,6 +20013,38 @@
         }
       }
     },
+    "Maquette is free, and it'll stay free. Go show someone what you made.": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Maquette è gratis e lo resterà. Vai a far vedere a qualcuno cosa hai fatto."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Maquette مجاني وسيبقى مجانيًا. اذهب وأرِ أحدًا ما صنعته."
+          }
+        }
+      }
+    },
+    "Maquette is free, and it'll stay free. If you want to help it grow, there's a Support button.": {
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Maquette è gratis e lo resterà. Se vuoi aiutarla a crescere, c'è il pulsante Sostieni."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Maquette مجاني وسيبقى مجانيًا. إن أردت أن تساعده على النمو، فهناك زر «ادعم»."
+          }
+        }
+      }
+    },
     "Maquette may use the front camera only to show you your face here": {
       "localizations": {
         "it": {

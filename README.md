@@ -164,8 +164,9 @@ the price, because the people I made it for are the ones who'd never pay for a 3
 
 So it's free. If it's useful to you, you can help me keep going:
 
-- **[A coffee on Ko-fi](https://ko-fi.com/heshamvox)**, any amount, once.
-- **[Founding Supporter](https://github.com/sponsors/AhmedHeshamEG)**, $5 a month on GitHub Sponsors or Ko-fi. The
+- **[A coffee](https://github.com/sponsors/AhmedHeshamEG?frequency=one-time)**, any amount, once, on GitHub Sponsors.
+- **Founding Supporter**, $5 a month on [Patreon](https://www.patreon.com/HeshamVox) or
+  [GitHub Sponsors](https://github.com/sponsors/AhmedHeshamEG). The
   first 100 get a number, #1 to #100, in the app's credits and right here, forever.
 
 **The goal: $25,000, "Maquette, full time".** The app is already built; this pays for what comes after it.
@@ -176,7 +177,7 @@ $99      ▸ keeps Maquette on the App Store (Apple charges it every year)
 $25,000  ▸ a year of me working on nothing else but Maquette
 ```
 
-Every month there's one short post on Ko-fi saying what your money did: one clip, three lines.
+Every month there's one short post on Patreon (public, for everyone) saying what your money did: one clip, three lines.
 
 **Founding Supporters:** see [SUPPORTERS.md](SUPPORTERS.md). *(Empty for now. Number one could be you. No pressure.
 Some pressure.)*

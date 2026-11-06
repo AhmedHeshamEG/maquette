@@ -6,11 +6,11 @@ continues from 2.0 and numbers its phases again from 0.1 (each phase bumps the m
 ## [0.37] — Maquette — Supporters and the open launch (phase O1, in progress)
 
 - **Support Maquette** in Settings ▸ About, and **Credits** from `SUPPORTERS.md`, shipped inside each build (no
-  network). The App Store build links to Ko-fi only on the US storefront, as Apple's rules allow; elsewhere it thanks
+  network). The App Store build links to Patreon only on the US storefront, as Apple's rules allow; elsewhere it thanks
   you and opens the credits.
 - **A thank-you card** in the Export sheet after your first export: shown once, closed with one tap, never on the
   canvas.
-- `SUPPORTERS.md`, `.github/FUNDING.yml` (GitHub Sponsors and Ko-fi), a Support section in the README and the
+- `SUPPORTERS.md`, `.github/FUNDING.yml` (GitHub Sponsors and Patreon), a Support section in the README and the
   contributor rules in CONTRIBUTING.md.
 
 ## [0.36] — Maquette — Clean, the Real Look and open source (phase U9, in progress)
