@@ -93,7 +93,8 @@ async function start() {
   const target = new THREE.Vector3();
 
   function frame(now) {
-    const dt = Math.min((now - last) / 1000, 0.1);
+    // The first frame's timestamp can be a little before `last`, so time never runs backwards.
+    const dt = THREE.MathUtils.clamp((now - last) / 1000, 0, 0.1);
     last = now;
     if (!query.has('t')) clock.t += dt;
     s += (wanted() - s) * (pinned !== null ? 1 : 1 - Math.exp(-dt * 3.2));
@@ -313,7 +314,7 @@ function paint(group, stop) {
     brush.rotation.z = 0.5;
     const pot = stop.loaded?.pot;
     if (!pot) return;
-    const k = (t / 2) % colours.length;
+    const k = (((t / 2) % colours.length) + colours.length) % colours.length;
     tint.copy(colours[Math.floor(k)]).lerp(colours[(Math.floor(k) + 1) % colours.length], THREE.MathUtils.smoothstep(k % 1, 0.6, 1));
     pot.traverse((o) => { if (o.isMesh) o.material.color.copy(tint); });
   };
