@@ -106,7 +106,7 @@ def affected(tests, changed):
     classes = set()
     prefix = "Packages/LoweyFeatures/Sources/LoweyFeatures/"
     for path in changed:
-        if path.endswith(".md") or path.startswith("docs/"):
+        if path.endswith(".md") or path.startswith(("docs/", "site/", ".github/workflows/pages.yml")):
             continue
         if path.startswith("AppUITests/"):
             classes.add(pathlib.Path(path).stem)
