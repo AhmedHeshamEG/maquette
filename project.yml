@@ -33,11 +33,14 @@ settings:
     CODE_SIGN_STYLE: Automatic
     DEVELOPMENT_TEAM: ""
     MAQUETTE_HELD: ""
+    # The App Store build (O1): its Support row links out only on the US storefront (App Review 3.1.1(a), 3.1.3).
+    MAQUETTE_STORE_BUILD: "NO"
   configs:
     # CONTEXT §D.25: the App Store build hides these until each passes on the device (Workspace/Support/Held.swift).
     # Deleting a name ships it. While the companion is held the store build is iPad only (the Lowey target's settings).
     AppStore:
       MAQUETTE_HELD: "buildingFiles technicalSheets threads papercraft roomScan board faceTimeReview webPieces companion"
+      MAQUETTE_STORE_BUILD: "YES"
 
 packages:
   LoweyFeatures:
@@ -55,6 +58,9 @@ targets:
       # The Kit ships as one folder (its assets keep their Set folders; tools/fetch-kit.py builds it).
       - path: App/Resources/Kit
         type: folder
+        buildPhase: resources
+      # The credits (Settings ▸ About ▸ Credits) read the one list, shipped inside each build: no network.
+      - path: SUPPORTERS.md
         buildPhase: resources
     dependencies:
       - package: LoweyFeatures
@@ -95,6 +101,8 @@ targets:
         LoweyAIBridge: true
         # Held features (MaquetteHeld): what this build holds back, from the configuration's MAQUETTE_HELD.
         HmmHeld: $(MAQUETTE_HELD)
+        # The App Store build (O1's Support row and thank-you card follow Apple's payment-link rule).
+        MaquetteStoreBuild: $(MAQUETTE_STORE_BUILD)
         LoweyBackgroundBridge: true
         NSPhotoLibraryAddUsageDescription: "Maquette saves the videos and stills you export to your photo library."
         NSCameraUsageDescription: "Maquette uses the camera to follow the iPad when it acts as a film camera, the front camera to read your face for character performances and to show it in the Reference window while you draw, to film you acting so a character can copy your moves, to scan a room or an object into a model, and to show your scene standing in your room in the AR view. Nothing leaves your iPad."

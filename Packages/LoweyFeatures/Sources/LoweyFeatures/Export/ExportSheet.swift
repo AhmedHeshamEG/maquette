@@ -201,6 +201,7 @@ struct ExportSheet: View {
             .accessibilityElement(children: .contain)
             .accessibilityIdentifier("export-results")
         }
+        if editor.app.showsThankYou { ThankYouCard(editor: editor) }
     }
 }
 

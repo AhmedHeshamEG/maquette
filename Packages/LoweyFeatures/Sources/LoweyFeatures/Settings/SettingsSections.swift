@@ -148,7 +148,7 @@ struct StorageSection: View {
     }
 }
 
-/// About: the version, licences, and Diagnostics (the feel recorder, the benchmarks, the Pencil's latency, logs).
+/// About: the version, Support and the credits (O1), licences, and Diagnostics (the feel recorder, the benchmarks, the Pencil's latency, logs).
 struct AboutSection: View {
     let diagnostics: () -> Void
 
@@ -156,6 +156,7 @@ struct AboutSection: View {
         Section("About") {
             LabeledContent("Version", value: AppIdentity.version)
             LabeledContent("Made by", value: "studio h.")
+            SupportRows()
             NavigationLink("Licences") { AcknowledgementsView() }
             Button("Diagnostics", action: diagnostics)
                 .accessibilityIdentifier("Diagnostics")

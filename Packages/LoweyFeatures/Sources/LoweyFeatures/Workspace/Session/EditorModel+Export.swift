@@ -33,6 +33,7 @@ extension EditorModel {
                 if AppIdentity.isUITesting { trail("exported=\(urls.map(\.lastPathComponent).joined(separator: "+"))") }
                 HmmHaptics.play(.commit)
                 reporter?.exportFinished(id: id, title: job.title, files: urls)
+                if Support.thankYouGate.takeTurn() { app.showsThankYou = true }
             }
             exportProgress = nil
             exportWaiting = false
