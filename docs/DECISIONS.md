@@ -3952,3 +3952,16 @@ out in Italy and Egypt with no fee on personal sponsorships). One-off coffees ar
 button opens Patreon: anyone can pay there without a GitHub account. The $25,000 goal is a running total, which
 Patreon's goals can't show, so the site's bar carries it. Rejected: Ko-fi (one more account to keep for no gain), a
 studio-h account (none exists; the seller is his own name).
+
+**D-627 — The site is the app's own world.** `site/` is one static page: three.js with `maquette/look.js` from the
+app's three.js export (the Ink Look itself), the Keeper's Tower rebuilt from `KeepersTowerSample`'s Scene Script, and
+the eleven stops made from Kit models (CC0). The scroll drives the camera along one path through the stops; each
+stop's card sits on one side and the camera frames the stop on the other (`setViewOffset`). Reduced motion or no WebGL
+shows `img/still.jpg`. Everything is ~2 MB, no build step, no fonts to fetch, no analytics. Rejected: a video
+background (heavy on phones, not interactive), a page builder (another account), screenshots only (doesn't show what
+3D is).
+
+**D-628 — The wall shows what's made in Maquette, and nothing else.** The approved copy said "every 3D shot on my
+channel was made in this app"; checking it, the channel's 3D is three.js, HyperFrames and Blender. The wall shows the
+app's own screens and Looks, and invites people to tag #MadeWithMaquette. Rejected: the channel's clips (not made in
+the app).
